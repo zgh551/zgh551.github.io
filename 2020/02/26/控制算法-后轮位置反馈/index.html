@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="概述 本文介绍一种使用后轮位置反馈的路径跟踪算法，使用李亚普洛夫稳定判据，推导控制率。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="控制算法-后轮位置反馈">
+<meta property="og:url" content="https://zgh551.github.io/2020/02/26/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%90%8E%E8%BD%AE%E4%BD%8D%E7%BD%AE%E5%8F%8D%E9%A6%88/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="概述 本文介绍一种使用后轮位置反馈的路径跟踪算法，使用李亚普洛夫稳定判据，推导控制率。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200103140558.JPG">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200226171609.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200227170936.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200310173756.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200312135729.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200312111356.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200313145608.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200313145612.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200316160254.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200316160259.png">
+<meta property="article:published_time" content="2020-02-26T09:00:18.000Z">
+<meta property="article:modified_time" content="2021-06-16T13:13:09.970Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="Rear Wheel Position Base Feedback">
+<meta property="article:tag" content="后轮位置反馈">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200103140558.JPG">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2020/02/26/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%90%8E%E8%BD%AE%E4%BD%8D%E7%BD%AE%E5%8F%8D%E9%A6%88/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;2020&#x2F;02&#x2F;26&#x2F;%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%90%8E%E8%BD%AE%E4%BD%8D%E7%BD%AE%E5%8F%8D%E9%A6%88&#x2F;&quot;,&quot;path&quot;:&quot;2020&#x2F;02&#x2F;26&#x2F;控制算法-后轮位置反馈&#x2F;&quot;,&quot;title&quot;:&quot;控制算法-后轮位置反馈&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>控制算法-后轮位置反馈 | Z</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%AF%E5%B7%AE"><span class="nav-number">2.</span> <span class="nav-text">误差</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%8D%E7%BD%AE%E8%AF%AF%E5%B7%AE"><span class="nav-number">2.1.</span> <span class="nav-text">位置误差</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%92%E5%BA%A6%E8%AF%AF%E5%B7%AE"><span class="nav-number">2.2.</span> <span class="nav-text">角度误差</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">微分方程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%9B%B2%E7%BA%BF%E6%9C%80%E8%BF%91%E7%82%B9"><span class="nav-number">3.1.</span> <span class="nav-text">参考曲线最近点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%AA%E5%90%91%E8%AF%AF%E5%B7%AE"><span class="nav-number">3.2.</span> <span class="nav-text">横向误差</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%88%AA%E5%90%91%E8%A7%92%E8%AF%AF%E5%B7%AE"><span class="nav-number">3.3.</span> <span class="nav-text">航向角误差</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%BC%E8%BF%B0"><span class="nav-number">3.4.</span> <span class="nav-text">综述</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%8E%E4%BA%9A%E6%99%AE%E6%B4%9B%E5%A4%AB%E7%A8%B3%E5%AE%9A%E5%88%A4%E6%8D%AE"><span class="nav-number">4.</span> <span class="nav-text">李亚普洛夫稳定判据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#lyapunov%E5%87%BD%E6%95%B0"><span class="nav-number">4.1.</span> <span class="nav-text">Lyapunov函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E7%8E%87"><span class="nav-number">5.</span> <span class="nav-text">控制率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%BF%E7%9C%9F"><span class="nav-number">6.</span> <span class="nav-text">仿真</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0%E6%9B%B2%E7%BA%BF%E8%B7%9F%E8%B8%AA"><span class="nav-number">6.1.</span> <span class="nav-text">三角函数曲线跟踪</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%86%E5%BC%A7%E6%9B%B2%E7%BA%BF%E8%B7%9F%E8%B8%AA"><span class="nav-number">6.2.</span> <span class="nav-text">圆弧曲线跟踪</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E6%B5%8B%E6%95%B0%E6%8D%AE"><span class="nav-number">7.</span> <span class="nav-text">实测数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/02/26/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%90%8E%E8%BD%AE%E4%BD%8D%E7%BD%AE%E5%8F%8D%E9%A6%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="John">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          控制算法-后轮位置反馈
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-02-26 17:00:18" itemprop="dateCreated datePublished" datetime="2020-02-26T17:00:18+08:00">2020-02-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 21:13:09" itemprop="dateModified" datetime="2021-06-16T21:13:09+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">控制算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA/" itemprop="url" rel="index"><span itemprop="name">路径跟踪</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">概述</h2>
+<p>本文介绍一种使用后轮位置反馈的路径跟踪算法，使用李亚普洛夫稳定判据，推导控制率。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200103140558.JPG" alt="大连" /><span id="more"></span></p>
+<h2 id="误差">误差</h2>
+<figure>
+<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200226171609.png" alt="后轮位置跟踪示意图" /><figcaption aria-hidden="true">后轮位置跟踪示意图</figcaption>
+</figure>
+<h3 id="位置误差">位置误差</h3>
+<p>关于位置误差的计算，首先搜寻参考路径与车辆后轴中心距离最近的点： <span class="math display">\[
+s(t) = arg\min_{\gamma}\|\bigl(x_r(t),y_r(t)\bigr)-\bigl(x_{ref}(\gamma),y_{ref}(\gamma)\bigr) \| \tag{1}
+\]</span> 其中，<span class="math inline">\(\bigl(x_r(t),y_r(t)\bigr)\)</span>代表<span class="math inline">\(t\)</span>时刻车辆后轴中心位置坐标，<span class="math inline">\(\bigl(x_{ref}(\gamma),y_{ref}(\gamma)\bigr)\)</span>代表参考路径上离车辆后轴距离最近点的位置坐标，<span class="math inline">\(s(t)\)</span>代表<span class="math inline">\(t\)</span>时刻与车辆后轴中心点距离最近参考路径点的位置参数<span class="math inline">\(\gamma\)</span>。</p>
+<p>关于参考路径在<span class="math inline">\(s(t)\)</span>参数处的单位切向量为 <span class="math display">\[
+\hat{t}=
+\frac{
+\Bigl(\dfrac{\partial x_{ref}}{\partial s}\|_{s(t)},\dfrac{\partial y_{ref}}{ \partial s}\|_{s(t)}
+\Bigr)}
+{\Bigg\|
+\Bigl(\dfrac{ \partial x_{ref}\bigl(s(t)\bigr)}{ \partial s},\dfrac{ \partial y_{ref}\bigl(s(t)\bigr)}{ \partial s}\Bigr)
+\Biggr\|}
+=(t_x,t_y) \tag{2}
+\]</span></p>
+<p>跟踪误差向量表示如下：</p>
+<p><span class="math display">\[
+\vec{d}(t)=\Bigl(x_r(t) - x_{ref}\bigl(s(t)\bigr),y_r(t) - y_{ref}\bigl(s(t)\bigr)\Bigr)=(d_x,d_y)\tag{3}
+\]</span></p>
+<p>所以跟踪误差向量<span class="math inline">\(\vec{d}\)</span>和参考路径上最近点的单位切向量<span class="math inline">\(\hat{t}\)</span>的向量积为</p>
+<p><span class="math display">\[
+\vec{e} = \hat{t} \times \vec{d} = 
+\left\lvert 
+\begin{array}{cl}
+x &amp; y\\
+t_x &amp; t_y\\
+d_x &amp; d_y
+\end{array}
+\right\rvert=t_xd_y - t_yd_x \tag{4}
+\]</span></p>
+<h3 id="角度误差">角度误差</h3>
+<p>关于车辆航向向量与目标路径切向量的夹角<span class="math inline">\(\psi_e\)</span>如下：</p>
+<p><span class="math display">\[
+\psi_e(t)=\psi-\arctan2(\frac{ \partial y_{ref}\bigl(s(t)\bigr)}{ \partial s},\frac{ \partial x_{ref}\bigl(s(t)\bigr)}{ \partial s}) \tag{5}
+\]</span></p>
+<h2 id="微分方程">微分方程</h2>
+<h3 id="参考曲线最近点">参考曲线最近点</h3>
+<p>关于参考曲线与车辆后轴中心最近点处的速度<span class="math inline">\(\dot{s}(t)\)</span>可以通过下图求得</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200227170936.png" /></p>
+<p>如上图所示，车辆沿目标路径顺时针运动，点<span class="math inline">\(O\)</span>代表当前目标曲线点对应的旋转中心。很明显此时曲率为负值，即<span class="math inline">\(R &lt; 0\)</span>。根据矢量叉乘性质得，<span class="math inline">\(e &gt; 0\)</span>。假设以点<span class="math inline">\(O\)</span>为旋转中心的车辆后轴中心角速度<span class="math inline">\(\omega_r\)</span>和最近参考路径点处的角速度<span class="math inline">\(\omega_s\)</span>近似相等，得 <span class="math display">\[
+\omega_r = \omega_s &lt; 0\tag{6}
+\]</span> 根据车辆旋转角速度的计算等式<span class="math inline">\(\frac{V}{R}\)</span>，结合等式(6)得 <span class="math display">\[
+\frac{v_{rx}}{R-e} = \frac{\dot{s}}{R} \tag{7}
+\]</span> 故<span class="math inline">\(\dot{s}\)</span>结果如下 <span class="math display">\[
+\dot{s} = \frac{R \cdot v_{rx}}{R - e}=\frac{v_{r}\cdot\cos(\psi_e)}{1-k(s)e}\tag{8}
+\]</span></p>
+<h3 id="横向误差">横向误差</h3>
+<p>车辆横向移动的速度<span class="math inline">\(\dot{e}\)</span>可以表示如下： <span class="math display">\[
+\dot{e} = v_r \cdot \sin(\psi_e)\tag{9}
+\]</span></p>
+<h3 id="航向角误差">航向角误差</h3>
+<p>关于车辆航向角误差的变化率表示如下： <span class="math display">\[
+\begin{array}{cl}
+\dot{\psi_e} &amp;= \dot{\psi} - \dot{\psi_{ref}} \\
+&amp;= \dot{\psi} - \dot{s}\cdot k(s)\\
+&amp;=\dot{\psi} - \dfrac{v_{r}\cdot\cos(\psi_e)\cdot k(s)}{1-k(s)e}
+\end{array}\tag{10}
+\]</span></p>
+<h3 id="综述">综述</h3>
+<p>基于上述参考曲线处的速度、横向误差变化率和航向角误差变化率，整理如下微分方程形式： <span class="math display">\[
+\begin{array}{cl}
+\dot{s} &amp;= \dfrac{v_{r}\cdot\cos(\psi_e)}{1-k(s)e}\\
+\dot{e} &amp;= v_r \cdot \sin(\psi_e)\\
+\dot{\psi_e} &amp;=\dot{\psi} - \dfrac{v_{r}\cdot\cos(\psi_e)\cdot k(s)}{1-k(s)e}
+\end{array}\tag{11}
+\]</span></p>
+<h2 id="李亚普洛夫稳定判据">李亚普洛夫稳定判据</h2>
+<h3 id="lyapunov函数">Lyapunov函数</h3>
+<p>基于上述微分方程，定义李亚普洛夫函数形式如下：</p>
+<p><span class="math display">\[
+V(e,\psi_e) = \frac{1}{2}e^2 + \frac{1}{2k_2}\psi_e^2 \tag{12}
+\]</span></p>
+<p>其中<span class="math inline">\(k_2 &gt; 0\)</span>，为了使<span class="math inline">\((e,\psi_e)\)</span>在平衡点<span class="math inline">\((0,0)\)</span>处稳定，根据李亚普洛夫稳定判据，必须满足一下两个条件：</p>
+<ol type="1">
+<li><p><span class="math inline">\(\lim_{\rvert e,\psi_e \rvert \to \infty}V = \infty\)</span></p></li>
+<li><p><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(e \neq 0,\psi_e \neq 0)\end{array}\)</span></p></li>
+</ol>
+<p>对于条件1，等式(12)明显成立，所以李亚普洛夫稳定判据第一条满足。</p>
+<p>对于<span class="math inline">\(\dot{V}\)</span>,结合等式(11)的微分方程，推导形式如下：</p>
+<p><span class="math display">\[
+\begin{array}{cl}
+\dot{V} &amp;= e\dot{e} + \dfrac{1}{k_2}\psi_e\dot{\psi}_e\\
+&amp;=e \cdot v_r \cdot \sin(\psi_e) + \dfrac{1}{k_2}\psi_e\Bigl(\dot{\psi} - \dfrac{v_{r}\cdot\cos(\psi_e)\cdot k(s)}{1-k(s)e}\Bigr)
+\end{array}\tag{13}
+\]</span></p>
+<p>根据等式(13)，另<span class="math inline">\(\dot{V} = 0\)</span>，得</p>
+<p><span class="math display">\[
+\begin{array}{cl}
+v_r \cdot \sin(\psi_e)\cdot e + \dfrac{1}{k_2}\psi_e\Bigl(\dot{\psi} - \dfrac{v_{r}\cdot\cos(\psi_e)\cdot k(s)}{1-k(s)e}\Bigr)=0\\
+k_2 v_r \dfrac{\sin(\psi_e)}{\psi_e}e + \dot{\psi} - \dfrac{v_{r}\cdot\cos(\psi_e)\cdot k(s)}{1-k(s)e} = 0\\
+\end{array} \tag{14}
+\]</span></p>
+<p>求出零界控制率<span class="math inline">\(\dot{\psi_e}\)</span> 如下：</p>
+<p><span class="math display">\[
+\dot{\psi}^* = \dfrac{v_{r}\cdot\cos(\psi_e)\cdot k(s)}{1-k(s)e} - k_2 v_r \dfrac{\sin(\psi_e)}{\psi_e}e \tag{15}
+\]</span></p>
+<p>为了满足第2条李亚普洛夫稳定判据，设置一个调节函数<span class="math inline">\(g(e, \psi_e, t) &gt; 0\)</span>,可以得出基于航向角变化率的控制命令：</p>
+<p><span class="math display">\[
+\dot{\psi} = \dot{\psi}^* - g(e,\psi_e,t)\psi_e\tag{16}
+\]</span></p>
+<p>设置<span class="math inline">\(g(e,{\psi}_e,t)= k_{\psi}|v_r|\)</span> ，其中<span class="math inline">\(k_{\psi} &gt; 0\)</span>。 <span class="math display">\[
+\dot{\psi} = \dfrac{v_{r}\cdot\cos(\psi_e)\cdot k(s)}{1-k(s)e} - k_2 v_r \dfrac{\sin(\psi_e)}{\psi_e}e - k_{\psi}|v_r|\psi_e \tag{17}
+\]</span></p>
+<p>将等式(17)带入等式(13)得</p>
+<p><span class="math display">\[
+\begin{array}{cl}
+\dot{V} 
+&amp;=v_r \cdot \sin(\psi_e) \cdot e + \dfrac{1}{k_2}\psi_e\Bigl(\dot{\psi} - \dfrac{v_{r}\cdot\cos(\psi_e)\cdot k(s)}{1-k(s)e}\Bigr)\\
+&amp;=v_r \cdot \sin(\psi_e) \cdot e +\dfrac{1}{k_2}\psi_e\bigl(- k_2 v_r \dfrac{\sin(\psi_e)}{\psi_e}e - k_{\psi}|v_r|\psi_e\bigr)\\
+&amp;=v_r \cdot \sin(\psi_e) \cdot e - v_r \cdot \sin(\psi_e) \cdot e -\dfrac{k_{\psi}}{k_2}|v_r|\psi_e^2\\
+&amp;=-\dfrac{k_{\psi}}{k_2}|v_r|\psi_e^2 \leq 0
+\end{array}\tag{18}
+\]</span></p>
+<p>所以设计得控制率满足稳定性条件。</p>
+<h2 id="控制率">控制率</h2>
+<p>根据车辆几何关系</p>
+<p><span class="math display">\[
+\tan(\delta) = \frac{L}{R} \tag{19}
+\]</span></p>
+<p>车辆航向变化率与车速和转弯半径的关系为<span class="math inline">\(\dot{\psi} = \frac{V}{R}\)</span>，结合等式(17)可得</p>
+<p><span class="math display">\[
+\tan(\delta) = \frac{\dot{\psi}L}{V} \tag{20}
+\]</span></p>
+<p>所以控制率<span class="math inline">\(\delta\)</span>为</p>
+<p><span class="math display">\[
+\delta = \arctan(\frac{\dot{\psi}L}{v_r})\tag{21}
+\]</span></p>
+<h2 id="仿真">仿真</h2>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200310173756.png" /></p>
+<p>根据上述控制系统框图，搭建仿真环境，分别测试三角函数曲线和圆弧曲线的跟踪效果。</p>
+<h3 id="三角函数曲线跟踪">三角函数曲线跟踪</h3>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200312135729.png" /></p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200312111356.png" /></p>
+<h3 id="圆弧曲线跟踪">圆弧曲线跟踪</h3>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200313145608.png" /></p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200313145612.png" /></p>
+<h2 id="实测数据">实测数据</h2>
+<p>下图是实际车辆测试结果，测试条件如下： - 初始位置(0,0)，初始偏航角0° - 目标位置(5,-5)，目标偏航角-90° - 初始转向角0° - 初始速度0.5m/s - 跟踪圆弧曲率-0.2</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200316160254.png" /></p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200316160259.png" /></p>
+<p>基于上图可知，跟踪过程主要分为三个阶段：</p>
+<ol type="1">
+<li>第一阶段(0,0.7)m：车辆按最大角速度转到右转最大角度500°左右</li>
+<li>第二阶段(0.7,3)m：车辆保持最大转向角趋近于跟踪曲线</li>
+<li>第三阶段(3,5)m：车辆跟踪目标曲线，按照控制率输出转向角</li>
+</ol>
+<h2 id="总结">总结</h2>
+<p>后轴位置反馈控制对于曲率连续变化的曲线控制较好，但对于曲率恒定的曲线(圆弧)，控制输出存在抖动。实际车辆控制时，由于执行器本身可以等效为一个低通滤波器，实测控制抖动较小。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="John 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="John 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Rear-Wheel-Position-Base-Feedback/" rel="tag"># Rear Wheel Position Base Feedback</a>
+              <a href="/tags/%E5%90%8E%E8%BD%AE%E4%BD%8D%E7%BD%AE%E5%8F%8D%E9%A6%88/" rel="tag"># 后轮位置反馈</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/02/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-Stanley%E6%B3%95/" rel="prev" title="控制算法-Stanley法">
+                  <i class="fa fa-chevron-left"></i> 控制算法-Stanley法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/02/29/crazyflie-%E7%A1%AC%E4%BB%B6%E5%88%86%E6%9E%90/" rel="next" title="crazyflie-硬件分析">
+                  crazyflie-硬件分析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;b0271657437e27e8a8baadb784895b87&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

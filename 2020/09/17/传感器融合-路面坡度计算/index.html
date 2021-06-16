@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="概述 本文主要介绍一种计算车辆坡度角的方法，利用有限的两轴加速度传感器并结合车辆动力学特性，实时估算车辆的坡度角。 融合框架">
+<meta property="og:type" content="article">
+<meta property="og:title" content="传感器融合-路面坡度计算">
+<meta property="og:url" content="https://zgh551.github.io/2020/09/17/%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88-%E8%B7%AF%E9%9D%A2%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="概述 本文主要介绍一种计算车辆坡度角的方法，利用有限的两轴加速度传感器并结合车辆动力学特性，实时估算车辆的坡度角。 融合框架">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97-vehicle%20frame1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97-vehicle%20frame%20acc.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97-%E4%B8%8A%E5%9D%A1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97-%E4%B8%8B%E5%9D%A1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97-speed.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%88%86%E6%9E%90.png">
+<meta property="article:published_time" content="2020-09-17T09:58:19.000Z">
+<meta property="article:modified_time" content="2021-06-16T13:13:09.962Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="sensor fusion">
+<meta property="article:tag" content="传感器融合">
+<meta property="article:tag" content="车辆坡度计算">
+<meta property="article:tag" content="加速度计">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97.png">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2020/09/17/%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88-%E8%B7%AF%E9%9D%A2%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;2020&#x2F;09&#x2F;17&#x2F;%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88-%E8%B7%AF%E9%9D%A2%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97&#x2F;&quot;,&quot;path&quot;:&quot;2020&#x2F;09&#x2F;17&#x2F;传感器融合-路面坡度计算&#x2F;&quot;,&quot;title&quot;:&quot;传感器融合-路面坡度计算&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>传感器融合-路面坡度计算 | Z</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%9E%8D%E5%90%88%E6%A1%86%E6%9E%B6"><span class="nav-number">2.</span> <span class="nav-text">融合框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%8A%A0%E9%80%9F%E5%BA%A6%E5%81%8F%E5%B7%AE%E5%9D%A1%E5%BA%A6%E4%BC%B0%E8%AE%A1"><span class="nav-number">3.</span> <span class="nav-text">基于加速度偏差坡度估计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%A6%E8%BE%86%E5%9D%90%E6%A0%87%E7%B3%BB%E5%AE%9A%E4%B9%89"><span class="nav-number">3.1.</span> <span class="nav-text">车辆坐标系定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E9%80%9F%E5%BA%A6%E8%AE%A1%E5%AE%9A%E4%B9%89"><span class="nav-number">3.2.</span> <span class="nav-text">加速度计定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E5%9D%A1%E5%BA%A6%E5%80%BC"><span class="nav-number">3.3.</span> <span class="nav-text">计算坡度值</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8A%E5%9D%A1%E9%9D%99%E6%AD%A2%E7%8A%B6%E6%80%81"><span class="nav-number">3.3.1.</span> <span class="nav-text">上坡静止状态</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E5%9D%A1%E9%9D%99%E6%AD%A2%E7%8A%B6%E6%80%81"><span class="nav-number">3.3.2.</span> <span class="nav-text">下坡静止状态</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BD%A6%E8%BE%86%E5%8A%A0%E9%80%9F%E5%BA%A6"><span class="nav-number">3.3.3.</span> <span class="nav-text">车辆加速度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9D%A1%E5%BA%A6%E8%A7%92%E8%AE%A1%E7%AE%97"><span class="nav-number">3.3.4.</span> <span class="nav-text">坡度角计算</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E7%BA%B5%E5%90%91%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97"><span class="nav-number">4.</span> <span class="nav-text">基于纵向动力学坡度计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%A6%E8%BE%86%E7%BA%B5%E5%90%91%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B"><span class="nav-number">4.1.</span> <span class="nav-text">车辆纵向动力学模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1"><span class="nav-number">4.2.</span> <span class="nav-text">参数估计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9D%A1%E5%BA%A6%E8%A7%92%E8%9E%8D%E5%90%88"><span class="nav-number">5.</span> <span class="nav-text">坡度角融合</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/09/17/%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88-%E8%B7%AF%E9%9D%A2%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="John">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          传感器融合-路面坡度计算
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-09-17 17:58:19" itemprop="dateCreated datePublished" datetime="2020-09-17T17:58:19+08:00">2020-09-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 21:13:09" itemprop="dateModified" datetime="2021-06-16T21:13:09+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">传感器融合算法</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">概述</h2>
+<p>本文主要介绍一种计算车辆坡度角的方法，利用有限的两轴加速度传感器并结合车辆动力学特性，实时估算车辆的坡度角。</p>
+<h2 id="融合框架">融合框架</h2>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97.png" /></p>
+<span id="more"></span>
+<h2 id="基于加速度偏差坡度估计">基于加速度偏差坡度估计</h2>
+<h3 id="车辆坐标系定义">车辆坐标系定义</h3>
+<p>车辆坐标下定义如下：</p>
+<figure>
+<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97-vehicle%20frame1.png" alt="车辆坐标系" /><figcaption aria-hidden="true">车辆坐标系</figcaption>
+</figure>
+<p>沿车辆中轴线确定<span class="math inline">\(x\)</span>轴，车头方向为正方向; <span class="math inline">\(x\)</span>轴与后轴的交点为原点<span class="math inline">\(o\)</span>，过点<span class="math inline">\(o\)</span>作一条直线与<span class="math inline">\(x\)</span>轴垂直，将该直线定义为<span class="math inline">\(y\)</span>轴，沿<span class="math inline">\(x\)</span>轴逆时针方向为正。</p>
+<h3 id="加速度计定义">加速度计定义</h3>
+<figure>
+<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97-vehicle%20frame%20acc.png" alt="加速度计" /><figcaption aria-hidden="true">加速度计</figcaption>
+</figure>
+<p>一般车辆加速度计的安装与车辆坐标系一致，车辆前进时，加速前进，传感测量值为<strong>正</strong>；减速前进，传感器测量值为<strong>负</strong>。车辆后退时，加速后退，传感器输出值为<strong>负</strong>；减速后退，传感器输出值为<strong>正</strong>。</p>
+<p>同理，如果车辆前进上坡，静止在坡道上，传感器输出信号为<strong>正</strong>值；车辆前进下坡，静止在坡道上，传感器输出信号为<strong>负</strong>值。</p>
+<h3 id="计算坡度值">计算坡度值</h3>
+<h4 id="上坡静止状态">上坡静止状态</h4>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97-%E4%B8%8A%E5%9D%A1.png" /></p>
+<p>如上图所示，车辆上坡阶段，静止于坡道上时，加速度传感器在<span class="math inline">\(x\)</span>轴上存在重力分量，可以表示为 <span class="math display">\[
+a_x = g\sin(\theta) \tag{1}
+\]</span></p>
+<h4 id="下坡静止状态">下坡静止状态</h4>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97-%E4%B8%8B%E5%9D%A1.png" /></p>
+<p>如上图所示，车辆下坡阶段，静止于坡道上时，加速度传感器在<span class="math inline">\(x\)</span>轴上存在重力分量，可以表示为 <span class="math display">\[
+a_x=g\sin(\pi -\theta)=g\sin(-\theta) \tag{2}
+\]</span></p>
+<h4 id="车辆加速度">车辆加速度</h4>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97-speed.png" /></p>
+<p>如上图所示，通过采集相邻时刻<span class="math inline">\(k-1\)</span>和<span class="math inline">\(k\)</span>的纵向速度，计算车辆<span class="math inline">\(k-1\)</span>时刻的加速度为 <span class="math display">\[
+\dot{v}_x(k-1) = \frac{v(k) - v(k-1)}{\Delta T} \tag{3}
+\]</span> 其中，<span class="math inline">\(\Delta T\)</span>为采样步长，<span class="math inline">\(v(k)\)</span>定义前进为正，后退为负。</p>
+<h4 id="坡度角计算">坡度角计算</h4>
+<p>基于车辆在坡道上的受力分析，可以推算出当车辆运动时，加速度传感器输出信号<span class="math inline">\(a_x\)</span>与坡度角<span class="math inline">\(\theta\)</span>的关系如下： <span class="math display">\[
+a_x = \dot{v}_x + g\sin(\theta) \tag{4}
+\]</span> 所以坡度角可以表示如下： <span class="math display">\[
+\theta = \arcsin(\frac{a_x - \dot{v}_x}{g}) \tag{5}
+\]</span></p>
+<h2 id="基于纵向动力学坡度计算">基于纵向动力学坡度计算</h2>
+<h3 id="车辆纵向动力学模型">车辆纵向动力学模型</h3>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%88%86%E6%9E%90.png" /></p>
+<p>如上图所示，车辆纵向方向主要受到发动机产生的牵引力<span class="math inline">\(F_x\)</span>的影响，同时也受到重力分量、迎风阻力和地面摩擦力的影响。通过对车辆对上述力的分析，车辆的动力学模型可以表示如下： <span class="math display">\[
+F_x - mg\sin(\theta) - fmg\cos(\theta) - \frac{1}{2}\rho C_dAv_x^2 = m\dot{v}_x\tag{6}
+\]</span> 其中，<span class="math inline">\(m\)</span>为车辆质量，<span class="math inline">\(\rho\)</span>为空气密度，<span class="math inline">\(C_d\)</span>为风阻系数，<span class="math inline">\(A\)</span>为迎风面积，<span class="math inline">\(g\)</span>为重力加速度，<span class="math inline">\(\theta\)</span>为路面坡度，<span class="math inline">\(f\)</span>为路面滚阻系数。上述等式(6)中，路面坡度<span class="math inline">\(\theta\)</span>为待求参数，其它参数对于某一车辆来说均可以认为是已知的或者通过测量能够得到。</p>
+<p>令 <span class="math inline">\(y = F_x\)</span>，<span class="math inline">\(u = m\dot{v}_x + \frac{1}{2}\rho C_dAv_x^2\)</span>，<span class="math inline">\(b = mg(\sin(\theta) + f\cos(\theta))\)</span>，将公式(6)简化为： <span class="math display">\[
+y = u + b \tag{7}
+\]</span> 上式中，<span class="math inline">\(y\)</span>、<span class="math inline">\(u\)</span>为已知量，<span class="math inline">\(b\)</span>为未知量，由于<span class="math inline">\(b\)</span>是参数<span class="math inline">\(\theta\)</span>的函数，因此对路面坡度的估计可以通过估算<span class="math inline">\(\hat{b}\)</span>的值求得。</p>
+<h3 id="参数估计">参数估计</h3>
+<p>采用带有遗忘因子的最小二乘法估计<span class="math inline">\(b\)</span>的值，假设代价函数为<span class="math inline">\(V(\hat{b},k)\)</span>，那么采用最小二乘法估计<span class="math inline">\(b\)</span>的值，相当于求解参数<span class="math inline">\(\hat{b}\)</span>，使得函数<span class="math inline">\(V(\hat{b},k)\)</span>在某一时刻<span class="math inline">\(k\)</span>取得最小值。 <span class="math display">\[
+V(\hat{b},k) = \frac{1}{2}\sum_{i=1}^{k} \lambda^{k-i}(y_i - u_i - \hat{b}_k)^2 \tag{8}
+\]</span> 其中，<span class="math inline">\(\lambda\)</span>为遗忘因子，<span class="math inline">\(k\)</span>为采样时刻。</p>
+<p>函数极小值的计算可以通过求解函数导数为0的参数，及 <span class="math display">\[
+\frac{\partial V}{\partial \hat{b}_k} = 0 \tag{9}
+\]</span> 结合等式(8)、(9)得 <span class="math display">\[
+\sum_{i=1}^{k}\lambda^{k-i}(y_i - u_i - \hat{b}_k)=0\tag{10}
+\]</span> 对等式(10)化简得 <span class="math display">\[
+\sum_{i=1}^{k}\lambda^{k-i}(y_i-u_i) - \sum_{i=1}^{k}\lambda^{k-i}\hat{b}_k=0 \tag{11}
+\]</span> 移项得 <span class="math display">\[
+\hat{b}_k \sum_{i=1}^{k}\lambda^{k-i} =\sum_{i=1}^{k}\lambda^{k-i}(y_i-u_i) \tag{12}
+\]</span> 基于等式(12)，提取<span class="math inline">\(\hat{b}_k\)</span>得 <span class="math display">\[
+\hat{b}_k = (\sum_{i=1}^{k}\lambda^{k-i})^{-1}\bigl(\sum_{i=1}^{k}\lambda^{k-i}(y_i-u_i)\bigr) \tag{13}
+\]</span> 从等式(13)可以看出，随着采样时刻<span class="math inline">\(k\)</span>不断增加，估计值<span class="math inline">\(\hat{b}\)</span>的计算量也不断增加。由于车辆行驶过程中的路面坡度估计需要实时计算，因此在实际应用中一般采用递推最小二乘估计来实时估计每一采样时刻<span class="math inline">\(b\)</span>的估计值<span class="math inline">\(\hat{b}\)</span>。 <span class="math display">\[
+\hat{b}_k = \hat{b}_{k-1} + L_k(y_k -u_k)\tag{14}
+\]</span> 增益系数<span class="math inline">\(L_k\)</span>为 <span class="math display">\[
+L_k = \frac{P_{k-1}}{\lambda + P_{k-1}} \tag{15}
+\]</span> 误差协方差<span class="math inline">\(P_k\)</span>为 <span class="math display">\[
+P_k = \frac{1}{\lambda}(1 - L_k)P_{k-1} \tag{16}
+\]</span> 根据公式(14)、(15)、(16)的更新过程 <span class="math display">\[
+D = \frac{\hat{b}}{mg} \tag{17}
+\]</span> 坡度角为 <span class="math display">\[
+\theta = \arcsin(\frac{D-f\sqrt{1-D^2 + f^2}}{1 + f^2}) \tag{18}
+\]</span></p>
+<h2 id="坡度角融合">坡度角融合</h2>
+<p>车辆行驶过程中路面坡度<span class="math inline">\(\theta\)</span>可以认为是高频信号和低频信号两部分组成，在对路面坡度进行估计时，基于纵向动力学估计方法依赖于车辆的多个参数，车辆的各个参数受高频噪声影响大；基于加速度偏差坡度估计的缺点是受惯性传感器的静态偏差影响较大，惯性传感器的静态偏差属于低频噪声，为了保证路面坡度估算结果的准确性，对<span class="math inline">\(\theta_1\)</span>采用低通滤波器除去其高频部分，对<span class="math inline">\(\theta_2\)</span>采用高通滤波器滤除其低频部分，最终得到更加准确的实时估计值<span class="math inline">\(\hat{\theta}\)</span>为： <span class="math display">\[
+\hat{\theta} = \frac{1}{\tau s + 1}\theta_1 + \frac{\tau s}{\tau s + 1}\theta_2 \tag{19}
+\]</span> 其中，<span class="math inline">\(\tau\)</span>为时间常数，<span class="math inline">\(s\)</span>为拉普拉斯算子，<span class="math inline">\(\frac{1}{\tau s + 1}\)</span>为低通滤波器，<span class="math inline">\(\frac{\tau s}{\tau s + 1}\)</span>为高通滤波器。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="John 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="John 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/sensor-fusion/" rel="tag"># sensor fusion</a>
+              <a href="/tags/%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88/" rel="tag"># 传感器融合</a>
+              <a href="/tags/%E8%BD%A6%E8%BE%86%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97/" rel="tag"># 车辆坡度计算</a>
+              <a href="/tags/%E5%8A%A0%E9%80%9F%E5%BA%A6%E8%AE%A1/" rel="tag"># 加速度计</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/04/15/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92-ReedsShepp%E6%9B%B2%E7%BA%BF/" rel="prev" title="路径规划-ReedsShepp曲线">
+                  <i class="fa fa-chevron-left"></i> 路径规划-ReedsShepp曲线
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/11/04/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B-apollo/" rel="next" title="碰撞检测-apollo">
+                  碰撞检测-apollo <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;677081ec8e84f8c970f8ec4bf9907514&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

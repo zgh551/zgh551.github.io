@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="概述 嵌入式软件开发主要包括编译(build)、调试(debug)和烧录(flash)三个步骤。本文结合crazefie项目，说明开发流程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="crazyflie-开发说明">
+<meta property="og:url" content="https://zgh551.github.io/2020/01/22/crazyflie-%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="概述 嵌入式软件开发主要包括编译(build)、调试(debug)和烧录(flash)三个步骤。本文结合crazefie项目，说明开发流程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200122110811.JPG">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE1NTQyNC5wbmc?x-oss-process=image/format,png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200120135445.PNG">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE2NTYzMC5naWY">
+<meta property="article:published_time" content="2020-01-22T03:10:47.000Z">
+<meta property="article:modified_time" content="2021-06-16T13:13:09.959Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="crazyflie">
+<meta property="article:tag" content="开发说明">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200122110811.JPG">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2020/01/22/crazyflie-%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;2020&#x2F;01&#x2F;22&#x2F;crazyflie-%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E&#x2F;&quot;,&quot;path&quot;:&quot;2020&#x2F;01&#x2F;22&#x2F;crazyflie-开发说明&#x2F;&quot;,&quot;title&quot;:&quot;crazyflie-开发说明&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>crazyflie-开发说明 | Z</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E6%BA%90%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">准备源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">3.</span> <span class="nav-text">环境搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#docker%E9%95%9C%E5%83%8F%E6%96%B9%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">Docker镜像方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85docker"><span class="nav-number">3.1.1.</span> <span class="nav-text">安装Docker</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95"><span class="nav-number">4.</span> <span class="nav-text">调试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ubuntu"><span class="nav-number">4.1.</span> <span class="nav-text">Ubuntu</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD"><span class="nav-number">5.</span> <span class="nav-text">下载</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/01/22/crazyflie-%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="John">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          crazyflie-开发说明
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-22 11:10:47" itemprop="dateCreated datePublished" datetime="2020-01-22T11:10:47+08:00">2020-01-22</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 21:13:09" itemprop="dateModified" datetime="2021-06-16T21:13:09+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/crazyflie/" itemprop="url" rel="index"><span itemprop="name">crazyflie</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">概述</h2>
+<p>嵌入式软件开发主要包括编译(build)、调试(debug)和烧录(flash)三个步骤。本文结合crazefie项目，说明开发流程。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200122110811.JPG" /></p>
+<span id="more"></span>
+<h2 id="准备源码">准备源码</h2>
+<p>由于官方仓库中使用了<code>git submodule</code>，所以在克隆源码时需使用<code>--recursive</code>标志</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --recursive https://github.com/bitcraze/crazyflie-firmware.git</span><br></pre></td></tr></table></figure>
+<p>如果已经克隆了仓库，但是没有添加<code>--recursive</code>选项，需要手动添加子模块</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> crazyflie-firmware</span><br><span class="line">git submodule init</span><br><span class="line">git submodule update</span><br></pre></td></tr></table></figure>
+<p>具体更新哪些子项目模块可以查看<code>.gitmodules</code>文件。 &gt; 注意： &gt; - 问题：如果编译时出现如下错误：<code>make[1]: *** No rule to make target 'libdw1000.o', needed by 'cf2.elf'.  Stop. &gt; Makefile:350: recipe for target 'build' failed</code> &gt; - 解决办法：上述错误原因是因为缺少<code>libdw1000</code>文件，输入<code>git submodule deinit</code>，并删除<code>libdw1000</code>目录里面的<code>.git</code>文件，重新拉取该项目源码。</p>
+<h2 id="环境搭建">环境搭建</h2>
+<p>官方提供三种环境搭建方式，分别使用虚拟机镜像<a target="_blank" rel="noopener" href="https://github.com/bitcraze/bitcraze-vm">Crazyflie VM</a>、Docker镜像<a target="_blank" rel="noopener" href="https://github.com/bitcraze/toolbelt">toolbelt</a>和本机安装相应的ARM工具链来搭建开发环境。 ### 虚拟机镜像 #### 概述 本文采用 VirtualBox 虚拟机软件，该软件属于自由软件，方便安装。 #### VirtualBox - 下载<a target="_blank" rel="noopener" href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a> - 安装软件 #### 下载bitcraze镜像 - <a target="_blank" rel="noopener" href="https://wiki.bitcraze.io/projects:virtualmachine:index">Bitcraze Virtual Machine Image</a> #### 导入镜像 <img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE1NTQyNC5wbmc?x-oss-process=image/format,png" alt="镜像导入过程" /> #### 启动镜像 <img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200120135445.PNG" alt="启动镜像" /> &gt; 注意：运行镜像时可能会出现如下问题 &gt; 错误1：<code>Implementation of the USB 2.0 controller not found!</code> &gt; 安装<a target="_blank" rel="noopener" href="https://www.virtualbox.org/wiki/Downloads">VirtualBox Extension Pack</a>即可解决 &gt; 错误2：<code>VT-x is not available</code> &gt; 对于Win10电脑如果已经开启了Hyper-V，需将其服务关闭； &gt; 1、控制面板 --&gt; 程序和功能 --&gt; 启用或关闭windows功能 &gt; 2、失效 <strong>H-yper-v</strong>、<strong>Windows 沙盒(Sandbox)</strong> 选项，使能 <strong>虚拟机平台</strong>、<strong>Windows虚拟机监控程序平台</strong>选项。 &gt; 3、管理员打开 PowerShell客户端 &gt; 4、输入<code>bcdedit /set hypervisorlaunchtype off</code> &gt; 5、重启电脑</p>
+<h3 id="docker镜像方式">Docker镜像方式</h3>
+<h4 id="安装docker">安装Docker</h4>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://docs.docker.com/docker-for-windows/install/">Docker Hub下载</a></li>
+<li>双击安装文件，一直Next。</li>
+<li>注册Docker账号 #### 下载Docker镜像</li>
+</ol>
+<ul>
+<li>关于<a target="_blank" rel="noopener" href="https://hub.docker.com/r/bitcraze/builder">bitcraze/builder镜像</a></li>
+<li>打开PowerShell客户端</li>
+<li>拉取远程镜像 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull bitcraze/builder</span><br></pre></td></tr></table></figure> 下载过程如下所示，由于文件较大可能需要一段时间。 <img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE2NTYzMC5naWY" /> #### 进入交互模式</li>
+<li>查看镜像是否下载成功 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure></li>
+<li>进入项目目录</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ./crazyflie-firmware</span><br></pre></td></tr></table></figure>
+<ul>
+<li>进入交互式环境</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm -it -v <span class="variable">$&#123;PWD&#125;</span>:/module bitcraze/builder bash</span><br></pre></td></tr></table></figure>
+<p>该命令用法参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/zghforever/article/details/100087437">Docker 常用命令</a> ### 本地工具链配置 待补充 ## 编译</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">命令</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>all</strong></td>
+<td>快捷编译方式，所有文件都编译</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>compile</strong></td>
+<td>编译生成 cflie.hex文件，但不更新version.c文件</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>build</strong></td>
+<td>更新 version.c 文件并编译生成 cflie.elf/hex文件</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>clean_o</strong></td>
+<td>只清除目标文件，保留执行文件(.elf,.hex)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>clean</strong></td>
+<td>清除所有的编译文件</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>mrproper</strong></td>
+<td>清除每一个编译文件和典型的编辑器备份文件</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>cload</strong></td>
+<td>如果crazyflie-clients-python与项目文件在同级目录并且Crazyradio/Crazyradio PA被插入电脑，该命令将会尝试通过无线bootloader烧写固件</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>flash</strong></td>
+<td>使用 OpenOCD烧录.elf 文件</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>halt</strong></td>
+<td>使用 OpenOCD 暂停目标芯片</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>reset</strong></td>
+<td>使用 OpenOCD 复位目标芯片</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>openocd</strong></td>
+<td>启动 OpenOCD</td>
+</tr>
+</tbody>
+</table>
+<h2 id="调试">调试</h2>
+<p>关于芯片功能的调试，使用开源工具OpenOCD。</p>
+<h3 id="ubuntu">Ubuntu</h3>
+<blockquote>
+<p><strong><em>Versions:</em></strong></p>
+<ul>
+<li>Ubuntu 18.04.2 LTS (64 bit)</li>
+<li>Eclipse 2019-03 (Eclipse IDE for C/C++ Developers) #### 安装依赖</li>
+<li>安装<strong>GDB</strong>和<strong>openocd</strong></li>
+</ul>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install gdb</span><br><span class="line">sudo apt-get install openocd</span><br></pre></td></tr></table></figure>
+<ul>
+<li>安装java运行环境</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install default-jre</span><br></pre></td></tr></table></figure>
+<ul>
+<li>安装eclipse</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://www.eclipse.org/downloads/download.php?file=/oomph/epp/2019-12/R/eclipse-inst-win64.exe">eclipse 下载页</a></p>
+<p>进入下载文件目录，解压文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf <span class="string">&quot;your-downloaded-file&quot;</span>.tar.gz</span><br></pre></td></tr></table></figure>
+<p>开始eclipse安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;your-unzip-folder&quot;</span>/.eclipse_inst</span><br></pre></td></tr></table></figure>
+<h2 id="下载">下载</h2>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="John 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="John 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/crazyflie/" rel="tag"># crazyflie</a>
+              <a href="/tags/%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E/" rel="tag"># 开发说明</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/01/22/crazyflie-%E7%9B%AE%E5%BD%95%E5%88%86%E6%9E%90/" rel="prev" title="crazyflie-目录分析">
+                  <i class="fa fa-chevron-left"></i> crazyflie-目录分析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/01/29/crazyflie-CRTP%E8%A7%A3%E6%9E%90/" rel="next" title="crazyflie-CRTP解析">
+                  crazyflie-CRTP解析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;db7825252fa468e062bd49512e7abed7&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

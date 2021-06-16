@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="1. 概述 使用IVE可以加速sobel滤波器和canny滤波器，但是IVE生成的滤波器结果格式不满足实际需求。为此，需要通过软件方式将IVE的输出结果转化成需要的形式，可以使用c语言、NEON Intrinscis和NEON汇编等方式去实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法优化-1bit转8bit-NEON处理">
+<meta property="og:url" content="https://zgh551.github.io/2021/03/17/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96_NEON%E5%90%8E%E5%A4%84%E7%90%86/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="1. 概述 使用IVE可以加速sobel滤波器和canny滤波器，但是IVE生成的滤波器结果格式不满足实际需求。为此，需要通过软件方式将IVE的输出结果转化成需要的形式，可以使用c语言、NEON Intrinscis和NEON汇编等方式去实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/03/22/aREjy9znB63wgOH.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/22/bvPYqLWknwjQdu9.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/22/CSVYXb1ADeKv3M2.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/22/jchBaQpVIzUw6FE.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/22/NwAekVfE3v18PF7.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/22/AcrYxXTozQDMNq4.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/22/auqrLtTUV3CO1WP.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/22/fvabiuxP3wOpdZk.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/22/A9rf8uEphmtJ1nR.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/22/y4FhAPkxJOp3b5B.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/22/i4ovKyuaHsO5T1P.png">
+<meta property="og:image" content="https://i.loli.net/2021/03/22/gtaHZXzmK685opf.png">
+<meta property="article:published_time" content="2021-03-17T02:37:21.000Z">
+<meta property="article:modified_time" content="2021-06-16T13:13:09.978Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="图像算法加速">
+<meta property="article:tag" content="NEON">
+<meta property="article:tag" content="联咏">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/03/22/aREjy9znB63wgOH.png">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2021/03/17/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96_NEON%E5%90%8E%E5%A4%84%E7%90%86/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;2021&#x2F;03&#x2F;17&#x2F;%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96_NEON%E5%90%8E%E5%A4%84%E7%90%86&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;03&#x2F;17&#x2F;算法优化_NEON后处理&#x2F;&quot;,&quot;title&quot;:&quot;算法优化-1bit转8bit-NEON处理&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>算法优化-1bit转8bit-NEON处理 | Z</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">1. 概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sobel%E6%BB%A4%E6%B3%A2"><span class="nav-number">2.</span> <span class="nav-text">2. Sobel滤波</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nfsu16tou8withtwo%E5%87%BD%E6%95%B0%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.1.</span> <span class="nav-text">2.1. NfsU16ToU8WithTwo函数实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#c%E8%AF%AD%E8%A8%80%E4%BB%A3%E7%A0%81"><span class="nav-number">2.1.1.</span> <span class="nav-text">2.2.1. C语言代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#intrinsics%E4%BC%98%E5%8C%96"><span class="nav-number">2.1.2.</span> <span class="nav-text">2.2.2. Intrinsics优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%E4%BC%98%E5%8C%96"><span class="nav-number">2.1.3.</span> <span class="nav-text">2.2.3. 数据加载优化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E8%83%BD%E5%90%91%E9%87%8F%E4%BC%98%E5%8C%96"><span class="nav-number">2.1.4.</span> <span class="nav-text">2.2.4. 使能向量优化</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#canny%E6%BB%A4%E6%B3%A2"><span class="nav-number">3.</span> <span class="nav-text">3. Canny滤波</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nfsonebittou8%E5%87%BD%E6%95%B0%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.1.</span> <span class="nav-text">3.1.NfsOneBitToU8函数实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#c%E8%AF%AD%E8%A8%80%E4%BB%A3%E7%A0%81-1"><span class="nav-number">3.1.1.</span> <span class="nav-text">3.1.1. C语言代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E4%BB%A3%E7%A0%81"><span class="nav-number">3.1.2.</span> <span class="nav-text">3.1.2. 汇编语言代码</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%80%9D%E8%B7%AF"><span class="nav-number">3.1.2.1.</span> <span class="nav-text">3.1.2.1 算法思路</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B1%87%E7%BC%96%E4%BB%A3%E7%A0%81"><span class="nav-number">3.1.2.2.</span> <span class="nav-text">3.1.2.2 汇编代码</span></a></li></ol></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2021/03/17/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96_NEON%E5%90%8E%E5%A4%84%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="John">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          算法优化-1bit转8bit-NEON处理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-17 10:37:21" itemprop="dateCreated datePublished" datetime="2021-03-17T10:37:21+08:00">2021-03-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 21:13:09" itemprop="dateModified" datetime="2021-06-16T21:13:09+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">算法优化</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96/NEON/" itemprop="url" rel="index"><span itemprop="name">NEON</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">1. 概述</h2>
+<p>使用IVE可以加速sobel滤波器和canny滤波器，但是IVE生成的滤波器结果格式不满足实际需求。为此，需要通过软件方式将IVE的输出结果转化成需要的形式，可以使用c语言、NEON Intrinscis和NEON汇编等方式去实现。 <span id="more"></span></p>
+<h2 id="sobel滤波">2. Sobel滤波</h2>
+<p>Sobel滤波器的结果形式如下，使用16比特存储<code>x</code>和<code>y</code>方向的梯度值，其中低8位表示<code>x</code>轴方向梯度，高8位表示<code>y</code>轴方向梯度。</p>
+<figure>
+<img src="https://i.loli.net/2021/03/22/aREjy9znB63wgOH.png" alt="IVE-sobel_result_form" /><figcaption aria-hidden="true">IVE-sobel_result_form</figcaption>
+</figure>
+<p>实际需求要将<code>x</code>和<code>y</code>方向的梯度拆分为两个字节，具体形式如下：</p>
+<figure>
+<img src="https://i.loli.net/2021/03/22/bvPYqLWknwjQdu9.png" alt="sobel_result_form_xy" /><figcaption aria-hidden="true">sobel_result_form_xy</figcaption>
+</figure>
+<h3 id="nfsu16tou8withtwo函数实现">2.1. NfsU16ToU8WithTwo函数实现</h3>
+<p>该函数实现将<code>16bit</code>的高低位拆分为两个独立的字节，并将拆分后的字节单独输出。 #### 2.1.1 C语言代码 使用C语言编写代码如下： <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int32_t</span> i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">	sobel_x[i] =  data_sobel[i]       &amp; <span class="number">0xff</span>;</span><br><span class="line">	sobel_y[i] = (data_sobel[i] &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xff</span>;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure> &gt; <strong>Running Time</strong> : 14.3ms ### 2.2. NfsU16ToU8Square 函数实现 该函数实现将<code>16bit</code>的高低位拆分为两个独立的字节(x,y)，并计算<span class="math inline">\(x^2 + y^2\)</span>，将<code>x</code>和<code>y</code>轴的梯度求平方和后按照<code>16bit</code>输出结果。</p>
+<h4 id="c语言代码">2.2.1. C语言代码</h4>
+<p>使用C语言编写代码如下： <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint8_t</span> temp_x, temp_y; </span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int32_t</span> i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">     temp_x =  data_sobel[i]       &amp; <span class="number">0xff</span>;</span><br><span class="line">     temp_y = (data_sobel[i] &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xff</span>;</span><br><span class="line">     output_sobel[i] = temp_x * temp_x + temp_y * temp_y;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure> &gt; <strong>Running Time</strong> : 18.2ms</p>
+<h4 id="intrinsics优化">2.2.2. Intrinsics优化</h4>
+<p>首先想到的优化方式是采用<strong>NEON Intrinsics</strong>方式对上述<strong>C</strong>语言代码进行重构，该方式相比于编写汇编代码更加简单，且便于移植。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int32_t</span> i = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">uint16x8_t</span> v_in;</span><br><span class="line"><span class="keyword">uint8x8_t</span> x, y;</span><br><span class="line"><span class="keyword">uint16x8_t</span> x2;</span><br><span class="line"><span class="keyword">uint16x8_t</span> xy_square;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i + <span class="number">7</span> &lt; size; i += <span class="number">8</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// load the input data</span></span><br><span class="line">    v_in = vld1q_u8(input + i);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// seprate the u16 to two u8</span></span><br><span class="line">    x = vmovn_u16(v_in); <span class="comment">// mov low 8bit to the x </span></span><br><span class="line">    y = vshrn_n_u16(v_in, <span class="number">8</span>); <span class="comment">// the element right shift 8bit </span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// calculate the x^2 + y^2</span></span><br><span class="line">    x2 = vmull_u8(x, x);</span><br><span class="line">    xy_square = vmlal_u8(x2, y, y);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// store the result</span></span><br><span class="line">    vst1q_u16(output + i, xy_square);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>Running Time</strong> : 3.42ms</p>
+</blockquote>
+<h4 id="数据加载优化">2.2.3. 数据加载优化</h4>
+<p>随着对NEON指令集理解的深入，可以直接使用<code>VLD2</code>指令直接在加载数据时就实现<code>x</code>和<code>y</code>通道的拆分，从而进一步提升了处理的速度。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int32_t</span> i = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">uint8x8x2_t</span> v_in;</span><br><span class="line"><span class="keyword">uint16x8_t</span> x2;</span><br><span class="line"><span class="keyword">uint16x8_t</span> xy_square;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i + <span class="number">7</span> &lt; size; i += <span class="number">8</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// load the input data</span></span><br><span class="line">    v_in = vld2_u8((<span class="keyword">uint8_t</span>*)input + i);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// calculate the x^2 + y^2</span></span><br><span class="line">    x2 = vmull_u8(v_in.val[<span class="number">0</span>], v_in.val[<span class="number">0</span>]);</span><br><span class="line">    xy_square = vmlal_u8(x2, v_in.val[<span class="number">1</span>], v_in.val[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// store the result</span></span><br><span class="line">    vst1q_u16(output + i, xy_square);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过该方式，处理器时可以减少一次<code>mov</code>操作和一次<code>shift</code>操作。如下图所示，<code>VLD2.8</code>直接加载<code>sobel_x</code>进<code>D8</code>，同时加载<code>sobel_y</code>进<code>D9</code>。</p>
+<figure>
+<img src="https://i.loli.net/2021/03/22/CSVYXb1ADeKv3M2.png" alt="IVE-u16totwobyte_load2" /><figcaption aria-hidden="true">IVE-u16totwobyte_load2</figcaption>
+</figure>
+<blockquote>
+<p><strong>Running Time</strong>: 2.64ms</p>
+</blockquote>
+<h4 id="使能向量优化">2.2.4. 使能向量优化</h4>
+<p>在使用<code>NEON Intinsics</code>时，编译选项中需要使能向量化，具体编译参数如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -mcpu=cortex-a9 -mfloat-abi=hard -ftree-vectorize -O2 </span><br></pre></td></tr></table></figure>
+<h2 id="canny滤波">3. Canny滤波</h2>
+<p>Canny滤波器的结果使用一个字节表示8个像素信息，具体形式如下：</p>
+<figure>
+<img src="https://i.loli.net/2021/03/22/jchBaQpVIzUw6FE.png" alt="IVE-one_bit_to_byte" /><figcaption aria-hidden="true">IVE-one_bit_to_byte</figcaption>
+</figure>
+<p>因此，需要通过软件的方式将字节中的每一个bit像素拆分为一个字节表示，将上图中的两个字节数据进行转换，结果如下图所示：</p>
+<figure>
+<img src="https://i.loli.net/2021/03/22/NwAekVfE3v18PF7.png" alt="one_bit_to_byte_split" /><figcaption aria-hidden="true">one_bit_to_byte_split</figcaption>
+</figure>
+<h3 id="nfsonebittou8函数实现">3.1.NfsOneBitToU8函数实现</h3>
+<h4 id="c语言代码-1">3.1.1. C语言代码</h4>
+<p>使用C语言编写代码如下： <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">	data_canny_8bit[i]  = ((data_canny[i/<span class="number">8</span>] &gt;&gt; (i % <span class="number">8</span>)) &amp; <span class="number">0x01</span>) &lt;&lt; <span class="number">7</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="汇编语言代码">3.1.2. 汇编语言代码</h4>
+<h5 id="算法思路">3.1.2.1 算法思路</h5>
+<p>上述功能可以使用NEON汇编进行加速，具体思路如下：</p>
+<ol type="1">
+<li><strong>加载</strong>操作 使用<code>VLD1</code>指令从内存空间加载图像数据到<code>Q6</code>寄存器，该指令可以一次加载16个字节数据，对应图像的128个像素值；</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2021/03/22/AcrYxXTozQDMNq4.png" alt="one_bit_to_byte_neon1" /><figcaption aria-hidden="true">one_bit_to_byte_neon1</figcaption>
+</figure>
+<ol start="2" type="1">
+<li><strong>位与</strong>操作 使用<code>VAND</code>指令，对<code>Q6</code>与<code>Q4</code>寄存器的元素进行<code>位与</code>操作，并将结果存入<code>Q7</code>寄存器，其中<code>Q4</code>寄存器可使用<code>DUP</code>指令全部置为<code>0x01</code>；此步骤将每个元素的低位像素值取出放入<code>Q7</code>寄存器中；</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2021/03/22/auqrLtTUV3CO1WP.png" alt="one_bit_to_byte_neon2" /><figcaption aria-hidden="true">one_bit_to_byte_neon2</figcaption>
+</figure>
+<ol start="3" type="1">
+<li><strong>比较</strong>操作 使用<code>VCGT</code>指令对<code>Q7</code>和<code>Q5</code>寄存器的元素逐个进行比较，判断<code>Q7</code>寄存器的元素是否大于对应<code>Q5</code>中的元素，其计算结果保存在<code>Q8</code>寄存器中。如果<code>Q7</code>的元素大于<code>Q5</code>的元素，则对应<code>Q8</code>元素设置为<strong>255</strong>,否则设置为<strong>0</strong>。</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2021/03/22/fvabiuxP3wOpdZk.png" alt="one_bit_to_byte_neon3" /><figcaption aria-hidden="true">one_bit_to_byte_neon3</figcaption>
+</figure>
+<ol start="4" type="1">
+<li><strong>移位</strong>操作 使用<code>VSHR</code>指令，将<code>Q6</code>中的元素整体向右移动1比特位，即将下一组像素移到元素最低位，方便循环取出图像像素值。</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2021/03/22/A9rf8uEphmtJ1nR.png" alt="one_bit_to_byte_neon4" /><figcaption aria-hidden="true">one_bit_to_byte_neon4</figcaption>
+</figure>
+<ol start="5" type="1">
+<li><strong>循环</strong>操作 循环上述2、3、4步骤，将<code>Q6</code>寄存器中的像素值分别取出，放入<code>Q8~Q15</code>寄存器中。</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2021/03/22/y4FhAPkxJOp3b5B.png" alt="one_bit_to_byte_neon5" /><figcaption aria-hidden="true">one_bit_to_byte_neon5</figcaption>
+</figure>
+<ol start="6" type="1">
+<li><strong>打包</strong>操作 使用<code>VZIP</code>指令每隔4个<code>Q</code>寄存器进行一次打包操作，如下图所示，使像素索引号间隔4排列。该步骤的目的是未了方便下一步的存储操作。</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2021/03/22/i4ovKyuaHsO5T1P.png" alt="one_bit_to_byte_neon6" /><figcaption aria-hidden="true">one_bit_to_byte_neon6</figcaption>
+</figure>
+<ol start="7" type="1">
+<li><strong>存储</strong>操作 使用<code>VST4</code>指令将上述打包好的数据，按照像素循序存储相应的内存地址。</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2021/03/22/gtaHZXzmK685opf.png" alt="one_bit_to_byte_neon7" /><figcaption aria-hidden="true">one_bit_to_byte_neon7</figcaption>
+</figure>
+<h5 id="汇编代码">3.1.2.2 汇编代码</h5>
+<p>使用<strong>NEON Assembly</strong>编写上述功能代码如下： <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">NfsOneBitToU8Asm</span><span class="params">(<span class="keyword">uint8_t</span>* <span class="keyword">restrict</span> input, <span class="keyword">uint8_t</span>* <span class="keyword">restrict</span> output, <span class="keyword">uint32_t</span> size)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">uint8_t</span>* input_temp = input;</span><br><span class="line">  <span class="keyword">uint8_t</span>* output_temp = output;</span><br><span class="line">  <span class="keyword">uint32_t</span> size_tmp = size;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">asm</span> <span class="title">volatile</span><span class="params">(<span class="string">&quot;vmov.i8      q4, #0x01         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vmov.i8      q5, #0x00         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;100:                           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vld1.8      &#123;q6&#125;, [%0]!        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;pld         [%0, #128]         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q9, q6, #1         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q10, q6, #2        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q11, q6, #3        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q12, q6, #4        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q13, q6, #5        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q14, q6, #6        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q15, q6, #7        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q8, q6, q4         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q9, q9, q4         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q10, q10, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q11, q11, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q12, q12, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q13, q13, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q14, q14, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q15, q15, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q8, q8, q5         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q9, q9, q5         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q10, q10, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q11, q11, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q12, q12, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q13, q13, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q14, q14, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q15, q15, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q8, q12            \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q9, q13            \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q10, q14           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q11, q15           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d16, d18, d20, d22&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d17, d19, d21, d23&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d24, d26, d28, d30&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d25, d27, d29, d31&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;subs        %2, #16             \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;bgt         100b                \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;=r&quot;</span>(input_temp), <span class="string">&quot;=r&quot;</span>(output_temp), <span class="string">&quot;=r&quot;</span>(size_tmp)</span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;0&quot;</span>(input_temp), <span class="string">&quot;1&quot;</span>(output_temp), <span class="string">&quot;2&quot;</span>(size_tmp)</span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;memory&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;cc&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q4&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q5&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q6&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q7&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q8&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q9&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q10&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q11&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q12&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q13&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q14&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q15&quot;</span>)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> ## 4. 性能对比 如下表所示，上述代码在联咏<strong>NT96565A</strong>平台运行时间如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>C language</th>
+<th>Intrinsics</th>
+<th>Assembly</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>NfsU16ToU8WithTwo</strong></td>
+<td>14.3</td>
+<td><strong>3.2</strong></td>
+<td>3.56</td>
+</tr>
+<tr class="even">
+<td><strong>NfsU16ToU8Square</strong></td>
+<td>18.6</td>
+<td><strong>2.64</strong></td>
+<td>2.82</td>
+</tr>
+<tr class="odd">
+<td><strong>NfsOneBitToU8</strong></td>
+<td>10.2</td>
+<td>2.13</td>
+<td><strong>1.78</strong></td>
+</tr>
+</tbody>
+</table>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="John 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="John 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%9B%BE%E5%83%8F%E7%AE%97%E6%B3%95%E5%8A%A0%E9%80%9F/" rel="tag"># 图像算法加速</a>
+              <a href="/tags/NEON/" rel="tag"># NEON</a>
+              <a href="/tags/%E8%81%94%E5%92%8F/" rel="tag"># 联咏</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/11/04/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B-apollo/" rel="prev" title="碰撞检测-apollo">
+                  <i class="fa fa-chevron-left"></i> 碰撞检测-apollo
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;d559ba5e88726dd6da5c283ece0fcc7c&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

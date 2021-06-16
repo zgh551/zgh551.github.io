@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="概述 车辆横向运动学模型描述了车辆横向运动的数学模型，该模型不考虑车辆的受力情况。一般考虑运动学模型时，将车辆模型简化成单车模型(bicycle model)。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="控制算法-运动学模型">
+<meta property="og:url" content="https://zgh551.github.io/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="概述 车辆横向运动学模型描述了车辆横向运动的数学模型，该模型不考虑车辆的受力情况。一般考虑运动学模型时，将车辆模型简化成单车模型(bicycle model)。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8lRTglOEYlOEElRTglOEElQjElRTUlQjElOTU1LmpwZw?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8lRTglQkQlQTYlRTglQkUlODYlRTYlQTglQTElRTUlOUUlOEIlRTQlQjklOEIlRTUlOEQlOTUlRTglQkQlQTYlRTYlQTglQTElRTUlOUUlOEIxLlBORw?x-oss-process=image/format,png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E6%89%B9%E6%B3%A8%202019-12-02%20104530.png">
+<meta property="article:published_time" content="2019-12-02T01:14:59.000Z">
+<meta property="article:modified_time" content="2021-06-16T13:13:09.976Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="车辆模型">
+<meta property="article:tag" content="车辆控制">
+<meta property="article:tag" content="运动模型">
+<meta property="article:tag" content="单车模型">
+<meta property="article:tag" content="Kinematic Model">
+<meta property="article:tag" content="bycycle model">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8lRTglOEYlOEElRTglOEElQjElRTUlQjElOTU1LmpwZw?x-oss-process=image/format,png">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%A8%A1%E5%9E%8B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;2019&#x2F;12&#x2F;02&#x2F;%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%A8%A1%E5%9E%8B&#x2F;&quot;,&quot;path&quot;:&quot;2019&#x2F;12&#x2F;02&#x2F;控制算法-运动学模型&#x2F;&quot;,&quot;title&quot;:&quot;控制算法-运动学模型&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>控制算法-运动学模型 | Z</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E8%BD%A6%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">单车模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E5%8A%A8%E6%96%B9%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">运动方程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">3.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A7%BF%E6%80%81%E4%BF%A1%E6%81%AF%E5%81%8F%E8%88%AA%E8%A7%92"><span class="nav-number">3.2.</span> <span class="nav-text">姿态信息(偏航角)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A5%E5%85%85"><span class="nav-number">4.</span> <span class="nav-text">补充</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">5.</span> <span class="nav-text">结论</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B%E5%BD%A2%E5%BC%8F"><span class="nav-number">5.1.</span> <span class="nav-text">微分方程形式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%A8%A1%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="John">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          控制算法-运动学模型
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-02 09:14:59" itemprop="dateCreated datePublished" datetime="2019-12-02T09:14:59+08:00">2019-12-02</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 21:13:09" itemprop="dateModified" datetime="2021-06-16T21:13:09+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">控制算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/%E8%BD%A6%E8%BE%86%E6%A8%A1%E5%9E%8B/" itemprop="url" rel="index"><span itemprop="name">车辆模型</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">概述</h2>
+<p>车辆横向运动学模型描述了车辆横向运动的数学模型，该模型不考虑车辆的受力情况。一般考虑运动学模型时，将车辆模型简化成单车模型(bicycle model)。</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8lRTglOEYlOEElRTglOEElQjElRTUlQjElOTU1LmpwZw?x-oss-process=image/format,png" /></p>
+<span id="more"></span>
+<h2 id="单车模型">单车模型</h2>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8lRTglQkQlQTYlRTglQkUlODYlRTYlQTglQTElRTUlOUUlOEIlRTQlQjklOEIlRTUlOEQlOTUlRTglQkQlQTYlRTYlQTglQTElRTUlOUUlOEIxLlBORw?x-oss-process=image/format,png" /></p>
+<p>单车模型中： - <strong>左右轮等效为单个轮子</strong> 左右前轮合并为单个轮子，其中心点为<span class="math inline">\(A\)</span>点，同样后轮等效后的中心点为<span class="math inline">\(B\)</span>点。 - <strong>转向角</strong> 前后轮的转向角用<span class="math inline">\(\delta_f\)</span>和<span class="math inline">\(\delta_r\)</span>表示，模型中前后轮都可以转向，对于只有前轮转向的系统，后轮转向角<span class="math inline">\(\delta_r\)</span>可以设置为0. - <strong>重心</strong> 点<span class="math inline">\(C\)</span>代表车辆的重心，<span class="math inline">\(A\)</span>点和<span class="math inline">\(B\)</span>点到重心的距离分别用<span class="math inline">\(l_f\)</span>和<span class="math inline">\(l_r\)</span>表示，轴距表示为<span class="math inline">\(L = l_f + l_r\)</span>。 - <strong>速度</strong> 车辆重心的速度用<span class="math inline">\(V\)</span>表示，与车辆纵向轴的夹角为<span class="math inline">\(\beta\)</span>，该角度叫做车辆的滑移角。 - <strong>运动描述</strong> 假设车辆平动，车辆运动状态可以用三个坐标量描述：<span class="math inline">\(X\)</span> 、 <span class="math inline">\(Y\)</span> 和 <span class="math inline">\(\psi\)</span>。其中<span class="math inline">\((X,Y)\)</span>代表车辆重心的位置，<span class="math inline">\(\Psi\)</span>描述了车辆的方向。</p>
+<ul>
+<li><strong>条件假设</strong> 假设速度矢量<span class="math inline">\(V\)</span>的方向在点<span class="math inline">\(A\)</span>点和<span class="math inline">\(B\)</span>点的方向与转向角的方向相同，换句话说，在A点的速度矢量与车辆纵轴的夹角为<span class="math inline">\(\delta_f\)</span>，同样<span class="math inline">\(B\)</span>点的速度矢量与车辆纵轴的夹角为<span class="math inline">\(\delta_r\)</span>。也就是说前后轮的滑移角都为0。该条件假设成立前提的是车辆速度很低(&lt;5m/s)，此时轮胎产生的横向力很小，可以忽略。</li>
+<li><strong>轨迹半径</strong> 点<span class="math inline">\(O\)</span>代表车辆的瞬时旋转中心，线段<span class="math inline">\(AO\)</span>与<span class="math inline">\(BO\)</span>与前后两个转轮方向垂直，他们的交点即为<span class="math inline">\(O\)</span>点，线段<span class="math inline">\(OC\)</span>的长度代表车辆的轨迹半径<span class="math inline">\(R\)</span>。</li>
+<li><strong>航迹角</strong> 车辆重心处的速度垂直于<span class="math inline">\(OC\)</span>,车辆速度矢量与车辆纵轴的夹角为<span class="math inline">\(\beta\)</span>，车辆的航向角为<span class="math inline">\(\psi\)</span>，则航迹角为<span class="math inline">\(\gamma = \psi + \beta\)</span>。</li>
+</ul>
+<h2 id="运动方程">运动方程</h2>
+<h3 id="概述-1">概述</h3>
+<p>运动方程可以根据单车模型几何关系推导出，下面根据单车模型的几何关系，推导出车辆运动的微分方程。</p>
+<h3 id="姿态信息偏航角">姿态信息(偏航角)</h3>
+<p>三角形<span class="math inline">\(OCA\)</span>根据正弦定理得 <span class="math display">\[
+\frac{\sin(\delta_f - \beta)}{l_f} = \frac{\sin(\frac{\pi}{2} - \delta_f)}{R} \tag{1}
+\]</span> 同理，三角形<span class="math inline">\(OCB\)</span>根据正弦定理可得</p>
+<p><span class="math display">\[
+\frac{\sin(\beta - \delta_r)}{l_r} = \frac{\sin(\frac{\pi}{2} + \delta_r)}{R} \tag{2}
+\]</span> 根据<strong>和差定理</strong>，等式(1)得 <span class="math display">\[
+\frac{\sin(\delta_f)\cos(\beta) - \cos(\delta_f)\sin(\beta)}{l_f} = \frac{\cos(\delta_f)}{R} \tag{3}
+\]</span> 同理，根据等式(2)得 <span class="math display">\[
+\frac{\cos(\delta_r)\sin(\beta) - \cos(\beta)\sin(\delta_r)}{l_r} = \frac{\cos(\delta_f)}{R} \tag{4}
+\]</span> 等式(3)两边同时乘<span class="math inline">\(\frac{l_f}{\cos(\delta_f)}\)</span>得 <span class="math display">\[
+\tan(\delta_f)\cos(\beta) - sin(\beta) = \frac{l_f}{R} \tag{5}
+\]</span> 同理，等式(4)两边同时乘<span class="math inline">\(\frac{l_r}{\cos(\delta_r)}\)</span>得 <span class="math display">\[
+sin(\beta) - \tan(\delta_r)\cos(\beta) = \frac{l_r}{R} \tag{6}
+\]</span> 等式(5)和(6)相加得 <span class="math display">\[
+\{\tan(\delta_f) - \tan(\delta_r)\}\cos(\beta) = \frac{l_f + l_r}{R} \tag{7}
+\]</span> 根据条件假设，车辆速度很低，车辆的轨迹半径变化就很慢。车辆偏航角的变化率(<span class="math inline">\(\dot{\psi}\)</span>)可以近似等于车辆的角速度(<span class="math inline">\(\omega\)</span>)。根据车辆角速度<span class="math inline">\(\omega = \frac{V}{R}\)</span>得 <span class="math display">\[
+\dot{\psi} = \frac{V}{R} \tag{8}
+\]</span> 将等式(8)带入等式(7)中，消除<span class="math inline">\(R\)</span>项得 <span class="math display">\[
+\dot{\psi} = \frac{V\cos(\beta)}{l_f + l_r}\{\tan(\delta_f) - \tan(\delta_r)\} \tag{9}
+\]</span> 上述等式一共三个输入变量：<span class="math inline">\(\delta_f\)</span> 、<span class="math inline">\(\delta_r\)</span>和<span class="math inline">\(V\)</span>。其中<span class="math inline">\(\delta_f\)</span>和<span class="math inline">\(\delta_r\)</span>是车辆的转向角，可以通过车身传感器获得。<span class="math inline">\(V\)</span>是一个外部变量，可以假设其为时变函数，可以从纵向控制中获得。 #### 滑移角<span class="math inline">\(\beta\)</span>的计算 等式(5)乘以<span class="math inline">\(l_r\)</span>， <span class="math display">\[
+\tan(\delta_f)\cos(\beta)l_r - sin(\beta)l_r = \frac{l_f*l_r}{R} \tag{10}
+\]</span> 等式(6)乘以<span class="math inline">\(l_f\)</span>得 <span class="math display">\[
+sin(\beta)l_f - \tan(\delta_r)\cos(\beta)l_f = \frac{l_f*l_r}{R} \tag{11}
+\]</span> 等式(10)和(11)相减得 <span class="math display">\[
+\cos(\beta)(l_f\tan(\delta_r) + l_r\tan(\delta_f)) = \sin(\beta)(l_f + l_r) \tag{12}
+\]</span> 等式(12)两端同时乘以<span class="math inline">\(\frac{1}{\cos(\beta)}\)</span>得 <span class="math display">\[
+\tan(\beta) = \frac{l_f\tan(\delta_r) + l_r\tan(\delta_f)}{l_f + l_r} \tag{13}
+\]</span> 故取反三角函数得 <span class="math display">\[
+\beta = \arctan(\frac{l_f\tan(\delta_r) + l_r\tan(\delta_f)}{l_f + l_r} \tag{13})
+\]</span> ### 位置信息 根据单车模型得 <span class="math display">\[
+\dot{X} = V\cos(\beta + \psi) \tag{14}
+\]</span> <span class="math display">\[
+\dot{Y} = V\sin(\beta + \psi) \tag{15}
+\]</span></p>
+<h2 id="补充">补充</h2>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E6%89%B9%E6%B3%A8%202019-12-02%20104530.png" /></p>
+<p>由上图可知，<span class="math inline">\(l_w\)</span>为车轴宽度，为了避免与上述单车模型的转向角定义重复，使用<span class="math inline">\(\delta_o\)</span>表示外部转向角，<span class="math inline">\(\delta_i\)</span>表示内部转向角。由于轴距<span class="math inline">\(L = l_f + l_r\)</span>远远小于轨迹半径<span class="math inline">\(R\)</span>，滑移角<span class="math inline">\(\beta\)</span>接近于0。一般车辆模型后轴为固定轴，故<span class="math inline">\(\delta_r\)</span>为0，所以等式(9)可以近似为 <span class="math display">\[
+\dot{\psi} = \frac{V}{L}\tan(\delta_f) \tag{16}
+\]</span> 由于<span class="math inline">\(\delta_f\)</span>很小 <span class="math display">\[
+\tan(\delta_f) \approx \delta_f \tag{17}
+\]</span> 根据等式(8)和等式(16)得 <span class="math display">\[
+\frac{\dot{\psi}}{V} \approx \frac{\delta_f}{L} = \frac{1}{R} \tag{18}
+\]</span> 故不区分前后轴，等效转向角为 <span class="math display">\[
+\delta = \frac{L}{R} \tag{19}
+\]</span> 由于内外轮的转弯半径不同，根据等式(19),外轮转角为 <span class="math display">\[
+\delta_o = \frac{L}{R + \frac{l_w}{2}} \tag{20}
+\]</span> 内轮转角为 <span class="math display">\[
+\delta_i = \frac{L}{R - \frac{l_w}{2}} \tag{21}
+\]</span> 故前轮平均转向角为 <span class="math display">\[
+\delta = \frac{\delta_o + \delta_i}{2} = \frac{L}{R - \frac{l_w^2}{4R}} \tag{22}
+\]</span> 由于<span class="math inline">\(\frac{l_w^2}{4R}\)</span>项中，<span class="math inline">\(l_w\)</span>远远小于<span class="math inline">\(R\)</span>,且<span class="math inline">\(l_w\)</span>的二次项更小，故 <span class="math display">\[
+\frac{l_w^2}{4R} \cong 0 \tag{23}
+\]</span> 所以等式(22)可以近似为 <span class="math display">\[
+\delta = \frac{L}{R} \tag{24}
+\]</span> 比较等式(20)和(21)知，<span class="math inline">\(\delta_i\)</span>始终大于<span class="math inline">\(\delta_o\)</span>，故 <span class="math display">\[
+\delta_i - \delta_o = \frac{L}{R - \frac{l_w}{2}} - \frac{L}{R + \frac{l_w}{2}} \quad\\
+=\frac{Ll_w}{R^2 - \frac{l_w^2}{4}} \qquad\\
+\cong \frac{L}{R^2}l_w = \delta^2\frac{l_w}{L} \tag{25}
+\]</span> 根据等式(25)可知，前轮内外转向角的差值接近于平均转向角的二次方，所以当前轮转向角较大时，内外轮的转向角误差就越大。</p>
+<h2 id="结论">结论</h2>
+<p>车辆运动模型基于单车模型推导，推导过程不考虑车辆受到的横向力，故该模型只适用于车辆速度很低的情形。 <span class="math display">\[
+a = \frac{mV^2}{R} \tag{26}
+\]</span> 根据等式(26)知，速度很小时，车辆受到的向心力可以忽略不记，所以才有公式(8)的成立。所以当车辆的运动场景速度较低时，可以使用该模型描述车辆的运动。</p>
+<h3 id="微分方程形式">微分方程形式</h3>
+<p>根据等式(9)、(14)和(15)，对于前轮转向系统，<span class="math inline">\(\delta_r = 0\)</span>，可得 <span class="math display">\[
+\dot{X} = V\cos(\beta + \psi) \qquad\\
+\dot{Y} = V\sin(\beta + \psi) \qquad\\
+\dot{\psi} = \frac{V\cos(\beta)\tan(\delta_f)}{L}
+\]</span> 其中 <span class="math display">\[
+\beta = \arctan(\frac{l_r\tan(\delta_f)}{l_f + l_r})
+\]</span> 假设车辆重心点在后轴中心点，则<span class="math inline">\(beta \cong 0\)</span>，由上述微分方程得 <span class="math display">\[
+\dot{X} = V\cos(\psi) \quad\\
+\dot{Y} = V\sin(\psi) \quad\\
+\dot{\psi} = \frac{V\tan(\delta_f)}{L}
+\]</span></p>
+<h2 id="参考">参考</h2>
+<ol type="1">
+<li>" vehicle dynamics and control "</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="John 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="John 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%BD%A6%E8%BE%86%E6%A8%A1%E5%9E%8B/" rel="tag"># 车辆模型</a>
+              <a href="/tags/%E8%BD%A6%E8%BE%86%E6%8E%A7%E5%88%B6/" rel="tag"># 车辆控制</a>
+              <a href="/tags/%E8%BF%90%E5%8A%A8%E6%A8%A1%E5%9E%8B/" rel="tag"># 运动模型</a>
+              <a href="/tags/%E5%8D%95%E8%BD%A6%E6%A8%A1%E5%9E%8B/" rel="tag"># 单车模型</a>
+              <a href="/tags/Kinematic-Model/" rel="tag"># Kinematic Model</a>
+              <a href="/tags/bycycle-model/" rel="tag"># bycycle model</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/11/22/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E7%9B%B4%E7%BA%BF%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96/" rel="prev" title="直线特征提取">
+                  <i class="fa fa-chevron-left"></i> 直线特征提取
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B/" rel="next" title="控制算法-动力学模型">
+                  控制算法-动力学模型 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;532d019eeebbb38d20336e4524c9b6b6&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

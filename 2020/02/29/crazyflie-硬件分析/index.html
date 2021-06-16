@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="概述 本文主要对crazyflie飞控硬件原理图设计进行简单的分析，包括电路原理、参数选型和PCB设计等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="crazyflie-硬件分析">
+<meta property="og:url" content="https://zgh551.github.io/2020/02/29/crazyflie-%E7%A1%AC%E4%BB%B6%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="概述 本文主要对crazyflie飞控硬件原理图设计进行简单的分析，包括电路原理、参数选型和PCB设计等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200111173609.JPG">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200301222549.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200314235344.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200314235400.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200328150801.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200328160050.png">
+<meta property="article:published_time" content="2020-02-29T08:43:38.000Z">
+<meta property="article:modified_time" content="2021-06-16T13:13:09.961Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="crazyflie">
+<meta property="article:tag" content="硬件设计">
+<meta property="article:tag" content="Hardware">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200111173609.JPG">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2020/02/29/crazyflie-%E7%A1%AC%E4%BB%B6%E5%88%86%E6%9E%90/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;2020&#x2F;02&#x2F;29&#x2F;crazyflie-%E7%A1%AC%E4%BB%B6%E5%88%86%E6%9E%90&#x2F;&quot;,&quot;path&quot;:&quot;2020&#x2F;02&#x2F;29&#x2F;crazyflie-硬件分析&#x2F;&quot;,&quot;title&quot;:&quot;crazyflie-硬件分析&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>crazyflie-硬件分析 | Z</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86%E5%9B%BE%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">原理图分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E5%A4%84%E7%90%86%E5%99%A8%E5%8D%95%E5%85%83"><span class="nav-number">2.1.</span> <span class="nav-text">微处理器单元</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%89%E5%9E%8B"><span class="nav-number">2.1.1.</span> <span class="nav-text">选型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%8A%AF%E7%89%87%E4%BE%9B%E7%94%B5%E5%88%86%E6%9E%90"><span class="nav-number">2.1.2.</span> <span class="nav-text">芯片供电分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%8D%E4%BD%8D%E7%94%B5%E8%B7%AF"><span class="nav-number">2.1.3.</span> <span class="nav-text">复位电路</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%99%B6%E6%8C%AF"><span class="nav-number">2.1.4.</span> <span class="nav-text">晶振</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#boot%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.1.5.</span> <span class="nav-text">Boot模式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%A0%E6%84%9F%E5%99%A8%E5%8D%95%E5%85%83"><span class="nav-number">2.2.</span> <span class="nav-text">传感器单元</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%83%AF%E6%80%A7%E6%B5%8B%E9%87%8F%E5%8D%95%E5%85%83imu"><span class="nav-number">2.2.1.</span> <span class="nav-text">惯性测量单元(IMU)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%AB%98%E5%BA%A6%E6%B5%8B%E9%87%8F%E5%8D%95%E5%85%83"><span class="nav-number">2.2.2.</span> <span class="nav-text">高度测量单元</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%B5%E6%9C%BA%E9%A9%B1%E5%8A%A8%E5%8D%95%E5%85%83"><span class="nav-number">2.3.</span> <span class="nav-text">电机驱动单元</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A0%E7%BA%BF%E9%80%9A%E4%BF%A1%E5%8D%95%E5%85%83"><span class="nav-number">2.4.</span> <span class="nav-text">无线通信单元</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%B5%E6%BA%90%E7%AE%A1%E7%90%86%E5%8D%95%E5%85%83"><span class="nav-number">2.5.</span> <span class="nav-text">电源管理单元</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%B5%E6%B1%A0%E7%AE%A1%E7%90%86%E8%8A%AF%E7%89%87"><span class="nav-number">2.5.1.</span> <span class="nav-text">电池管理芯片</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E7%94%B5%E6%BA%90"><span class="nav-number">2.5.2.</span> <span class="nav-text">线性电源</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/02/29/crazyflie-%E7%A1%AC%E4%BB%B6%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="John">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          crazyflie-硬件分析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-02-29 16:43:38" itemprop="dateCreated datePublished" datetime="2020-02-29T16:43:38+08:00">2020-02-29</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 21:13:09" itemprop="dateModified" datetime="2021-06-16T21:13:09+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/crazyflie/" itemprop="url" rel="index"><span itemprop="name">crazyflie</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/crazyflie/%E7%A1%AC%E4%BB%B6%E8%AE%BE%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">硬件设计</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">概述</h2>
+<p>本文主要对crazyflie飞控硬件原理图设计进行简单的分析，包括电路原理、参数选型和PCB设计等。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200111173609.JPG" /></p>
+<span id="more"></span>
+<h2 id="原理图分析">原理图分析</h2>
+<h3 id="微处理器单元">微处理器单元</h3>
+<h4 id="选型">选型</h4>
+<p>关于主控芯片的选型采用<a target="_blank" rel="noopener" href="https://www.st.com/content/st_com/en/products/microcontrollers-microprocessors/stm32-32-bit-arm-cortex-mcus/stm32-high-performance-mcus/stm32f4-series.html"><strong>ST</strong></a>公司F4系列处理器,该系列处理器主要有三个产线，分别为进阶产线、基础产线和入门产线。基于性能和成本考虑，飞控设计选用基础产线系类，该系类主控拥有210 <strong>DMIPS</strong>，与进阶产线的225 <strong>DMIPS</strong>差距不大。由于摄像头接口外设并不需要，所以选择最基本的<strong>STM32F405</strong>系列主控就可以满足性能要求。</p>
+<figure>
+<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200301222549.jpg" alt="产品对比图" /><figcaption aria-hidden="true">产品对比图</figcaption>
+</figure>
+<p>由于迷你四轴对引脚需求较少，可以选择下图64引脚的RG系列封装。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200314235344.jpg" /></p>
+<p>芯片外设如下：</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200314235400.jpg" /></p>
+<p>飞控中主要用到的通信外设包括IIC、SPI、USART和USB，控制相关外设包括PWM。</p>
+<h4 id="芯片供电分析">芯片供电分析</h4>
+<h4 id="复位电路">复位电路</h4>
+<h4 id="晶振">晶振</h4>
+<h4 id="boot模式">Boot模式</h4>
+<h3 id="传感器单元">传感器单元</h3>
+<h4 id="惯性测量单元imu">惯性测量单元(IMU)</h4>
+<ul>
+<li><strong>Gyroscope</strong>(陀螺仪)</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>参数</th>
+<th>BMI088</th>
+<th>ICM20602</th>
+<th>单位</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>TCO</strong>(零速率偏移随温度的变化)</td>
+<td>15</td>
+<td>10</td>
+<td>mdps/K</td>
+</tr>
+<tr class="even">
+<td><strong>TCS</strong>(零敏度随温度的变化)</td>
+<td>0.03</td>
+<td>2</td>
+<td>%/K</td>
+</tr>
+<tr class="odd">
+<td>零速率偏置</td>
+<td>1</td>
+<td>1</td>
+<td>dps</td>
+</tr>
+<tr class="even">
+<td>输出噪声</td>
+<td>0.1</td>
+<td>0.04</td>
+<td>dps</td>
+</tr>
+<tr class="odd">
+<td>偏差稳定性</td>
+<td>&lt; 2</td>
+<td></td>
+<td>°/h</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Accelerometer</strong>(加速度计)</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>参数</th>
+<th>BMI088</th>
+<th>ICM20602</th>
+<th>单位</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>TCO</strong>(零速率偏移随温度的变化)</td>
+<td>0.2</td>
+<td>xy:0.5 z:1</td>
+<td>mg/k</td>
+</tr>
+<tr class="even">
+<td><strong>TCS</strong>(零敏度随温度的变化)</td>
+<td>0.002</td>
+<td>1.5</td>
+<td>%/K</td>
+</tr>
+<tr class="odd">
+<td>零重力偏置</td>
+<td>20</td>
+<td>25-40</td>
+<td>mg</td>
+</tr>
+<tr class="even">
+<td>噪声频谱密度</td>
+<td>z:190;x,y:160</td>
+<td>100</td>
+<td>ug/Hz</td>
+</tr>
+<tr class="odd">
+<td>输出噪声</td>
+<td>2.4</td>
+<td>1.0</td>
+<td>mg</td>
+</tr>
+<tr class="even">
+<td>非线性度</td>
+<td>0.5</td>
+<td>0.3</td>
+<td>%FS</td>
+</tr>
+<tr class="odd">
+<td>跨轴灵敏度(<strong>Cross-Axis Sensitivity</strong>)</td>
+<td>0.5</td>
+<td>1</td>
+<td>%</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<ul>
+<li>非线性度：理想情况下，电压与加速度之间是线性关系，用器件的灵敏度来描述。 非线性度衡量实际灵敏度与理想的恒定灵敏度之间的偏差，用相对于满量程范围(%FSR)或正负满量程(%FS)的百分比来表示。 通常，FSR = FS+FS。 ADI加速度计的非线性度非常低，绝大多数情况下可忽略不计。</li>
+<li>跨轴灵敏度:衡量对某一轴施加一个加速度时，在另一轴上产生多大的输出，通常表示为百分比。 两个轴之间的耦合是由对齐误差、蚀刻不精确性和电路串扰共同造成。</li>
+</ul>
+</blockquote>
+<h4 id="高度测量单元">高度测量单元</h4>
+<ul>
+<li>气压计</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>参数</th>
+<th>BMP388</th>
+<th>ICP101</th>
+<th>单位</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Relative Accuracy</strong>(相对精度)</td>
+<td>8</td>
+<td>3</td>
+<td>Pa</td>
+</tr>
+<tr class="even">
+<td><strong>Absolute Accuracy</strong>(绝对精度)</td>
+<td>50</td>
+<td>100</td>
+<td>Pa</td>
+</tr>
+<tr class="odd">
+<td><strong>TCO</strong>(温度偏移系数)</td>
+<td>0.75</td>
+<td>0.5</td>
+<td>Pa/k</td>
+</tr>
+<tr class="even">
+<td><strong>Resolution</strong>(解析度)</td>
+<td>0.016</td>
+<td>0.01</td>
+<td>Pa</td>
+</tr>
+</tbody>
+</table>
+<h3 id="电机驱动单元">电机驱动单元</h3>
+<p>由于mini四轴一般采用空心杯电机，驱动电路相对简单。方案设计中选用简单的<strong>MOS</strong>电路驱动，具体形式如下：</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200328150801.png" /></p>
+<p>由上图可知，选用NMOS搭建驱动电路，参考CJ2302数据手册知，<span class="math display">\[V_{gs}\]</span>阀值为<span class="math display">\[0.95V\]</span>，<span class="math display">\[GS\]</span>驱动电流<span class="math display">\[I_{gss}=\pm100nA\]</span>。所以选取电阻<span class="math display">\[R1\]</span>和<span class="math display">\[R2\]</span>参数时，为了减小<span class="math display">\[DS\]</span>端的导通电阻，需要保证<span class="math display">\[V_{gs}\]</span>尽可能大。</p>
+<p>为了满足驱动电流<span class="math display">\[I_{gss}\]</span>的需求，电阻<span class="math display">\[R1\]</span>需要足够小，几欧姆的数量级即可。电阻<span class="math display">\[R1\]</span> 如果选取太小数值，又会增大导通过程产生的振铃，太大可能会不满足瞬间驱动电流，无法导通。</p>
+<p>图中二极管<span class="math display">\[D1\]</span>用于续流二极管，当NMOS管关闭时，电机内部可以等效为一个电感，与二极管<span class="math display">\[D1\]</span>组成一个放电回路，释放电机停止过程中的电流，避免对MOS管的损坏。</p>
+<h3 id="无线通信单元">无线通信单元</h3>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200328160050.png" /></p>
+<p>如上图所示，51与52系列的主要功能对比，对于mini飞控来说，51系列芯片性能已经足够使用。目前由于对车规级认证无要求，且无需ANT协议，所以选取<strong>nRF51</strong>系列无线芯片中的<strong>nRF51822</strong> SoC。</p>
+<p>设计中采用<strong>RFX2411N</strong>收发一体的驱动器。</p>
+<h3 id="电源管理单元">电源管理单元</h3>
+<h4 id="电池管理芯片">电池管理芯片</h4>
+<p>设计中选用电池管理芯片<strong>BQ24075</strong>，充电电流1.5A，支持一个电池。</p>
+<h4 id="线性电源">线性电源</h4>
+<p>无线通信模块采用<strong>NCP702SN30</strong>线性电源芯片单独供电，传感器模块采用<strong>LP2985</strong>线性电源芯片单独供电。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="John 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="John 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/crazyflie/" rel="tag"># crazyflie</a>
+              <a href="/tags/%E7%A1%AC%E4%BB%B6%E8%AE%BE%E8%AE%A1/" rel="tag"># 硬件设计</a>
+              <a href="/tags/Hardware/" rel="tag"># Hardware</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/02/26/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%90%8E%E8%BD%AE%E4%BD%8D%E7%BD%AE%E5%8F%8D%E9%A6%88/" rel="prev" title="控制算法-后轮位置反馈">
+                  <i class="fa fa-chevron-left"></i> 控制算法-后轮位置反馈
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/04/15/%E5%9F%BA%E4%BA%8E%E5%9B%BE%E6%90%9C%E7%B4%A2-AStar/" rel="next" title="路径规划-AStar">
+                  路径规划-AStar <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;f4d43304a502bc25f59c12e5b98990b1&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

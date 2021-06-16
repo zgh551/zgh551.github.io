@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="概述 本文介绍离散时间有限范围内的LQR(Linear Quadratic Regulator)算法求解过程.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基础算法-LQR-离散时间有限边界">
+<meta property="og:url" content="https://zgh551.github.io/2020/02/20/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-LQR-%E7%A6%BB%E6%95%A3%E6%97%B6%E9%97%B4%E6%9C%89%E9%99%90%E8%BE%B9%E7%95%8C/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="概述 本文介绍离散时间有限范围内的LQR(Linear Quadratic Regulator)算法求解过程.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200223154809.JPG">
+<meta property="article:published_time" content="2020-02-20T03:23:45.000Z">
+<meta property="article:modified_time" content="2021-06-16T14:47:43.619Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="LQR">
+<meta property="article:tag" content="Linear quadratic regulator">
+<meta property="article:tag" content="最优">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200223154809.JPG">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2020/02/20/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-LQR-%E7%A6%BB%E6%95%A3%E6%97%B6%E9%97%B4%E6%9C%89%E9%99%90%E8%BE%B9%E7%95%8C/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;2020&#x2F;02&#x2F;20&#x2F;%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-LQR-%E7%A6%BB%E6%95%A3%E6%97%B6%E9%97%B4%E6%9C%89%E9%99%90%E8%BE%B9%E7%95%8C&#x2F;&quot;,&quot;path&quot;:&quot;2020&#x2F;02&#x2F;20&#x2F;基础算法-LQR-离散时间有限边界&#x2F;&quot;,&quot;title&quot;:&quot;基础算法-LQR-离散时间有限边界&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>基础算法-LQR-离散时间有限边界 | Z</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lqr%E9%97%AE%E9%A2%98%E8%83%8C%E6%99%AF"><span class="nav-number">2.</span> <span class="nav-text">LQR问题背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lqr%E4%BB%A3%E4%BB%B7%E5%87%BD%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">LQR代价函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B1%82%E8%A7%A3lqr%E6%96%B9%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">求解LQR方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95"><span class="nav-number">4.1.</span> <span class="nav-text">最小二乘法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E6%B3%95dynamic-programming"><span class="nav-number">4.2.</span> <span class="nav-text">动态规划法(Dynamic Programming)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%80%BC%E5%87%BD%E6%95%B0"><span class="nav-number">4.2.1.</span> <span class="nav-text">值函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B1%82%E6%9E%81%E5%80%BC"><span class="nav-number">4.2.2.</span> <span class="nav-text">求极值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B1%82%E8%A7%A3%E8%BF%87%E7%A8%8B"><span class="nav-number">4.2.3.</span> <span class="nav-text">求解过程</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/02/20/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-LQR-%E7%A6%BB%E6%95%A3%E6%97%B6%E9%97%B4%E6%9C%89%E9%99%90%E8%BE%B9%E7%95%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="John">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          基础算法-LQR-离散时间有限边界
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-02-20 11:23:45" itemprop="dateCreated datePublished" datetime="2020-02-20T11:23:45+08:00">2020-02-20</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 22:47:43" itemprop="dateModified" datetime="2021-06-16T22:47:43+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">基础算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/%E6%9C%80%E4%BC%98%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">最优算法</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">概述</h2>
+<p>本文介绍离散时间有限范围内的<strong>LQR(Linear Quadratic Regulator)</strong>算法求解过程. <img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200223154809.JPG" /></p>
+<span id="more"></span>
+<h2 id="lqr问题背景">LQR问题背景</h2>
+<p>对于一个离散时间系统： <span class="math display">\[
+x_{t+1}=Ax_t + Bu_t,x_0=x_{init}\tag{1}
+\]</span> 其中，<span class="math inline">\(A\in R^{n\times n}\)</span>，<span class="math inline">\(B\in R^{n\times m}\)</span></p>
+<p>关于最优问题，就在于如何选择合适的<span class="math inline">\(u_0,u_1,...\)</span>，使得状态量<span class="math inline">\(x_0,x_1,...\)</span>足够小，因此得到好的调节和控制；或者使得<span class="math inline">\(u_0,u_1,...\)</span>足够小，以使用更少的能量。这两个量通常相互制约，如果采用更大的输入<span class="math inline">\(u\)</span>，就会驱使状态量<span class="math inline">\(x\)</span>更快达到0。采用线性二次调节原理可以解决这个问题。</p>
+<h2 id="lqr代价函数">LQR代价函数</h2>
+<p>为了表示控制系统达到稳定控制所付出的代价，定义如下二次型代价函数： <span class="math display">\[
+J(U)=\sum^{N-1}_{\tau=0}(x^{T}_{\tau}Qx_{\tau} + u^{T}_{\tau}Ru_{\tau})+ x^{T}_{N}Q_{f}x_{N}\tag{2}
+\]</span> 其中函数参数<span class="math inline">\(U = (u_0,u_1,..,u_N)\)</span>，并且矩阵<span class="math inline">\(Q,Q_f,R\)</span>为正定矩阵，及 <span class="math display">\[
+\begin{array}{cl}
+Q=Q^{T}\geq0,&amp;Q_f=Q_{f}^{T}\geq0,&amp;R=R^{T}&gt;0
+\end{array}
+\]</span></p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><span class="math inline">\(Q\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(Q_f\)</span></th>
+<th style="text-align: center;"><span class="math inline">\(R\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">给定状态代价矩阵</td>
+<td style="text-align: center;">最终状态代价矩阵</td>
+<td style="text-align: center;">输入代价矩阵</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><span class="math inline">\(N\)</span>：时间范围(考虑<span class="math inline">\(N = \infty\)</span>)</li>
+<li><span class="math inline">\(Q\)</span>，<span class="math inline">\(R\)</span>：分别设定状态偏差和输入的相对权重</li>
+<li><span class="math inline">\(R&gt;0\)</span>：意味着任何非零输入都增加<span class="math inline">\(J\)</span>的代价</li>
+<li><span class="math inline">\(x_{\tau}^{T} {Q} x_{\tau}\)</span>：衡量状态偏差</li>
+<li><span class="math inline">\(u^{T}_{\tau} R u_{\tau}\)</span>：衡量输入大小</li>
+<li><span class="math inline">\(x^{T}_{N} Q_{f} x_{N}\)</span>：衡量最终状态偏差</li>
+</ul>
+<p>因此，关于<strong>LQR</strong>问题就是找出使得代价函数<span class="math inline">\(J(U)\)</span>最小的一组控制输入<span class="math inline">\((u_0,u_1,...,u_{N-1})_{lqr}\)</span>。</p>
+<h2 id="求解lqr方法">求解LQR方法</h2>
+<p>本文主要介绍两种求解LQR的方法，分别为最小二乘法和动态规划算法。</p>
+<h3 id="最小二乘法">最小二乘法</h3>
+<p>根据公式(1)可知，<span class="math inline">\(x_0\)</span>是<span class="math inline">\(X = (x_0,...,x_N)\)</span>的线性函数，并且<span class="math inline">\(U = (u_0,...,u_{N-1})\)</span>，可以得出如下关系： <span class="math display">\[
+\begin{array}{cl}
+x_1 &amp;= Ax_0 + Bu_0\\
+x_2 &amp;= Ax_1 + Bu_1\\
+\vdots\\
+x_n &amp;= Ax_{N-1} + Bu_{N-1}
+\end{array}\tag{3}
+\]</span> 将上述公式(3)逐个带入得 <span class="math display">\[
+\begin{array}{cl}
+x_1 &amp;= Ax_0 + Bu_0\\
+x_2 &amp;= A^{2}x_0 + ABu_0 + Bu_1\\
+\vdots\\
+x_n &amp;= A^{N}x_0 + A^{N-1}Bu_0 + A^{N-2}Bu_1 + \dots+ Bu_{N-1}
+\end{array} \tag{4}
+\]</span> 整理得 <span class="math display">\[
+\left[\begin{array}{cl}
+x_0\\
+x_1\\
+\vdots\\
+x_N
+\end{array}\right]=
+\left[ \begin{array}{cl}
+0 &amp; \dots \\
+B &amp; 0 &amp; \dots \\
+AB &amp; B &amp; 0 &amp; \dots \\
+\vdots &amp; \vdots \\
+A^{N-1}B &amp; A^{N-2}B &amp; \dots &amp; B
+\end{array}\right]
+\left[
+\begin{array}{cl}
+u_0\\
+u_1\\
+\vdots\\
+u_{N-1}
+\end{array}
+\right]+
+\left[
+\begin{array}{cl}
+I\\
+A\\
+\vdots\\
+A^{N}
+\end{array}
+\right]x_0 \tag{5}
+\]</span> 其中 <span class="math display">\[
+G=\left[ \begin{array}{cl}
+0 &amp; \dots \\
+B &amp; 0 &amp; \dots \\
+AB &amp; B &amp; 0 &amp; \dots \\
+\vdots &amp; \vdots \\
+A^{N-1}B &amp; A^{N-2}B &amp; \dots &amp; B
+\end{array}\right]，H=\left[
+\begin{array}{cl}
+I\\
+A\\
+\vdots\\
+A^{N}
+\end{array}
+\right]
+\]</span></p>
+<p>等式(5)可以进一步表示为 <span class="math display">\[
+X= GU + Hx_0 \tag{6}
+\]</span> 其中，<span class="math inline">\(G\in R^{Nn\times Nm}\)</span>，<span class="math inline">\(H\in R^{Nn\times n}\)</span>。</p>
+<p>从而等式(2)所表示得代价函数可以表示为 <span class="math display">\[
+J(U)=\parallel diag(Q^{1/2},\dots,Q^{1/2},Q^{1/2}_{f})(GU+Hx_0)\parallel^2+
+\parallel diag(R^{1/2},\dots,R^{1/2})U\parallel^2 \tag{7}
+\]</span> 这就转化成一个求解最小二乘法的问题，其问题大小为<span class="math inline">\(N(n + m)\times Nm\)</span>。</p>
+<h3 id="动态规划法dynamic-programming">动态规划法(Dynamic Programming)</h3>
+<p>动态规划算法是解决多阶段决策过程最优化的一种有效的数学方法。</p>
+<h4 id="值函数">值函数</h4>
+<p>首先定义一个值函数<span class="math inline">\(V_t:R^n \to R\)</span>,其中<span class="math inline">\(t=(0,\dots,N)\)</span>： <span class="math display">\[
+V_t(z)=\min_{u_t,\dots,u_{N-1}}\Bigl(\sum_{\tau=t}^{N-1}(x^T_\tau Qx_\tau + u^t_\tau Ru_\tau) + x_N^TQ_fx_N\Bigr) \tag{8}
+\]</span> 如果设置<span class="math inline">\(x_t = z\)</span>，根据公式(1)的关系，<span class="math inline">\(x_{\tau+1} = Ax_{\tau} + Bu_{\tau}\)</span>,并且<span class="math inline">\(\tau=t,\dots,N\)</span>。</p>
+<ul>
+<li><span class="math inline">\(V_t(z)\)</span>可以表示在<span class="math inline">\(t\)</span>时刻，从状态<span class="math inline">\(z\)</span>开始的LQR最小代价值</li>
+<li><span class="math inline">\(V_0(x_0)\)</span>表示在0时刻，从状态<span class="math inline">\(x_0\)</span>开始的LQR最小代价值</li>
+</ul>
+<p><span class="math inline">\(V_t\)</span>可以表示为二次型的形式，即<span class="math inline">\(V_T(z)=z^TP_tz\)</span>, 其中<span class="math inline">\(P_t=P_t^T \geq 0\)</span>。当<span class="math inline">\(t=N\)</span>时，代价值函数为： <span class="math display">\[
+V_N(z) = z^TQ_f z \tag{9}
+\]</span> 因此<span class="math inline">\(P_N = Q_f\)</span>。</p>
+<p>根据动态规划原理，等式(8)可以写成如下递归关系式： <span class="math display">\[
+V_t(z)=\min_w\bigl(z^TQz + w^TRw + V_{t+1}(Az+Bw)\bigr)\tag{10}
+\]</span> 其中，</p>
+<ul>
+<li><span class="math inline">\(z^TQz + w^TRw\)</span>：如果<span class="math inline">\(u_t = w\)</span>,则代表<span class="math inline">\(t\)</span>时刻产生的代价值；</li>
+<li><span class="math inline">\(V_{t+1}(Az+Bw)\)</span>：代表从<span class="math inline">\(t+1\)</span>时刻开始，引起的最小代价值；</li>
+</ul>
+<p>提取等式(10)中与<span class="math inline">\(w\)</span>无关的选项得</p>
+<p><span class="math display">\[
+V_t(z)=z^TQz + \min_w\bigl(w^TRw + V_{t+1}(Az+Bw)\bigr)\tag{11}
+\]</span></p>
+<p>等式(11)描述了<span class="math inline">\(V_t(z)\)</span>与<span class="math inline">\(V_{t+1}(z)\)</span>之间的递归关系。</p>
+<p>最优控制率<span class="math inline">\(u_t\)</span>可以表示为 <span class="math display">\[
+u_t^{lqr}=arg\min_w\bigl(w^TRw + V_{t+1}(Az+Bw)\bigr)
+\]</span></p>
+<h4 id="求极值">求极值</h4>
+<p>假设<span class="math inline">\(V_{t+1}= z^TP_{t+1}z\)</span>,并且<span class="math inline">\(P_{t+1}=P^{T}_{t+1} \geq0\)</span>,等式(13)可以进一步转化为<span class="math inline">\(P_{t+1}\)</span>的形式：</p>
+<p><span class="math display">\[
+V_t(z)=z^TQz + \min_w\bigl(w^TRw + (Az+Bw)^TP_{t+1}(Az+Bw)\bigr)\tag{12}
+\]</span></p>
+<p>为了求最小值，对<span class="math inline">\(w\)</span>求导，导数为零的点即为最值点。</p>
+<p><span class="math display">\[
+2w^TR + 2(Az+Bw)^TP_{t+1}B = 0 \tag{13}
+\]</span></p>
+<p>推导等式(13)，求取<span class="math inline">\(w\)</span>:</p>
+<p><span class="math display">\[
+\begin{array}{cl}
+w^TR + z^{T}A^{T}P_{t+1}B+w^{T}B^{T}P_{t+1}B &amp;= 0\\
+w^T(R + B^TP_{t+1}B) &amp;= - z^{T}A^{T}P_{t+1}B &amp;\text{(合并同类项并移项)}\\
+(R + B^TP_{t+1}B)^Tw &amp;= -B^TP_{t+1}^{T}Az &amp; \text{(转置)}\\
+(R + B^TP_{t+1}B)w &amp;= -B^TP_{t+1}Az &amp;(P_{t+1}=P^{T}_{t+1},R=R^T)\\
+w &amp;=-(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}Az &amp;\text{(矩阵求逆)}
+\end{array}\tag{14}
+\]</span></p>
+<p>由等式(14)可知，最优输入为</p>
+<p><span class="math display">\[
+w^* =-(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}Az \tag{15}
+\]</span></p>
+<p>将等式(15)带入等式(12)得</p>
+<p><span class="math display">\[
+V_t(z)=z^TQz + w^{*T}Rw^* + (Az+Bw^*)^TP_{t+1}(Az+Bw^*)\tag{16}
+\]</span></p>
+<p>对等式(16)化简得</p>
+<p><span class="math display">\[
+\begin{array}{cl}
+V_t(z) 
+&amp;= &amp; z^TQz + w^{*T}Rw^* + (Az+Bw^*)^TP_{t+1}(Az+Bw^*)\\
+&amp;= &amp; z^TQz + w^{*T}Rw^* + z^TA^TP_{t+1}Az + 2z^TA^TP_{t+1}Bw^* + w^{*T}B^TP_{t+1}Bw^*\\
+&amp;= &amp;z^TQz + z^TA^TP_{t+1}Az + w^{*T}(R+B^TP_{t+1}B)w^*  + 2z^TA^TP_{t+1}Bw^*\\
+&amp;= &amp;z^TQz + z^TA^TP_{t+1}Az\\
+&amp;  &amp;+z^TA^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}(R+B^TP_{t+1}B)(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}Az\\
+&amp;  &amp;-2z^TA^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}Az\\
+&amp;= &amp;z^TQz + z^TA^TP_{t+1}Az\\
+&amp;  &amp;+z^TA^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}Az\\
+&amp;  &amp;-2z^TA^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}Az\\
+&amp;= &amp;z^TQz + z^TA^TP_{t+1}Az - z^TA^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}Az\\
+&amp;= &amp;z^T(Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A)z\\
+&amp;= &amp;z^TP_tz
+\end{array}\tag{17}
+\]</span> 上述公式化简过程中，由于<span class="math inline">\(P_{t+1}=P^{T}_{t+1},R=R^T\)</span>，所以<span class="math inline">\(\bigl((R+B^TP_{t+1}B)^{-1}\bigr)^T = (R + B^TP_{t+1}B)^{-1}\)</span>。</p>
+<p>由等式(17)可知 <span class="math display">\[
+P_t = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A \tag{18}
+\]</span></p>
+<h4 id="求解过程">求解过程</h4>
+<p>关于LQR的求解过程，可以采用动态规划算法，依据上述公式(18)的递归关系，反向递推，求出满足一定条件的最小代价值。</p>
+<ol type="1">
+<li>确定迭代范围<span class="math inline">\(N\)</span></li>
+<li>设置迭代初始值<span class="math inline">\(P_N=Q_f\)</span></li>
+<li>循环迭代，<span class="math inline">\(t = N,\dots,1\)</span></li>
+</ol>
+<p><span class="math display">\[
+P_{t-1} = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A
+\]</span></p>
+<ol start="4" type="1">
+<li>则反馈系数<span class="math inline">\(K_t = -(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A\)</span>，对于时间<span class="math inline">\(t=0,\dots,N-1\)</span></li>
+<li>优化的控制量<span class="math inline">\(u_t^{lqr}=K_tx_t\)</span></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="John 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="John 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/LQR/" rel="tag"># LQR</a>
+              <a href="/tags/Linear-quadratic-regulator/" rel="tag"># Linear quadratic regulator</a>
+              <a href="/tags/%E6%9C%80%E4%BC%98/" rel="tag"># 最优</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/02/18/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%9F%BA%E4%BA%8E%E8%BF%90%E5%8A%A8%E6%A8%A1%E5%9E%8B%E7%9A%84LQR%E4%BC%98%E5%8C%96/" rel="prev" title="控制算法-基于运动模型的LQR优化">
+                  <i class="fa fa-chevron-left"></i> 控制算法-基于运动模型的LQR优化
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/02/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA%E5%88%86%E6%9E%90/" rel="next" title="控制算法-路径跟踪">
+                  控制算法-路径跟踪 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;d52892986a397273d99a9e1aaf5268df&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

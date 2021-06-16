@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="[TOC] 1. 概述 联咏IVE主要包括通用滤波、中值滤波、边沿滤波、非极大值抑制、阈值查找表、形态学操作和图像积分等功能。有些功能可以独立运行，有些功能可以通过子功能的组合完成。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="算法优化-联咏IVE">
+<meta property="og:url" content="https://zgh551.github.io/draft/%E8%81%94%E5%92%8FIVE%E4%BB%8B%E7%BB%8D.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="[TOC] 1. 概述 联咏IVE主要包括通用滤波、中值滤波、边沿滤波、非极大值抑制、阈值查找表、形态学操作和图像积分等功能。有些功能可以独立运行，有些功能可以通过子功能的组合完成。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zgh551.github.io/draft/doc/ive_function.PNG">
+<meta property="og:image" content="https://zgh551.github.io/draft/doc/IVE.png">
+<meta property="og:image" content="https://zgh551.github.io/draft/doc/IVE-morphologic_mask.png">
+<meta property="og:image" content="https://zgh551.github.io/draft/doc/canny_result.PNG">
+<meta property="og:image" content="https://zgh551.github.io/draft/doc/sobel_x_y.PNG">
+<meta property="og:image" content="https://zgh551.github.io/draft/doc/sobel_result.PNG">
+<meta property="og:image" content="https://zgh551.github.io/draft/doc/nomax.PNG">
+<meta property="article:published_time" content="2021-03-17T02:37:21.000Z">
+<meta property="article:modified_time" content="2021-06-16T13:13:10.030Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="图像算法加速">
+<meta property="article:tag" content="IVE">
+<meta property="article:tag" content="联咏">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zgh551.github.io/draft/doc/ive_function.PNG">
+
+
+<link rel="canonical" href="https://zgh551.github.io/draft/%E8%81%94%E5%92%8FIVE%E4%BB%8B%E7%BB%8D">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:false,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;draft&#x2F;%E8%81%94%E5%92%8FIVE%E4%BB%8B%E7%BB%8D.html&quot;,&quot;path&quot;:&quot;draft&#x2F;联咏IVE介绍.html&quot;,&quot;title&quot;:&quot;算法优化-联咏IVE&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>算法优化-联咏IVE | Z
+</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">1. 概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E4%BE%9D%E8%B5%96"><span class="nav-number">2.</span> <span class="nav-text">2. 相关依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%8F%82%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">3. 编译参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%93%8D%E4%BD%9C"><span class="nav-number">4.</span> <span class="nav-text">4. 算法操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%9F%E8%83%BD%E6%A8%A1%E5%9D%97%E9%85%8D%E7%BD%AE"><span class="nav-number">4.0.1.</span> <span class="nav-text">4.1.1. 功能模块配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#canny%E6%BB%A4%E6%B3%A2%E7%BB%93%E6%9E%9C"><span class="nav-number">4.0.2.</span> <span class="nav-text">4.1.2. Canny滤波结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sobel%E6%BB%A4%E6%B3%A2"><span class="nav-number">4.1.</span> <span class="nav-text">4.2. Sobel滤波</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#sobel%E6%BB%A4%E6%B3%A2%E7%BB%93%E6%9E%9C"><span class="nav-number">4.1.1.</span> <span class="nav-text">4.2.2. Sobel滤波结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%9E%E6%9E%81%E5%A4%A7%E5%80%BC%E6%8A%91%E5%88%B6"><span class="nav-number">4.2.</span> <span class="nav-text">4.3. 非极大值抑制</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="zh-CN"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">算法优化-联咏IVE
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>[TOC]</p>
+<h2 id="概述">1. 概述</h2>
+<p>联咏IVE主要包括通用滤波、中值滤波、边沿滤波、非极大值抑制、阈值查找表、形态学操作和图像积分等功能。有些功能可以独立运行，有些功能可以通过子功能的组合完成。</p>
+<span id="more"></span>
+<h2 id="相关依赖">2. 相关依赖</h2>
+<p>关于使用<strong>IVE</strong>库所需的依赖库详细如下：</p>
+<ul>
+<li><strong>hdal</strong>：该库主要包含联咏硬件抽象层的相关内容；</li>
+<li><strong>vendor_cv</strong>：该库主要包含计算机视觉相关内容；</li>
+<li><strong>pthread</strong>: IVE支持多线程，需要依赖该库实现；</li>
+</ul>
+<h2 id="编译参数">3. 编译参数</h2>
+<p>再<code>depth_magic</code>项目中，使用如下编译参数可开启<strong>IVE</strong>功能，主要使能<code>WITH_NOVATEK_IVE</code>选项；</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=<span class="string">&quot;-mfpu=neon&quot;</span> -DWITH_OPENMP=<span class="keyword">OFF</span> -DWITH_NFS=<span class="keyword">ON</span> -DDEPTH_MAGIC_BUILD_SHARED=<span class="keyword">ON</span> -DWITH_NOVATEK_IVE=<span class="keyword">ON</span> -DWITH_INIT_NOVATEK_IVE=<span class="keyword">ON</span> ..</span><br></pre></td></tr></table></figure>
+<p>如果在嵌入式APP中运行，为了避免重复初始化操作，需要将<code>WITH_INIT_NOVATEK_IVE</code>选项置为<code>OFF</code>。</p>
+<h2 id="算法操作">4. 算法操作</h2>
+<p>如下图所示，是IVE的功能组成框图。如果实际需求是在中间某个功能模块输出，则相应后边的功能模块需要关闭。</p>
+<p><img src="./doc/ive_function.PNG" alt="morphologic_mask" /> ### 4.1. Canny滤波器</p>
+<p><strong>Canny</strong>滤波器可以由gauss滤波、边沿滤波、非极大值约束、阈值查找表和形态学操作等组成，其各个模块之间连接框图如下：</p>
+<figure>
+<img src="./doc/IVE.png" alt="ive_canny" /><figcaption aria-hidden="true">ive_canny</figcaption>
+</figure>
+<h4 id="功能模块配置">4.1.1. 功能模块配置</h4>
+<ol type="1">
+<li><strong>高斯</strong>滤波</li>
+</ol>
+<p>关于高斯的滤波系数如下：</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+1 &amp; 2 &amp; 1\\
+2 &amp; 4 &amp; 2\\
+1 &amp; 2 &amp; 1
+\end{bmatrix} * \frac{1}{16} \tag{1}
+\]</span></p>
+<ol start="2" type="1">
+<li><strong>边沿</strong>滤波</li>
+</ol>
+<p><code>x</code>轴的滤波系数为如下公式(2)： <span class="math display">\[
+G_x = \begin{bmatrix}
+-1 &amp; 0 &amp; 1\\
+-2 &amp; 0 &amp; 2\\
+-1 &amp; 0 &amp; 1
+\end{bmatrix} \tag{2}
+\]</span></p>
+<p><code>y</code>轴的滤波系数为如下公式(3)： <span class="math display">\[
+G_y = \begin{bmatrix}
+1 &amp; 2 &amp; 1\\
+0 &amp; 0 &amp; 0\\
+-1 &amp; -2 &amp; -1
+\end{bmatrix} \tag{3}
+\]</span> 3. 非极大值抑制</p>
+<p>目前设置非极大值抑制的系数为160。</p>
+<ol start="4" type="1">
+<li>阈值查找表</li>
+</ol>
+<p>如果输出格式为1比特输出，则只有阈值0有效，测试时设置阈值为20。</p>
+<ol start="5" type="1">
+<li>形态学操作</li>
+</ol>
+<p>测试代码中使用的腐蚀掩码为如下图格式，其中白色对应系数中<code>FALSE</code>，其余部分对应系数为<code>TRUE</code>。</p>
+<figure>
+<img src="./doc/IVE-morphologic_mask.png" alt="morphologic_mask" /><figcaption aria-hidden="true">morphologic_mask</figcaption>
+</figure>
+<h4 id="canny滤波结果">4.1.2. Canny滤波结果</h4>
+<p>如下图所示，是Canny滤波器的输出结果与原图的对比。其中，左边是原图，右边是Canny输出结果。</p>
+<figure>
+<img src="./doc/canny_result.PNG" alt="canny" /><figcaption aria-hidden="true">canny</figcaption>
+</figure>
+<blockquote>
+<p>注: 由于阈值查找表只有一个阈值可以使用，所以无法实现滞后阈值算法；</p>
+</blockquote>
+<h3 id="sobel滤波">4.2. Sobel滤波</h3>
+<p>Sobel滤波器可以由Gauss滤波、中值滤波和边沿滤波组合而成。 #### 4.2.1. X和Y方向的梯度</p>
+<p>如下图所示，左图代表求取的<code>X</code>轴方向的梯度，右图代表求取的<code>Y</code>轴方向梯度。</p>
+<figure>
+<img src="./doc/sobel_x_y.PNG" alt="sobel_x_y" /><figcaption aria-hidden="true">sobel_x_y</figcaption>
+</figure>
+<h4 id="sobel滤波结果">4.2.2. Sobel滤波结果</h4>
+<p>如下图所示，是结合X和Y轴梯度的结果，根据<span class="math inline">\(x^2 + y^2\)</span>求取对应结果。</p>
+<figure>
+<img src="./doc/sobel_result.PNG" alt="sobel_result" /><figcaption aria-hidden="true">sobel_result</figcaption>
+</figure>
+<h3 id="非极大值抑制">4.3. 非极大值抑制</h3>
+<p>Sobel滤波器可以由Gauss滤波、中值滤波、边沿滤波和非极大值抑制组合而成。如下图所示，是非极大值抑制的结果。 <img src="./doc/nomax.PNG" alt="nomax" /></p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;500a67224b79c6f0c24349cdc777ce9e&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

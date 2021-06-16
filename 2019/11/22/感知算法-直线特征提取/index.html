@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="问题概述 常见的直线特征提取算法是最小二乘法进行的直线拟合，但是线性二次拟合的效果容易受噪声影响，导致拟合效果较差。本文基于直线方程的另一种形式，详细给出最优直线的推导过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="直线特征提取">
+<meta property="og:url" content="https://zgh551.github.io/2019/11/22/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E7%9B%B4%E7%BA%BF%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="问题概述 常见的直线特征提取算法是最小二乘法进行的直线拟合，但是线性二次拟合的效果容易受噪声影响，导致拟合效果较差。本文基于直线方程的另一种形式，详细给出最优直线的推导过程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%8F%8A%E8%8A%B1%E5%B1%951.jpg">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy9SX3RoZXRhX2xpbmUuR0lG?x-oss-process=image/format,png#pic_center">
+<meta property="article:published_time" content="2019-11-22T01:35:45.000Z">
+<meta property="article:modified_time" content="2021-06-16T13:13:09.966Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="特征提取">
+<meta property="article:tag" content="超声波">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%8F%8A%E8%8A%B1%E5%B1%951.jpg">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2019/11/22/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E7%9B%B4%E7%BA%BF%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;2019&#x2F;11&#x2F;22&#x2F;%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E7%9B%B4%E7%BA%BF%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96&#x2F;&quot;,&quot;path&quot;:&quot;2019&#x2F;11&#x2F;22&#x2F;感知算法-直线特征提取&#x2F;&quot;,&quot;title&quot;:&quot;直线特征提取&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>直线特征提取 | Z</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">问题概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%80%BC%E6%B1%82%E8%A7%A3%E8%BF%87%E7%A8%8B%E6%8E%A8%E5%AF%BC"><span class="nav-number">2.</span> <span class="nav-text">最值求解过程推导</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%AE%9A%E4%B9%89"><span class="nav-number">2.1.</span> <span class="nav-text">函数定义</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/11/22/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E7%9B%B4%E7%BA%BF%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="John">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          直线特征提取
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-11-22 09:35:45" itemprop="dateCreated datePublished" datetime="2019-11-22T09:35:45+08:00">2019-11-22</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 21:13:09" itemprop="dateModified" datetime="2021-06-16T21:13:09+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">感知算法</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="问题概述">问题概述</h2>
+<p>常见的直线特征提取算法是最小二乘法进行的直线拟合，但是线性二次拟合的效果容易受噪声影响，导致拟合效果较差。本文基于直线方程的另一种形式，详细给出最优直线的推导过程。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%8F%8A%E8%8A%B1%E5%B1%951.jpg" /></p>
+<span id="more"></span>
+<p>直线方程可以表示为 <span class="math display">\[
+r = \cos\theta*x + \sin\theta*y
+\]</span></p>
+<p>几何关系如下图所示</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy9SX3RoZXRhX2xpbmUuR0lG?x-oss-process=image/format,png#pic_center" /></p>
+<p>假设一组数据集合为 <span class="math display">\[
+S_k= \{ (x_0,y_0),...,(x_k,y_k)\}
+\]</span> 该数据集符合直线分布，那么满足<span class="math inline">\(S_k\)</span>数据的最优直线<span class="math inline">\(L\)</span>为 <span class="math display">\[
+r = \cos\theta*x + \sin\theta*y \tag{1}
+\]</span> 这组数据集与直线<span class="math inline">\(L\)</span>的误差值为 <span class="math display">\[
+e_i = \| \cos\theta*x_i + \sin\theta*y_i - r\| \tag{2}
+\]</span> 方差值为 <span class="math display">\[
+E_2 =\sum_{S_k}e_i^2 \tag{3}
+\]</span> 那么求取与数据点<span class="math inline">\(S_k\)</span>匹配度最优的线段<span class="math inline">\(L\)</span>问题,就可以转化为求取方差<span class="math inline">\(E_2\)</span>的最小值问题。</p>
+<h2 id="最值求解过程推导">最值求解过程推导</h2>
+<h3 id="函数定义">函数定义</h3>
+<p>根据最值原理，求最小值的问题，可以转化为求解函数导数为零的解的问题。 假设函数 <span class="math display">\[
+f(\theta,r) = \sum_{S_k}(\cos\theta*x_i + \sin\theta*y_i - r)^2 \tag{4}
+\]</span> 导数为 <span class="math display">\[
+\dot{f}(\theta,r) = 2\sum_{S_k}(\cos\theta*x_i + \sin\theta*y_i - r)&#39; \tag{5}
+\]</span> 根据函数参数 <span class="math inline">\(\theta\)</span> 和 <span class="math inline">\(r\)</span>，分别对其求偏导数得 <span class="math display">\[
+\dot{f}(\theta,r) = \frac{\partial f}{\partial \theta} + \frac{\partial f}{\partial r} \tag{6}
+\]</span> 故得 <span class="math display">\[
+\dot{f}(\theta,r) = 2\sum_{S_k}(\cos\theta*x_i + \sin\theta*y_i - r)(\cos\theta*y_i - \sin\theta*x_i -1) \tag{7}
+\]</span> 当 <span class="math inline">\(\dot{f}(\theta,r)= 0\)</span>得 <span class="math display">\[
+\sum_{S_k}(\cos\theta*x_i + \sin\theta*y_i - r)(\cos\theta*y_i - \sin\theta*x_i -1) = 0 \tag{8}
+\]</span> ### 求解假设 假设 <span class="math display">\[
+\sum_{S_k}\cos\theta*x_i + \sin\theta*y_i - r = 0 \\
+\cos\theta\sum_{i_0}^kx_i + \sin\theta\sum_{i_0}^ky_i - \sum_{i_0}^kr = 0 \tag{9}
+\]</span></p>
+<p>由上述得 <span class="math display">\[
+\sum_{i=0}^{k}r = \cos\theta\sum_{i=0}^kx_i + \sin\theta\sum_{i=0}^ky_i\\
+r = \cos\theta\frac{\sum_{i=0}^kx_i}{k} + \sin\theta\frac{\sum_{i=0}^ky_i}{k} \tag{10}
+\]</span> 令 <span class="math display">\[
+V_x = \frac{\sum_{i=0}^kx_i}{k} \\
+V_y = \frac{\sum_{i=0}^ky_i}{k} \tag{11}
+\]</span> 上述公式可以表述为</p>
+<p><span class="math display">\[
+r = \cos\theta*V_x + \sin\theta*V_y \tag{12}
+\]</span> ### 函数导数化简</p>
+<p>由公式(8)得 <span class="math display">\[
+\sum_{i=0}^{k}(\cos\theta*x_i + \sin\theta*y_i)(\cos\theta*y_i - \sin\theta*x_i) -\\\sum_{i=0}^{k}(\cos\theta*x_i + \sin\theta*y_i)- \\
+\sum_{i=0}^{k}r(\cos\theta*y_i - \sin\theta*x_i) + \sum_{i=0}^{k}r = 0 \tag{13}
+\]</span> 将等式(12)带入等式(13),并将等式分解为一下4个部分</p>
+<p><span class="math display">\[
+A = \sum_{i=0}^{k}\cos^2\theta*x_iy_i - \sin\theta\cos\theta*x_i^2 + \sin\theta\cos\theta*y_i^2 -\sin^2\theta*x_iy_i \\
+B = \sum_{i=0}^{k}(\cos\theta*x_i + \sin\theta*y_i) \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
+C = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y)(\cos\theta*y_i - \sin\theta*x_i)\qquad\qquad\qquad\\
+D = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y) \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\tag{14}
+\]</span></p>
+<p>等式(14)的四个部分可化简为 <span class="math display">\[
+A = \sum_{i=0}^{k}\cos^2\theta*x_iy_i - \sin\theta\cos\theta*x_i^2 + \sin\theta\cos\theta*y_i^2 -\sin^2\theta*x_iy_i\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
+= (\cos^2\theta - \sin^2\theta)\sum_{i=0}^{k}x_iy_i - \sin\theta\cos\theta(\sum_{i=0}^{k}x_i^2 - \sum_{i=0}^{k}y_i^2)\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
+= \cos2\theta\sum_{i=0}^{k}x_iy_i - 0.5\sin2\theta(\sum_{i=0}^{k}x_i^2 - \sum_{i=0}^{k}y_i^2)\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad \tag{15}
+\]</span></p>
+<p><span class="math display">\[
+B = \sum_{i=0}^{k}(\cos\theta*x_i + \sin\theta*y_i) 
+  = \cos\theta\sum_{i=0}^{k}x_i + \sin\theta\sum_{i=0}^{k}y_i \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\tag{16}
+\]</span></p>
+<p><span class="math display">\[
+C = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y)(\cos\theta*y_i - \sin\theta*x_i)\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\qquad\qquad\qquad\qquad\\
+=\cos^2\theta*V_x\sum_{i=0}^{k}y_i - \sin\theta\cos\theta*V_x\sum_{i=0}^{k}x_i+\sin\theta\cos\theta*V_y\sum_{i=0}^{k}y_i -\sin^2\theta*V_y\sum_{i=0}^{k}x_i\qquad\qquad\qquad\qquad\\
+=(\cos^2\theta - \sin^2\theta)\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} - \sin\theta\cos\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i)\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
+=\cos2\theta\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} -0.5\sin2\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i)\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\tag{17}
+\]</span></p>
+<p><span class="math display">\[
+D = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y) \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\\
+=\cos\theta*V_x\sum_{i=0}^{k} + \sin\theta*V_y\sum_{i=0}^{k} \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\\
+=\cos\theta\sum_{i=0}^{k}x_i + \sin\theta\sum_{i=0}^{k}y_i\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad \tag{18}
+\]</span> 故等式(13)可以表示为 <span class="math display">\[
+A - B - C + D = 0 \tag{19}
+\]</span></p>
+<p>根据等式(16)和(18)知，B和D相等，故等式(19)可以进一步简化为 <span class="math display">\[
+A - C = 0 \tag{20}
+\]</span></p>
+<p>等式(20)两端同时扩大两倍得 <span class="math display">\[
+2\cos2\theta\sum_{i=0}^{k}x_iy_i - \sin2\theta(\sum_{i=0}^{k}x_i^2 - \sum_{i=0}^{k}y_i^2) \\-2\cos2\theta\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} + \sin2\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i) = 0\tag{21}
+\]</span> 合并同类项得 <span class="math display">\[
+\cos2\theta*2*(\sum_{i=0}^{k}x_iy_i - \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k}) + \\\sin2\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i - \sum_{i=0}^{k}x_i^2 + \sum_{i=0}^{k}y_i^2) = 0 \tag{22}
+\]</span></p>
+<p>令 <span class="math display">\[
+V_{xy} = \sum_{i=0}^{k}x_iy_i - \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k}\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
+= \sum_{i=0}^{k}x_iy_i - \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} -\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} + \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k}\qquad\qquad\qquad\qquad\qquad\quad\\
+= \sum_{i=0}^{k}x_iy_i - \sum_{i=0}^{k}x_iV_y - \sum_{i=0}^{k}y_iV_x + \sum_{i=0}^{k}V_xV_y\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
+= \sum_{i=0}^{k}(x_i - V_x)(y_i - V_y)\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\tag{23}
+\]</span></p>
+<p><span class="math display">\[
+V_{xx} = \sum_{i=0}^{k}x_i^2 - V_x\sum_{i=0}^{k}x_i\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
+= \sum_{i=0}^{k}x_i^2 - 2\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}x_i}{k} + \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}x_i}{k}\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
+=\sum_{i=0}^{k}x_i^2 - 2V_x\sum_{i=0}^{k}x_i + \sum_{i=0}^{k}V_xV_x\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\\
+=\sum_{i=0}^{k}(x_i - V_x)^2\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad \tag{24}
+\]</span></p>
+<p><span class="math display">\[
+V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\tag{25}
+\]</span></p>
+<p>等式(22)可以表示为 <span class="math display">\[
+\cos2\theta*2*V_{xy} + \sin2\theta(V_{yy} - V_{xx}) = 0\tag{26}
+\]</span> 根据博客<a target="_blank" rel="noopener" href="https://blog.csdn.net/zghforever/article/details/88644499">求解方程A<em>cos + B</em>sin = C</a>可知 <span class="math display">\[
+\theta = \arctan\frac{(V_{yy} - V_{xx}) - \sqrt{(V_{yy} - V_{xx})^2 + 4V_{xy}^2}}{2V_{xy}}\tag{27}
+\]</span> 根据数据集<span class="math inline">\(S_k\)</span>和等式(12)(27),可以求出最优的<span class="math inline">\(\theta\)</span>和<span class="math inline">\(r\)</span>参数。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="John 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="John 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96/" rel="tag"># 特征提取</a>
+              <a href="/tags/%E8%B6%85%E5%A3%B0%E6%B3%A2/" rel="tag"># 超声波</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/11/12/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E4%B8%AD%E5%BF%83/" rel="prev" title="超声波障碍物定位_库位中心">
+                  <i class="fa fa-chevron-left"></i> 超声波障碍物定位_库位中心
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%A8%A1%E5%9E%8B/" rel="next" title="控制算法-运动学模型">
+                  控制算法-运动学模型 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;4693e304c781fc04657677c978ae6500&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

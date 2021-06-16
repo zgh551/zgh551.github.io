@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="[TOC] 1. 概述 本文主要讲述联咏开发环境的相关配置，主要包括Docker镜像、交叉编译、TFTP服务和联咏平台配置等内容。 2. Docker 2.1.拉取 镜像 首先从Docker仓库拉取联咏的编译容器。 1$ docker pull 192.168.104.3:32768&#x2F;nt96565a:firmware_4.0 建议拉取最新的4.0镜像。 2.2. 运行镜像 1$">
+<meta property="og:type" content="website">
+<meta property="og:title" content="算法优化-联咏IVE-NEON后处理">
+<meta property="og:url" content="https://zgh551.github.io/draft/%E8%81%94%E5%92%8F%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="[TOC] 1. 概述 本文主要讲述联咏开发环境的相关配置，主要包括Docker镜像、交叉编译、TFTP服务和联咏平台配置等内容。 2. Docker 2.1.拉取 镜像 首先从Docker仓库拉取联咏的编译容器。 1$ docker pull 192.168.104.3:32768&#x2F;nt96565a:firmware_4.0 建议拉取最新的4.0镜像。 2.2. 运行镜像 1$">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="d:/WorkSpace/github/HexoNextBlog/source/draft/doc/tftp_configure1.PNG">
+<meta property="og:image" content="d:/WorkSpace/github/HexoNextBlog/source/draft/doc/tftp_configure2.PNG">
+<meta property="og:image" content="d:/WorkSpace/github/HexoNextBlog/source/draft/doc/tftp_configure3.PNG">
+<meta property="article:published_time" content="2021-03-17T02:37:21.000Z">
+<meta property="article:modified_time" content="2021-06-16T13:13:10.030Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="图像算法加速">
+<meta property="article:tag" content="NEON">
+<meta property="article:tag" content="联咏">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="d:/WorkSpace/github/HexoNextBlog/source/draft/doc/tftp_configure1.PNG">
+
+
+<link rel="canonical" href="https://zgh551.github.io/draft/%E8%81%94%E5%92%8F%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:false,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;draft&#x2F;%E8%81%94%E5%92%8F%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html&quot;,&quot;path&quot;:&quot;draft&#x2F;联咏开发环境配置.html&quot;,&quot;title&quot;:&quot;算法优化-联咏IVE-NEON后处理&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>算法优化-联咏IVE-NEON后处理 | Z
+</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">1. 概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker"><span class="nav-number">2.</span> <span class="nav-text">2. Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%89%E5%8F%96-%E9%95%9C%E5%83%8F"><span class="nav-number">2.1.</span> <span class="nav-text">2.1.拉取 镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E9%95%9C%E5%83%8F"><span class="nav-number">2.2.</span> <span class="nav-text">2.2. 运行镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91"><span class="nav-number">3.</span> <span class="nav-text">3. 交叉编译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">3.1.</span> <span class="nav-text">3.1. 更新环境变量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tftp%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.</span> <span class="nav-text">4. TFTP服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%85%8D%E7%BD%AE"><span class="nav-number">4.1.</span> <span class="nav-text">4.1. 服务端配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%86%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E6%8E%A8%E9%80%81%E5%88%B0%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="nav-number">4.1.1.</span> <span class="nav-text">4.2.2. 将本地文件推送到服务端</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-number">4.1.2.</span> <span class="nav-text">4.2.3. 参数说明</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%94%E5%92%8F%E5%B9%B3%E5%8F%B0%E9%85%8D%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text">5. 联咏平台配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE"><span class="nav-number">5.1.</span> <span class="nav-text">5.1. 网络配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%9D%83%E9%99%90"><span class="nav-number">5.2.</span> <span class="nav-text">5.2. 文件系统权限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%AD%98%E5%82%A8%E5%99%A8%E5%AE%B9%E9%87%8F"><span class="nav-number">5.3.</span> <span class="nav-text">5.3. 查看存储器容量</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="zh-CN"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">算法优化-联咏IVE-NEON后处理
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <p>[TOC]</p>
+<h2 id="概述">1. 概述</h2>
+<p>本文主要讲述联咏开发环境的相关配置，主要包括Docker镜像、交叉编译、TFTP服务和联咏平台配置等内容。</p>
+<h2 id="docker">2. Docker</h2>
+<h3 id="拉取-镜像">2.1.拉取 镜像</h3>
+<p>首先从Docker仓库拉取联咏的编译容器。 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker pull 192.168.104.3:32768/nt96565a:firmware_4.0</span><br></pre></td></tr></table></figure></p>
+<p>建议拉取最新的<code>4.0</code>镜像。</p>
+<h3 id="运行镜像">2.2. 运行镜像</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run --rm --cpus=4 -it -v <span class="variable">$&#123;PWD&#125;</span>:/home/deptrum 192.168.104.3:32768/nt96565a:firmware_4.0 bash</span><br></pre></td></tr></table></figure>
+<h2 id="交叉编译">3. 交叉编译</h2>
+<h3 id="更新环境变量">3.1. 更新环境变量</h3>
+<ol type="1">
+<li>进入固件目录 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> /home/NT9852x_linux_sdk_v2.04.000_glibc_with_patch/</span><br></pre></td></tr></table></figure></li>
+<li>更新环境变量设置 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">source</span> build/envsetup.sh</span><br></pre></td></tr></table></figure> ### 3.2. 编译选项 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cmake -DCMAKE_BUILD_TYPE=Release -DDEPTH_MAGIC_BUILD_SHARED=ON -DWITH_NOVATEK_IVE=ON -DWITH_INIT_NOVATEK_IVE=ON -DWITH_NFS=ON -DCMAKE_CXX_FLAGS=<span class="string">&quot;-mfpu=neon&quot;</span> -DWITH_OPENMP=OFF ..</span><br></pre></td></tr></table></figure> <strong>参数说明</strong></li>
+</ol>
+<ul>
+<li><code>-DCMAKE_BUILD_TYPE=Release</code> : 指定生成正式版本</li>
+<li><code>-DCMAKE_CXX_FLAGS="-mfpu=neon"</code>：开启NEON编译选项</li>
+<li><code>-DWITH_OPENMP=OFF</code> :关闭OpenMp功能；</li>
+<li><code>-DWITH_NFS=ON</code>: 使用NFS库</li>
+<li><code>-DDEPTH_MAGIC_BUILD_SHARED=ON</code>：使能生成动态库</li>
+<li><code>-DWITH_NOVATEK_IVE=ON</code>：使能联咏IVE功能</li>
+<li><code>-DWITH_INIT_NOVATEK_IVE=ON</code>：使能联咏初始化</li>
+</ul>
+<h2 id="tftp服务">4. TFTP服务</h2>
+<h3 id="服务端配置">4.1. 服务端配置</h3>
+<ol type="1">
+<li>打开<code>Tftpd64</code>软件</li>
+<li>点击<code>Settiings</code>按钮</li>
+<li><strong>GLOBAL</strong>配置</li>
+</ol>
+<p><img src="D:\WorkSpace\github\HexoNextBlog\source\draft\doc\tftp_configure1.PNG" /></p>
+<ol start="4" type="1">
+<li><strong>TFTP</strong>配置</li>
+</ol>
+<p><img src="D:\WorkSpace\github\HexoNextBlog\source\draft\doc\tftp_configure2.PNG" /></p>
+<ol start="5" type="1">
+<li><strong>DHCP</strong>配置</li>
+</ol>
+<p><img src="D:\WorkSpace\github\HexoNextBlog\source\draft\doc\tftp_configure3.PNG" /> ### 4.2. 终端使用介绍 #### 4.2.1. 从服务端获取文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tftp -g -r &#123;file_name&#125; 192.168.11.8</span><br></pre></td></tr></table></figure>
+<h4 id="将本地文件推送到服务端">4.2.2. 将本地文件推送到服务端</h4>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ tftp -p -l &#123;file_name&#125; 192.168.11.8</span><br></pre></td></tr></table></figure>
+<h4 id="参数说明">4.2.3. 参数说明</h4>
+<ul>
+<li>-g :[get] 从服务器获取文件</li>
+<li>-p :[put] 推送文件到服务器</li>
+<li>-l : [local] 后面跟随客户端文件名</li>
+<li>-r : [remote] 后面跟随服务器端文件名</li>
+</ul>
+<h2 id="联咏平台配置">5. 联咏平台配置</h2>
+<h3 id="网络配置">5.1. 网络配置</h3>
+<p>需要将本地<code>IP</code>地址设置在和服务器端(192.168.11.8)的网段内。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ifconfig eth0 192.168.11.12</span><br></pre></td></tr></table></figure>
+<h3 id="文件系统权限">5.2. 文件系统权限</h3>
+<p>当需要将动态库放入<code>/lib</code>目录时，需要重新挂载文件系统权限。 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mount -o remount rw /</span><br></pre></td></tr></table></figure></p>
+<h3 id="查看存储器容量">5.3. 查看存储器容量</h3>
+<p>由于联咏平台存储空间较小，有时传输文件时空间不够，这时就需要用如此命令查看空间占用情况，将无用的大型文件删除。尤其当芯片运行奔溃后，会在<code>/var/log/</code>目录下存储异常的<code>log</code>文件，需要不定时的将这些文件删除。 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ df -h</span><br></pre></td></tr></table></figure></p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;c5a3d7828029c5efea4941641cb6b3eb&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

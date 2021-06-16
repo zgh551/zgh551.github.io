@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="1234567891011121314151617181920212223242526typedef struct xi_tile3DStruct&amp;#123;    void       *pBuffer;    uint32_t    bufferSize;    void       *pData;    int32_t     dim1Size;    int32_t     dim1Pit">
+<meta property="og:type" content="website">
+<meta property="og:title" content="vdsp_conv">
+<meta property="og:url" content="https://zgh551.github.io/draft/vdsp-conv.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="1234567891011121314151617181920212223242526typedef struct xi_tile3DStruct&amp;#123;    void       *pBuffer;    uint32_t    bufferSize;    void       *pData;    int32_t     dim1Size;    int32_t     dim1Pit">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-02T08:11:11.000Z">
+<meta property="article:modified_time" content="2021-06-16T13:13:10.026Z">
+<meta property="article:author" content="John">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://zgh551.github.io/draft/vdsp-conv">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:false,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;draft&#x2F;vdsp-conv.html&quot;,&quot;path&quot;:&quot;draft&#x2F;vdsp-conv.html&quot;,&quot;title&quot;:&quot;vdsp_conv&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>vdsp_conv | Z
+</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0-flk_conv"><span class="nav-number">1.</span> <span class="nav-text">函数 flk_conv</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E5%8F%82%E6%95%B0"><span class="nav-number">1.1.</span> <span class="nav-text">函数参数</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+  
+  
+
+
+    
+    
+    
+    <div class="post-block" lang="zh-CN"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">vdsp_conv
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">xi_tile3DStruct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">void</span>       *pBuffer;</span><br><span class="line">    <span class="keyword">uint32_t</span>    bufferSize;</span><br><span class="line">    <span class="keyword">void</span>       *pData;</span><br><span class="line">    <span class="keyword">int32_t</span>     dim1Size;</span><br><span class="line">    <span class="keyword">int32_t</span>     dim1Pitch;</span><br><span class="line">    <span class="keyword">uint32_t</span>    status;    <span class="comment">// Currently not used, planned to be obsolete</span></span><br><span class="line">    <span class="keyword">uint16_t</span>    type;</span><br><span class="line">    <span class="keyword">uint16_t</span>    dim2Size;</span><br><span class="line">    <span class="keyword">int32_t</span>     dim2Pitch;</span><br><span class="line">    xi_frame3D *pFrame;    <span class="comment">// changed to 3D frame</span></span><br><span class="line">    <span class="keyword">int32_t</span>     dim1Loc;   <span class="comment">// dim1-loc of top-left active pixel in src frame</span></span><br><span class="line">    <span class="keyword">int32_t</span>     dim2Loc;   <span class="comment">// dim2-loc of top-left active pixel in src frame</span></span><br><span class="line">    <span class="keyword">uint16_t</span>    dim1Edge1;</span><br><span class="line">    <span class="keyword">uint16_t</span>    dim2Edge1;</span><br><span class="line">    <span class="keyword">uint16_t</span>    dim1Edge2;</span><br><span class="line">    <span class="keyword">uint16_t</span>    dim2Edge2;</span><br><span class="line">    <span class="comment">// new fields</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">uint16_t</span>      dim3Size;</span><br><span class="line">    xi_cnn_data_order dataOrder;</span><br><span class="line">    <span class="keyword">int32_t</span>       dim3Loc; <span class="comment">// dim3-loc of top-left active pixel in src frame</span></span><br><span class="line">    <span class="keyword">uint16_t</span>      dim3Edge1;</span><br><span class="line">    <span class="keyword">uint16_t</span>      dim3Edge2;</span><br><span class="line">&#125; xi_tile3D, *xi_pTile3D;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">XI_ERR_TYPE <span class="title">convolvedA3D_func</span><span class="params">(<span class="keyword">const</span> xi_pTile3D inTile, </span></span></span><br><span class="line"><span class="params"><span class="function">                              <span class="keyword">const</span> xi_pArray inPtrOffsetArr, </span></span></span><br><span class="line"><span class="params"><span class="function">                              <span class="keyword">const</span> xi_pTile4D coeffTile,</span></span></span><br><span class="line"><span class="params"><span class="function">                              <span class="keyword">const</span> xi_pArray biasArray, </span></span></span><br><span class="line"><span class="params"><span class="function">                              <span class="keyword">const</span> xi_pTile fixUpTile,  </span></span></span><br><span class="line"><span class="params"><span class="function">                              xi_pTile3D outTile,  </span></span></span><br><span class="line"><span class="params"><span class="function">                              <span class="keyword">const</span> xi_cnna_conv_params *param ,</span></span></span><br><span class="line"><span class="params"><span class="function">                              xiConvolvedA3D_f func_ptr,</span></span></span><br><span class="line"><span class="params"><span class="function">                              xiConvolvedA3D_VQ7_QM_f VQ7_QM_func_ptr ,</span></span></span><br><span class="line"><span class="params"><span class="function">                              <span class="keyword">int32_t</span> isVQ7optimize)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//根据是否采用VQ7优化，选取不同的函数</span></span><br><span class="line">    <span class="keyword">if</span> (isVQ7optimize)&#123;</span><br><span class="line">        <span class="built_in">XI_CHECK_RESULT</span>(<span class="built_in">VQ7_QM_func_ptr</span>(inTile, inPtrOffsetArr, coeffTile,biasArray, fixUpTile, outTile, 								(xi_cnna_conv_params *) param));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="built_in">XI_CHECK_RESULT</span>(<span class="built_in">func_ptr</span>(inTile, fixUpTile, coeffTile, biasArray, outTile, (xi_cnna_conv_params *)param));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="函数-flk_conv">函数 flk_conv</h3>
+<h4 id="函数参数">函数参数</h4>
+<p>关于函数参数主要涉及卷积属性和输入输出相关。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">XI_ERR_TYPE <span class="title">flk_conv</span><span class="params">(<span class="keyword">const</span> <span class="keyword">uint8_t</span> *raw_params,</span></span></span><br><span class="line"><span class="params"><span class="function">                     struct XtensaOperationArgs *input,</span></span></span><br><span class="line"><span class="params"><span class="function">                     struct XtensaOperationArgs *output)</span></span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>conv_params_t</strong></li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">PACKED</span> &#123;</span></span><br><span class="line">    <span class="comment">/* Size of this structure (for consistency checking). */</span></span><br><span class="line">    <span class="keyword">int32_t</span>  structSize;</span><br><span class="line">    <span class="comment">/* Bank allocation layout */</span></span><br><span class="line">    <span class="keyword">banks_info_t</span>    banks_info;</span><br><span class="line">    <span class="comment">/* Input dimensions. Layout is DWHB wih D is the fastest dimension. */</span></span><br><span class="line">    <span class="keyword">dims3d_t</span> input;</span><br><span class="line">    <span class="comment">/* Output dimensions. Layout is DWHB wih D is the fastest dimension. */</span></span><br><span class="line">    <span class="keyword">dims3d_t</span> output;</span><br><span class="line">    <span class="comment">/* Batch size for both input and output. */</span></span><br><span class="line">    <span class="keyword">uint32_t</span> batch;</span><br><span class="line">    <span class="keyword">float</span> F32_reluMin;</span><br><span class="line">    <span class="keyword">float</span> F32_reluMax;</span><br><span class="line">    <span class="comment">/* Quantized scale factor applied to the output */</span></span><br><span class="line">    <span class="keyword">int32_t</span>  quantizedScale;</span><br><span class="line">    <span class="comment">/* right shift bits which is associated with quantized scale factor applied to the output */</span></span><br><span class="line">    <span class="keyword">int32_t</span>  outputShift;</span><br><span class="line">    <span class="comment">/* Output tile dimensions. */</span></span><br><span class="line">    <span class="keyword">dims3d_t</span> tile;</span><br><span class="line">    <span class="comment">/* Convolution kernel width. */</span></span><br><span class="line">    <span class="keyword">uint16_t</span> kernelW;</span><br><span class="line">    <span class="comment">/* Convolution kernel height. */</span></span><br><span class="line">    <span class="keyword">uint16_t</span> kernelH;</span><br><span class="line">    <span class="comment">/* Stride, same in both W and H dimensions. */</span></span><br><span class="line">    <span class="keyword">uint8_t</span>  stride; <span class="comment">// 步幅</span></span><br><span class="line">    <span class="comment">/* Flag bits:</span></span><br><span class="line"><span class="comment">       0  : Enable ReLU</span></span><br><span class="line"><span class="comment">       1  : Reload coefficients</span></span><br><span class="line"><span class="comment">       2-4: Kernel kind</span></span><br><span class="line"><span class="comment">       5  : Are coefficients double buffered or not</span></span><br><span class="line"><span class="comment">       6  : There is a fused PRELU operation</span></span><br><span class="line"><span class="comment">       7  : There is a fused leaky PRELU operation</span></span><br><span class="line"><span class="comment">       8  : Flag to indicate InvQM24 kernels (<span class="doctag">TODO:</span> Integrate into kernel_kind)</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">uint16_t</span>  flags;</span><br><span class="line">    <span class="comment">/* Number of Groups */</span></span><br><span class="line">    <span class="keyword">uint32_t</span> numGroups;</span><br><span class="line">    <span class="comment">/* Offset to the first tile.</span></span><br><span class="line"><span class="comment">         Output is smaller than input and no padding outside</span></span><br><span class="line"><span class="comment">           of input data is needed if offsetX == kernelW/2.</span></span><br><span class="line"><span class="comment">         Output has same size as input and borders are zero padded</span></span><br><span class="line"><span class="comment">           when offsetX == 0.</span></span><br><span class="line"><span class="comment">         Same rules apply in H dimension.</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">int8_t</span>   offsetX; <span class="comment">// x轴扩充</span></span><br><span class="line">    <span class="keyword">int8_t</span>   offsetY; <span class="comment">// y轴扩充</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* Zero point offset of input data */</span></span><br><span class="line">    <span class="keyword">uint8_t</span>  zeroPtInput;</span><br><span class="line">    <span class="comment">/* Zero point offset of coefficient data */</span></span><br><span class="line">    <span class="keyword">uint8_t</span>  zeroPtCoeff;</span><br><span class="line">    <span class="comment">/* Zero point offset of output data */</span></span><br><span class="line">    <span class="keyword">uint8_t</span>  zeroPtOutput;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* minimum threshold value to control the output range to implement ReLU/ReLU1/ReLU6 */</span></span><br><span class="line">    <span class="keyword">uint8_t</span>  reluMin;</span><br><span class="line">    <span class="comment">/* maximum threshold value to control the output range to implement ReLU/ReLU1/ReLU6 */</span></span><br><span class="line">    <span class="keyword">uint8_t</span>  reluMax;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Fused PRELU parameters</span></span><br><span class="line">    <span class="keyword">int32_t</span> inZeroPoint;</span><br><span class="line">    <span class="keyword">int32_t</span> alphaZeroPoint;</span><br><span class="line">    <span class="keyword">int32_t</span> outZeroPoint;</span><br><span class="line">    <span class="keyword">int32_t</span> posOutMultiplier;</span><br><span class="line">    <span class="keyword">int32_t</span> posOutShift;</span><br><span class="line">    <span class="keyword">int32_t</span> negOutMultiplier;</span><br><span class="line">    <span class="keyword">int32_t</span> negOutShift;</span><br><span class="line">    <span class="keyword">int32_t</span> VQ7_512MAC_supported;</span><br><span class="line">    <span class="keyword">int32_t</span> isVQ7optimize;</span><br><span class="line">    <span class="comment">// minVal == 0, maxVal = 255 ???</span></span><br><span class="line">&#125; <span class="keyword">conv_params_t</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>XtensaOperationArgs</strong></li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">XtensaOperationArgs</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint32_t</span> numArgs;</span><br><span class="line">    <span class="keyword">uint8_t</span> *args[XTENSA_OPERATION_MAX_NUM_ARGS];</span><br><span class="line">    <span class="keyword">uint32_t</span> argsSize[XTENSA_OPERATION_MAX_NUM_ARGS];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>输入参数</li>
+</ul>
+<ol type="1">
+<li>第一组代表输入数据；</li>
+<li>第二组代表卷积核系数；</li>
+<li>第三组代表卷积的后的偏置系数；</li>
+<li>第四组代表relu参数</li>
+</ol>
+<ul>
+<li>输出参数</li>
+</ul>
+<p>一组输出</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;144b05da621991b0fccf8523e6560f14&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

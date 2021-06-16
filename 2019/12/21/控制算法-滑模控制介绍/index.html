@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="一维运动模型 考虑简单的单位质量块的一维运动模型，使用位移和速度状态变量进行描述。  定义位移变量\(x_1 &#x3D; x\)和速度变量\(x_2 &#x3D; \dot{x_1} &#x3D; v\)，运动模型的微分形式使用\(x_1\)、\(x_2\)表示如下： \[ \left\{ \begin{array}{rl} &amp;\dot{x_1} &#x3D; x_2&amp; x_1(0)&#x3D;x_{10}\\ &amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="控制算法-滑模控制介绍">
+<meta property="og:url" content="https://zgh551.github.io/2019/12/21/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E4%BB%8B%E7%BB%8D/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="一维运动模型 考虑简单的单位质量块的一维运动模型，使用位移和速度状态变量进行描述。  定义位移变量\(x_1 &#x3D; x\)和速度变量\(x_2 &#x3D; \dot{x_1} &#x3D; v\)，运动模型的微分形式使用\(x_1\)、\(x_2\)表示如下： \[ \left\{ \begin{array}{rl} &amp;\dot{x_1} &#x3D; x_2&amp; x_1(0)&#x3D;x_{10}\\ &amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220200846.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220194837.png#pic_center">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220194841.png#pic_center">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143643.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143647.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143650.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221144252.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Figure_7.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191222084921.png">
+<meta property="article:published_time" content="2019-12-21T14:01:27.000Z">
+<meta property="article:modified_time" content="2021-06-16T14:31:06.651Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="滑模控制">
+<meta property="article:tag" content="滑模面">
+<meta property="article:tag" content="滑模变量">
+<meta property="article:tag" content="抖振">
+<meta property="article:tag" content="sliding mode controller">
+<meta property="article:tag" content="sliding mode variable">
+<meta property="article:tag" content="sliding mode surface">
+<meta property="article:tag" content="chattering">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220200846.png">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2019/12/21/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E4%BB%8B%E7%BB%8D/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;2019&#x2F;12&#x2F;21&#x2F;%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E4%BB%8B%E7%BB%8D&#x2F;&quot;,&quot;path&quot;:&quot;2019&#x2F;12&#x2F;21&#x2F;控制算法-滑模控制介绍&#x2F;&quot;,&quot;title&quot;:&quot;控制算法-滑模控制介绍&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>控制算法-滑模控制介绍 | Z</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E7%BB%B4%E8%BF%90%E5%8A%A8%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">一维运动模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E5%8F%8D%E9%A6%88%E6%8E%A7%E5%88%B6"><span class="nav-number">1.1.</span> <span class="nav-text">状态反馈控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%BF%E7%9C%9F%E7%BB%93%E6%9E%9C"><span class="nav-number">1.2.</span> <span class="nav-text">仿真结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E7%9A%84%E4%B8%BB%E8%A6%81%E7%89%B9%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">滑模控制的主要特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BB%91%E6%A8%A1%E5%8F%98%E9%87%8F"><span class="nav-number">2.1.</span> <span class="nav-text">滑模变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%B3%E5%AE%9A%E5%88%A4%E6%8D%AE"><span class="nav-number">2.2.</span> <span class="nav-text">稳定判据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%AE%9A%E4%B9%89"><span class="nav-number">2.3.</span> <span class="nav-text">基本定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%BF%E7%9C%9F%E7%BB%93%E6%9E%9C-1"><span class="nav-number">2.4.</span> <span class="nav-text">仿真结果</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/12/21/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E4%BB%8B%E7%BB%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="John">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          控制算法-滑模控制介绍
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-21 22:01:27" itemprop="dateCreated datePublished" datetime="2019-12-21T22:01:27+08:00">2019-12-21</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 22:31:06" itemprop="dateModified" datetime="2021-06-16T22:31:06+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">控制算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6/" itemprop="url" rel="index"><span itemprop="name">滑模控制</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="一维运动模型">一维运动模型</h2>
+<p>考虑简单的单位质量块的一维运动模型，使用位移和速度状态变量进行描述。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220200846.png" /></p>
+<p>定义位移变量<span class="math inline">\(x_1 = x\)</span>和速度变量<span class="math inline">\(x_2 = \dot{x_1} = v\)</span>，运动模型的微分形式使用<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>表示如下： <span class="math display">\[
+\left\{
+\begin{array}{rl}
+&amp;\dot{x_1} = x_2&amp; x_1(0)=x_{10}\\
+&amp;\dot{x_2} = u + f(x_1,x_2,t) &amp;x_2(0)=x_{20}
+\end{array} \right.\tag{1}
+\]</span> <span id="more"></span></p>
+<p>其中,<span class="math inline">\(u\)</span>代表控制力，干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>包括干粘摩檫力的影响和一些未知的阻力，并假定有界。 <span class="math display">\[
+\rvert f(x_1,x_2,t)\rvert \leqslant L \gt 0 \tag{2}
+\]</span></p>
+<p>问题关键在于设计一个反馈控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>，驱动质量块渐进到达原点。换句话说，控制变量<span class="math inline">\(u=f(x_1,x_2)\)</span>应该驱使状态变量趋近于0：<span class="math inline">\(\lim_{t \to \infty}{x_1,x_2} = 0\)</span>。</p>
+<p>这个问题看似简单，但对于存在未知的边界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，使系统渐进收敛仍然存在着挑战。</p>
+<h3 id="状态反馈控制">状态反馈控制</h3>
+<p>例如，通过一个线性状态反馈控制率 <span class="math display">\[
+\begin{matrix}
+u = -k_1x_1 - k_2x_2, &amp;\text{其中}(k_1&gt;0,&amp;k_2&gt;0)
+\end{matrix}\tag{3}
+\]</span> 在外界干扰项<span class="math inline">\(f(x_1,x_2,t)\equiv 0\)</span>，即不存在外界干扰时，系统可以实现渐进收敛。</p>
+<h3 id="仿真结果">仿真结果</h3>
+<ul>
+<li>初始条件<span class="math inline">\(x_{10}=1\)</span>、<span class="math inline">\(x_{20} = -2\)</span>、控制率参数<span class="math inline">\(k_1=3\)</span>、<span class="math inline">\(k_2=4\)</span>。</li>
+</ul>
+<p>如下图所示，是无外界干扰项时的渐近收敛效果图，图中蓝色线代表距离<span class="math inline">\(x\)</span>，橘黄色线代表速度<span class="math inline">\(v\)</span>，可以看出在反馈控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>的作用下，距离和速度值都趋近于0。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220194837.png#pic_center" /></p>
+<p>加入外部干扰<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>，响应波形如下：</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220194841.png#pic_center" /></p>
+<p>对于干扰项<span class="math inline">\(\rvert f(x_1,x_2,t)\rvert \leq L &gt; 0\)</span>,产生的状态边界范围为<span class="math inline">\(\Omega=(k_1,k_2,L)\)</span> 。</p>
+<p>现在问题在于，仅使用未知扰动范围的知识是否可以解决规定的控制问题。</p>
+<h2 id="滑模控制的主要特性">滑模控制的主要特性</h2>
+<p>介绍对于等式(1)系统，所需的补偿动力。一个较好的替代这些动力学特性的是齐次线性时不变微分方程： <span class="math display">\[
+\begin{array}{rl}
+\dot{x}_1 + c \cdot x_1 = 0 ,&amp; c &gt; 0 \tag{4}
+\end{array}
+\]</span> 因为 <span class="math inline">\(x_2(t) = \dot{x}_1(t)\)</span>,等式(4)的通用解和它的微分形式如下： <span class="math display">\[
+\begin{array}{}
+&amp;x_1(t) = x_1(0)\exp(-ct)\\
+&amp;x_2(t) = \dot{x_1}(t)=-c \cdot x_1(0)\exp(-ct)
+\end{array}\tag{5}
+\]</span> 从等式(5)可以看出，<span class="math inline">\(x_1(t)\)</span>和<span class="math inline">\(x_2(t)\)</span>都是逐渐趋近于0。注意，无干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的状态补偿动力学是很明显的。如何获得这些补偿动力。</p>
+<h3 id="滑模变量">滑模变量</h3>
+<p>首先介绍一个等式(1)系统的状态空间的新变量(<strong><em>滑模变量</em></strong>)： <span class="math display">\[
+\sigma = \sigma(x_1,x_2) = x_2 + c \cdot x_1 \tag{6}
+\]</span> 在给定等式(5)收敛率且存在有界干扰<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，为了使状态变量<span class="math inline">\(x_1\)</span>，<span class="math inline">\(x_2\)</span>逐渐收敛于0，即<span class="math inline">\(\lim_{t \to \infty} x_1,x_2 = 0\)</span>，不得不通过控制率<span class="math inline">\(u\)</span>使得等式(6)的变量<span class="math inline">\(\sigma\)</span>在有限的时间内趋于0。</p>
+<p>为了完成这个任务利用李亚普洛夫函数技术，结合等式(1)和(6)推动出关于滑模变量<span class="math inline">\(\sigma\)</span>的动力学方程如下： <span class="math display">\[
+\begin{array}{rl}
+\dot{\sigma} = c \cdot x_2 + f(x_1,x_2,t) + u ,&amp;\sigma(0) = \sigma_0
+\end{array} \tag{7}
+\]</span></p>
+<h3 id="稳定判据">稳定判据</h3>
+<p>李亚普洛夫函数(Lyapunov)形式如下： <span class="math display">\[
+V = \frac{1}{2}\sigma^2 \tag{8}
+\]</span> 为了使等式(6)在平衡点<span class="math inline">\(\sigma = 0\)</span>处渐进稳定，根据李亚普洛夫稳定判据，必须满足下面两个条件：</p>
+<ol type="1">
+<li><p><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(\sigma \neq 0)\end{array}\)</span></p></li>
+<li><p><span class="math inline">\(\lim_{\rvert \sigma \rvert \to \infty}V = \infty\)</span></p></li>
+</ol>
+<p>由等式(8)知，条件2明显满足。为了满足有限时间内渐进稳定，条件(1)可以修改为： <span class="math display">\[
+\dot{V} \leq -\alpha {V}^{\frac{1}{2}} ,\qquad \alpha &gt; 0 \tag{9}
+\]</span> 在时间间隔<span class="math inline">\(0 \leq \tau \leq t\)</span>内，对等式(9)所示的微分方程进行变量分离求积分得 <span class="math display">\[
+\begin{array}{rl}
+\int_{0}^{t} V(\tau)^{-\frac{1}{2}}dV(\tau) &amp;\leq -\alpha*\int_{0}^{t}1 d\tau\\
+2*V(\tau)^{\frac{1}{2}}|_0^t &amp;\leq -\alpha*\tau|_0^t\\
+2*[V(t)^{\frac{1}{2}} - V(0)^{\frac{1}{2}}] &amp;\leq -\alpha*t\\
+V(t)^{\frac{1}{2}} &amp;\leq -\dfrac{1}{2}\alpha*t + V(0)^{\frac{1}{2}}
+\end{array}\tag{10}
+\]</span> 故<span class="math inline">\(V(t)\)</span>在有限时间<span class="math inline">\(t_r\)</span>达到0时的边界，根据等式(26)得 <span class="math display">\[
+t_r \leq \frac{2V(0)^{\frac{1}{2}}}{\alpha} \tag{11}
+\]</span> 因此，设计一个控制器<span class="math inline">\(u\)</span>满足等式(9)，使得变量<span class="math inline">\(s\)</span>在有限的时间内趋近于0并在之后一直保持。</p>
+<p><span class="math inline">\(V\)</span>的微分计算如下： <span class="math display">\[
+\dot{V} = \sigma\dot{\sigma}=\sigma(c \cdot x_2 + f(x_1,x_2,t) + u) \tag{12}
+\]</span> 假设 <span class="math inline">\(u = -c \cdot x_2 + v\)</span>，并将其带入等式(12)得 <span class="math display">\[
+\dot{V} 
+= \sigma\bigl( f(x_1,x_2,t) + v \bigr) 
+= \sigma \cdot f(x_1,x_2,t) + \sigma v
+\leq   \rvert \sigma \rvert L + \sigma v \tag{13}
+\]</span></p>
+<p>此处选择<span class="math inline">\(v = -\rho sign(\sigma)\)</span>，该函数表示为 <span class="math display">\[
+sign(x) = 
+\left \{
+\begin{array}{rl}
+&amp; 1 &amp; x &gt; 0\\
+&amp; &amp; &amp;\\
+&amp;-1 &amp; x &lt; 0
+\end{array}
+\right. \tag{14}
+\]</span> 并且</p>
+<p><span class="math display">\[
+sign(0) \in [-1,1] \tag{15}
+\]</span></p>
+<p>由于<span class="math inline">\(\rho &gt; 0\)</span>，将其带入等式(13)得 <span class="math display">\[
+\dot{V} \leq \rvert \sigma  \rvert L - \rvert \sigma \rvert \rho 
+= \rvert \sigma \rvert(L - \rho) \tag{16}
+\]</span></p>
+<p>考虑到等式(8)的形式，等式(9)可以表示为 <span class="math display">\[
+\dot{V} \leq -\alpha {V}^{\frac{1}{2}} = -\frac{\alpha}{\sqrt{2}}\rvert \sigma \rvert,\qquad \alpha &gt; 0 \tag{17}
+\]</span> 结合等式(16)和等式(17)得 <span class="math display">\[
+\dot{V} \leq \rvert \sigma \rvert(L - \rho)
+=-\frac{\alpha}{\sqrt{2}}\rvert \sigma \rvert \tag{18}
+\]</span> 最终控制增益可以表示为 <span class="math display">\[
+\rho = L + \frac{\alpha}{\sqrt{2}} \tag{19}
+\]</span> 所以最终使滑模变量<span class="math inline">\(\sigma\)</span>在有限时间内趋近于0的控制率<span class="math inline">\(u\)</span>为 <span class="math display">\[
+u = -c \cdot x_2 - \rho \cdot sign(\sigma) \tag{20}
+\]</span></p>
+<blockquote>
+<ol type="1">
+<li>显然，为了成功地设计出等式(20)中的控制器，<span class="math inline">\(\dot{\sigma}\)</span>必须是控制率<span class="math inline">\(u\)</span>的函数。当设计像等式(6)中的滑模变量时，这个特性必须考虑其中。</li>
+<li>等式(19)中控制增益<span class="math inline">\(\rho\)</span>的第一项被设计用来补偿有界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>，同时第二项<span class="math inline">\(\frac{\alpha}{\sqrt{2}}\)</span>负责确定滑模面的到达时间。<span class="math inline">\(\alpha\)</span>的数值越大，到达时间就越短。</li>
+</ol>
+</blockquote>
+<h3 id="基本定义">基本定义</h3>
+<ul>
+<li><strong>滑模变量</strong></li>
+</ul>
+<p>等式(6)中定义的变量<span class="math inline">\(\sigma\)</span>叫做 <strong>滑模变量</strong>(<em>sliding variable</em>)</p>
+<ul>
+<li><strong>滑模面</strong></li>
+</ul>
+<p>结合等式(4)和(5)，可以重新写成如下形式： <span class="math display">\[
+\sigma = x_2 + c \cdot x_1 = 0, c &gt; 0 \tag{21}
+\]</span> 相当于在系统(1)状态空间内的一条直线，这条直线被称为 <strong>滑模面</strong>(<em>sliding surface</em>)。</p>
+<p>考虑到等式(9)可以等效于 <span class="math display">\[
+\sigma\dot{\sigma} \leq - \frac{\sigma}{\sqrt{2}} \rvert \sigma\rvert \tag{22}
+\]</span> 等式(22)经常被称为 <strong>到达条件</strong>(<em>reachability condition</em>)。满足<strong>到达条件</strong>意味着等式(1)系统的轨迹趋向于<strong>滑模面</strong>，并在此后一直保持。</p>
+<ul>
+<li><strong>滑模控制</strong></li>
+</ul>
+<p>等式(20)所对应的控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>驱使状态变量<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>在有限时间<span class="math inline">\(t_r\)</span>内趋近于<strong>滑模面</strong>，并在存在有界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下保持在该平面上，这个控制率<span class="math inline">\(u\)</span>就叫做 <strong>滑模控制</strong>。并且对于所有的<span class="math inline">\(t &gt; t_r\)</span>，系统都将产生一个<strong>理想滑动模态</strong>。</p>
+<h3 id="仿真结果-1">仿真结果</h3>
+<p>初始条件为<span class="math inline">\(x_1(0) = 1，x_2(0) = -2\)</span>，控制增益为<span class="math inline">\(\sigma = 2\)</span>，滑模参数为<span class="math inline">\(c = 1.5\)</span>同时干扰项为<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>。 使用等式(20)的滑模控制率的仿真结果如下：</p>
+<p>下图表明，在有限的时间内，滑模变量趋近于0。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143643.png" /></p>
+<p>在干扰项作用的情况下，状态变量<span class="math inline">\(x\)</span>和<span class="math inline">\(v\)</span>逐渐收敛到0。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143647.png" /></p>
+<p>相图如下，展示了到达相位和滑移相位。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143650.png" /></p>
+<p>对上面的相图进行局部放大发现，在滑模状态下，状态变量存在小幅度且高频率的蜿蜒运动。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221144252.png" /></p>
+<p>理想的滑模切换频率应该接近于无限并且蜿蜒运动的振幅接近于0。从下图可知，符号函数<span class="math inline">\(sign\)</span>不完美表现为在滑动模态中产生了有限幅度和频率的之字形运动，原因在于计算机仿真的离散特性，这样的影响叫做 <strong>抖振</strong>(<em>chattering</em>)。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Figure_7.png" /></p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191222084921.png" /></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="John 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="John 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6/" rel="tag"># 滑模控制</a>
+              <a href="/tags/%E6%BB%91%E6%A8%A1%E9%9D%A2/" rel="tag"># 滑模面</a>
+              <a href="/tags/%E6%BB%91%E6%A8%A1%E5%8F%98%E9%87%8F/" rel="tag"># 滑模变量</a>
+              <a href="/tags/%E6%8A%96%E6%8C%AF/" rel="tag"># 抖振</a>
+              <a href="/tags/sliding-mode-controller/" rel="tag"># sliding mode controller</a>
+              <a href="/tags/sliding-mode-variable/" rel="tag"># sliding mode variable</a>
+              <a href="/tags/sliding-mode-surface/" rel="tag"># sliding mode surface</a>
+              <a href="/tags/chattering/" rel="tag"># chattering</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/12/04/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%B7%9F%E8%B8%AA%E8%AF%AF%E5%B7%AE%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B/" rel="prev" title="控制算法-跟踪误差动力学模型">
+                  <i class="fa fa-chevron-left"></i> 控制算法-跟踪误差动力学模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/12/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E9%9D%9E%E6%97%B6%E9%97%B4%E5%8F%82%E8%80%83%E7%9A%84%E8%BD%A6%E8%BE%86%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA/" rel="next" title="控制算法-非时间参考的车辆路径跟踪">
+                  控制算法-非时间参考的车辆路径跟踪 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;58aa6c5cc7d1e875f64555dea06b22f8&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

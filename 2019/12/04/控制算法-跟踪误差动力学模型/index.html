@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="概述 使用相对与目标曲线的位置和方向误差作为动力学模型的状态变量开发转向控制系统似乎更合适一些，对于车辆模型-动力学模型章节中的动力学模型，需重新定义一下误差变量：  \(e_y\):车辆重心到目标曲线的距离； \(e_{\psi}\):车辆相对于目标曲线的方向误差；  假设车辆纵向速度\(V_x\)恒定且行驶路径的转弯半径\(R\)不变，其中转弯半径\(R\)足够大，以满足上述章节的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="控制算法-跟踪误差动力学模型">
+<meta property="og:url" content="https://zgh551.github.io/2019/12/04/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%B7%9F%E8%B8%AA%E8%AF%AF%E5%B7%AE%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="概述 使用相对与目标曲线的位置和方向误差作为动力学模型的状态变量开发转向控制系统似乎更合适一些，对于车辆模型-动力学模型章节中的动力学模型，需重新定义一下误差变量：  \(e_y\):车辆重心到目标曲线的距离； \(e_{\psi}\):车辆相对于目标曲线的方向误差；  假设车辆纵向速度\(V_x\)恒定且行驶路径的转弯半径\(R\)不变，其中转弯半径\(R\)足够大，以满足上述章节的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%8F%8A%E8%8A%B1%E5%B1%953.jpg">
+<meta property="article:published_time" content="2019-12-04T12:20:23.000Z">
+<meta property="article:modified_time" content="2021-06-16T14:34:12.875Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="跟踪误差模型">
+<meta property="article:tag" content="动力学模型">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%8F%8A%E8%8A%B1%E5%B1%953.jpg">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2019/12/04/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%B7%9F%E8%B8%AA%E8%AF%AF%E5%B7%AE%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;2019&#x2F;12&#x2F;04&#x2F;%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%B7%9F%E8%B8%AA%E8%AF%AF%E5%B7%AE%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B&#x2F;&quot;,&quot;path&quot;:&quot;2019&#x2F;12&#x2F;04&#x2F;控制算法-跟踪误差动力学模型&#x2F;&quot;,&quot;title&quot;:&quot;控制算法-跟踪误差动力学模型&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>控制算法-跟踪误差动力学模型 | Z</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">2.</span> <span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E5%8F%82%E6%95%B0"><span class="nav-number">2.1.</span> <span class="nav-text">目标参数</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/12/04/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%B7%9F%E8%B8%AA%E8%AF%AF%E5%B7%AE%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="John">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          控制算法-跟踪误差动力学模型
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-04 20:20:23" itemprop="dateCreated datePublished" datetime="2019-12-04T20:20:23+08:00">2019-12-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 22:34:12" itemprop="dateModified" datetime="2021-06-16T22:34:12+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">控制算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/%E8%BD%A6%E8%BE%86%E6%A8%A1%E5%9E%8B/" itemprop="url" rel="index"><span itemprop="name">车辆模型</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">概述</h2>
+<p>使用相对与目标曲线的位置和方向误差作为动力学模型的状态变量开发转向控制系统似乎更合适一些，对于<a target="_blank" rel="noopener" href="https://blog.csdn.net/zghforever/article/details/103352211">车辆模型-动力学模型</a>章节中的动力学模型，需重新定义一下误差变量：</p>
+<ul>
+<li><span class="math inline">\(e_y\)</span>:车辆重心到目标曲线的距离；</li>
+<li><span class="math inline">\(e_{\psi}\)</span>:车辆相对于目标曲线的方向误差；</li>
+</ul>
+<p>假设车辆纵向速度<span class="math inline">\(V_x\)</span>恒定且行驶路径的转弯半径<span class="math inline">\(R\)</span>不变，其中转弯半径<span class="math inline">\(R\)</span>足够大，以满足上述章节的小角度近似假设。</p>
+<figure>
+<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%8F%8A%E8%8A%B1%E5%B1%953.jpg" alt="菊花" /><figcaption aria-hidden="true">菊花</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="基本概念">基本概念</h2>
+<h3 id="目标参数">目标参数</h3>
+<ol type="1">
+<li>定义车辆<strong>目标偏航角速度</strong>为 <span class="math display">\[
+\dot{\psi}_{des} = \frac{V_x}{R} \tag{1}
+\]</span></li>
+<li>定义车辆<strong>目标向心加速度</strong>为 <span class="math display">\[
+a_{des} = \frac{V_x^2}{R} = V_x\frac{V_x}{R}=V_x\dot{\psi}_{des}\tag{2}
+\]</span> ### 误差定义</li>
+<li>定义车辆<strong>偏航角误差</strong>为 <span class="math display">\[
+e_{\psi} = \psi - \psi_{des} \tag{3}
+\]</span></li>
+<li>定义车辆<strong>偏航角速度误差</strong>为 <span class="math display">\[
+\dot{e}_{\psi} = \dot{\psi} - \dot{\psi}_{des} \tag{4}
+\]</span></li>
+<li>定义车辆<strong>偏航角加速度误差</strong>为 <span class="math display">\[
+\ddot{e}_{\psi} = \ddot{\psi} - \ddot{\psi}_{des} \tag{5}
+\]</span></li>
+<li>定义车辆<span class="math inline">\(y\)</span>轴方向的<strong>加速度误差</strong>为 <span class="math display">\[
+\ddot{e}_y = a_y - a_{des} \qquad\qquad\qquad\\
+=(\ddot{y} + V_x\dot{\psi}) - V_x\dot{\psi}_{des} \\
+=\ddot{y} + V_x(\dot{\psi} - \dot{\psi}_{des})\quad \tag{3}
+\]</span></li>
+<li>定义车辆<span class="math inline">\(y\)</span>轴方向的<strong>速度误差</strong>为 当车辆纵向速度恒定时，<span class="math inline">\(y\)</span>轴方向的速度误差可以表示为 <span class="math display">\[
+\dot{e}_y = \int \ddot{e}_y\mathrm{d}t = \dot{y} + V_x(\psi - \psi_{des}) \tag{6}
+\]</span> 当纵向速度不再恒定，随着时间变化时，对等式(3)积分得 <span class="math display">\[
+\dot{e}_y = \int \ddot{e}_y\mathrm{d}t = \dot{y} +\int V_x(\psi - \psi_{des})\mathrm{d}t \tag{7}
+\]</span> 这就使得模型非线性且时变，不利于控制系统的设计。因此解决方法就是假设纵向速度是恒定，这就获得了一个<strong>线性时不变</strong>(<strong>LTI</strong>)模型。如果速度变化，LTI模型就需要使用线性参变模型(LPV)替代，这个模型中纵向速度是一个随着时间变化的参数。 ## 跟踪误差动力学模型 上述等式(3)、(6)可以变换如下： <span class="math display">\[
+\ddot{y}  =\ddot{e}_y + V_x\dot{\psi}_{des} - V_x\dot{\psi}\tag{8}
+\]</span></li>
+</ol>
+<p><span class="math display">\[
+ \dot{y} =\dot{e}_y - V_xe_{\psi} \tag{9}
+\]</span> 根据<a target="_blank" rel="noopener" href="https://blog.csdn.net/zghforever/article/details/103352211">车辆模型-动力学模型(Dynamics Model)</a>章节中的等式(14) <span class="math display">\[
+\ddot{y} = -\frac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x}\dot{y}   - ( V_x +  \frac{2C_{\alpha f}l_f- 2C_{\alpha r}l_r}{mV_x})\dot{\psi}  + \frac{2C_{\alpha f}}{m} \delta \tag{10}
+\]</span></p>
+<p>将等式(8)和(9)代入等式(10)得 <span class="math display">\[
+\ddot{e}_y + V_x\dot{\psi}_{des} = -\frac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x}(\dot{e}_y - V_xe_{\psi})   - ( V_x +  \frac{2C_{\alpha f}l_f- 2C_{\alpha r}l_r}{mV_x})\dot{\psi}  + \frac{2C_{\alpha f}}{m} \delta \tag{11}
+\]</span> 对等式(11)进行简化，提取<span class="math inline">\(\ddot{e}_y\)</span>、<span class="math inline">\(\dot{e}_y\)</span>、<span class="math inline">\(e_y\)</span>、<span class="math inline">\(\dot{\psi}_{des}\)</span>和<span class="math inline">\(\delta\)</span>项得 <span class="math display">\[
+\ddot{e}_y = \frac{-2C_{\alpha f}-2C_{\alpha r}}{mV_x}\dot{e}_y + \frac{2C_{\alpha f}+2C_{\alpha r}}{m}e_{\psi} +
+\frac{-2C_{\alpha f}l_f + 2C_{\alpha r}l_r}{mV_x}\dot{e}_{\psi} \\+ (\frac{-2C_{\alpha f}l_f + 2C_{\alpha r}l_r}{mV_x}-V_x)\dot{\psi}_{des} +\frac{2C_{\alpha f}}{m}\delta \tag{12}
+\]</span> 整理成矩阵形式为 <span class="math display">\[
+\frac{\mathrm{d}}{\mathrm{d}t}\dot{e}_y =
+\begin{bmatrix}
+0 &amp;
+-\dfrac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x} &amp;
+\dfrac{2C_{\alpha f}+2C_{\alpha r}}{m} &amp;
+\dfrac{-2C_{\alpha f}l_f + 2C_{\alpha r}l_r}{mV_x}
+\end{bmatrix}
+\begin{bmatrix}
+e_y\\
+\dot{e}_y\\
+e_{\psi}\\
+\dot{e}_{\psi}
+\end{bmatrix}\\
++(\dfrac{-2C_{\alpha f}l_f + 2C_{\alpha r}l_r}{mV_x} - V_x)\dot{\psi}_{des}+\frac{2C_{\alpha f}}{m}\delta \tag{13}
+\]</span> 同理根据<a target="_blank" rel="noopener" href="https://blog.csdn.net/zghforever/article/details/103352211">车辆模型-动力学模型(Dynamics Model)</a>章节中的等式(17) <span class="math display">\[
+\ddot{\psi} = - \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x}\dot{y}  - \frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi} + \frac{2l_fC_{\alpha f}}{I_z}\delta\tag{14}
+\]</span> 将等式(5)、(8)和(9)代入等式(14)得 <span class="math display">\[
+\ddot{e}_{\psi}+ \ddot{\psi}_{des} = - \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x}(\dot{e}_y - V_xe_{\psi})  - \frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi} + \frac{2l_fC_{\alpha f}}{I_z}\delta\tag{15}
+\]</span> 对等式(15)进行简化，提取<span class="math inline">\(\ddot{e}_y\)</span>、<span class="math inline">\(\dot{e}_y\)</span>、<span class="math inline">\(e_y\)</span>、<span class="math inline">\(\dot{\psi}_{des}\)</span>和<span class="math inline">\(\delta\)</span>项得 <span class="math display">\[
+\ddot{e}_{\psi} = - \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x}\dot{e}_y + \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_z}e_{\psi}\\
+-\frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{e}_{\psi}
+-\frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi}_{des} + \frac{2l_fC_{\alpha f}}{I_z}\delta - \ddot{\psi}_{des} \tag{16}
+\]</span> 由于上述假设为<strong>线性时不变系统(LTI)</strong>(<span class="math inline">\(\dot{V}_x = 0\)</span>)，故<span class="math inline">\(\ddot{\psi}_{des}=\frac{\dot{V}_x}{R} = 0\)</span>，将上述等式整理成矩阵形式得 <span class="math display">\[
+\frac{\mathrm{d}}{\mathrm{d}t}\dot{e}_{\psi} =
+\begin{bmatrix}
+0 &amp;
+-\dfrac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x} &amp;
+\dfrac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_z} &amp;
+-\dfrac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}
+\end{bmatrix}
+\begin{bmatrix}
+e_y\\
+\dot{e}_y\\
+e_{\psi}\\
+\dot{e}_{\psi}
+\end{bmatrix}\\
+-\frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi}_{des}+\frac{2l_fC_{\alpha f}}{I_z}\delta \tag{17}
+\]</span> 根据等式(13)和(17)，基于跟踪误差变量的状态空间模型表示为 <span class="math display">\[
+\frac{\mathrm{d}}{\mathrm{d}t}
+\begin{bmatrix}
+e_y\\
+\dot{e}_y\\
+e_{\psi}\\
+\dot{e}_{\psi}
+\end{bmatrix}=
+\begin{bmatrix}
+0 &amp; 1 &amp; 0 &amp; 0\\
+0 &amp;
+-\dfrac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x} &amp;
+\dfrac{2C_{\alpha f}+2C_{\alpha r}}{m} &amp;
+\dfrac{-2C_{\alpha f}l_f + 2C_{\alpha r}l_r}{mV_x}\\
+0 &amp; 0 &amp; 0 &amp; 1\\
+0 &amp;
+-\dfrac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x} &amp;
+\dfrac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_z} &amp;
+-\dfrac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}
+\end{bmatrix}
+\begin{bmatrix}
+e_y\\
+\dot{e}_y\\
+e_{\psi}\\
+\dot{e}_{\psi}
+\end{bmatrix}\\
++
+\begin{bmatrix}
+0\\
+\dfrac{2C_{\alpha f}}{m}\\
+0\\
+\dfrac{2l_fC_{\alpha f}}{I_z}
+\end{bmatrix}\delta+
+\begin{bmatrix}
+0\\
+(\dfrac{-2C_{\alpha f}l_f + 2C_{\alpha r}l_r}{mV_x} - V_x)\\
+0\\
+-\dfrac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}
+\end{bmatrix}\dot{\psi}_{des}\tag{18}
+\]</span> 上述状态空间模型，将转向控制系统的目标跟踪问题转化为动力学的稳定性问题。 状态空间模型一般形式如下： <span class="math display">\[
+\dot{x} = Ax + B_1\delta + B_2\dot{\psi}_{des}
+\]</span></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="John 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="John 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%B7%9F%E8%B8%AA%E8%AF%AF%E5%B7%AE%E6%A8%A1%E5%9E%8B/" rel="tag"># 跟踪误差模型</a>
+              <a href="/tags/%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B/" rel="tag"># 动力学模型</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B/" rel="prev" title="控制算法-动力学模型">
+                  <i class="fa fa-chevron-left"></i> 控制算法-动力学模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/12/21/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E4%BB%8B%E7%BB%8D/" rel="next" title="控制算法-滑模控制介绍">
+                  控制算法-滑模控制介绍 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;c53023adc3a48ee038fc859c3de5d749&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

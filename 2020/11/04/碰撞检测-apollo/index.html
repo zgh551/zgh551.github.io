@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="概述 本文主要分析aplollo代码中关于障碍物碰撞检测相关算法，该算法通过将车辆抽象成二维矩形盒(Box)，建立点与矩形盒、线段与矩形盒、矩形盒与矩形盒的碰撞检测算法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="碰撞检测-apollo">
+<meta property="og:url" content="https://zgh551.github.io/2020/11/04/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B-apollo/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="概述 本文主要分析aplollo代码中关于障碍物碰撞检测相关算法，该算法通过将车辆抽象成二维矩形盒(Box)，建立点与矩形盒、线段与矩形盒、矩形盒与矩形盒的碰撞检测算法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20201127165023.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/04/NwXoO1iQdxHSm4R.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/04/8PclGvub46QxOrR.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/06/pqGR8F4jxWJ5fCV.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/04/9NrinbFamEds1p6.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/04/uriBfCcGEX3H4Sl.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/05/DknoJSP8vbcrLaU.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/07/fMP1eUWuH2dngjS.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/05/j1CodMGyezNSWwB.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/05/XS4Q7WVujPgZhmc.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/05/QZCTfSRhJEa2zLA.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/05/aAnrLxq2S1f9GTQ.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/05/dsHiLS9M5FO4xZm.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/06/cvArUsyTKzZHPqJ.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/06/3xbcGn8ViREtNmp.png">
+<meta property="article:published_time" content="2020-11-04T06:27:53.000Z">
+<meta property="article:modified_time" content="2021-06-16T13:13:09.977Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="collision checker">
+<meta property="article:tag" content="obstacle collision">
+<meta property="article:tag" content="碰撞检测">
+<meta property="article:tag" content="apllo碰撞检测分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20201127165023.png">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2020/11/04/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B-apollo/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;2020&#x2F;11&#x2F;04&#x2F;%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B-apollo&#x2F;&quot;,&quot;path&quot;:&quot;2020&#x2F;11&#x2F;04&#x2F;碰撞检测-apollo&#x2F;&quot;,&quot;title&quot;:&quot;碰撞检测-apollo&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>碰撞检测-apollo | Z</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A2%B0%E6%92%9E%E5%88%A4%E6%96%AD"><span class="nav-number">2.</span> <span class="nav-text">碰撞判断</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%82%B9%E4%B8%8E%E7%9F%A9%E5%BD%A2%E7%9B%92"><span class="nav-number">2.1.</span> <span class="nav-text">点与矩形盒</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A4%E5%AE%9A%E7%82%B9%E6%98%AF%E5%90%A6%E5%9C%A8%E7%9F%A9%E5%BD%A2%E7%9B%92%E8%BE%B9%E7%95%8C%E4%B8%8A"><span class="nav-number">2.1.1.</span> <span class="nav-text">判定点是否在矩形盒边界上</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E7%82%B9%E5%88%B0%E7%9F%A9%E5%BD%A2%E7%9B%92%E7%9A%84%E8%B7%9D%E7%A6%BB"><span class="nav-number">2.1.2.</span> <span class="nav-text">计算点到矩形盒的距离</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E6%AE%B5%E4%B8%8E%E7%9F%A9%E5%BD%A2%E7%9B%92"><span class="nav-number">2.2.</span> <span class="nav-text">线段与矩形盒</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A4%E5%AE%9A%E7%BA%BF%E6%AE%B5%E4%B8%8E%E7%9F%A9%E5%BD%A2%E7%9B%92%E6%98%AF%E5%90%A6%E4%BA%A4%E5%8F%A0"><span class="nav-number">2.2.1.</span> <span class="nav-text">判定线段与矩形盒是否交叠</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E7%BA%BF%E6%AE%B5%E5%88%B0%E7%9F%A9%E5%BD%A2%E7%9B%92%E7%9A%84%E8%B7%9D%E7%A6%BB"><span class="nav-number">2.2.2.</span> <span class="nav-text">计算线段到矩形盒的距离</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8C%BA%E5%9F%9F%E5%88%92%E5%88%86"><span class="nav-number">2.2.2.1.</span> <span class="nav-text">区域划分</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AF%B9%E7%A7%B0%E5%8F%98%E6%8D%A2"><span class="nav-number">2.2.2.2.</span> <span class="nav-text">对称变换</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BA%BF%E6%AE%B5%E4%B8%8E%E7%9F%A9%E5%BD%A2%E7%9B%92%E8%B7%9D%E7%A6%BB%E8%AE%A1%E7%AE%97"><span class="nav-number">2.2.2.3.</span> <span class="nav-text">线段与矩形盒距离计算</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B5%B7%E5%A7%8B%E7%82%B9%E5%8C%BA%E5%9F%9F1"><span class="nav-number">2.2.2.4.</span> <span class="nav-text">起始点区域1</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B5%B7%E5%A7%8B%E7%82%B9%E5%8C%BA%E5%9F%9F8"><span class="nav-number">2.2.2.5.</span> <span class="nav-text">起始点区域8</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%A9%E5%BD%A2%E7%9B%92%E4%B8%8E%E7%9F%A9%E5%BD%A2%E7%9B%92"><span class="nav-number">2.3.</span> <span class="nav-text">矩形盒与矩形盒</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/11/04/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B-apollo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="John">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          碰撞检测-apollo
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-04 14:27:53" itemprop="dateCreated datePublished" datetime="2020-11-04T14:27:53+08:00">2020-11-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 21:13:09" itemprop="dateModified" datetime="2021-06-16T21:13:09+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">碰撞检测算法</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">概述</h2>
+<p>本文主要分析<strong>aplollo</strong>代码中关于障碍物碰撞检测相关算法，该算法通过将车辆抽象成二维矩形盒(Box)，建立点与矩形盒、线段与矩形盒、矩形盒与矩形盒的碰撞检测算法。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20201127165023.png" /></p>
+<span id="more"></span>
+<h2 id="碰撞判断">碰撞判断</h2>
+<h3 id="点与矩形盒">点与矩形盒</h3>
+<p>关于点与矩形盒子的位置关系,可能情况为点在矩形盒内,点在矩形边框上和点在矩形盒外部,如果点在矩形盒的外部,可以求取点到矩形盒的距离值. #### 判定点是否在矩形盒内</p>
+<p>如下图所示,红色圆点与矩形盒的关系如下图左侧,为了便于判定红点是否在矩形盒内,将下图左侧整体按照航向角顺时针旋转<span class="math inline">\(\theta\)</span>角度,得到下图右侧状态.此时,只需要判定红点的坐标<span class="math inline">\((dx,dy)\)</span>是否满足<span class="math inline">\(\mid dx \mid &lt;= length_h\)</span> 或者 <span class="math inline">\(\mid dy \mid &lt;= width_h\)</span>，则说明红点位于矩形盒内.</p>
+<figure>
+<img src="https://i.loli.net/2020/11/04/NwXoO1iQdxHSm4R.png" alt="point_in_box" /><figcaption aria-hidden="true">point_in_box</figcaption>
+</figure>
+<p>其中, - <span class="math inline">\(length_{half}\)</span>:车长的一半; - <span class="math inline">\(width_{half}\)</span>: 车宽的一半;</p>
+<h4 id="判定点是否在矩形盒边界上">判定点是否在矩形盒边界上</h4>
+<p>如下图所示,当红点位于矩形盒的边界上时,先以航向角顺时针旋转<span class="math inline">\(\theta\)</span>角度,然后通过判断旋转后的红点坐标<span class="math inline">\((dx,dy)\)</span>是否满足<span class="math inline">\(\mid \mid dx \mid - length_h \mid == 0\)</span> 或者 <span class="math inline">\(\mid \mid dy \mid - width_h \mid == 0\)</span>,则说明点红点位于矩形盒边界上.</p>
+<figure>
+<img src="https://i.loli.net/2020/11/04/8PclGvub46QxOrR.png" alt="point_on_box_bound" /><figcaption aria-hidden="true">point_on_box_bound</figcaption>
+</figure>
+<p>其中,</p>
+<ul>
+<li><span class="math inline">\(length_{half}\)</span>:车长的一半;</li>
+<li><span class="math inline">\(width_{half}\)</span>: 车宽的一半;</li>
+</ul>
+<h4 id="计算点到矩形盒的距离">计算点到矩形盒的距离</h4>
+<p>如下图所示,点到矩形盒的距离可以分为如下三种情况:</p>
+<ol type="1">
+<li><code>dx &lt;= 0</code>:如果红点在<span class="math inline">\(x\)</span>轴上的投影小于等于车长距离的一半,则此时的距离可以表示为<span class="math inline">\(\mid dy \mid\)</span>;</li>
+<li><code>dy &lt;= 0</code>:如果条件1不满足,即<code>dx &gt; 0</code>,则判断红点在<span class="math inline">\(y\)</span>轴上的投影是否小于等于车宽的一半,如果满足条件,则距离可以表示为<span class="math inline">\(\mid dx \mid\)</span>;</li>
+<li><code>dx &gt; 0 and dy &gt; 0</code>: 如果条件1和2都不满足,则距离可以表示为红点与矩形盒边角点的距离,即<span class="math inline">\(\sqrt{dx^2 + dy^2}\)</span>;</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2020/11/06/pqGR8F4jxWJ5fCV.png" alt="point_to_box_distance" /><figcaption aria-hidden="true">point_to_box_distance</figcaption>
+</figure>
+<h3 id="线段与矩形盒">线段与矩形盒</h3>
+<h4 id="判定线段与矩形盒是否交叠">判定线段与矩形盒是否交叠</h4>
+<p>关于某线段与矩形盒关系的判定,先计算线段的长度,如果线段的长度为0,则可以把该线段当作一个点,利用点和矩形盒的距离来判断是否交叠;如果线段的长度不为0,则先进行线段与矩形盒的粗判定,即线段的起始点与终点是否落在矩形盒的一边,如下图所示,表示线段位于矩形盒一边的四种情况.如果线段不满足如下关系,则交叠关系可以通过距离来判断.</p>
+<figure>
+<img src="https://i.loli.net/2020/11/04/9NrinbFamEds1p6.png" alt="line_to_box_outside" /><figcaption aria-hidden="true">line_to_box_outside</figcaption>
+</figure>
+<h4 id="计算线段到矩形盒的距离">计算线段到矩形盒的距离</h4>
+<h5 id="区域划分">区域划分</h5>
+<p>如下图所示,将矩形盒的外围分成如下8个区域,关于区域的划分,可以根据线段起始点和终点分别在<span class="math inline">\(x\)</span>轴和<span class="math inline">\(y\)</span>轴的投影,表示为<span class="math inline">\((p_x,p_y)\)</span>;以车辆中心<span class="math inline">\(o\)</span>为原点,则四个边角点可以表示为<span class="math inline">\((box_x,box_y)\)</span>,<span class="math inline">\((box_x,-box_y)\)</span>,<span class="math inline">\((-box_x,box_y)\)</span>,<span class="math inline">\((-box_x,-box_y)\)</span>.</p>
+<p>其中,根据点在<span class="math inline">\(x\)</span>轴的投影,可以将区域值表示如下: <span class="math display">\[
+g_x=\begin{cases}
+1  &amp; \text{if } (p_x &gt;= box_x),\\
+0  &amp; \text{if } (-box_x &lt; p_x &lt; box_x),\\
+-1 &amp; \text{if } (p_x &lt;= -box_x),\\
+\end{cases}
+\]</span></p>
+<figure>
+<img src="https://i.loli.net/2020/11/04/uriBfCcGEX3H4Sl.png" alt="line_to_box_group" /><figcaption aria-hidden="true">line_to_box_group</figcaption>
+</figure>
+<p>根据上图,区域的值表示如下:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">区域</th>
+<th style="text-align: center;">gx</th>
+<th>gy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">-1</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">-1</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">-1</td>
+<td>-1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">0</td>
+<td>-1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">1</td>
+<td>-1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>其中,区域<span class="math inline">\((0,0)\)</span>位于矩形盒内,即线段中有一点位于矩形盒内,必定与矩形盒交叠.因此去除点位于区域<span class="math inline">\((0,0)\)</span>的情形,考虑线段两个端点与矩形盒的关系共有<span class="math inline">\(8 \times 8 = 64\)</span>种情况.</p>
+<h5 id="对称变换">对称变换</h5>
+<p>首先将起始点通过<span class="math inline">\(x\)</span>轴和<span class="math inline">\(y\)</span>轴对称变换,将落在区域3,4,5,6,7的点变换到区域1,2,8中.对于区域2和8,进行<span class="math inline">\(xy\)</span>轴对称变换,将区域2变换为区域8.所以经过三种轴对称转换后,起始点将会落在区域1和区域8两种区域状态. - 区域1</p>
+<p>当<strong>起始点</strong>位于区域1,则将终点进行<span class="math inline">\(xy\)</span>轴对称变换,将位于区域2,3,4的终点,对称变换到区域8,7,6中.因此关于终点的所在区域的情况只需考虑落在区域1,8,7,6,5,这五个区域的情况;</p>
+<ul>
+<li>区域8</li>
+</ul>
+<p>当<strong>起始点</strong>位于区域8,对终点进行<span class="math inline">\(y\)</span>轴对称变换,将位于<span class="math inline">\(y\)</span>轴下方的区域变换到<span class="math inline">\(y\)</span>轴上方,即区域5,6,7对称变换到区域3,2,1.因此终点只需考虑区域8,1,2,3,4五个区域的请况.</p>
+<p>通过上述对称变换,可以将原先的64种线段与矩形的关系减少到10种,从而减少相关计算量.</p>
+<h5 id="线段与矩形盒距离计算">线段与矩形盒距离计算</h5>
+<p>如下图所示,线段起始点与矩形盒边角点之间的向量表示为<span class="math inline">\(\vec{sb}\)</span>,起始点与终点之间的向量表示为<span class="math inline">\(\vec{sg}\)</span>.</p>
+<ul>
+<li>当<span class="math inline">\(\vec{sb}\cdot\vec{sg} &lt;= 0\)</span>时,即下图浅绿色表示的区域,此时,线段与矩形盒的距离表示为<span class="math inline">\(\mid \vec{sb}\mid\)</span>.</li>
+</ul>
+<figure>
+<img src="https://i.loli.net/2020/11/05/DknoJSP8vbcrLaU.png" alt="vector_cdot_less_zero" /><figcaption aria-hidden="true">vector_cdot_less_zero</figcaption>
+</figure>
+<ul>
+<li>当<span class="math inline">\(\vec{sb}\cdot\vec{sg} &gt;= \vec{sg} \cdot \vec{sg}\)</span>,即下图浅绿色区域,线段与矩形盒的距离可以表示为<span class="math inline">\(\mid \vec{sb}-\vec{sg}\mid\)</span>.</li>
+</ul>
+<figure>
+<img src="https://i.loli.net/2020/11/07/fMP1eUWuH2dngjS.png" alt="vector_cdot_length_two" /><figcaption aria-hidden="true">vector_cdot_length_two</figcaption>
+</figure>
+<ul>
+<li>当上述条件都不满足时,即位于下图浅黄色区域,线段与矩形盒的距离可以表示为<span class="math inline">\(\mid \vec{sb} \mid \sin{\theta}\)</span>,可使用向量叉乘得到<span class="math inline">\(\frac{\vec{sb}\times\vec{sg}}{\mid \vec{sg} \mid}\)</span>.</li>
+</ul>
+<figure>
+<img src="https://i.loli.net/2020/11/05/j1CodMGyezNSWwB.png" alt="vector_times" /><figcaption aria-hidden="true">vector_times</figcaption>
+</figure>
+<h5 id="起始点区域1">起始点区域1</h5>
+<ol type="1">
+<li>当终点位于区域1时,直接使用上述方法计算距离值;</li>
+<li>当终点位于区域8时,先判定起始点与终点的<span class="math inline">\(x\)</span>轴坐标的关系,当起始点坐标的<span class="math inline">\(x\)</span>轴坐标大于终点的<span class="math inline">\(x\)</span>轴坐标,则距离值为<span class="math inline">\(\mid g_x - b_x \mid\)</span>,否则按照上述方法计算距离值;</li>
+<li>当终点位于区域7时,先判定起始点与终点的<span class="math inline">\(x\)</span>轴坐标的关系,选取不同的矩形盒的边角点;</li>
+<li>当终点位于区域6时,先判定线段与矩形盒是否交叠,如下图所示,通过计算向量叉乘<span class="math inline">\(\vec{sg}\times\vec{sb}\)</span>,判断线段是否与矩形盒交叠.</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2020/11/05/XS4Q7WVujPgZhmc.png" alt="vector_times_less_zero" /><figcaption aria-hidden="true">vector_times_less_zero</figcaption>
+</figure>
+<ol start="5" type="1">
+<li>当终点位于区域5时,矩形盒的边角点分两种,首先判断与右下角的边角点的关系,如果不交叠则直接按上述方法计算距离值,否则判断与左上角边角点的关系,如果无交叠则按上述方法计算距离值.</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2020/11/05/QZCTfSRhJEa2zLA.png" alt="vector_times_two_bound_zero" /><figcaption aria-hidden="true">vector_times_two_bound_zero</figcaption>
+</figure>
+<h5 id="起始点区域8">起始点区域8</h5>
+<ol type="1">
+<li>当终点位于区域1时,如下图所示,先判定起始点与终点的<span class="math inline">\(x\)</span>轴坐标的关系,如果起始点小于终点,则距离值为<span class="math inline">\(\mid s_x - b_x \mid\)</span>,否则计算线段与矩形盒的距离;</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2020/11/05/aAnrLxq2S1f9GTQ.png" alt="zoom8_1" /><figcaption aria-hidden="true">zoom8_1</figcaption>
+</figure>
+<ol start="2" type="1">
+<li><p>当终点位于区域8时,选取起始点与终点中离矩形盒最近的点到矩形盒的距离,即<span class="math inline">\(\mid min(s_x,g_x) -b_x \mid\)</span>;</p></li>
+<li><p>当终点位于区域2和3时,如下图所示,通过右上边角点与线段的起始点,终点形成的矢量,进行矢量叉乘,通过数值的正负判断线段是否与矩形盒交叠;</p></li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2020/11/05/dsHiLS9M5FO4xZm.png" alt="zoom8_23" /><figcaption aria-hidden="true">zoom8_23</figcaption>
+</figure>
+<ol start="4" type="1">
+<li>当终点位于区域4时,线段与矩形盒一定交叠;</li>
+</ol>
+<h3 id="矩形盒与矩形盒">矩形盒与矩形盒</h3>
+<p>关于矩形盒与矩形盒的碰撞检测采用分离轴原理,即通过判断任意两个<strong>凸多边形</strong>在任意角度下的投影是否均存在重叠，来判断是否发生碰撞。若在某一角度光源下，两物体的投影存在间隙，则为不碰撞，否则为发生碰撞。 如下图所示,将左右两个矩形盒投影到左侧矩形盒长边所在轴上,从图中可以看出投影重叠;</p>
+<figure>
+<img src="https://i.loli.net/2020/11/06/cvArUsyTKzZHPqJ.png" alt="projection_1" /><figcaption aria-hidden="true">projection_1</figcaption>
+</figure>
+<p>如下图所示,以左侧矩形盒短边为轴,将矩形盒投影到该轴上,可以发现投影无重叠,只要存在一种投影方式无重叠,则说明无碰撞。</p>
+<figure>
+<img src="https://i.loli.net/2020/11/06/3xbcGn8ViREtNmp.png" alt="projection_2" /><figcaption aria-hidden="true">projection_2</figcaption>
+</figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="John 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="John 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/collision-checker/" rel="tag"># collision checker</a>
+              <a href="/tags/obstacle-collision/" rel="tag"># obstacle collision</a>
+              <a href="/tags/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B/" rel="tag"># 碰撞检测</a>
+              <a href="/tags/apllo%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B%E5%88%86%E6%9E%90/" rel="tag"># apllo碰撞检测分析</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/09/17/%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88-%E8%B7%AF%E9%9D%A2%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97/" rel="prev" title="传感器融合-路面坡度计算">
+                  <i class="fa fa-chevron-left"></i> 传感器融合-路面坡度计算
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/03/17/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96_NEON%E5%90%8E%E5%A4%84%E7%90%86/" rel="next" title="算法优化-1bit转8bit-NEON处理">
+                  算法优化-1bit转8bit-NEON处理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;a3f34b2d7dfe041053b96ea11dbae7e8&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

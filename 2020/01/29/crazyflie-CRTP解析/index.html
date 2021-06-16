@@ -1,0 +1,2131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="概述 本文主要分析CRTP协议的结构，对该协议结构的理解，有助于后续的数据扩展和对软件架构的理解。为了和Crazyflie通信，Crazyflie飞控中提出一种高层次的协议叫做CRTP(Crazy RealTime Protocol)。这种简单的协议使用一些可以收发数据的双向目标端口，但是大都时候通信由主机发起。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="crazyflie-CRTP解析">
+<meta property="og:url" content="https://zgh551.github.io/2020/01/29/crazyflie-CRTP%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="概述 本文主要分析CRTP协议的结构，对该协议结构的理解，有助于后续的数据扩展和对软件架构的理解。为了和Crazyflie通信，Crazyflie飞控中提出一种高层次的协议叫做CRTP(Crazy RealTime Protocol)。这种简单的协议使用一些可以收发数据的双向目标端口，但是大都时候通信由主机发起。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200122110902.JPG">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200210192236.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200210143407.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200210151627.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200210183816.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200211145749.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200202163538.png">
+<meta property="article:published_time" content="2020-01-29T13:48:16.000Z">
+<meta property="article:modified_time" content="2021-06-16T13:13:09.958Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="CRTP">
+<meta property="article:tag" content="Crazy RealTime Protocol">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200122110902.JPG">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2020/01/29/crazyflie-CRTP%E8%A7%A3%E6%9E%90/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;2020&#x2F;01&#x2F;29&#x2F;crazyflie-CRTP%E8%A7%A3%E6%9E%90&#x2F;&quot;,&quot;path&quot;:&quot;2020&#x2F;01&#x2F;29&#x2F;crazyflie-CRTP解析&#x2F;&quot;,&quot;title&quot;:&quot;crazyflie-CRTP解析&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>crazyflie-CRTP解析 | Z</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%A9%E7%90%86%E8%BD%BD%E4%BD%93"><span class="nav-number">2.</span> <span class="nav-text">物理载体</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE%E5%A4%B4"><span class="nav-number">3.</span> <span class="nav-text">协议头</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%AF%E5%8F%A3%E5%88%86%E9%85%8D"><span class="nav-number">4.</span> <span class="nav-text">端口分配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#console%E7%AB%AF%E5%8F%A3%E8%AF%B4%E6%98%8E"><span class="nav-number">4.1.</span> <span class="nav-text">Console端口说明</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE"><span class="nav-number">4.1.1.</span> <span class="nav-text">通信协议</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">4.1.2.</span> <span class="nav-text">代码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#consoleinit%E5%87%BD%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-number">4.1.2.1.</span> <span class="nav-text">consoleInit函数说明</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-number">4.1.2.1.1.</span> <span class="nav-text">流程图</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#consoletest%E5%87%BD%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-number">4.1.2.2.</span> <span class="nav-text">consoleTest函数说明</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#consoleputs%E5%87%BD%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-number">4.1.2.3.</span> <span class="nav-text">consolePuts函数说明</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B%E5%9B%BE-1"><span class="nav-number">4.1.2.3.1.</span> <span class="nav-text">流程图</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#consoleputchar%E5%87%BD%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-number">4.1.2.4.</span> <span class="nav-text">consolePutchar函数说明</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B%E5%9B%BE-2"><span class="nav-number">4.1.2.4.1.</span> <span class="nav-text">流程图</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#consoleputcharfromisr%E5%87%BD%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-number">4.1.2.5.</span> <span class="nav-text">consolePutcharFromISR函数说明</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E6%B5%81%E7%A8%8B%E5%9B%BE-3"><span class="nav-number">4.1.2.5.1.</span> <span class="nav-text">流程图</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#consolesendmessage%E5%87%BD%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-number">4.1.2.6.</span> <span class="nav-text">consoleSendMessage函数说明</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#addbufferfullmarker"><span class="nav-number">4.1.2.7.</span> <span class="nav-text">addBufferFullMarker</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#findmarkerstart%E5%87%BD%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-number">4.1.2.8.</span> <span class="nav-text">findMarkerStart函数说明</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#consoleflush%E5%87%BD%E6%95%B0%E8%AF%B4%E6%98%8E"><span class="nav-number">4.1.2.9.</span> <span class="nav-text">consoleFlush函数说明</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#parameters%E7%AB%AF%E5%8F%A3%E8%AF%B4%E6%98%8E"><span class="nav-number">4.2.</span> <span class="nav-text">Parameters端口说明</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#toc%E8%AE%BF%E9%97%AE"><span class="nav-number">4.2.1.</span> <span class="nav-text">TOC访问</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E8%AF%BB%E5%8F%96"><span class="nav-number">4.2.2.</span> <span class="nav-text">参数读取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E5%86%99%E5%85%A5"><span class="nav-number">4.2.3.</span> <span class="nav-text">参数写入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B6%E5%AE%83%E5%91%BD%E4%BB%A4"><span class="nav-number">4.2.4.</span> <span class="nav-text">其它命令</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8C%89%E5%90%8D%E7%A7%B0%E8%AE%BE%E7%BD%AE"><span class="nav-number">4.2.4.1.</span> <span class="nav-text">按名称设置</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#commander%E7%AB%AF%E5%8F%A3%E8%AF%B4%E6%98%8E"><span class="nav-number">4.3.</span> <span class="nav-text">Commander端口说明</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE-1"><span class="nav-number">4.3.1.</span> <span class="nav-text">通信协议</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#memory-access%E7%AB%AF%E5%8F%A3%E8%AF%B4%E6%98%8E"><span class="nav-number">4.4.</span> <span class="nav-text">Memory access端口说明</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-number">4.4.1.</span> <span class="nav-text">逻辑流程图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE-2"><span class="nav-number">4.4.2.</span> <span class="nav-text">通信协议</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%80%9A%E9%81%930%E4%BF%A1%E6%81%AF%E8%AE%BE%E7%BD%AE"><span class="nav-number">4.4.2.1.</span> <span class="nav-text">通道0：信息&#x2F;设置</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#get_nbr_of_mems"><span class="nav-number">4.4.2.1.1.</span> <span class="nav-text">GET_NBR_OF_MEMS</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#get_mem_info"><span class="nav-number">4.4.2.1.2.</span> <span class="nav-text">GET_MEM_INFO</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#set_mem_erase%E4%BB%A3%E7%A0%81%E4%B8%AD%E6%97%A0%E6%8F%8F%E8%BF%B0"><span class="nav-number">4.4.2.1.3.</span> <span class="nav-text">SET_MEM_ERASE(代码中无描述)</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%80%9A%E9%81%931%E5%AD%98%E5%82%A8%E5%99%A8%E8%AF%BB%E5%8F%96"><span class="nav-number">4.4.2.2.</span> <span class="nav-text">通道1：存储器读取</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%80%9A%E9%81%932%E5%AD%98%E5%82%A8%E5%99%A8%E5%86%99%E5%85%A5"><span class="nav-number">4.4.2.3.</span> <span class="nav-text">通道2：存储器写入</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#datalog%E7%AB%AF%E5%8F%A3%E8%AF%B4%E6%98%8E"><span class="nav-number">4.5.</span> <span class="nav-text">DataLog端口说明</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E5%86%85%E5%AE%B9%E8%A1%A8table-of-content-access"><span class="nav-number">4.5.1.</span> <span class="nav-text">访问内容表(Table of content access)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#get-toc-item"><span class="nav-number">4.5.1.1.</span> <span class="nav-text">Get TOC item</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#get-info"><span class="nav-number">4.5.1.2.</span> <span class="nav-text">Get Info</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#log-control"><span class="nav-number">4.5.2.</span> <span class="nav-text">Log control</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#create-block"><span class="nav-number">4.5.2.1.</span> <span class="nav-text">Create block</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#append-variable-to-block"><span class="nav-number">4.5.2.2.</span> <span class="nav-text">Append variable to block</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#delelte-block"><span class="nav-number">4.5.2.3.</span> <span class="nav-text">Delelte block</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#start-block"><span class="nav-number">4.5.2.4.</span> <span class="nav-text">Start block</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#stop-block"><span class="nav-number">4.5.2.5.</span> <span class="nav-text">Stop block</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#reset"><span class="nav-number">4.5.2.6.</span> <span class="nav-text">Reset</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#create-block-v2"><span class="nav-number">4.5.2.7.</span> <span class="nav-text">CREATE BLOCK V2</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#append-block-v2"><span class="nav-number">4.5.2.8.</span> <span class="nav-text">APPEND BLOCK V2</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#log-data"><span class="nav-number">4.5.3.</span> <span class="nav-text">Log data</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#localization%E7%AB%AF%E5%8F%A3%E8%AF%B4%E6%98%8E"><span class="nav-number">4.6.</span> <span class="nav-text">Localization端口说明</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#external-position"><span class="nav-number">4.6.1.</span> <span class="nav-text">External Position</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#generic-localization"><span class="nav-number">4.6.2.</span> <span class="nav-text">Generic Localization</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#lpp-short-packet-tunnel"><span class="nav-number">4.6.2.1.</span> <span class="nav-text">LPP Short packet tunnel</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#emergency-stop"><span class="nav-number">4.6.2.2.</span> <span class="nav-text">Emergency stop</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#emergency_stop_watchdog"><span class="nav-number">4.6.2.3.</span> <span class="nav-text">EMERGENCY_STOP_WATCHDOG</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ext_pose"><span class="nav-number">4.6.2.4.</span> <span class="nav-text">EXT_POSE</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ext_pose_packed"><span class="nav-number">4.6.2.5.</span> <span class="nav-text">EXT_POSE_PACKED</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#generic-setpoint%E7%AB%AF%E5%8F%A3%E8%AF%B4%E6%98%8E"><span class="nav-number">4.7.</span> <span class="nav-text">Generic Setpoint端口说明</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#stop"><span class="nav-number">4.7.1.</span> <span class="nav-text">Stop</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#velocity-world"><span class="nav-number">4.7.2.</span> <span class="nav-text">Velocity World</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#z-distance"><span class="nav-number">4.7.3.</span> <span class="nav-text">Z Distance</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cppm-emulation"><span class="nav-number">4.7.4.</span> <span class="nav-text">CPPM Emulation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#altitude-hold"><span class="nav-number">4.7.5.</span> <span class="nav-text">Altitude Hold</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#hover"><span class="nav-number">4.7.6.</span> <span class="nav-text">Hover</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#full-state"><span class="nav-number">4.7.7.</span> <span class="nav-text">Full State</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#position"><span class="nav-number">4.7.8.</span> <span class="nav-text">Position</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E6%AD%A5%E9%AA%A4"><span class="nav-number">5.</span> <span class="nav-text">连接步骤</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/01/29/crazyflie-CRTP%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="John">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          crazyflie-CRTP解析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-29 21:48:16" itemprop="dateCreated datePublished" datetime="2020-01-29T21:48:16+08:00">2020-01-29</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 21:13:09" itemprop="dateModified" datetime="2021-06-16T21:13:09+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/crazyflie/" itemprop="url" rel="index"><span itemprop="name">crazyflie</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">概述</h2>
+<p>本文主要分析CRTP协议的结构，对该协议结构的理解，有助于后续的数据扩展和对软件架构的理解。为了和Crazyflie通信，<strong>Crazyflie</strong>飞控中提出一种高层次的协议叫做<strong>CRTP</strong>(<em>Crazy RealTime Protocol</em>)。这种简单的协议使用一些可以收发数据的双向目标端口，但是大都时候通信由主机发起。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200122110902.JPG" /></p>
+<span id="more"></span>
+<h2 id="物理载体">物理载体</h2>
+<p>当前CRTP同时支持 Crazyradio 和 USB(只针对Crazyflie 2.0)模式。</p>
+<table>
+<thead>
+<tr class="header">
+<th>物理载体</th>
+<th>支持的飞控</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Crazyradio (PA)</td>
+<td>Crazyflie 1.0/2.0</td>
+</tr>
+<tr class="even">
+<td>USB</td>
+<td>Crazyflie 2.0</td>
+</tr>
+</tbody>
+</table>
+<h2 id="协议头">协议头</h2>
+<p>每个数据包拥有1字节的数据头和31字节有效数据载荷，数据头布局如下： <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">   7    6    5    4    3    2    1    0</span><br><span class="line">+----+----+----+----+----+----+----+----+</span><br><span class="line">|       Port        |  Link   |  Chan.  |</span><br><span class="line">+----+----+----+----+----+----+----+----+</span><br></pre></td></tr></table></figure></p>
+<p>其中：</p>
+<ul>
+<li><strong>Port</strong>: 用来区别与消息相关的功能和任务</li>
+<li><strong>Link</strong>: 为以后使用预留</li>
+<li><strong>Channel</strong>: 用来识别子任务和子功能</li>
+</ul>
+<h2 id="端口分配">端口分配</h2>
+<p>当前端口分配如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>端口</th>
+<th>目标</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>Console</td>
+<td>读取使用consoleprintf打印到Crazyflie控制台上的控制台信息</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Parameters</td>
+<td>获取或设置Crazyflie参数.Crazyflie源码中宏定义参数</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Commander</td>
+<td>发送控制 滚转/俯仰/偏航/油门调节的设置点</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Memory access</td>
+<td>访问类似于单线或I2C总线的非易失性存储器 (只支持Crazyflie 2.0)</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Data logging</td>
+<td>设置包含需要在特殊周期发回Crazyflie的变量的日记块.</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Localization</td>
+<td>与定位相关的数据包</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>Generic Setpoint</td>
+<td>允许发送设置点和控制模式</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>Platform</td>
+<td>用于其它平台控制，例如调试和关机</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>Client-side debugging</td>
+<td>调试界面并只存在于Crazyflie Python API，Crazyflie飞控本身不具备</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>Link layer</td>
+<td>用于控制和询问通信连接</td>
+</tr>
+</tbody>
+</table>
+<h3 id="console端口说明">Console端口说明</h3>
+<p>该端口作为一种文本控制台方式，可以使用<strong>consoleprintf</strong> 函数从<em>Crazyflie</em>飞控端到主机端打印文本信息。</p>
+<h4 id="通信协议">通信协议</h4>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Answer (Crazyflie to host):</span><br><span class="line">        +---------//-----------+</span><br><span class="line">        | PRINTED CONSOLE TEXT |</span><br><span class="line">        +---------//-----------+</span><br><span class="line">Length          0-31</span><br></pre></td></tr></table></figure>
+<p>如果任何如下条件满足，飞行器端的缓存区的内容将被发送：</p>
+<ul>
+<li>输出缓存区满(31字节)</li>
+<li>一个"新行"字符已经被发送(或 </li>
+<li>已发出刷新命令</li>
+</ul>
+<h4 id="代码分析">代码分析</h4>
+<p>参考源文件 <strong>console.c</strong>，函数调用关系如下：</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200210192236.png" /></p>
+<h5 id="consoleinit函数说明">consoleInit函数说明</h5>
+<p>该函数用于初始化相关变量，并创建二值型信号量<strong>synch</strong>用于任务间，任务和中断间同步。</p>
+<h6 id="流程图">流程图</h6>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200210143407.png" /></p>
+<h5 id="consoletest函数说明">consoleTest函数说明</h5>
+<p>该函数返回初始化结果，初始化成功即测试通过。</p>
+<h5 id="consoleputs函数说明">consolePuts函数说明</h5>
+<p>该函数用于发送字符串。</p>
+<h6 id="流程图-1">流程图</h6>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200210151627.png" /></p>
+<p>该函数主要通过调用<strong>consolePutchar</strong>函数，实现字符串的发送。</p>
+<h5 id="consoleputchar函数说明">consolePutchar函数说明</h5>
+<p>该函数用于发送单字节字符。</p>
+<p>参考module/interface/console.h文件,通过utils/src/eprintf.c文件中的<strong>eprintf</strong>函数，将<strong>consolePutchar</strong>函数映射到通用打印函数，使用宏定义<strong>consolePrintf</strong>表示。其中<strong>VA_ARGS</strong>是可变参数宏。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> consolePrintf(FMT, ...) eprintf(consolePutchar, FMT, ## __VA_ARGS__)</span></span><br></pre></td></tr></table></figure>
+<p>在utils/interface/debug.h文件中</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEBUG_PRINT(fmt, ...) consolePrintf(DEBUG_FMT(fmt), ##__VA_ARGS__)</span></span><br></pre></td></tr></table></figure>
+<p>使用<strong>DEBUG_PRINT</strong>宏定义映射<strong>consolePrintf</strong>函数，通过无线模块或者USB接口发送，并在控制台显示。</p>
+<h6 id="流程图-2">流程图</h6>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200210183816.png" /></p>
+<h5 id="consoleputcharfromisr函数说明">consolePutcharFromISR函数说明</h5>
+<p>该函数用于在中断中运行，进行字符的发送工作。</p>
+<h6 id="流程图-3">流程图</h6>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200211145749.png" /></p>
+<h5 id="consolesendmessage函数说明">consoleSendMessage函数说明</h5>
+<p>该函数用于将消息缓存区的的数据<strong>messageToPrint</strong>，通过<strong>CRTP</strong>函数发送出去。</p>
+<h5 id="addbufferfullmarker">addBufferFullMarker</h5>
+<p>该函数用于当发送队列快满时，在队列缓存区最后加上缓存区满的标志(<F>)。</p>
+<h5 id="findmarkerstart函数说明">findMarkerStart函数说明</h5>
+<p>该函数用于查找标志的起始位置。</p>
+<h5 id="consoleflush函数说明">consoleFlush函数说明</h5>
+<p>该函数用于发送清空缓存区的内容。</p>
+<h3 id="parameters端口说明">Parameters端口说明</h3>
+<p>参数系统使得飞行器的所有可获得和可设置参数可访问。飞行器拥有一个可修改得参数表，在这个表中，每个参数都和一个ID和一个组名相关联。三个ID用于访问TOC，参数如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>Port</th>
+<th>Channel</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2</td>
+<td>0</td>
+<td><a href="####TOC访问">TOC 访问</a></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>1</td>
+<td><a href="#parameter-read">参数读取</a></td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>2</td>
+<td><a href="#parameter-write">参数写入</a></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>3</td>
+<td><a href="#misc-commands">其它命令</a></td>
+</tr>
+</tbody>
+</table>
+<h4 id="toc访问">TOC访问</h4>
+<p>这些信息允许访问参数表的内容。信息的第一个字节是信息ID，信息ID定义如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>命令</th>
+<th>数值</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CMD_GET_ITEM</td>
+<td>0</td>
+<td>原始版本，获取TOC元素</td>
+</tr>
+<tr class="even">
+<td>CMD_GET_INFO</td>
+<td>1</td>
+<td>原始版本，获取CRC信息</td>
+</tr>
+<tr class="odd">
+<td>CMD_GET_ITEM_V2</td>
+<td>2</td>
+<td>V2版本，获取TOC元素</td>
+</tr>
+<tr class="even">
+<td>CMD_GET_INFO_V2</td>
+<td>3</td>
+<td>V2版本，获取CRC信息</td>
+</tr>
+</tbody>
+</table>
+<p>上游数据ID和命令单独发送，下游数据包拥有如下形式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Bytes     1       1          1        空终止字符串</span><br><span class="line">        +---+------------+------+----------+--------------+</span><br><span class="line">        | 0 |  Param ID  | Type |  Group   |     Name     |</span><br><span class="line">        +---+------------+------+---+------+--------------+</span><br><span class="line">        | 1 | Num. Param |  CRC32   |</span><br><span class="line">        +---+------------+----------+</span><br><span class="line">Bytes     1       1           4</span><br></pre></td></tr></table></figure>
+<p>参数被PC端有序请求直到最后。当达到最后参数时,ID为0'最后的TOC元素'，复位命令允许复位TOC指针，因此下一个发送TOC元素将会是第一个。“获取 TOC CRC”命令也会返回参数数量。</p>
+<p>CRC32是飞行器TOC的哈希值。旨在PC应用程序中实现TOC的缓存以避免每次飞行器连接后获取完整的TOC。</p>
+<p><strong>参数类型</strong>用一个字节描述如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>类型码</th>
+<th>c语言类型</th>
+<th>Python解包</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0x08</td>
+<td>uint8_t</td>
+<td>'&lt;B '</td>
+</tr>
+<tr class="even">
+<td>0x09</td>
+<td>uint16_t</td>
+<td>'&lt;H'</td>
+</tr>
+<tr class="odd">
+<td>0x0A</td>
+<td>uint32_t</td>
+<td>'&lt;L'</td>
+</tr>
+<tr class="even">
+<td>0x0B</td>
+<td>uint64_t</td>
+<td>'&lt;Q'</td>
+</tr>
+<tr class="odd">
+<td>0x00</td>
+<td>int8_t</td>
+<td>'&lt;b'</td>
+</tr>
+<tr class="even">
+<td>0x01</td>
+<td>int16_t</td>
+<td>'&lt;h'</td>
+</tr>
+<tr class="odd">
+<td>0x02</td>
+<td>int32_t</td>
+<td>'&lt;i'</td>
+</tr>
+<tr class="even">
+<td>0x03</td>
+<td>int64_t</td>
+<td>'&lt;q'</td>
+</tr>
+<tr class="odd">
+<td>0x05</td>
+<td>FP16</td>
+<td>''</td>
+</tr>
+<tr class="even">
+<td>0x06</td>
+<td>float</td>
+<td>'&lt;f'</td>
+</tr>
+<tr class="odd">
+<td>0x07</td>
+<td>double</td>
+<td>'&lt;d'</td>
+</tr>
+</tbody>
+</table>
+<h4 id="参数读取">参数读取</h4>
+<p>PC客户端请求内容如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">字节</th>
+<th style="text-align: center;">请求字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">ID</td>
+<td>需要读取参数的ID</td>
+</tr>
+</tbody>
+</table>
+<p>Crazyflie飞控端应答内容如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">字节</th>
+<th style="text-align: center;">应答字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">ID</td>
+<td>参数ID值</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1- ...</td>
+<td style="text-align: center;">数值</td>
+<td>参数值。TOC中描述了大小和形式</td>
+</tr>
+</tbody>
+</table>
+<p>参数读取请求是在通道1上的一个简单包，Crazyflie飞控应答相应的参数值。</p>
+<h4 id="参数写入">参数写入</h4>
+<p>PC客户端请求写入内容如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>请求字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>ID</td>
+<td>需要写入的参数ID值</td>
+</tr>
+<tr class="even">
+<td>1- ...</td>
+<td>value</td>
+<td>写入值，大小和形式在TOC中有描述</td>
+</tr>
+</tbody>
+</table>
+<p>Crazyflie飞控端应答内容如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>应答字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>ID</td>
+<td>参数ID</td>
+</tr>
+<tr class="even">
+<td>1- ...</td>
+<td>数值</td>
+<td>参数值，大小和形式在TOC中有描述</td>
+</tr>
+</tbody>
+</table>
+<p>写入请求是一个通道2上的简单包。Crazyflie飞控发回参数值作为应答。</p>
+<h4 id="其它命令">其它命令</h4>
+<p>如下其它命令被使用：</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>命令内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0x00</td>
+<td>按名称设置</td>
+</tr>
+</tbody>
+</table>
+<h5 id="按名称设置">按名称设置</h5>
+<p>请求内容</p>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>请求字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>按名称设置</td>
+<td>0x00</td>
+</tr>
+<tr class="even">
+<td>1~ n</td>
+<td>组</td>
+<td>组名</td>
+</tr>
+<tr class="odd">
+<td>n ~ (n+1)</td>
+<td>NULL</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>(n+1) ~ (n+m+1)</td>
+<td>名称</td>
+<td>参数名称</td>
+</tr>
+<tr class="odd">
+<td>(n+m+1)~(n+m+2)</td>
+<td>NULL</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>(n+m+2)~(n+m+3)</td>
+<td>类型</td>
+<td>参数类型</td>
+</tr>
+<tr class="odd">
+<td>(n+m+3) ~ ...</td>
+<td>数值</td>
+<td>参数数值，大小和形式由类型描述</td>
+</tr>
+</tbody>
+</table>
+<p>应答内容</p>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>应答字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>按名称设置</td>
+<td>0x00</td>
+</tr>
+<tr class="even">
+<td>1~ n</td>
+<td>组</td>
+<td>组名</td>
+</tr>
+<tr class="odd">
+<td>n ~ (n+1)</td>
+<td>NULL</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>(n+1) ~ (n+m+1)</td>
+<td>名称</td>
+<td>参数名称</td>
+</tr>
+<tr class="odd">
+<td>(n+m+2)</td>
+<td>NULL</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>(n+m+3)</td>
+<td>错误</td>
+<td>如果参数被成功写入返回0.其它编码</td>
+</tr>
+</tbody>
+</table>
+<p>组名和参数名称是ASCII字符串的形式，对应的大小分别为n和m。</p>
+<h3 id="commander端口说明">Commander端口说明</h3>
+<p>命令端口被用来发送从PC客户端到Crazyflie飞控的控制指令，用来调节滚转、俯仰、偏航和油门等控制信号。随着通信链的建立这些数据包能被发送出去，并且直到下一包数据接收到之前该数值都是有效的。</p>
+<h4 id="通信协议-1">通信协议</h4>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">        +-------+-------+-------+-------+</span><br><span class="line">        | ROLL  | PITCH |  YAW  |THRUST |</span><br><span class="line">        +-------+-------+-------+-------+</span><br><span class="line">Length      4       4       4       2      bytes</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr class="header">
+<th>名称</th>
+<th>字节</th>
+<th>大小</th>
+<th>类型</th>
+<th>注释</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>滚转角</td>
+<td>0-3</td>
+<td>4</td>
+<td>float</td>
+<td>滚转设置点</td>
+</tr>
+<tr class="even">
+<td>俯仰角</td>
+<td>4-7</td>
+<td>4</td>
+<td>float</td>
+<td>俯仰设置点</td>
+</tr>
+<tr class="odd">
+<td>偏航角</td>
+<td>8-11</td>
+<td>4</td>
+<td>float</td>
+<td>偏航设置点</td>
+</tr>
+<tr class="even">
+<td>油门</td>
+<td>12-13</td>
+<td>2</td>
+<td>uint16_t</td>
+<td>油门设置点</td>
+</tr>
+</tbody>
+</table>
+<h3 id="memory-access端口说明">Memory access端口说明</h3>
+<p>存储器访问对<a target="_blank" rel="noopener" href="https://wiki.bitcraze.io/projects:crazyflie:index">Crazyflie Nano Quadcopter</a>无用，当前只在Crazyflie 2.0中应用。使用存储器访问给出如下可能性：</p>
+<ul>
+<li><p>获得哪些存储单元可用的信息；</p></li>
+<li><p>读取/写入/擦除 存储器；</p></li>
+</ul>
+<p>当前如下存储器被支持：</p>
+<ul>
+<li><p>Crazyflie 2.0的板载EEPROM；</p></li>
+<li><p>Crazyflie 2.0扩展板上的单线存储器；</p>
+<p>有更多的信息关于EEPROM如何构建和单总线存储器如何工作和构建可用。</p></li>
+</ul>
+<h4 id="逻辑流程图">逻辑流程图</h4>
+<p>对于客户端获取信息和读写存储器是可选择的，但是Crazyflie Python 客户端总是在连接状态下载关于存储器的信息。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200202163538.png" /></p>
+<h4 id="通信协议-2">通信协议</h4>
+<p>存储器端口使用3个不同的通道：</p>
+<table>
+<thead>
+<tr class="header">
+<th>端口</th>
+<th>通道</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>4</td>
+<td>0</td>
+<td>获取关于存储器数量和类型的信息并同时擦除</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>1</td>
+<td>读取存储器</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>2</td>
+<td>写入存储器</td>
+</tr>
+</tbody>
+</table>
+<h5 id="通道0信息设置">通道0：信息/设置</h5>
+<p>这个通道被用来获取存在的存储器数量、关于存储器的信息和大规模擦除内存的可能性。每个包的第一个字节是命令类型：</p>
+<table>
+<thead>
+<tr class="header">
+<th>命令内容</th>
+<th>命令</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>GET_NBR_OF_MEMS</td>
+<td>获取存储器的数量</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>GET_MEM_INFO</td>
+<td>获取关于存储器的信息</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>SET_MEM_ERASE</td>
+<td>块擦除存储器</td>
+</tr>
+</tbody>
+</table>
+<h6 id="get_nbr_of_mems">GET_NBR_OF_MEMS</h6>
+<p>这个被用来获取存在的存储器数量。</p>
+<ul>
+<li>请求从PC主机到Crazyflie飞控：</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>字段</th>
+<th>数值</th>
+<th>长度</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>获取存储器数量</td>
+<td>0x01</td>
+<td>1</td>
+<td>命令字节</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>响应从Crazyflie飞控到PC主机：</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>字段</th>
+<th>数值</th>
+<th>长度</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>获取存储器数量</td>
+<td>0x01</td>
+<td>1</td>
+<td>命令字节</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>存储器数量</td>
+<td></td>
+<td>1</td>
+<td>(所有类型)存在存储器数量</td>
+</tr>
+</tbody>
+</table>
+<p>例如当Crazyflie飞控上存在三个存储器时：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Host-to-Crazyflie: &lt;port/chan&gt; 0x01</span><br><span class="line">Crazyflie-to-Host: &lt;port/chan&gt; 0x01 0x03</span><br></pre></td></tr></table></figure>
+<h6 id="get_mem_info">GET_MEM_INFO</h6>
+<p>该命令被用来获取存储器的ID信息。存储器的ID是顺序的，并且从0到1，其数值小于从GET_NUMBER_OF_MEMS返回的存储器数量。</p>
+<ul>
+<li>请求从PC主机到Crazyflie飞控：</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>字段</th>
+<th>数值</th>
+<th>长度</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>获取存储器信息</td>
+<td>0x02</td>
+<td>1</td>
+<td>命令字节</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>存储器ID</td>
+<td></td>
+<td>1</td>
+<td>存储器ID(0 &lt;= id &lt; 存储器数量)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>如果id<strong>有效</strong>，应答从Crazyflie飞控到PC主机如下：</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>字段</th>
+<th>数值</th>
+<th>长度</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>GET_MEM_INFO</td>
+<td>0x02</td>
+<td>1</td>
+<td>命令字节</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>MEM_ID</td>
+<td></td>
+<td>1</td>
+<td>存储器ID</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>MEM_TYPE</td>
+<td></td>
+<td>1</td>
+<td>存储器类型(详见如下)</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>MEM_SIZE</td>
+<td></td>
+<td>4</td>
+<td>存储器的字节数</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>MEM_ADDR</td>
+<td></td>
+<td>8</td>
+<td>存储器地址(只对单总线存储器有效)</td>
+</tr>
+</tbody>
+</table>
+<p>关于<strong>MEM_ID</strong>字段如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>数值</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>EEPROM_ID</td>
+<td>0x00</td>
+<td>关于</td>
+</tr>
+<tr class="even">
+<td>LEDMEM_ID</td>
+<td>0x01</td>
+<td>LED环存储器ID</td>
+</tr>
+<tr class="odd">
+<td>LOCO_ID</td>
+<td>0x02</td>
+<td>本地位置节点ID</td>
+</tr>
+<tr class="even">
+<td>TRAJ_ID</td>
+<td>0x03</td>
+<td>轨迹ID</td>
+</tr>
+<tr class="odd">
+<td>LOCO2_ID</td>
+<td>0x04</td>
+<td>本地位置节点2的ID</td>
+</tr>
+<tr class="even">
+<td>LH_ID</td>
+<td>0x05</td>
+<td>灯塔基站的ID</td>
+</tr>
+<tr class="odd">
+<td>TESTER_ID</td>
+<td>0x06</td>
+<td>存储器测试ID</td>
+</tr>
+<tr class="even">
+<td>USD_ID</td>
+<td>0x07</td>
+<td><em>待确认</em></td>
+</tr>
+<tr class="odd">
+<td>OW_FIRST_ID</td>
+<td>0x08</td>
+<td>第一个单总线存储器ID</td>
+</tr>
+</tbody>
+</table>
+<p>关于<strong>MEM_TYPE</strong>字段如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>类型</th>
+<th>数值</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MEM_TYPE_EEPROM</td>
+<td>0x00</td>
+<td>电可擦除存储器</td>
+</tr>
+<tr class="even">
+<td>MEM_TYPE_OW</td>
+<td>0x01</td>
+<td>单总线存储器</td>
+</tr>
+<tr class="odd">
+<td>MEM_TYPE_LED12</td>
+<td>0x10</td>
+<td>LED环</td>
+</tr>
+<tr class="even">
+<td>MEM_TYPE_LOCO</td>
+<td>0x11</td>
+<td>本地位置节点</td>
+</tr>
+<tr class="odd">
+<td>MEM_TYPE_TRAJ</td>
+<td>0x12</td>
+<td>轨迹</td>
+</tr>
+<tr class="even">
+<td>MEM_TYPE_LOCO2</td>
+<td>0x13</td>
+<td>本地位置节点2</td>
+</tr>
+<tr class="odd">
+<td>MEM_TYPE_LH</td>
+<td>0x14</td>
+<td>灯塔基站</td>
+</tr>
+<tr class="even">
+<td>MEM_TYPE_TESTER</td>
+<td>0x15</td>
+<td>存储器测试</td>
+</tr>
+<tr class="odd">
+<td>MEM_TYPE_USD</td>
+<td>0x16</td>
+<td><em>待确认</em></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>如果id<strong>无效</strong>，应答从Crazyflie飞控到PC主机如下：</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>字段</th>
+<th>数值</th>
+<th>长度</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>GET_MEM_INFO</td>
+<td>0x02</td>
+<td>1</td>
+<td>字节命令</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>MEM_ID</td>
+<td></td>
+<td>1</td>
+<td>存储器id</td>
+</tr>
+</tbody>
+</table>
+<p>例如对于单总线存储器的请求内容如下：</p>
+<p>MEM_ID=1, MEM_SIZE=112bytes, MEM_ADDR=0x1234567890ABCDEF</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Host-to-Crazyflie: &lt;port/chan&gt; 0x02 0x01</span><br><span class="line">Crazyflie-to-Host: &lt;port/chan&gt; 0x02 0x01 0x01 0x70 0x00 0x00 0x00 0xEF 0xCD 0xAB 0x90 0x78 0x56 0x34 0x12</span><br></pre></td></tr></table></figure>
+<p>例如请求的存储器索引信息无效时：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Host-to-Crazyflie: &lt;port/chan&gt; 0x01 0x10</span><br><span class="line">Crazyflie-to-Host: &lt;port/chan&gt; 0x01 0x10</span><br></pre></td></tr></table></figure>
+<h6 id="set_mem_erase代码中无描述">SET_MEM_ERASE(代码中无描述)</h6>
+<p>该命令被用来块擦除给定的id存储器。存储器的id是顺序的，并且从0到1，其数值小于从GET_NUMBER_OF_MEMS返回的存储器数量。</p>
+<ul>
+<li>请求从PC主机到Crazyflie飞控：</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>字段</th>
+<th>数值</th>
+<th>长度</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>SET_MEM_ERASE</td>
+<td>0x03</td>
+<td>1</td>
+<td>命令字节</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>MEM_ID</td>
+<td></td>
+<td>1</td>
+<td>存储器ID(0 &lt;= id &lt; 存储器数量)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>应答从Crazyflie飞控到PC主机：</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>字段</th>
+<th>数值</th>
+<th>长度</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>SET_MEM_ERASE</td>
+<td>0x03</td>
+<td>1</td>
+<td>命令字节</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>MEM_ID</td>
+<td></td>
+<td>1</td>
+<td>存储器id</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>STATUS</td>
+<td></td>
+<td>1</td>
+<td>命令状态(详见如下)</td>
+</tr>
+</tbody>
+</table>
+<p>例如请求块擦除MEM_ID=2的存储器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Host-to-Crazyflie: &lt;port/chan&gt; 0x03 0x02</span><br><span class="line">Crazyflie-to-Host: &lt;port/chan&gt; 0x03 0x02 0x00</span><br></pre></td></tr></table></figure>
+<h5 id="通道1存储器读取">通道1：存储器读取</h5>
+<p>这个通道只被用来读取存储器，因此信息不包含任何命令字节。</p>
+<ul>
+<li>请求从PC主机到Crazyflie飞控：</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>字段</th>
+<th>数值</th>
+<th>长度</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>MEM_ID</td>
+<td></td>
+<td>1</td>
+<td>存储器id(0 &lt;= id &lt; 存储器数量)</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>MEM_ADDR</td>
+<td></td>
+<td>4</td>
+<td>要读取的首字节地址</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>LEN</td>
+<td></td>
+<td>1</td>
+<td>要被读取的字节数量</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>如果存储器的ID有效且地址和长度读取有效，则应答从Crazyflie飞控到PC主机如下：</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>字段</th>
+<th>数值</th>
+<th>长度</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>MEM_ID</td>
+<td></td>
+<td>1</td>
+<td>存储器id(0 &lt;= id &lt; 存储器数量)</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>MEM_ADDR</td>
+<td></td>
+<td>4</td>
+<td>要读取的首字节地址</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>STATUS</td>
+<td></td>
+<td>1</td>
+<td>请求状态(详见如下)</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>DATA</td>
+<td></td>
+<td>1 .. 24?</td>
+<td>要读取的数据(只有MEM_ID/MEM_ADDR/LEN有效时)</td>
+</tr>
+</tbody>
+</table>
+<p>例如从MEM_ID=0x01 MEM_ADDR=0x0A读取LEN=0x0F字节数据：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Host-to-Crazyflie: &lt;port/chan&gt; 0x01 0x0A 0x00 0x00 0x00 0x0F</span><br><span class="line">Crazyflie-to-Host: &lt;port/chan&gt; 0x01 0x0A 0x00 0x00 0x00 0x00 0x01 0x09 0x62 0x63 0x4C 0x65 0x64 0x52 0x69 0x6E 0x67 0x02 0x01 0x62 0x55 </span><br></pre></td></tr></table></figure>
+<h5 id="通道2存储器写入">通道2：存储器写入</h5>
+<p>该通道只被用来写入存储器，因此消息中不好含任何命令字节。</p>
+<ul>
+<li>请求从PC主机到Crazyflie飞控：</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>字段</th>
+<th>数值</th>
+<th>长度</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>MEM_ID</td>
+<td></td>
+<td>1</td>
+<td>存储器id(0 &lt;= id &lt; 存储器数量)</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>MEM_ADDR</td>
+<td></td>
+<td>4</td>
+<td>要写入的首字节地址</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>DATA</td>
+<td></td>
+<td>1 .. 24?</td>
+<td>要写入的数据</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>如果存储器的ID有效并且地址和长度被写入有效，应答从Crazyflie飞控到PC主机：</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>字段</th>
+<th>数值</th>
+<th>长度</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>MEM_ID</td>
+<td></td>
+<td>1</td>
+<td>存储器id(0 &lt;= id &lt; 存储器数量)</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>MEM_ADDR</td>
+<td></td>
+<td>4</td>
+<td>要写入的首字节地址</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>STATUS</td>
+<td></td>
+<td>1</td>
+<td>请求状态</td>
+</tr>
+</tbody>
+</table>
+<h3 id="datalog端口说明">DataLog端口说明</h3>
+<p>log端口分为三个通道：</p>
+<table>
+<thead>
+<tr class="header">
+<th>端口</th>
+<th>通道</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>5</td>
+<td>0</td>
+<td>访问内容表：用于读取出TOC</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>1</td>
+<td>日志控制操作：用于添加/删除/开始/暂停log块</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>2</td>
+<td>日志数据操作：用于从Crazyflie飞控端到PC客户端发送log数据</td>
+</tr>
+</tbody>
+</table>
+<h4 id="访问内容表table-of-content-access">访问内容表(Table of content access)</h4>
+<p>这个通道用来下载包含所有可记录变量和变量类型的内容表。每组信息的第一个字节对应于命令，所有这个通道的通信都被客户端初始化，并且所有来自飞行器的应答都包含同样的命令字节。</p>
+<table>
+<thead>
+<tr class="header">
+<th>TOC命令字</th>
+<th>命令</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>CMD_GET_ITEM</td>
+<td>原始版本：从TOC中获取元素</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>CMD_GET_INFO</td>
+<td>原始版本：获取TOC和LOG子系统的信息</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>CMD_GET_ITEM_V2</td>
+<td>V2版本：从TOC中获取元素</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>CMD_GET_INFO_V2</td>
+<td>V2版本：获取TOC和LOG子系统的信息</td>
+</tr>
+</tbody>
+</table>
+<h5 id="get-toc-item">Get TOC item</h5>
+<p>CMD_GET_ITEM命令允许从飞行器上检索日志变量名、组名和变量类型。该命令旨在从0到LOG_LEN 的所有ID中被请求。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Request (PC to Copter):</span><br><span class="line">        +--------------+----+</span><br><span class="line">        | GET_ITEM (0) | ID |</span><br><span class="line">        +--------------+----+</span><br><span class="line">Length         1         1</span><br><span class="line"></span><br><span class="line">Answer (Copter to PC):</span><br><span class="line">        +--------------+----+</span><br><span class="line">        | GET_ITEM (0) | ID |                                        If index out of range</span><br><span class="line">        +--------------+----+------+------------+--------------+</span><br><span class="line">        | GET_ITEM (0) | ID | Type |   Group    |     Name     |     If returning Item</span><br><span class="line">        +--------------+----+------+------------+--------------+</span><br><span class="line">Length        1          1     1    &lt; Null terminated strings &gt;</span><br></pre></td></tr></table></figure>
+<p>下表说明PC端请求内容如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>请求字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>GET_ITEM</td>
+<td>数值0作为GET_ITEM操作</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>ID</td>
+<td>被检索元素的ID，变量数量从0到LOG_LEN</td>
+</tr>
+</tbody>
+</table>
+<p>下表说明Crazyflie飞控端的应答响应内容：</p>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>应答字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>GET_ITEM</td>
+<td>数值0用于GET_ITEM操作</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>ID</td>
+<td>返回元素的ID</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>Type</td>
+<td>元素的变量类型，详见变量类型列表</td>
+</tr>
+<tr class="even">
+<td>3-...</td>
+<td>Group</td>
+<td>包含元素组名可变的空终止字符串</td>
+</tr>
+<tr class="odd">
+<td>...</td>
+<td>Name</td>
+<td>包含元素变量名可变的空终止字符串</td>
+</tr>
+</tbody>
+</table>
+<p>如果请求的<strong>ID</strong>高于(TOC_LEN-1)，则元素类型、元素组名和元素变量名不被发送。</p>
+<h5 id="get-info">Get Info</h5>
+<p>当连接到飞行器时，首先要请求<strong>Get Info</strong>命令。该操作能够知道变量数量、日志实施的限制和日志变量的指纹。</p>
+<p>原始版本的请求和应答流程如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Request (PC to Copter):</span><br><span class="line">        +--------------+</span><br><span class="line">        | GET_INFO (1) |</span><br><span class="line">        +--------------+</span><br><span class="line">Length         1</span><br><span class="line"></span><br><span class="line">Answer (Copter to PC):</span><br><span class="line">        +--------------+---------+---------+-----------------+-------------+</span><br><span class="line">        | GET_INFO (1) | LOG_LEN | LOG_CRC |  LOG_MAX_PACKET | LOG_MAX_OPS |</span><br><span class="line">        +--------------+---------+---------+-----------------+-------------+</span><br><span class="line">Length        1             1         4             1               1</span><br></pre></td></tr></table></figure>
+<p>下表详述PC端的请求内容：</p>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>请求字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>GET_INFO</td>
+<td>数值1用于<strong>GET_INFO</strong>操作</td>
+</tr>
+</tbody>
+</table>
+<p>下表详述crazyflie飞控应答内容：</p>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>应答字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>GET_INFO</td>
+<td>数值1用于GET_INFO操作</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>LOG_LEN</td>
+<td>包含在日志表中的元素的数量</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>LOG_CRC</td>
+<td>在日志TOC存储区内容数值的CRC值，这是飞行器版本的指纹</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>LOG_MAX_PACKET</td>
+<td>飞行器的最大日志包数量，可以在飞行器中编程</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>LOG_MAX_OPS</td>
+<td>飞行器中的可编程操作的最大数量，该操作是一种日志变量检索程序</td>
+</tr>
+</tbody>
+</table>
+<h4 id="log-control">Log control</h4>
+<p>日志控制通道允许安装、激活、失效和移除日志包。就像访问TOC通道第一个字节代表的命令，日志控制同样有如下命令：</p>
+<table>
+<thead>
+<tr class="header">
+<th>控制命令字节</th>
+<th>命令</th>
+<th>操作</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>CREATE_BLOCK</td>
+<td>创建一个新的日志块</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>APPEND_BLOCK</td>
+<td>在存在的日志块上追加变量</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>DELETE_BLOCK</td>
+<td>删除一个日志块</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>START_BLOCK</td>
+<td>启用日志块传输</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>STOP_BLOCK</td>
+<td>停止日志块传输</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>RESET</td>
+<td>删除所有的日志块</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>CREATE_BLOCK_V2</td>
+<td>V2版本:创建一个新的日志块</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>APPEND_BLOCK_V2</td>
+<td>V2版本:在存在的日志块上追加变量</td>
+</tr>
+</tbody>
+</table>
+<h5 id="create-block">Create block</h5>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Request (PC to Copter):</span><br><span class="line">										  &lt; 更多设置参数按如下结构扩展      &gt;</span><br><span class="line">        +------------------+--------------+--------------+-------------+</span><br><span class="line">        | CREATE_BLOCK (0) | LOG_BLOCK_ID | SET_LOG_TYPE |  SET_LOG_ID |</span><br><span class="line">        +------------------+--------------+--------------+-------------+</span><br><span class="line">Length         1				   1			  1				1</span><br><span class="line"></span><br><span class="line">Answer (Copter to PC):</span><br><span class="line">        +------------------+--------------+------------+</span><br><span class="line">        | CREATE_BLOCK (0) | LOG_BLOCK_ID | CREATE_STS |</span><br><span class="line">        +------------------+--------------+------------+</span><br><span class="line">Length            1               1               1</span><br></pre></td></tr></table></figure>
+<p>返回状态参考<strong>&lt;errno.h&gt;</strong>文件内容。</p>
+<h5 id="append-variable-to-block">Append variable to block</h5>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Request (PC to Copter):</span><br><span class="line">										  &lt; 更多设置参数按如下结构扩展      &gt;</span><br><span class="line">        +------------------+--------------+--------------+-------------+</span><br><span class="line">        | APPEND_BLOCK (1) | LOG_BLOCK_ID | SET_LOG_TYPE |  SET_LOG_ID |</span><br><span class="line">        +------------------+--------------+--------------+-------------+</span><br><span class="line">Length         1				   1			  1				1</span><br><span class="line"></span><br><span class="line">Answer (Copter to PC):</span><br><span class="line">        +------------------+--------------+------------+</span><br><span class="line">        | APPEND_BLOCK (1) | LOG_BLOCK_ID | CREATE_STS |</span><br><span class="line">        +------------------+--------------+------------+</span><br><span class="line">Length            1               1               1</span><br></pre></td></tr></table></figure>
+<p>返回状态参考<strong>&lt;errno.h&gt;</strong>文件内容。</p>
+<h5 id="delelte-block">Delelte block</h5>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Request (PC to Copter):</span><br><span class="line">        +------------------+--------------+</span><br><span class="line">        | DELETE_BLOCK (2) | LOG_BLOCK_ID |</span><br><span class="line">        +------------------+--------------+</span><br><span class="line">Length         1				   1		</span><br><span class="line"></span><br><span class="line">Answer (Copter to PC):</span><br><span class="line">        +------------------+--------------+------------+</span><br><span class="line">        | DELETE_BLOCK (2) | LOG_BLOCK_ID | CREATE_STS |</span><br><span class="line">        +------------------+--------------+------------+</span><br><span class="line">Length            1               1               1</span><br></pre></td></tr></table></figure>
+<p>通过请求的LOG_BLOCK_ID，查找相关节点，并删除链表中的该节点。</p>
+<h5 id="start-block">Start block</h5>
+<p>通过启动相应的定时器实现日志的发送，并设置相应的周期时间。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Request (PC to Copter):</span><br><span class="line">        +-----------------+--------------+------------+</span><br><span class="line">        | START_BLOCK (3) | LOG_BLOCK_ID | LOG_PERIOD |</span><br><span class="line">        +-----------------+--------------+------------+</span><br><span class="line">Length         1				   1		     1</span><br><span class="line"></span><br><span class="line">Answer (Copter to PC):</span><br><span class="line">        +-----------------+--------------+------------+</span><br><span class="line">        | START_BLOCK (3) | LOG_BLOCK_ID | CREATE_STS |</span><br><span class="line">        +-----------------+--------------+------------+</span><br><span class="line">Length            1               1               1</span><br></pre></td></tr></table></figure>
+<h5 id="stop-block">Stop block</h5>
+<p>通过停止相应的定时器来停止日志数据的发送。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Request (PC to Copter):</span><br><span class="line">        +----------------+--------------+</span><br><span class="line">        | STOP_BLOCK (4) | LOG_BLOCK_ID |</span><br><span class="line">        +----------------+--------------+</span><br><span class="line">Length         1				   1		</span><br><span class="line"></span><br><span class="line">Answer (Copter to PC):</span><br><span class="line">        +----------------+--------------+------------+</span><br><span class="line">        | STOP_BLOCK (4) | LOG_BLOCK_ID | CREATE_STS |</span><br><span class="line">        +----------------+--------------+------------+</span><br><span class="line">Length          1               1               1</span><br></pre></td></tr></table></figure>
+<h5 id="reset">Reset</h5>
+<p>停止所有日志块的发送、删除所有日志块的内容，释放所有日志块的空间。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Request (PC to Copter):</span><br><span class="line">        +-----------+</span><br><span class="line">        | RESET (5) |</span><br><span class="line">        +-----------+</span><br><span class="line">Length       1					</span><br><span class="line"></span><br><span class="line">Answer (Copter to PC):</span><br><span class="line">        +-----------+--------------+------------+</span><br><span class="line">        | RESET (5) | LOG_BLOCK_ID | CREATE_STS |</span><br><span class="line">        +-----------+--------------+------------+</span><br><span class="line">Length        1             1             1</span><br></pre></td></tr></table></figure>
+<h5 id="create-block-v2">CREATE BLOCK V2</h5>
+<p>V2版本的日志块创建。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Request (PC to Copter):</span><br><span class="line">										  &lt; 更多设置参数按如下结构扩展      &gt;</span><br><span class="line">        +---------------------+--------------+--------------+-------------+</span><br><span class="line">        | CREATE_BLOCK_V2 (6) | LOG_BLOCK_ID | SET_LOG_TYPE |  SET_LOG_ID |</span><br><span class="line">        +---------------------+--------------+--------------+-------------+</span><br><span class="line">Length         1				   1			  1				2</span><br><span class="line"></span><br><span class="line">Answer (Copter to PC):</span><br><span class="line">        +---------------------+--------------+------------+</span><br><span class="line">        | CREATE_BLOCK_V2 (6) | LOG_BLOCK_ID | CREATE_STS |</span><br><span class="line">        +---------------------+--------------+------------+</span><br><span class="line">Length            1               1               1</span><br></pre></td></tr></table></figure>
+<h5 id="append-block-v2">APPEND BLOCK V2</h5>
+<p>V2版本的追加日志内容。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Request (PC to Copter):</span><br><span class="line">										  &lt; 更多设置参数按如下结构扩展      &gt;</span><br><span class="line">        +---------------------+--------------+--------------+-------------+</span><br><span class="line">        | APPEND_BLOCK_V2 (7) | LOG_BLOCK_ID | SET_LOG_TYPE |  SET_LOG_ID |</span><br><span class="line">        +---------------------+--------------+--------------+-------------+</span><br><span class="line">Length         1				   1			  1				2</span><br><span class="line"></span><br><span class="line">Answer (Copter to PC):</span><br><span class="line">        +---------------------+--------------+------------+</span><br><span class="line">        | APPEND_BLOCK_V2 (7) | LOG_BLOCK_ID | CREATE_STS |</span><br><span class="line">        +---------------------+--------------+------------+</span><br><span class="line">Length            1               1               1</span><br></pre></td></tr></table></figure>
+<h4 id="log-data">Log data</h4>
+<p>日志数据通道用于飞行器在可编程速率下发送日志块数据。</p>
+<p>详细的请求内容如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Answer (Copter to PC):</span><br><span class="line">        +----------+------------+---------//----------+</span><br><span class="line">        | BLOCK_ID | TIME_STAMP | LOG VARIABLE VALUES |</span><br><span class="line">        +----------+------------+---------//----------+</span><br><span class="line">Length        1          3           0 to 28</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>应答字段</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>BLOCK_ID</td>
+<td>日志块的ID</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>TIME_STAMP</td>
+<td>时标以ms形式，从飞行器启动起算起，并以3字节的小端整形表示</td>
+</tr>
+<tr class="odd">
+<td>4-...</td>
+<td>Log variable values</td>
+<td>日志包的数据值以小端形式表述</td>
+</tr>
+</tbody>
+</table>
+<h3 id="localization端口说明">Localization端口说明</h3>
+<p>该端口组有一系列定位相关的数据包，主要如下几个通道：</p>
+<table>
+<thead>
+<tr class="header">
+<th>端口</th>
+<th>通道</th>
+<th>命名</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>6</td>
+<td>0</td>
+<td>External Position</td>
+<td>外部位置</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>1</td>
+<td>Generic localization</td>
+<td>通用定位</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>2</td>
+<td>External Position Packet</td>
+<td>外部位置数据包</td>
+</tr>
+</tbody>
+</table>
+<h4 id="external-position">External Position</h4>
+<p>该数据包被用来发送由外部系统获取的Crazyflie位置信息。主要用该数据包发送由运动捕获系统获取的位置信息，并通过扩展卡尔曼滤波，允许Crazyflie计算位置估计并控制其状态。</p>
+<p>数据包形式如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">CrtpExtPosition</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="keyword">float</span> x; <span class="comment">// in m</span></span><br><span class="line">  <span class="keyword">float</span> y; <span class="comment">// in m</span></span><br><span class="line">  <span class="keyword">float</span> z; <span class="comment">// in m</span></span><br><span class="line">&#125; __attribute__((packed));</span><br></pre></td></tr></table></figure>
+<h4 id="generic-localization">Generic Localization</h4>
+<p>该通道用于定位子系统有用的主机数据包，该数据包被创建用来服务于自身位置系统数据包，但可以被用作对更多通用系统像GPS NMEA编码或二进制数据流。数据包格式如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>数值</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>PACKET_TYPE</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>1-...</td>
+<td>Payload</td>
+<td>数据包的有效载荷，数据形式由包类型确定</td>
+</tr>
+</tbody>
+</table>
+<p>关于<strong>PACKET_TYPE</strong>定义：</p>
+<table>
+<thead>
+<tr class="header">
+<th>包类型</th>
+<th>数值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RANGE_STREAM_FLOAT</td>
+<td>0</td>
+<td>待确认</td>
+</tr>
+<tr class="even">
+<td>RANGE_STREAM_FP16</td>
+<td>1</td>
+<td>待确认</td>
+</tr>
+<tr class="odd">
+<td>LPS_SHORT_LPP_PACKET</td>
+<td>2</td>
+<td>LPS 发送 LPP数据包</td>
+</tr>
+<tr class="even">
+<td>EMERGENCY_STOP</td>
+<td>3</td>
+<td>紧急停止</td>
+</tr>
+<tr class="odd">
+<td>EMERGENCY_STOP_WATCHDOG</td>
+<td>4</td>
+<td>接收超时触发紧急停止</td>
+</tr>
+<tr class="even">
+<td>COMM_GNSS_NMEA</td>
+<td>6</td>
+<td>待确认</td>
+</tr>
+<tr class="odd">
+<td>COMM_GNSS_PROPRIETARY</td>
+<td>7</td>
+<td>待确认</td>
+</tr>
+<tr class="even">
+<td>EXT_POSE</td>
+<td>8</td>
+<td>外部位置信息包</td>
+</tr>
+<tr class="odd">
+<td>EXT_POSE_PACKED</td>
+<td>9</td>
+<td>外部位置信息压缩包</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>LPS:Loco Positioning System</p>
+<p>LPP:Loco Positioning Protocol</p>
+</blockquote>
+<h5 id="lpp-short-packet-tunnel">LPP Short packet tunnel</h5>
+<p>该数据用于发送LPP短包到本地位置系统，有效数据以<a target="_blank" rel="noopener" href="https://www.bitcraze.io/docs/lps-node-firmware/master/lpp/">LPP Short Packet</a>的形式发送给系统。</p>
+<h5 id="emergency-stop">Emergency stop</h5>
+<p>当收到时，稳定循环系统被设置到紧急停止模式，该模式下停止所有电机。直到飞控状态复位，否则稳定循环模式一直保持在紧急停止状态。</p>
+<h5 id="emergency_stop_watchdog">EMERGENCY_STOP_WATCHDOG</h5>
+<p>飞控启动时<strong>超时紧急停止</strong>处于失效状态，当第一个数据包接收开始，超时1s就会使能<strong>超时紧急停止</strong>。该数据包至少每秒被<strong>Crazyflie</strong>发送和接收一次，否则稳定循环系统就会被设置进入紧急停止状态且所有电机停转。</p>
+<h5 id="ext_pose">EXT_POSE</h5>
+<p>外部系统的位置信息，详细结构如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>字段</th>
+<th>类型</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>EXT_POSE</td>
+<td>byte</td>
+<td>外部位置 信息包</td>
+</tr>
+<tr class="even">
+<td>1 - 4</td>
+<td>x</td>
+<td>float</td>
+<td>x轴坐标信息</td>
+</tr>
+<tr class="odd">
+<td>5 - 8</td>
+<td>y</td>
+<td>float</td>
+<td>y轴坐标信息</td>
+</tr>
+<tr class="even">
+<td>9 - 12</td>
+<td>z</td>
+<td>float</td>
+<td>z轴坐标信息</td>
+</tr>
+<tr class="odd">
+<td>13 - 16</td>
+<td>qx</td>
+<td>float</td>
+<td>四元素姿态信息：方位信息的x轴分量</td>
+</tr>
+<tr class="even">
+<td>17 - 20</td>
+<td>qy</td>
+<td>float</td>
+<td>四元素姿态信息：方位信息的y轴分量</td>
+</tr>
+<tr class="odd">
+<td>21 - 24</td>
+<td>qz</td>
+<td>float</td>
+<td>四元素姿态信息：方位信息的z轴分量</td>
+</tr>
+<tr class="even">
+<td>25 - 28</td>
+<td>qw</td>
+<td>float</td>
+<td>四元素姿态信息：矢量大小系数</td>
+</tr>
+</tbody>
+</table>
+<h5 id="ext_pose_packed">EXT_POSE_PACKED</h5>
+<p>外部位置系统的数据通过该数据包形式进行压缩发送，节省通道带宽，详细包形式如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>字段</th>
+<th>类型</th>
+<th>系数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>EXT_POSE_PACKED</td>
+<td>byte</td>
+<td></td>
+<td>外部位置信息压缩包</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>id</td>
+<td>uint8</td>
+<td></td>
+<td>Crazyflie飞控地址的最后8bit</td>
+</tr>
+<tr class="odd">
+<td>2 - 3</td>
+<td>x</td>
+<td>int16</td>
+<td>0.001</td>
+<td>x轴坐标信息</td>
+</tr>
+<tr class="even">
+<td>4 - 5</td>
+<td>y</td>
+<td>int16</td>
+<td>0.001</td>
+<td>y轴坐标信息</td>
+</tr>
+<tr class="odd">
+<td>6 - 7</td>
+<td>z</td>
+<td>int16</td>
+<td>0.001</td>
+<td>z轴坐标信息</td>
+</tr>
+<tr class="even">
+<td>8 - 11</td>
+<td>quaternion</td>
+<td>uint32_t</td>
+<td></td>
+<td>压缩格式的四元素(压缩算法详见<strong>quatcompress.h</strong>)</td>
+</tr>
+<tr class="odd">
+<td>...</td>
+<td></td>
+<td></td>
+<td></td>
+<td>另一同样包形式的元素</td>
+</tr>
+</tbody>
+</table>
+<p>每个CRTP数据包可以达到两个外部位置信息元素。</p>
+<h3 id="generic-setpoint端口说明">Generic Setpoint端口说明</h3>
+<p>该端口允许发送设定点到飞行器平台。其理念在于能够为每个不同的用例定义设定点数据的包格式。因此这是一个拥有一个通道和一个主要包形式的通用端口。</p>
+<table>
+<thead>
+<tr class="header">
+<th>端口</th>
+<th>通道</th>
+<th>命名</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>7</td>
+<td>0</td>
+<td>通用设定点</td>
+</tr>
+</tbody>
+</table>
+<p>通用设定点包的形式如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>字节</th>
+<th>数值</th>
+<th>注解</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>ID</td>
+<td>设定点数据包类型的ID值</td>
+</tr>
+<tr class="even">
+<td>1 - ...</td>
+<td>Payload</td>
+<td>数据形式由数据包类型确定</td>
+</tr>
+</tbody>
+</table>
+<p>详细的包类型如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td><a href="#stop">stop</a></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td><a href="#velocity-world">Velocity World</a></td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td><a href="#z-distance">Z Distance</a></td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td><a href="#cppm-emulation">CPPM Emulation</a></td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td><a href="#altitude-hold">Altitude Hold</a></td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td><a href="#hover">Hover</a></td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td><a href="#full-state">Full State</a></td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td><a href="#position">Position</a></td>
+</tr>
+</tbody>
+</table>
+<h4 id="stop">Stop</h4>
+<p>这个设定点无有效负载，用于停止电机和失效控制循环。需要在Crazyflie飞控着陆的情况下发送。</p>
+<h4 id="velocity-world">Velocity World</h4>
+<p>世界坐标系中的速度设定点伴随着偏航角速度。适用于在本地位置系统的遥控模式。</p>
+<p>有效载荷数据的形式如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">velocityPacket_s</span> &#123;</span></span><br><span class="line">  <span class="keyword">float</span> vx;        <span class="comment">// m in the world frame of reference</span></span><br><span class="line">  <span class="keyword">float</span> vy;        <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">float</span> vz;        <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">float</span> yawrate;  <span class="comment">// deg/s</span></span><br><span class="line">&#125; __attribute__((packed));</span><br></pre></td></tr></table></figure>
+<h4 id="z-distance">Z Distance</h4>
+<p>设置Crazyflie飞控绝对高度和俯仰/滚转角度，数据有效载荷形似如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">zDistancePacket_s</span> &#123;</span></span><br><span class="line">  <span class="keyword">float</span> roll;            <span class="comment">// deg</span></span><br><span class="line">  <span class="keyword">float</span> pitch;           <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">float</span> yawrate;         <span class="comment">// deg/s</span></span><br><span class="line">  <span class="keyword">float</span> zDistance;        <span class="comment">// m in the world frame of reference</span></span><br><span class="line">&#125; __attribute__((packed));</span><br></pre></td></tr></table></figure>
+<h4 id="cppm-emulation">CPPM Emulation</h4>
+<p>CRTP数据包拥有一个<strong>CPPM</strong>(Crazyflie Pulse Position Modulation)仿真通道，该通道数据范围1000-2000，其中间值为1500，支持原始的<strong>RPYT</strong>(Roll Pitch Yaw Thrust)通道，再加上高达<strong>MAX_AUX_RC_CHANNELS</strong> 数量的辅组通道。辅组通道是可选的，并且除非给定通道被实际使用，发射器没必要传输所有的数据(<strong>numAuxChannels</strong>是设定依据)。</p>
+<p>有效数据载荷形式：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAX_AUX_RC_CHANNELS 10</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">float</span> s_CppmEmuRollMaxRateDps = <span class="number">720.0f</span>; <span class="comment">// For rate mode</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">float</span> s_CppmEmuPitchMaxRateDps = <span class="number">720.0f</span>; <span class="comment">// For rate mode</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">float</span> s_CppmEmuRollMaxAngleDeg = <span class="number">50.0f</span>; <span class="comment">// For level mode</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">float</span> s_CppmEmuPitchMaxAngleDeg = <span class="number">50.0f</span>; <span class="comment">// For level mode</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">float</span> s_CppmEmuYawMaxRateDps = <span class="number">400.0f</span>; <span class="comment">// Used regardless of flight mode</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cppmEmuPacket_s</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">      <span class="keyword">uint8_t</span> numAuxChannels : <span class="number">4</span>;   <span class="comment">// Set to 0 through MAX_AUX_RC_CHANNELS</span></span><br><span class="line">      <span class="keyword">uint8_t</span> reserved : <span class="number">4</span>;</span><br><span class="line">  &#125; hdr;</span><br><span class="line">  <span class="keyword">uint16_t</span> channelRoll;</span><br><span class="line">  <span class="keyword">uint16_t</span> channelPitch;</span><br><span class="line">  <span class="keyword">uint16_t</span> channelYaw;</span><br><span class="line">  <span class="keyword">uint16_t</span> channelThrust;</span><br><span class="line">  <span class="keyword">uint16_t</span> channelAux[MAX_AUX_RC_CHANNELS];</span><br><span class="line">&#125; __attribute__((packed));</span><br></pre></td></tr></table></figure>
+<h4 id="altitude-hold">Altitude Hold</h4>
+<p>设置Crazyflie飞控的垂直速度和滚转/俯仰角度。</p>
+<p>数据有效载荷形式如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">altHoldPacket_s</span> &#123;</span></span><br><span class="line">  <span class="keyword">float</span> roll;            <span class="comment">// rad</span></span><br><span class="line">  <span class="keyword">float</span> pitch;           <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">float</span> yawrate;         <span class="comment">// deg/s</span></span><br><span class="line">  <span class="keyword">float</span> zVelocity;       <span class="comment">// m/s in the world frame of reference</span></span><br><span class="line">&#125; __attribute__((packed));</span><br></pre></td></tr></table></figure>
+<h4 id="hover">Hover</h4>
+<p>设置Crazyflie飞控绝对高度和在刚体坐标系下的速度。</p>
+<p>数据有效载荷形似如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hoverPacket_s</span> &#123;</span></span><br><span class="line">  <span class="keyword">float</span> vx;           <span class="comment">// m/s in the body frame of reference</span></span><br><span class="line">  <span class="keyword">float</span> vy;           <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">float</span> yawrate;      <span class="comment">// deg/s</span></span><br><span class="line">  <span class="keyword">float</span> zDistance;    <span class="comment">// m in the world frame of reference</span></span><br><span class="line">&#125; __attribute__((packed));</span><br></pre></td></tr></table></figure>
+<h4 id="full-state">Full State</h4>
+<p>设置所有的控制状态。其数据有效载荷形式如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">fullStatePacket_s</span> &#123;</span></span><br><span class="line">  <span class="keyword">int16_t</span> x;         <span class="comment">// position - mm</span></span><br><span class="line">  <span class="keyword">int16_t</span> y;</span><br><span class="line">  <span class="keyword">int16_t</span> z;</span><br><span class="line">  <span class="keyword">int16_t</span> vx;        <span class="comment">// velocity - mm / sec</span></span><br><span class="line">  <span class="keyword">int16_t</span> vy;</span><br><span class="line">  <span class="keyword">int16_t</span> vz;</span><br><span class="line">  <span class="keyword">int16_t</span> ax;        <span class="comment">// acceleration - mm / sec^2</span></span><br><span class="line">  <span class="keyword">int16_t</span> ay;</span><br><span class="line">  <span class="keyword">int16_t</span> az;</span><br><span class="line">  <span class="keyword">int32_t</span> quat;      <span class="comment">// compressed quaternion, see quatcompress.h</span></span><br><span class="line">  <span class="keyword">int16_t</span> rateRoll;  <span class="comment">// angular velocity - milliradians / sec</span></span><br><span class="line">  <span class="keyword">int16_t</span> ratePitch; <span class="comment">//  (<span class="doctag">NOTE:</span> limits to about 5 full circles per sec.</span></span><br><span class="line">  <span class="keyword">int16_t</span> rateYaw;   <span class="comment">//   may not be enough for extremely aggressive flight.)</span></span><br><span class="line">&#125; __attribute__((packed));</span><br></pre></td></tr></table></figure>
+<h4 id="position">Position</h4>
+<p>设置绝对位置和方向，其数据有效载荷形式如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">positionPacket_s</span> &#123;</span></span><br><span class="line">  <span class="keyword">float</span> x;     <span class="comment">// Position in m</span></span><br><span class="line">  <span class="keyword">float</span> y;</span><br><span class="line">  <span class="keyword">float</span> z;</span><br><span class="line">  <span class="keyword">float</span> yaw;   <span class="comment">// Orientation in degree</span></span><br><span class="line">&#125; __attribute__((packed));</span><br></pre></td></tr></table></figure>
+<h2 id="连接步骤">连接步骤</h2>
+<p>CRTP被设计为无状态模式，所以不需要握手过程。任何命令可以在任何时候被发送，但是对于一些日记/参数/存储 命令，为了主机客户端能够发送正确的信息，内容表(TOC)需要被下载。为了能够使用所有的功能，在连接的情况下，执行Python API 将会下载 参数/日记/存储 TOC 。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="John 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="John 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/CRTP/" rel="tag"># CRTP</a>
+              <a href="/tags/Crazy-RealTime-Protocol/" rel="tag"># Crazy RealTime Protocol</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/01/22/crazyflie-%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E/" rel="prev" title="crazyflie-开发说明">
+                  <i class="fa fa-chevron-left"></i> crazyflie-开发说明
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/02/18/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%9F%BA%E4%BA%8E%E8%BF%90%E5%8A%A8%E6%A8%A1%E5%9E%8B%E7%9A%84LQR%E4%BC%98%E5%8C%96/" rel="next" title="控制算法-基于运动模型的LQR优化">
+                  控制算法-基于运动模型的LQR优化 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;f7f1d18163ac2400d3db6ed7b430efa9&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

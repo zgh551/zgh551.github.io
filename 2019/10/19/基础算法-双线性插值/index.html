@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="概述 线性差值在实际应用非常广泛，比如航空航天行业中广泛用到气动数据的插值，经常会用到三线性到四线性的插值，在汽车行业很多标定数据而需要使用双线性插值，本篇文章主要讲述双线性插值的实现方式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="双线性插值">
+<meta property="og:url" content="https://zgh551.github.io/2019/10/19/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="概述 线性差值在实际应用非常广泛，比如航空航天行业中广泛用到气动数据的插值，经常会用到三线性到四线性的插值，在汽车行业很多标定数据而需要使用双线性插值，本篇文章主要讲述双线性插值的实现方式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20191020163410.jpg">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190727155601290.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190727155822629.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190729105119489.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190727171729916.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20190727171818236.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2019-10-19T02:03:41.000Z">
+<meta property="article:modified_time" content="2021-06-16T13:13:09.964Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="线性插值">
+<meta property="article:tag" content="算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20191020163410.jpg">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2019/10/19/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;2019&#x2F;10&#x2F;19&#x2F;%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC&#x2F;&quot;,&quot;path&quot;:&quot;2019&#x2F;10&#x2F;19&#x2F;基础算法-双线性插值&#x2F;&quot;,&quot;title&quot;:&quot;双线性插值&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>双线性插值 | Z</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">2.</span> <span class="nav-text">应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">双线性插值原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text">软件实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">3.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E8%A1%A8%E7%9A%84%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84"><span class="nav-number">3.2.</span> <span class="nav-text">数据表的存储结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E5%B7%AE%E5%80%BC%E5%87%BD%E6%95%B0"><span class="nav-number">3.3.</span> <span class="nav-text">线性差值函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC%E5%87%BD%E6%95%B0"><span class="nav-number">3.4.</span> <span class="nav-text">双线性插值函数</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/10/19/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="John">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          双线性插值
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-10-19 10:03:41" itemprop="dateCreated datePublished" datetime="2019-10-19T10:03:41+08:00">2019-10-19</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 21:13:09" itemprop="dateModified" datetime="2021-06-16T21:13:09+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">基础算法</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">概述</h2>
+<p>线性差值在实际应用非常广泛，比如航空航天行业中广泛用到气动数据的插值，经常会用到三线性到四线性的插值，在汽车行业很多标定数据而需要使用双线性插值，本篇文章主要讲述双线性插值的实现方式。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20191020163410.jpg" /></p>
+<span id="more"></span>
+<h2 id="应用场景">应用场景</h2>
+<p>本文基于车辆扭矩标定的应用场景来说明2维线性插值的具体应用，根据车辆的控制原理可知，车辆的目标加速度与当前车速和发动机输出扭矩有关，因此对车辆扭矩进行标定后，我们就可以得到一个根据当前目标加速度和车速，获得车辆输出扭矩的关系表。 如下表所示，只选取了目标加速度为正的部分标定数据，其中横向表示速度(m/s)，纵向表示加速度(m/s2)，表中的数据代表汽车扭矩输出(Nm)。由于速度只采样了[0.1,0.2,0.3,0.4,0.5,0.6,0.7]这几个数值点的数据，加速度也只采样了[0.06,0.09,0.1,0.12,0.13,0.15,0.2,0.21,0.24,0.26]这几组数据点的数据，如果想得到中间任意数值的数值，就需要使用双线性插值算法来获得。 <img src="https://img-blog.csdnimg.cn/20190727155601290.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /> 如下表所示，如果当前需求的目标加速度为0.094m/s2，当前车速为0.36m/s，想得到当前输出扭矩值，按照表格所圈出的扭矩值，进行多次线性插值，求得理想的输出扭矩。 <img src="https://img-blog.csdnimg.cn/20190727155822629.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+<h3 id="双线性插值原理">双线性插值原理</h3>
+<p>双线性插值算法，是在线性插值的基础上进行多次插值的结果。 如下图所示，假设插值点<span class="math inline">\({(x_i,y_i)}\)</span>的坐标点<span class="math inline">\(x_i\)</span>和<span class="math inline">\(y_i\)</span>范围满足，<span class="math inline">\(x_1\le x_i \le x_2\)</span>，<span class="math inline">\(y_1\le y_i \le y_2\)</span>，其中<span class="math inline">\((x_1,y_1)\)</span>对应数值为<span class="math inline">\(z_1\)</span>，<span class="math inline">\((x_2,y_1)\)</span>对应数值为<span class="math inline">\(z_2\)</span>，<span class="math inline">\((x_2,y_2)\)</span>对应数值为<span class="math inline">\(z_3\)</span>，<span class="math inline">\((x_1,y_2)\)</span>对应数值为<span class="math inline">\(z_4\)</span>。</p>
+<figure>
+<img src="https://img-blog.csdnimg.cn/20190729105119489.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
+</figure>
+<p>第一步，进行x轴方向的线性插值。当y取值<span class="math inline">\(y_1\)</span>时，进行点<span class="math inline">\((x_1,z_1)\)</span>和点<span class="math inline">\((x_2,z_2)\)</span>之间的插值，得到插值点<span class="math inline">\((x_i,z5)\)</span>；同理y取值<span class="math inline">\(y_2\)</span>时，进行点<span class="math inline">\((x_1,z_4)\)</span>和点<span class="math inline">\((x_2,z_3)\)</span>之间的插值，可得第二个插值点<span class="math inline">\((x_i,z_6)\)</span>。</p>
+<figure>
+<img src="https://img-blog.csdnimg.cn/20190727171729916.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
+</figure>
+<p>第二步，进行y轴方向的插值。依据新的插值点<span class="math inline">\((y_1,z5)\)</span>和<span class="math inline">\((y_2,z_6)\)</span>，进行线性插值，得到插值点<span class="math inline">\((x_i,y_i,z_7)\)</span>。此时的点<span class="math inline">\((x_i,y_i,z_7)\)</span>就是双线性插值的最终结果。</p>
+<figure>
+<img src="https://img-blog.csdnimg.cn/20190727171818236.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
+</figure>
+<h2 id="软件实现">软件实现</h2>
+<h3 id="概述-1">概述</h3>
+<p>本文基于c语言去实现插值算法，数据结构采用简单的数组结构，不使用C++的关联容器属性去实现数据表的存储。</p>
+<h3 id="数据表的存储结构">数据表的存储结构</h3>
+<p>数据结构使用三个数组进行数组的存储，其中两个数组分别存储横向的速度值和纵向的加速度值，另一个数组存储对应的扭矩值。 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ACC_ARRAY_NUM  		( 10 )</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> VELOCITY_ARRAY_NUM  (  7 )</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">float</span> acc_table[ACC_ARRAY_NUM]           = &#123;<span class="number">0.06f</span>,<span class="number">0.09f</span>,<span class="number">0.1f</span>,<span class="number">0.12f</span>,<span class="number">0.13f</span>,<span class="number">0.15f</span>,<span class="number">0.2f</span>,<span class="number">0.21f</span>,<span class="number">0.24f</span>,<span class="number">0.26f</span>&#125;;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">float</span> velocity_table[VELOCITY_ARRAY_NUM] = &#123;<span class="number">0.1f</span>,<span class="number">0.2f</span>,<span class="number">0.3f</span>,<span class="number">0.4f</span>,<span class="number">0.5f</span>,<span class="number">0.6f</span>,<span class="number">0.7f</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">float</span> torque_table[ACC_ARRAY_NUM][VELOCITY_ARRAY_NUM]=</span><br><span class="line">&#123;</span><br><span class="line">		&#123;<span class="number">60</span>,<span class="number">60</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">80</span>,<span class="number">60</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">80</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">100</span>,<span class="number">80</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">100</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure> ### 索引ID查找函数 输入参数 <strong><em>array</em></strong> ：需进行数值匹配查找的数组 输入参数 <strong><em>num</em></strong> ：数组的长度 输入参数 <strong><em>input</em></strong> ：需要匹配的值 输出参数 <strong><em>before</em></strong> ：匹配值的前数组边界ID 输出参数 <strong><em>before</em></strong> ：匹配值的后数组边界ID <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ArrayIndexFind</span><span class="params">(<span class="keyword">float</span> *<span class="built_in">array</span>,<span class="keyword">uint16_t</span> num,<span class="keyword">float</span> input,<span class="keyword">uint16_t</span> *before,<span class="keyword">uint16_t</span> *after)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">uint16_t</span> min_index,max_index;</span><br><span class="line">	<span class="keyword">uint16_t</span> middle_index;</span><br><span class="line">	min_index = <span class="number">0</span>;</span><br><span class="line">	max_index = num - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span>( (max_index - min_index) &gt; <span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		middle_index = (min_index + max_index) / <span class="number">2</span> ;</span><br><span class="line">		<span class="keyword">if</span>(input &lt; <span class="built_in">array</span>[middle_index])</span><br><span class="line">		&#123;</span><br><span class="line">			max_index = middle_index;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			min_index = middle_index;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	*before = min_index;</span><br><span class="line">	*after  = max_index;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> ### 数据插值函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">InterpolateValue</span><span class="params">(<span class="keyword">float</span> x,<span class="keyword">float</span> x0,<span class="keyword">float</span> y0,<span class="keyword">float</span> x1,<span class="keyword">float</span> y1)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="built_in">fabs</span>(x - x0) &lt; kDoubleEpsilon)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> y0;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(<span class="built_in">fabs</span>(x - x1) &lt; kDoubleEpsilon)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> y1;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> y0 + (y1 - y0)*(x - x0)/ (x1 - x0);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="线性差值函数">线性差值函数</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">Interpolation::InterpolationYZ</span><span class="params">(<span class="keyword">float</span> y,<span class="keyword">float</span> *y_tb,<span class="keyword">uint16_t</span> y_num,<span class="keyword">float</span> *z_tb)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">float</span> max_y = y_tb[y_num - <span class="number">1</span>];</span><br><span class="line">	<span class="keyword">float</span> min_y = y_tb[<span class="number">0</span>];</span><br><span class="line">	<span class="keyword">uint16_t</span> y_before,y_after;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span>(y &gt;= (max_y - kDoubleEpsilon))</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> z_tb[y_num - <span class="number">1</span>];</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(y &lt;= (min_y + kDoubleEpsilon))</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> z_tb[<span class="number">0</span>];</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ArrayIndexFind(y_tb,y_num,y,&amp;y_before,&amp;y_after);</span><br><span class="line">	<span class="keyword">return</span> InterpolateValue(y,y_tb[y_before],z_tb[y_before],y_tb[y_after],z_tb[y_after]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="双线性插值函数">双线性插值函数</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">Interpolation2D</span><span class="params">(<span class="keyword">float</span> x,<span class="keyword">float</span> y,<span class="keyword">float</span> *x_tb,<span class="keyword">uint16_t</span> x_num,<span class="keyword">float</span> *y_tb,<span class="keyword">uint16_t</span> y_num,<span class="keyword">float</span> *z_tb)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">float</span> max_x = x_tb[x_num - <span class="number">1</span>];</span><br><span class="line">	<span class="keyword">float</span> min_x = x_tb[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">uint16_t</span> x_before,x_after;</span><br><span class="line">	<span class="keyword">uint16_t</span> z_before_value,z_after_value;</span><br><span class="line">	<span class="keyword">if</span>(x &gt; (max_x - kDoubleEpsilon))</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> InterpolationYZ(y,y_tb,y_num, (z_tb + (x_num - <span class="number">1</span>)*y_num));</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(x &lt; (min_x + kDoubleEpsilon))</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> InterpolationYZ(y,y_tb,y_num, z_tb);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ArrayIndexFind(x_tb,x_num,x,&amp;x_before,&amp;x_after);</span><br><span class="line"></span><br><span class="line">	z_before_value = InterpolationYZ(y,y_tb,y_num, (z_tb + x_before * y_num));</span><br><span class="line">	z_after_value  = InterpolationYZ(y,y_tb,y_num, (z_tb + x_after  * y_num));</span><br><span class="line">	<span class="keyword">return</span> InterpolateValue(x,x_tb[x_before],z_before_value,x_tb[x_after],z_after_value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="John 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="John 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC/" rel="tag"># 线性插值</a>
+              <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"># 算法</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/10/17/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95%E7%9A%84%E7%BA%BF%E6%80%A7%E6%8B%9F%E5%90%88/" rel="prev" title="最小二乘法线性拟合">
+                  <i class="fa fa-chevron-left"></i> 最小二乘法线性拟合
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/10/20/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E9%9C%8D%E5%A4%AB%E5%8F%98%E6%8D%A2(Hough)-OpenCV%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="next" title="霍夫变换-OpenCV源码分析">
+                  霍夫变换-OpenCV源码分析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;fa6c6657eba812a7ce179f30eef86bb2&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

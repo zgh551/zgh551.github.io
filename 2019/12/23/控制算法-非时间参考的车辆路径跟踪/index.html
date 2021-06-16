@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="概述 基于非时间的参考的路径跟踪方法最早应用于机器人的路径跟踪系统，通过引入非时间参考量代替时间参考量，解决传统路径跟踪方法中将期望轨迹视为时间函数的问题。该方法选择移动机器人实际路径在某参考系下的x 轴投影作为非时间参考量。  重庆涂鸦">
+<meta property="og:type" content="article">
+<meta property="og:title" content="控制算法-非时间参考的车辆路径跟踪">
+<meta property="og:url" content="https://zgh551.github.io/2019/12/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E9%9D%9E%E6%97%B6%E9%97%B4%E5%8F%82%E8%80%83%E7%9A%84%E8%BD%A6%E8%BE%86%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="概述 基于非时间的参考的路径跟踪方法最早应用于机器人的路径跟踪系统，通过引入非时间参考量代替时间参考量，解决传统路径跟踪方法中将期望轨迹视为时间函数的问题。该方法选择移动机器人实际路径在某参考系下的x 轴投影作为非时间参考量。  重庆涂鸦">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/DSCF3912.jpg">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191226105628.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191226105632.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225194515.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201717.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201732.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201746.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201811.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201827.png">
+<meta property="article:published_time" content="2019-12-23T08:22:46.000Z">
+<meta property="article:modified_time" content="2021-06-16T14:39:19.659Z">
+<meta property="article:author" content="John">
+<meta property="article:tag" content="路径跟踪">
+<meta property="article:tag" content="滑模控制">
+<meta property="article:tag" content="非时间参考系">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/DSCF3912.jpg">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2019/12/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E9%9D%9E%E6%97%B6%E9%97%B4%E5%8F%82%E8%80%83%E7%9A%84%E8%BD%A6%E8%BE%86%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;https:&#x2F;&#x2F;zgh551.github.io&#x2F;2019&#x2F;12&#x2F;23&#x2F;%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E9%9D%9E%E6%97%B6%E9%97%B4%E5%8F%82%E8%80%83%E7%9A%84%E8%BD%A6%E8%BE%86%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA&#x2F;&quot;,&quot;path&quot;:&quot;2019&#x2F;12&#x2F;23&#x2F;控制算法-非时间参考的车辆路径跟踪&#x2F;&quot;,&quot;title&quot;:&quot;控制算法-非时间参考的车辆路径跟踪&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>控制算法-非时间参考的车辆路径跟踪 | Z</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E6%97%B6%E9%97%B4%E5%8F%82%E8%80%83%E9%87%8F%E4%B8%8B%E7%9A%84%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">非时间参考量下的微分方程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">2.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E8%B7%AF%E5%BE%84%E6%9B%B2%E7%BA%BF"><span class="nav-number">2.2.</span> <span class="nav-text">目标路径曲线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%A6%E8%BE%86%E8%B7%9F%E8%B8%AA%E8%AF%AF%E5%B7%AE%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.3.</span> <span class="nav-text">车辆跟踪误差模型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E5%99%A8%E8%AE%BE%E8%AE%A1"><span class="nav-number">3.</span> <span class="nav-text">滑模控制器设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E5%88%86%E6%96%B9%E7%A8%8B"><span class="nav-number">3.1.</span> <span class="nav-text">微分方程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BB%91%E6%A8%A1%E9%9D%A2"><span class="nav-number">3.2.</span> <span class="nav-text">滑模面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%B6%8B%E8%BF%91%E5%BE%8B%E7%9A%84%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6"><span class="nav-number">3.3.</span> <span class="nav-text">基于趋近律的滑模控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%B3%E5%AE%9A%E5%88%A4%E6%8D%AE"><span class="nav-number">3.4.</span> <span class="nav-text">稳定判据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E7%8E%87"><span class="nav-number">3.5.</span> <span class="nav-text">控制率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E6%8D%A2%E5%87%BD%E6%95%B0"><span class="nav-number">3.6.</span> <span class="nav-text">切换函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text">性能分析</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="John"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">John</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-stack-overflow fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/12/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E9%9D%9E%E6%97%B6%E9%97%B4%E5%8F%82%E8%80%83%E7%9A%84%E8%BD%A6%E8%BE%86%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="John">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          控制算法-非时间参考的车辆路径跟踪
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-23 16:22:46" itemprop="dateCreated datePublished" datetime="2019-12-23T16:22:46+08:00">2019-12-23</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-16 22:39:19" itemprop="dateModified" datetime="2021-06-16T22:39:19+08:00">2021-06-16</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">控制算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA/" itemprop="url" rel="index"><span itemprop="name">路径跟踪</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">概述</h2>
+<p>基于非时间的参考的路径跟踪方法最早应用于机器人的路径跟踪系统，通过引入非时间参考量代替时间参考量，解决传统路径跟踪方法中将期望轨迹视为时间函数的问题。该方法选择移动机器人实际路径在某参考系下的x 轴投影作为非时间参考量。</p>
+<figure>
+<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/DSCF3912.jpg" alt="重庆涂鸦" /><figcaption aria-hidden="true">重庆涂鸦</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="非时间参考量下的微分方程">非时间参考量下的微分方程</h2>
+<h3 id="定义">定义</h3>
+<p>定义一个非时间参考的标量<span class="math inline">\(s\)</span>,该<span class="math inline">\(s\)</span>为时间t的单调递增函数。 <span class="math display">\[
+\left\{
+\begin{array}{rl} 
+&amp;s = S(t)\\
+&amp;\dot{S}(t) &gt; 0
+\end{array} 
+\right.\tag{1}
+\]</span></p>
+<p>在车辆控制中，可以定义车辆的位移<span class="math inline">\(x\)</span>为非时间参考量，为了满足随时间递增的要求，且泊车时速度为负值<span class="math inline">\((v&lt;0)\)</span>，选取的非时间参考量为 <span class="math display">\[
+f = -x(t) \tag{2}
+\]</span> 对上式求导得 <span class="math display">\[
+\dot{f}(t) = -v(t)\cos\psi(t) \tag{3}
+\]</span> 由于车辆泊车过程中偏航角<span class="math inline">\(\psi \in (-\frac{\pi}{2},\frac{\pi}{2})\)</span>，故<span class="math inline">\(\dot{f}(t)&gt;0\)</span>，满足非时间参考量随时间变化单调递增得要求。</p>
+<p>基于非时间参考的车辆运动学方程可表示为: <span class="math display">\[
+\left \{
+\begin{array}{cl}
+&amp;\dfrac{dx}{df}= \dfrac{dx}{dt}\dfrac{dt}{df} = \dfrac{\dot{x}(t)}{\dot{f}(t)}\\
+&amp;\dfrac{dy}{df}= \dfrac{dy}{dt}\dfrac{dt}{df} = \dfrac{\dot{y}(t)}{\dot{f}(t)}\\
+&amp;\dfrac{d\psi}{df}= \dfrac{d\psi}{dt}\dfrac{dt}{df} = \dfrac{\dot{\psi}(t)}{\dot{f}(t)}
+\end{array}
+\right. \tag{4}
+\]</span></p>
+<h3 id="目标路径曲线">目标路径曲线</h3>
+<p>假设目标路径曲线函数为<span class="math inline">\(y_r = F(x_r)\)</span>，如果车辆可以无误差地跟踪，当车辆后轴中心横坐标为<span class="math inline">\(x_r\)</span>时，对应的纵坐标为<span class="math inline">\(y_r\)</span>、航向角为<span class="math inline">\(\psi_r\)</span>、前轮等效转角为<span class="math inline">\(\delta_r\)</span>。</p>
+<ul>
+<li>目标航向角<span class="math inline">\(\psi_r\)</span>计算</li>
+</ul>
+<p>目标航向角<span class="math inline">\(\psi_r\)</span>可以看作是函数<span class="math inline">\(y_r = F(x_r)\)</span>在点<span class="math inline">\(x_r\)</span>处的斜率所对应的航向角度，即 <span class="math display">\[
+\tan(\psi_r) = \dot{F}(x_r)= \frac{dy_r}{dx_r} \tag{5}
+\]</span> 通过反三角函数求得目标航向角为 <span class="math display">\[
+\psi_r = \arctan\bigl(\dot{F}(x_r)\bigr)= \arctan(\frac{dy_r}{dx_r}) \tag{6}
+\]</span></p>
+<ul>
+<li>目标转向角<span class="math inline">\(\delta_r\)</span>计算</li>
+</ul>
+<p>根据转向角的几何关系得 <span class="math display">\[
+\delta_r = \arctan(l*k) \tag{7}
+\]</span></p>
+<p>其中，<span class="math inline">\(l\)</span>代表车辆轴距、<span class="math inline">\(k\)</span>代表点<span class="math inline">\(x_r\)</span>处的目标路径曲线的曲率。</p>
+<p>根据轨迹函数<span class="math inline">\(y_r = F(x_r)\)</span>的一阶导数和二阶导数，曲率计算公式表示如下： <span class="math display">\[
+k = \frac{\rvert\ddot{F}(x_r)\rvert}{[1+\dot{F}(x_r)^{2}]^\frac{3}{2}} \tag{8}
+\]</span></p>
+<p>根据目标路径曲线，如果某段曲线是凸的，对应的二阶导数<span class="math inline">\(\ddot{F}(x_r) &lt; 0\)</span>。很明显，当偏航角满足<span class="math inline">\(\psi \in (-\frac{\pi}{2},\frac{\pi}{2})\)</span>时，如果希望车辆跟踪凸形路线，对应的转向角应该为负值。同理，当曲线某段是凹形，对应的二阶导数<span class="math inline">\(\ddot{F}(x_r) &gt; 0\)</span>，要想继续跟踪路线，转向角应该为正值。考虑<span class="math inline">\(\delta_r\)</span>的正负性与曲线函数<span class="math inline">\(\ddot{F}(x_r)\)</span>的二阶导数符号一致，等式(8)的绝对值符号可以消除，将其带入等式(7)得</p>
+<p><span class="math display">\[
+\delta_r = \arctan\Biggl( l*\frac{\ddot{F}(x_r)}{[1+\dot{F}(x_r)^{2}]^\frac{3}{2}}\Biggr)\tag{9}
+\]</span></p>
+<p>将等式(5)带入等式(9)得 <span class="math display">\[
+\delta_r = \arctan\Bigl(l*\cos(\psi_r)^{3}\ddot{F}(x_r)\Bigr) \tag{10}
+\]</span> 通过等式(6)和(10)可知，已知目标路径函数的前提下，可以计算得到横坐标为<span class="math inline">\(x_r\)</span>下的车辆理想状态参数。 <span class="math display">\[
+\left \{
+\begin{array}{cl}
+&amp;\psi_r = \arctan\bigl(\dot{F}(x_r)\bigr)\\
+&amp;\delta_r = \arctan\Bigl(l*\cos(\psi_r)^{3}\ddot{F}(x_r)\Bigr)
+\end{array}
+\right. \tag{11}
+\]</span></p>
+<h3 id="车辆跟踪误差模型">车辆跟踪误差模型</h3>
+<p>车辆的跟踪误差表示如下： <span class="math display">\[
+\left \{
+\begin{array}{rl}
+&amp;e_x= 0\\
+&amp;e_y = y_r - y\\
+&amp;e_\psi = \psi_r - \psi
+\end{array}
+\right.\tag{12}
+\]</span> 其中，<span class="math inline">\(y\)</span>和<span class="math inline">\(\psi\)</span>为车辆后轴中心点横坐标为<span class="math inline">\(x_r\)</span>时，对应的车辆实际状态参数。<span class="math inline">\(e_x\)</span>、<span class="math inline">\(e_y\)</span>和<span class="math inline">\(e_\psi\)</span>分别表示纵向误差、横向误差和航向角误差。</p>
+<p>则以非时间参考量<span class="math inline">\(f = -x(t)\)</span>为参考的路径跟踪误差微分方程如下：</p>
+<ul>
+<li>纵向距离误差的微分方程</li>
+</ul>
+<p><span class="math display">\[
+\begin{array}{rl}
+\dfrac{dy_e}{-dx} &amp;= \dfrac{d(y_r-y)}{-dx}\\
+&amp;=\dfrac{-dy_r}{dx} + \dfrac{dy}{dx}\\
+&amp;=-tan(\psi_r) + \tan(\psi)
+\end{array}\tag{13}
+\]</span> - 偏航角误差微分方程</p>
+<p>由等式(10)得 <span class="math display">\[
+\tan(\delta_r) = l*\cos(\varphi_r)^{3}\ddot{F}(x_r) \tag{14}
+\]</span> 等式(5)对<span class="math inline">\(x\)</span>求导得 <span class="math display">\[
+[1 + \tan(\psi_r)^2]*\frac{d\psi_r}{dx} = \ddot{F}(x_r) \tag{15}
+\]</span> 等式(15)带入等式(14)得 <span class="math display">\[
+\begin{array}{cl}
+\tan(\delta_r) &amp;= l*\cos(\psi_r)^{3}*[1+\tan(\psi_r)^{2}]*\dfrac{d\psi_r}{dx}\\
+&amp;= l*\cos(\psi_r)*\dfrac{d\psi_r}{dx}
+\end{array} \tag{16}
+\]</span> 由于<span class="math inline">\(\psi \in (-\frac{\pi}{2},\frac{\pi}{2})\)</span>，故<span class="math inline">\(\cos(\psi_r) \neq 0\)</span>，等式(16)移项整理得 <span class="math display">\[
+\frac{d\psi_r}{dx} = \frac{\tan(\delta_r)}{l*\cos(\psi_r)} \tag{17}
+\]</span> 根据等式(17)，可得航向角误差的微分方程为 <span class="math display">\[
+\begin{array}{rl}
+\dfrac{d\psi_e}{-dx} &amp;= -\dfrac{d\psi_r}{dx} + \dfrac{d\psi}{dx}\\
+&amp;=-\dfrac{\tan(\delta_r)}{l*\cos(\psi_r)} + \dfrac{\tan(\delta)}{l*\cos(\psi)}
+\end{array}\tag{18}
+\]</span> 整理等式(13)和(18)得 <span class="math display">\[
+\left \{
+\begin{array}{rl}
+&amp; \dfrac{de_y}{-dx} = -tan(\psi_r) + \tan(\psi)\\
+&amp; \dfrac{de_\psi}{-dx} = -\dfrac{\tan(\delta_r)}{l*\cos(\psi_r)} + \dfrac{\tan(\delta)}{l*\cos(\psi)}
+\end{array}
+\right. \tag{19}
+\]</span></p>
+<h2 id="滑模控制器设计">滑模控制器设计</h2>
+<p>滑模控制算法因算法简单、鲁棒性好、适应性强、实用性而被广泛运用。滑模控制的核心是设计处合适的切换函数和变结构控制率，使系统状态轨迹线能快速到达设计的切换面进行滑动模态运动。</p>
+<h3 id="微分方程">微分方程</h3>
+<p>系统参考状态量为： <span class="math display">\[
+\left \{
+\begin{array}{rl}
+&amp;x_1 = y_r - y\\
+&amp;x_2 = -tan(\psi_r) + \tan(\psi)
+\end{array}
+\right. \tag{20}
+\]</span> 结合等式(12)、(17)，对应的微分方程为： <span class="math display">\[
+\left \{
+\begin{array}{rl}
+&amp;\dot{x_1} &amp;= \dfrac{dx_1}{-dx} &amp;= \dfrac{y_r - y}{-dx} &amp;= x_2\\
+&amp;\dot{x_2} &amp;= \dfrac{dx_2}{-dx} &amp;=\dfrac{-tan(\psi_r) + \tan(\psi)}{-dx} 
+&amp;= \dfrac{\tan(\delta_r)}{l*\cos(\psi_r)^3} - \dfrac{\tan(\delta)}{l*\cos(\psi)^3}
+\end{array}
+\right. \tag{21}
+\]</span></p>
+<h3 id="滑模面">滑模面</h3>
+<p>定义滑模变量<span class="math inline">\(s\)</span>为： <span class="math display">\[
+s = x_2 + c \cdot x_1 \tag{22}
+\]</span> 其中<span class="math inline">\(c &gt; 0\)</span>，结合等式(20)和(21)，对等式(22)求导得： <span class="math display">\[
+\dot{s}=\frac{ds}{-dx} = \dfrac{\tan(\delta_r)}{l*\cos(\psi_r)^3} -\dfrac{\tan(\delta)}{l*\cos(\psi)^3} + c \cdot \bigl(\tan(\psi)-tan(\psi_r)\bigr) \tag{23}
+\]</span></p>
+<h3 id="基于趋近律的滑模控制">基于趋近律的滑模控制</h3>
+<p>采用指数趋近率<span class="math inline">\(\dot{s} = -\rho \cdot sign(s) - k\cdot s\)</span>，可以减弱变结构控制系统的抖振。通过调整趋近率参数<span class="math inline">\(\rho\)</span>和<span class="math inline">\(k\)</span>，既可以保证滑动模态到达过程的动态品质，又可以减弱控制信号的高频抖振，但是较大的<span class="math inline">\(\rho\)</span>会引起抖振。</p>
+<p>采用指数趋近率为 <span class="math display">\[
+\dot{s} = -\rho \cdot sign(s) - k\cdot s \tag{24}
+\]</span> 其中<span class="math inline">\(\rho &gt; 0\)</span>、<span class="math inline">\(k &gt; 0\)</span>、<span class="math inline">\(sign(s)\)</span>为符号函数。</p>
+<h3 id="稳定判据">稳定判据</h3>
+<p>定义李亚普洛夫函数(Lyapunov)形式如下： <span class="math display">\[
+V = \frac{1}{2}s^2 \tag{25}
+\]</span> 为了使滑模变量在平衡点<span class="math inline">\(s = 0\)</span>处渐进稳定，根据李亚普洛夫稳定判据，必须满足下面两个条件：</p>
+<ol type="1">
+<li><p><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(s \neq 0)\end{array}\)</span></p></li>
+<li><p><span class="math inline">\(\lim_{\rvert s\rvert \to \infty}V = \infty\)</span></p></li>
+</ol>
+<p>由等式(25)的形式可知，条件2明显满足。将等式(24)所示的指数趋近率代入，并计算<span class="math inline">\(\dot{V}\)</span>得 <span class="math display">\[
+\begin{array}{rl}
+\dot{V} = s\dot{s} &amp;= s(-\rho \cdot sign(s) - k\cdot s)\\
+&amp;=-k \cdot s^2 - \rho \cdot sign(s) \cdot s\\
+&amp;= -k \cdot \rvert s \rvert ^2 - \rho \cdot \rvert s \rvert
+\end{array} \tag{26}
+\]</span> 其中<span class="math inline">\(k &gt; 0\)</span>，<span class="math inline">\(\rho &gt; 0\)</span>，很明显等式(26)中<span class="math inline">\(\dot{V} &lt; 0\)</span>，即满足条件1。因此采用等式(24)的指数趋近率可以使滑模变量渐进稳定。</p>
+<h3 id="控制率">控制率</h3>
+<p>驱使滑模变量<span class="math inline">\(s\)</span>变为0的控制率可以根据等式(23)和(24)得： <span class="math display">\[
+\dfrac{\tan(\delta_r)}{l*\cos(\psi_r)^3} -\dfrac{\tan(\delta)}{l*\cos(\psi)^3} + c \cdot \bigl(\tan(\psi)-tan(\psi_r)\bigr) = -\rho \cdot sign(s) - k\cdot s \tag{27}
+\]</span> 根据等式(27)，提取<span class="math inline">\(\delta\)</span>项得 <span class="math display">\[
+\delta = \arctan 
+\Biggl(
+    l*\cos(\psi)^3 \cdot 
+    \Bigl(
+        \dfrac{\tan(\delta_r)}{l*\cos(\psi_r)^3} +
+        c \cdot \bigl(\tan(\psi)-tan(\psi_r)\bigr) +
+        \rho \cdot sign(s) +
+        k\cdot s
+    \Bigr)
+\Biggr) \tag{28}
+\]</span> 等式(28)进一步化简为如下形式： <span class="math display">\[
+\delta = \arctan
+\Biggl(
+l*\cos(\psi)^3 \cdot 
+    \Bigl(
+        \dfrac{\tan(\delta_r)}{l*\cos(\psi_r)^3} +
+        c \cdot x_2 +
+        \rho \cdot sign(s) +
+        k\cdot s
+    \Bigr)
+\Biggr) \tag{29}
+\]</span></p>
+<h3 id="切换函数">切换函数</h3>
+<p>由于上述滑模控制器中使用的是符号函数<span class="math inline">\(sign(s)\)</span>，系统会出现不连续的开关特性，使得滑模变结构系统在滑动模态下存在高频的振动现象，从而导致路径跟踪过程中控制器出现较大波动，继而影响泊车的控制精度。</p>
+<p>为了抑制振动，本文分别采用饱和函数<span class="math inline">\(sat(\dfrac{s}{\Delta})\)</span>和<span class="math inline">\(sigmoid\)</span>函数代替符号函数<span class="math inline">\(sign(s)\)</span>，保证系统的切换面附近光滑连续。</p>
+<ul>
+<li><strong>Sigmoid Function</strong>: <span class="math display">\[
+Sigmoid(x) = \frac{x}{\rvert x \rvert + \varepsilon} \tag{30}
+\]</span></li>
+</ul>
+<p>其中<span class="math inline">\(\varepsilon\)</span>是很小的正标量，下图为<span class="math inline">\(\varepsilon = 0.001\)</span>时，<span class="math inline">\(Sigmoid(x)\)</span>函数的波形图入下：</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191226105628.png" /></p>
+<ul>
+<li><strong>Sat Function</strong>:</li>
+</ul>
+<p><span class="math display">\[
+Sat(\frac{x}{\Delta}) =
+\left \{
+\begin{array}{rl}
+&amp;1  &amp; , &amp;x \geq \Delta\\
+&amp;\dfrac{x}{\Delta}  &amp; , &amp;\rvert x \rvert &lt; \Delta\\
+&amp;-1 &amp; , &amp;x \leq -\Delta
+\end{array}
+\right. \tag{31}
+\]</span></p>
+<p>其中，<span class="math inline">\(\Delta\)</span>为很小的正标量，代表边界层的厚度，当<span class="math inline">\(\Delta = 0.05\)</span>时，<span class="math inline">\(Sat(x)\)</span>波形图如下：</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191226105632.png" /></p>
+<h2 id="性能分析">性能分析</h2>
+<p>根据如下控制系统框图，搭建仿真环境。</p>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225194515.png" /></p>
+<ul>
+<li>滑模变量<span class="math inline">\(s\)</span> 下图所示，是滑模变量<span class="math inline">\(s\)</span>随距离<span class="math inline">\(x\)</span>变化的图形。随着距离的增大，滑模变量<span class="math inline">\(s\)</span>趋近于0，系统也趋近于稳定，但是滑模变量在0附近存在抖振。</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201717.png" /></p>
+<ul>
+<li>相图 如下图所示，是系统的相图，可以看出，系统逐渐收敛于原点。</li>
+</ul>
+<figure>
+<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201732.png" alt="相图" /><figcaption aria-hidden="true">相图</figcaption>
+</figure>
+<ul>
+<li>路径跟踪图 如下图所示，是系统的路径跟踪波形图。刚开始时，跟踪存在偏差。经过一段时间的修正，跟踪路径趋近于一致。</li>
+</ul>
+<figure>
+<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201746.png" alt="路径跟踪图" /><figcaption aria-hidden="true">路径跟踪图</figcaption>
+</figure>
+<ul>
+<li>转向角图 如下图所示，是系统控制产生的转向角信号。从图中可以发现，系统在趋于稳定时，控制信号存在抖振现象。</li>
+</ul>
+<figure>
+<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201811.png" alt="转向角图" /><figcaption aria-hidden="true">转向角图</figcaption>
+</figure>
+<ul>
+<li>轨迹误差图 如下图所示，是系统产生的轨迹误差图，随着时间推移，估计误差趋近于0。</li>
+</ul>
+<figure>
+<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201827.png" alt="轨迹误差图" /><figcaption aria-hidden="true">轨迹误差图</figcaption>
+</figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="John 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="John 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA/" rel="tag"># 路径跟踪</a>
+              <a href="/tags/%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6/" rel="tag"># 滑模控制</a>
+              <a href="/tags/%E9%9D%9E%E6%97%B6%E9%97%B4%E5%8F%82%E8%80%83%E7%B3%BB/" rel="tag"># 非时间参考系</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/12/21/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E4%BB%8B%E7%BB%8D/" rel="prev" title="控制算法-滑模控制介绍">
+                  <i class="fa fa-chevron-left"></i> 控制算法-滑模控制介绍
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/12/27/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E6%8A%96%E6%8C%AF%E6%B6%88%E9%99%A4/" rel="next" title="控制算法-滑模控制抖振消除">
+                  控制算法-滑模控制抖振消除 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;mathjax@3.1.4&#x2F;es5&#x2F;tex-mml-chtml.js&quot;,&quot;integrity&quot;:&quot;sha256-ncNI9OXOS5Ek4tzVYiOMmN&#x2F;KKCPZ6V0Cpv2P&#x2F;zHntiA&#x3D;&quot;}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zgh551&quot;,&quot;repo&quot;:&quot;hexo_gittalk&quot;,&quot;client_id&quot;:&quot;1fb8d150a53497be045f&quot;,&quot;client_secret&quot;:&quot;04fcd95e4d714c51c62222db387f2597d4b5a968&quot;,&quot;admin_user&quot;:&quot;zgh551&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.herokuapp.com&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:{&quot;url&quot;:&quot;https:&#x2F;&#x2F;cdn.jsdelivr.net&#x2F;npm&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;integrity&quot;:&quot;sha256-Pmj85ojLaPOWwRtlMJwmezB&#x2F;Qg8BzvJp5eTzvXaYAfA&#x3D;&quot;},&quot;path_md5&quot;:&quot;b97172594c3b8d25b5299243c3731a78&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
