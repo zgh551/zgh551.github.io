@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/08/30/hk7PBu8asVmbpox.jpg">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/kVdqQai6KhGrelT.png">
 <meta property="article:published_time" content="2020-02-23T12:50:43.000Z">
-<meta property="article:modified_time" content="2021-08-30T04:02:03.467Z">
+<meta property="article:modified_time" content="2021-08-30T08:08:22.345Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="前轴反馈">
 <meta property="article:tag" content="路径跟踪">
@@ -266,7 +266,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 12:02:03" itemprop="dateModified" datetime="2021-08-30T12:02:03+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 16:08:22" itemprop="dateModified" datetime="2021-08-30T16:08:22+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -300,14 +300,21 @@
 <span id="more"></span>
 <h2 id="stanley方法">Stanley方法</h2>
 <p><img src="https://i.loli.net/2021/08/30/kVdqQai6KhGrelT.png" style="zoom:80%;" /></p>
-<p>Stanley方法是一种基于航迹误差<span class="math inline">\(e_{f}\)</span>的非线性反馈函数,该航向误差是车辆前轴中心点与目标路径最近点<span class="math inline">\((c_x,c_y)\)</span>的距离。由上图几何关系得 <span class="math display">\[
+<p>Stanley方法是一种基于航迹误差<span class="math inline">\(e_{f}\)</span>的非线性反馈函数,该航向误差是车辆前轴中心点与目标路径最近点<span class="math inline">\((c_x,c_y)\)</span>的距离。由上图几何关系得</p>
+<p><span class="math display">\[
 \psi_e = \psi - \psi_{t} \tag{1}
-\]</span> 其中，<span class="math inline">\(\psi\)</span>表示车辆横向角，<span class="math inline">\(\psi_{t}\)</span>表示离车辆前轴中心最近目标路径点处的航向角。</p>
-<p>前轮速度轴与目标路径航向之间的夹角<span class="math inline">\(\beta\)</span>为 <span class="math display">\[
+\]</span></p>
+<p>其中，<span class="math inline">\(\psi\)</span>表示车辆横向角，<span class="math inline">\(\psi_{t}\)</span>表示离车辆前轴中心最近目标路径点处的航向角。</p>
+<p>前轮速度轴与目标路径航向之间的夹角<span class="math inline">\(\beta\)</span>为</p>
+<p><span class="math display">\[
 \beta = \arcsin(\frac{k\cdot e_{f}}{v_x}) \tag{2}
-\]</span> 但是在论文中都是使用反正切函数求<span class="math inline">\(\beta\)</span>角，可能原因是系数<span class="math inline">\(k\)</span>可以任意选择，选择可是的系数<span class="math inline">\(k\)</span>，确实可以转化为 <span class="math display">\[
+\]</span></p>
+<p>但是在论文中都是使用反正切函数求<span class="math inline">\(\beta\)</span>角，可能原因是系数<span class="math inline">\(k\)</span>可以任意选择，选择可是的系数<span class="math inline">\(k\)</span>，确实可以转化为</p>
+<p><span class="math display">\[
 \beta = \arctan(\frac{k\cdot e_{f}}{v_x}) \tag{3}
-\]</span> 结合等式(1)和(3)得 <span class="math display">\[
+\]</span></p>
+<p>结合等式(1)和(3)得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \delta &amp;= \psi_e + \beta \\
 &amp;= \psi - \psi_{t} +  \arctan(\dfrac{k\cdot e_{f}}{v_x})

@@ -36,7 +36,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/08/30/afgl2rYhUwP5964.png">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/U8Ae7RSxg6OhcYv.png">
 <meta property="article:published_time" content="2020-09-17T09:58:19.000Z">
-<meta property="article:modified_time" content="2021-08-30T03:19:05.854Z">
+<meta property="article:modified_time" content="2021-08-30T08:13:15.922Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="sensor fusion">
 <meta property="article:tag" content="传感器融合">
@@ -273,7 +273,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 11:19:05" itemprop="dateModified" datetime="2021-08-30T11:19:05+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 16:13:15" itemprop="dateModified" datetime="2021-08-30T16:13:15+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -337,41 +337,68 @@ a_x = \dot{v}_x + g\sin(\theta) \tag{4}
 <h2 id="基于纵向动力学坡度计算">基于纵向动力学坡度计算</h2>
 <h3 id="车辆纵向动力学模型">车辆纵向动力学模型</h3>
 <p><img src="https://i.loli.net/2021/08/30/U8Ae7RSxg6OhcYv.png" style="zoom:80%;" /></p>
-<p>如上图所示，车辆纵向方向主要受到发动机产生的牵引力<span class="math inline">\(F_x\)</span>的影响，同时也受到重力分量、迎风阻力和地面摩擦力的影响。通过对车辆对上述力的分析，车辆的动力学模型可以表示如下： <span class="math display">\[
+<p>如上图所示，车辆纵向方向主要受到发动机产生的牵引力<span class="math inline">\(F_x\)</span>的影响，同时也受到重力分量、迎风阻力和地面摩擦力的影响。通过对车辆对上述力的分析，车辆的动力学模型可以表示如下：</p>
+<p><span class="math display">\[
 F_x - mg\sin(\theta) - fmg\cos(\theta) - \frac{1}{2}\rho C_dAv_x^2 = m\dot{v}_x\tag{6}
-\]</span> 其中，<span class="math inline">\(m\)</span>为车辆质量，<span class="math inline">\(\rho\)</span>为空气密度，<span class="math inline">\(C_d\)</span>为风阻系数，<span class="math inline">\(A\)</span>为迎风面积，<span class="math inline">\(g\)</span>为重力加速度，<span class="math inline">\(\theta\)</span>为路面坡度，<span class="math inline">\(f\)</span>为路面滚阻系数。上述等式(6)中，路面坡度<span class="math inline">\(\theta\)</span>为待求参数，其它参数对于某一车辆来说均可以认为是已知的或者通过测量能够得到。</p>
-<p>令 <span class="math inline">\(y = F_x\)</span>，<span class="math inline">\(u = m\dot{v}_x + \frac{1}{2}\rho C_dAv_x^2\)</span>，<span class="math inline">\(b = mg(\sin(\theta) + f\cos(\theta))\)</span>，将公式(6)简化为： <span class="math display">\[
+\]</span></p>
+<p>其中，<span class="math inline">\(m\)</span>为车辆质量，<span class="math inline">\(\rho\)</span>为空气密度，<span class="math inline">\(C_d\)</span>为风阻系数，<span class="math inline">\(A\)</span>为迎风面积，<span class="math inline">\(g\)</span>为重力加速度，<span class="math inline">\(\theta\)</span>为路面坡度，<span class="math inline">\(f\)</span>为路面滚阻系数。上述等式(6)中，路面坡度<span class="math inline">\(\theta\)</span>为待求参数，其它参数对于某一车辆来说均可以认为是已知的或者通过测量能够得到。</p>
+<p>令 <span class="math inline">\(y = F_x\)</span>，<span class="math inline">\(u = m\dot{v}_x + \frac{1}{2}\rho C_dAv_x^2\)</span>，<span class="math inline">\(b = mg(\sin(\theta) + f\cos(\theta))\)</span>，将公式(6)简化为：</p>
+<p><span class="math display">\[
 y = u + b \tag{7}
-\]</span> 上式中，<span class="math inline">\(y\)</span>、<span class="math inline">\(u\)</span>为已知量，<span class="math inline">\(b\)</span>为未知量，由于<span class="math inline">\(b\)</span>是参数<span class="math inline">\(\theta\)</span>的函数，因此对路面坡度的估计可以通过估算<span class="math inline">\(\hat{b}\)</span>的值求得。</p>
+\]</span></p>
+<p>上式中，<span class="math inline">\(y\)</span>、<span class="math inline">\(u\)</span>为已知量，<span class="math inline">\(b\)</span>为未知量，由于<span class="math inline">\(b\)</span>是参数<span class="math inline">\(\theta\)</span>的函数，因此对路面坡度的估计可以通过估算<span class="math inline">\(\hat{b}\)</span>的值求得。</p>
 <h3 id="参数估计">参数估计</h3>
-<p>采用带有遗忘因子的最小二乘法估计<span class="math inline">\(b\)</span>的值，假设代价函数为<span class="math inline">\(V(\hat{b},k)\)</span>，那么采用最小二乘法估计<span class="math inline">\(b\)</span>的值，相当于求解参数<span class="math inline">\(\hat{b}\)</span>，使得函数<span class="math inline">\(V(\hat{b},k)\)</span>在某一时刻<span class="math inline">\(k\)</span>取得最小值。 <span class="math display">\[
+<p>采用带有遗忘因子的最小二乘法估计<span class="math inline">\(b\)</span>的值，假设代价函数为<span class="math inline">\(V(\hat{b},k)\)</span>，那么采用最小二乘法估计<span class="math inline">\(b\)</span>的值，相当于求解参数<span class="math inline">\(\hat{b}\)</span>，使得函数<span class="math inline">\(V(\hat{b},k)\)</span>在某一时刻<span class="math inline">\(k\)</span>取得最小值。</p>
+<p><span class="math display">\[
 V(\hat{b},k) = \frac{1}{2}\sum_{i=1}^{k} \lambda^{k-i}(y_i - u_i - \hat{b}_k)^2 \tag{8}
-\]</span> 其中，<span class="math inline">\(\lambda\)</span>为遗忘因子，<span class="math inline">\(k\)</span>为采样时刻。</p>
-<p>函数极小值的计算可以通过求解函数导数为0的参数，及 <span class="math display">\[
+\]</span></p>
+<p>其中，<span class="math inline">\(\lambda\)</span>为遗忘因子，<span class="math inline">\(k\)</span>为采样时刻。</p>
+<p>函数极小值的计算可以通过求解函数导数为0的参数，及</p>
+<p><span class="math display">\[
 \frac{\partial V}{\partial \hat{b}_k} = 0 \tag{9}
-\]</span> 结合等式(8)、(9)得 <span class="math display">\[
+\]</span></p>
+<p>结合等式(8)、(9)得</p>
+<p><span class="math display">\[
 \sum_{i=1}^{k}\lambda^{k-i}(y_i - u_i - \hat{b}_k)=0\tag{10}
-\]</span> 对等式(10)化简得 <span class="math display">\[
+\]</span></p>
+<p>对等式(10)化简得</p>
+<p><span class="math display">\[
 \sum_{i=1}^{k}\lambda^{k-i}(y_i-u_i) - \sum_{i=1}^{k}\lambda^{k-i}\hat{b}_k=0 \tag{11}
-\]</span> 移项得 <span class="math display">\[
+\]</span></p>
+<p>移项得</p>
+<p><span class="math display">\[
 \hat{b}_k \sum_{i=1}^{k}\lambda^{k-i} =\sum_{i=1}^{k}\lambda^{k-i}(y_i-u_i) \tag{12}
-\]</span> 基于等式(12)，提取<span class="math inline">\(\hat{b}_k\)</span>得 <span class="math display">\[
+\]</span></p>
+<p>基于等式(12)，提取<span class="math inline">\(\hat{b}_k\)</span>得</p>
+<p><span class="math display">\[
 \hat{b}_k = (\sum_{i=1}^{k}\lambda^{k-i})^{-1}\bigl(\sum_{i=1}^{k}\lambda^{k-i}(y_i-u_i)\bigr) \tag{13}
-\]</span> 从等式(13)可以看出，随着采样时刻<span class="math inline">\(k\)</span>不断增加，估计值<span class="math inline">\(\hat{b}\)</span>的计算量也不断增加。由于车辆行驶过程中的路面坡度估计需要实时计算，因此在实际应用中一般采用递推最小二乘估计来实时估计每一采样时刻<span class="math inline">\(b\)</span>的估计值<span class="math inline">\(\hat{b}\)</span>。 <span class="math display">\[
+\]</span></p>
+<p>从等式(13)可以看出，随着采样时刻<span class="math inline">\(k\)</span>不断增加，估计值<span class="math inline">\(\hat{b}\)</span>的计算量也不断增加。由于车辆行驶过程中的路面坡度估计需要实时计算，因此在实际应用中一般采用递推最小二乘估计来实时估计每一采样时刻<span class="math inline">\(b\)</span>的估计值<span class="math inline">\(\hat{b}\)</span>。</p>
+<p><span class="math display">\[
 \hat{b}_k = \hat{b}_{k-1} + L_k(y_k -u_k)\tag{14}
-\]</span> 增益系数<span class="math inline">\(L_k\)</span>为 <span class="math display">\[
+\]</span></p>
+<p>增益系数<span class="math inline">\(L_k\)</span>为</p>
+<p><span class="math display">\[
 L_k = \frac{P_{k-1}}{\lambda + P_{k-1}} \tag{15}
-\]</span> 误差协方差<span class="math inline">\(P_k\)</span>为 <span class="math display">\[
+\]</span></p>
+<p>误差协方差<span class="math inline">\(P_k\)</span>为</p>
+<p><span class="math display">\[
 P_k = \frac{1}{\lambda}(1 - L_k)P_{k-1} \tag{16}
-\]</span> 根据公式(14)、(15)、(16)的更新过程 <span class="math display">\[
+\]</span></p>
+<p>根据公式(14)、(15)、(16)的更新过程</p>
+<p><span class="math display">\[
 D = \frac{\hat{b}}{mg} \tag{17}
-\]</span> 坡度角为 <span class="math display">\[
+\]</span></p>
+<p>坡度角为</p>
+<p><span class="math display">\[
 \theta = \arcsin(\frac{D-f\sqrt{1-D^2 + f^2}}{1 + f^2}) \tag{18}
 \]</span></p>
 <h2 id="坡度角融合">坡度角融合</h2>
-<p>车辆行驶过程中路面坡度<span class="math inline">\(\theta\)</span>可以认为是高频信号和低频信号两部分组成，在对路面坡度进行估计时，基于纵向动力学估计方法依赖于车辆的多个参数，车辆的各个参数受高频噪声影响大；基于加速度偏差坡度估计的缺点是受惯性传感器的静态偏差影响较大，惯性传感器的静态偏差属于低频噪声，为了保证路面坡度估算结果的准确性，对<span class="math inline">\(\theta_1\)</span>采用低通滤波器除去其高频部分，对<span class="math inline">\(\theta_2\)</span>采用高通滤波器滤除其低频部分，最终得到更加准确的实时估计值<span class="math inline">\(\hat{\theta}\)</span>为： <span class="math display">\[
+<p>车辆行驶过程中路面坡度<span class="math inline">\(\theta\)</span>可以认为是高频信号和低频信号两部分组成，在对路面坡度进行估计时，基于纵向动力学估计方法依赖于车辆的多个参数，车辆的各个参数受高频噪声影响大；基于加速度偏差坡度估计的缺点是受惯性传感器的静态偏差影响较大，惯性传感器的静态偏差属于低频噪声，为了保证路面坡度估算结果的准确性，对<span class="math inline">\(\theta_1\)</span>采用低通滤波器除去其高频部分，对<span class="math inline">\(\theta_2\)</span>采用高通滤波器滤除其低频部分，最终得到更加准确的实时估计值<span class="math inline">\(\hat{\theta}\)</span>为：</p>
+<p><span class="math display">\[
 \hat{\theta} = \frac{1}{\tau s + 1}\theta_1 + \frac{\tau s}{\tau s + 1}\theta_2 \tag{19}
-\]</span> 其中，<span class="math inline">\(\tau\)</span>为时间常数，<span class="math inline">\(s\)</span>为拉普拉斯算子，<span class="math inline">\(\frac{1}{\tau s + 1}\)</span>为低通滤波器，<span class="math inline">\(\frac{\tau s}{\tau s + 1}\)</span>为高通滤波器。</p>
+\]</span></p>
+<p>其中，<span class="math inline">\(\tau\)</span>为时间常数，<span class="math inline">\(s\)</span>为拉普拉斯算子，<span class="math inline">\(\frac{1}{\tau s + 1}\)</span>为低通滤波器，<span class="math inline">\(\frac{\tau s}{\tau s + 1}\)</span>为高通滤波器。</p>
 
     </div>
 

@@ -37,7 +37,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/08/30/6UVk2o1cSsT5iym.png">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/J4fnwU5QmtpLS78.png">
 <meta property="article:published_time" content="2019-12-23T08:22:46.000Z">
-<meta property="article:modified_time" content="2021-08-30T06:22:27.849Z">
+<meta property="article:modified_time" content="2021-08-30T07:57:06.377Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="路径跟踪">
 <meta property="article:tag" content="滑模控制">
@@ -273,7 +273,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 14:22:27" itemprop="dateModified" datetime="2021-08-30T14:22:27+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 15:57:06" itemprop="dateModified" datetime="2021-08-30T15:57:06+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -307,7 +307,8 @@
 <span id="more"></span>
 <h2 id="非时间参考量下的微分方程">非时间参考量下的微分方程</h2>
 <h3 id="定义">定义</h3>
-<p>定义一个非时间参考的标量<span class="math inline">\(s\)</span>,该<span class="math inline">\(s\)</span>为时间t的单调递增函数。 <span class="math display">\[
+<p>定义一个非时间参考的标量<span class="math inline">\(s\)</span>,该<span class="math inline">\(s\)</span>为时间t的单调递增函数。</p>
+<p><span class="math display">\[
 \left\{
 \begin{array}{rl} 
 &amp;s = S(t)\\
@@ -315,11 +316,15 @@
 \end{array} 
 \right.\tag{1}
 \]</span></p>
-<p>在车辆控制中，可以定义车辆的位移<span class="math inline">\(x\)</span>为非时间参考量，为了满足随时间递增的要求，且泊车时速度为负值<span class="math inline">\((v&lt;0)\)</span>，选取的非时间参考量为 <span class="math display">\[
+<p>在车辆控制中，可以定义车辆的位移<span class="math inline">\(x\)</span>为非时间参考量，为了满足随时间递增的要求，且泊车时速度为负值<span class="math inline">\((v&lt;0)\)</span>，选取的非时间参考量为</p>
+<p><span class="math display">\[
 f = -x(t) \tag{2}
-\]</span> 对上式求导得 <span class="math display">\[
+\]</span></p>
+<p>对上式求导得</p>
+<p><span class="math display">\[
 \dot{f}(t) = -v(t)\cos\psi(t) \tag{3}
-\]</span> 由于车辆泊车过程中偏航角<span class="math inline">\(\psi \in (-\frac{\pi}{2},\frac{\pi}{2})\)</span>，故<span class="math inline">\(\dot{f}(t)&gt;0\)</span>，满足非时间参考量随时间变化单调递增得要求。</p>
+\]</span></p>
+<p>由于车辆泊车过程中偏航角<span class="math inline">\(\psi \in (-\frac{\pi}{2},\frac{\pi}{2})\)</span>，故<span class="math inline">\(\dot{f}(t)&gt;0\)</span>，满足非时间参考量随时间变化单调递增得要求。</p>
 <p>基于非时间参考的车辆运动学方程可表示为: <span class="math display">\[
 \left \{
 \begin{array}{cl}
@@ -334,28 +339,36 @@ f = -x(t) \tag{2}
 <ul>
 <li>目标航向角<span class="math inline">\(\psi_r\)</span>计算</li>
 </ul>
-<p>目标航向角<span class="math inline">\(\psi_r\)</span>可以看作是函数<span class="math inline">\(y_r = F(x_r)\)</span>在点<span class="math inline">\(x_r\)</span>处的斜率所对应的航向角度，即 <span class="math display">\[
+<p>目标航向角<span class="math inline">\(\psi_r\)</span>可以看作是函数<span class="math inline">\(y_r = F(x_r)\)</span>在点<span class="math inline">\(x_r\)</span>处的斜率所对应的航向角度，即</p>
+<p><span class="math display">\[
 \tan(\psi_r) = \dot{F}(x_r)= \frac{dy_r}{dx_r} \tag{5}
-\]</span> 通过反三角函数求得目标航向角为 <span class="math display">\[
+\]</span></p>
+<p>通过反三角函数求得目标航向角为</p>
+<p><span class="math display">\[
 \psi_r = \arctan\bigl(\dot{F}(x_r)\bigr)= \arctan(\frac{dy_r}{dx_r}) \tag{6}
 \]</span></p>
 <ul>
 <li>目标转向角<span class="math inline">\(\delta_r\)</span>计算</li>
 </ul>
-<p>根据转向角的几何关系得 <span class="math display">\[
+<p>根据转向角的几何关系得</p>
+<p><span class="math display">\[
 \delta_r = \arctan(l*k) \tag{7}
 \]</span></p>
 <p>其中，<span class="math inline">\(l\)</span>代表车辆轴距、<span class="math inline">\(k\)</span>代表点<span class="math inline">\(x_r\)</span>处的目标路径曲线的曲率。</p>
-<p>根据轨迹函数<span class="math inline">\(y_r = F(x_r)\)</span>的一阶导数和二阶导数，曲率计算公式表示如下： <span class="math display">\[
+<p>根据轨迹函数<span class="math inline">\(y_r = F(x_r)\)</span>的一阶导数和二阶导数，曲率计算公式表示如下：</p>
+<p><span class="math display">\[
 k = \frac{\rvert\ddot{F}(x_r)\rvert}{[1+\dot{F}(x_r)^{2}]^\frac{3}{2}} \tag{8}
 \]</span></p>
 <p>根据目标路径曲线，如果某段曲线是凸的，对应的二阶导数<span class="math inline">\(\ddot{F}(x_r) &lt; 0\)</span>。很明显，当偏航角满足<span class="math inline">\(\psi \in (-\frac{\pi}{2},\frac{\pi}{2})\)</span>时，如果希望车辆跟踪凸形路线，对应的转向角应该为负值。同理，当曲线某段是凹形，对应的二阶导数<span class="math inline">\(\ddot{F}(x_r) &gt; 0\)</span>，要想继续跟踪路线，转向角应该为正值。考虑<span class="math inline">\(\delta_r\)</span>的正负性与曲线函数<span class="math inline">\(\ddot{F}(x_r)\)</span>的二阶导数符号一致，等式(8)的绝对值符号可以消除，将其带入等式(7)得</p>
 <p><span class="math display">\[
 \delta_r = \arctan\Biggl( l*\frac{\ddot{F}(x_r)}{[1+\dot{F}(x_r)^{2}]^\frac{3}{2}}\Biggr)\tag{9}
 \]</span></p>
-<p>将等式(5)带入等式(9)得 <span class="math display">\[
+<p>将等式(5)带入等式(9)得</p>
+<p><span class="math display">\[
 \delta_r = \arctan\Bigl(l*\cos(\psi_r)^{3}\ddot{F}(x_r)\Bigr) \tag{10}
-\]</span> 通过等式(6)和(10)可知，已知目标路径函数的前提下，可以计算得到横坐标为<span class="math inline">\(x_r\)</span>下的车辆理想状态参数。 <span class="math display">\[
+\]</span></p>
+<p>通过等式(6)和(10)可知，已知目标路径函数的前提下，可以计算得到横坐标为<span class="math inline">\(x_r\)</span>下的车辆理想状态参数。</p>
+<p><span class="math display">\[
 \left \{
 \begin{array}{cl}
 &amp;\psi_r = \arctan\bigl(\dot{F}(x_r)\bigr)\\
@@ -372,7 +385,8 @@ k = \frac{\rvert\ddot{F}(x_r)\rvert}{[1+\dot{F}(x_r)^{2}]^\frac{3}{2}} \tag{8}
 &amp;e_\psi = \psi_r - \psi
 \end{array}
 \right.\tag{12}
-\]</span> 其中，<span class="math inline">\(y\)</span>和<span class="math inline">\(\psi\)</span>为车辆后轴中心点横坐标为<span class="math inline">\(x_r\)</span>时，对应的车辆实际状态参数。<span class="math inline">\(e_x\)</span>、<span class="math inline">\(e_y\)</span>和<span class="math inline">\(e_\psi\)</span>分别表示纵向误差、横向误差和航向角误差。</p>
+\]</span></p>
+<p>其中，<span class="math inline">\(y\)</span>和<span class="math inline">\(\psi\)</span>为车辆后轴中心点横坐标为<span class="math inline">\(x_r\)</span>时，对应的车辆实际状态参数。<span class="math inline">\(e_x\)</span>、<span class="math inline">\(e_y\)</span>和<span class="math inline">\(e_\psi\)</span>分别表示纵向误差、横向误差和航向角误差。</p>
 <p>则以非时间参考量<span class="math inline">\(f = -x(t)\)</span>为参考的路径跟踪误差微分方程如下：</p>
 <ul>
 <li>纵向距离误差的微分方程</li>
@@ -387,23 +401,34 @@ k = \frac{\rvert\ddot{F}(x_r)\rvert}{[1+\dot{F}(x_r)^{2}]^\frac{3}{2}} \tag{8}
 <ul>
 <li>偏航角误差微分方程</li>
 </ul>
-<p>由等式(10)得 <span class="math display">\[
+<p>由等式(10)得</p>
+<p><span class="math display">\[
 \tan(\delta_r) = l*\cos(\varphi_r)^{3}\ddot{F}(x_r) \tag{14}
-\]</span> 等式(5)对<span class="math inline">\(x\)</span>求导得 <span class="math display">\[
+\]</span></p>
+<p>等式(5)对<span class="math inline">\(x\)</span>求导得</p>
+<p><span class="math display">\[
 [1 + \tan(\psi_r)^2]*\frac{d\psi_r}{dx} = \ddot{F}(x_r) \tag{15}
-\]</span> 等式(15)带入等式(14)得 <span class="math display">\[
+\]</span></p>
+<p>等式(15)带入等式(14)得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \tan(\delta_r) &amp;= l*\cos(\psi_r)^{3}*[1+\tan(\psi_r)^{2}]*\dfrac{d\psi_r}{dx}\\
 &amp;= l*\cos(\psi_r)*\dfrac{d\psi_r}{dx}
 \end{array} \tag{16}
-\]</span> 由于<span class="math inline">\(\psi \in (-\frac{\pi}{2},\frac{\pi}{2})\)</span>，故<span class="math inline">\(\cos(\psi_r) \neq 0\)</span>，等式(16)移项整理得 <span class="math display">\[
+\]</span></p>
+<p>由于<span class="math inline">\(\psi \in (-\frac{\pi}{2},\frac{\pi}{2})\)</span>，故<span class="math inline">\(\cos(\psi_r) \neq 0\)</span>，等式(16)移项整理得</p>
+<p><span class="math display">\[
 \frac{d\psi_r}{dx} = \frac{\tan(\delta_r)}{l*\cos(\psi_r)} \tag{17}
-\]</span> 根据等式(17)，可得航向角误差的微分方程为 <span class="math display">\[
+\]</span></p>
+<p>根据等式(17)，可得航向角误差的微分方程为</p>
+<p><span class="math display">\[
 \begin{array}{rl}
 \dfrac{d\psi_e}{-dx} &amp;= -\dfrac{d\psi_r}{dx} + \dfrac{d\psi}{dx}\\
 &amp;=-\dfrac{\tan(\delta_r)}{l*\cos(\psi_r)} + \dfrac{\tan(\delta)}{l*\cos(\psi)}
 \end{array}\tag{18}
-\]</span> 整理等式(13)和(18)得 <span class="math display">\[
+\]</span></p>
+<p>整理等式(13)和(18)得</p>
+<p><span class="math display">\[
 \left \{
 \begin{array}{rl}
 &amp; \dfrac{de_y}{-dx} = -tan(\psi_r) + \tan(\psi)\\
@@ -414,14 +439,17 @@ k = \frac{\rvert\ddot{F}(x_r)\rvert}{[1+\dot{F}(x_r)^{2}]^\frac{3}{2}} \tag{8}
 <h2 id="滑模控制器设计">滑模控制器设计</h2>
 <p>滑模控制算法因算法简单、鲁棒性好、适应性强、实用性而被广泛运用。滑模控制的核心是设计处合适的切换函数和变结构控制率，使系统状态轨迹线能快速到达设计的切换面进行滑动模态运动。</p>
 <h3 id="微分方程">微分方程</h3>
-<p>系统参考状态量为： <span class="math display">\[
+<p>系统参考状态量为：</p>
+<p><span class="math display">\[
 \left \{
 \begin{array}{rl}
 &amp;x_1 = y_r - y\\
 &amp;x_2 = -tan(\psi_r) + \tan(\psi)
 \end{array}
 \right. \tag{20}
-\]</span> 结合等式(12)、(17)，对应的微分方程为： <span class="math display">\[
+\]</span></p>
+<p>结合等式(12)、(17)，对应的微分方程为：</p>
+<p><span class="math display">\[
 \left \{
 \begin{array}{rl}
 &amp;\dot{x_1} &amp;= \dfrac{dx_1}{-dx} &amp;= \dfrac{y_r - y}{-dx} &amp;= x_2\\
@@ -431,35 +459,47 @@ k = \frac{\rvert\ddot{F}(x_r)\rvert}{[1+\dot{F}(x_r)^{2}]^\frac{3}{2}} \tag{8}
 \right. \tag{21}
 \]</span></p>
 <h3 id="滑模面">滑模面</h3>
-<p>定义滑模变量<span class="math inline">\(s\)</span>为： <span class="math display">\[
+<p>定义滑模变量<span class="math inline">\(s\)</span>为：</p>
+<p><span class="math display">\[
 s = x_2 + c \cdot x_1 \tag{22}
-\]</span> 其中<span class="math inline">\(c &gt; 0\)</span>，结合等式(20)和(21)，对等式(22)求导得： <span class="math display">\[
+\]</span></p>
+<p>其中<span class="math inline">\(c &gt; 0\)</span>，结合等式(20)和(21)，对等式(22)求导得：</p>
+<p><span class="math display">\[
 \dot{s}=\frac{ds}{-dx} = \dfrac{\tan(\delta_r)}{l*\cos(\psi_r)^3} -\dfrac{\tan(\delta)}{l*\cos(\psi)^3} + c \cdot \bigl(\tan(\psi)-tan(\psi_r)\bigr) \tag{23}
 \]</span></p>
 <h3 id="基于趋近律的滑模控制">基于趋近律的滑模控制</h3>
 <p>采用指数趋近率<span class="math inline">\(\dot{s} = -\rho \cdot sign(s) - k\cdot s\)</span>，可以减弱变结构控制系统的抖振。通过调整趋近率参数<span class="math inline">\(\rho\)</span>和<span class="math inline">\(k\)</span>，既可以保证滑动模态到达过程的动态品质，又可以减弱控制信号的高频抖振，但是较大的<span class="math inline">\(\rho\)</span>会引起抖振。</p>
-<p>采用指数趋近率为 <span class="math display">\[
+<p>采用指数趋近率为</p>
+<p><span class="math display">\[
 \dot{s} = -\rho \cdot sign(s) - k\cdot s \tag{24}
-\]</span> 其中<span class="math inline">\(\rho &gt; 0\)</span>、<span class="math inline">\(k &gt; 0\)</span>、<span class="math inline">\(sign(s)\)</span>为符号函数。</p>
+\]</span></p>
+<p>其中<span class="math inline">\(\rho &gt; 0\)</span>、<span class="math inline">\(k &gt; 0\)</span>、<span class="math inline">\(sign(s)\)</span>为符号函数。</p>
 <h3 id="稳定判据">稳定判据</h3>
-<p>定义李亚普洛夫函数(<strong>Lyapunov</strong>)形式如下： <span class="math display">\[
+<p>定义李亚普洛夫函数(<strong>Lyapunov</strong>)形式如下：</p>
+<p><span class="math display">\[
 V = \frac{1}{2}s^2 \tag{25}
-\]</span> 为了使滑模变量在平衡点<span class="math inline">\(s = 0\)</span>处渐进稳定，根据李亚普洛夫稳定判据，必须满足下面两个条件：</p>
+\]</span></p>
+<p>为了使滑模变量在平衡点<span class="math inline">\(s = 0\)</span>处渐进稳定，根据李亚普洛夫稳定判据，必须满足下面两个条件：</p>
 <ol type="1">
-<li><p><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(s \neq 0)\end{array}\)</span></p></li>
-<li><p><span class="math inline">\(\lim_{\rvert s\rvert \to \infty}V = \infty\)</span></p></li>
+<li><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(s \neq 0)\end{array}\)</span></li>
+<li><span class="math inline">\(\lim_{\rvert s\rvert \to \infty}V = \infty\)</span></li>
 </ol>
-<p>由等式(25)的形式可知，条件2明显满足。将等式(24)所示的指数趋近率代入，并计算<span class="math inline">\(\dot{V}\)</span>得 <span class="math display">\[
+<p>由等式(25)的形式可知，条件2明显满足。将等式(24)所示的指数趋近率代入，并计算<span class="math inline">\(\dot{V}\)</span>得</p>
+<p><span class="math display">\[
 \begin{array}{rl}
 \dot{V} = s\dot{s} &amp;= s(-\rho \cdot sign(s) - k\cdot s)\\
 &amp;=-k \cdot s^2 - \rho \cdot sign(s) \cdot s\\
 &amp;= -k \cdot \rvert s \rvert ^2 - \rho \cdot \rvert s \rvert
 \end{array} \tag{26}
-\]</span> 其中<span class="math inline">\(k &gt; 0\)</span>，<span class="math inline">\(\rho &gt; 0\)</span>，很明显等式(26)中<span class="math inline">\(\dot{V} &lt; 0\)</span>，即满足条件1。因此采用等式(24)的指数趋近率可以使滑模变量渐进稳定。</p>
+\]</span></p>
+<p>其中<span class="math inline">\(k &gt; 0\)</span>，<span class="math inline">\(\rho &gt; 0\)</span>，很明显等式(26)中<span class="math inline">\(\dot{V} &lt; 0\)</span>，即满足条件1。因此采用等式(24)的指数趋近率可以使滑模变量渐进稳定。</p>
 <h3 id="控制率">控制率</h3>
-<p>驱使滑模变量<span class="math inline">\(s\)</span>变为0的控制率可以根据等式(23)和(24)得： <span class="math display">\[
+<p>驱使滑模变量<span class="math inline">\(s\)</span>变为0的控制率可以根据等式(23)和(24)得：</p>
+<p><span class="math display">\[
 \dfrac{\tan(\delta_r)}{l*\cos(\psi_r)^3} -\dfrac{\tan(\delta)}{l*\cos(\psi)^3} + c \cdot \bigl(\tan(\psi)-tan(\psi_r)\bigr) = -\rho \cdot sign(s) - k\cdot s \tag{27}
-\]</span> 根据等式(27)，提取<span class="math inline">\(\delta\)</span>项得 <span class="math display">\[
+\]</span></p>
+<p>根据等式(27)，提取<span class="math inline">\(\delta\)</span>项得</p>
+<p><span class="math display">\[
 \delta = \arctan 
 \Biggl(
     l*\cos(\psi)^3 \cdot 
@@ -470,7 +510,9 @@ V = \frac{1}{2}s^2 \tag{25}
         k\cdot s
     \Bigr)
 \Biggr) \tag{28}
-\]</span> 等式(28)进一步化简为如下形式： <span class="math display">\[
+\]</span></p>
+<p>等式(28)进一步化简为如下形式：</p>
+<p><span class="math display">\[
 \delta = \arctan
 \Biggl(
 l*\cos(\psi)^3 \cdot 

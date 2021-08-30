@@ -16,7 +16,23 @@
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> crazyflie-firmware</span><br><span class="line">git submodule init</span><br><span class="line">git submodule update</span><br></pre></td></tr></table></figure>
 <p>具体更新哪些子项目模块可以查看<code>.gitmodules</code>文件。 &gt; 注意： &gt; - 问题：如果编译时出现如下错误：<code>make[1]: *** No rule to make target 'libdw1000.o', needed by 'cf2.elf'.  Stop. &gt; Makefile:350: recipe for target 'build' failed</code> &gt; - 解决办法：上述错误原因是因为缺少<code>libdw1000</code>文件，输入<code>git submodule deinit</code>，并删除<code>libdw1000</code>目录里面的<code>.git</code>文件，重新拉取该项目源码。</p>
 <h2 id="环境搭建">环境搭建</h2>
-<p>官方提供三种环境搭建方式，分别使用虚拟机镜像<a href="https://github.com/bitcraze/bitcraze-vm">Crazyflie VM</a>、Docker镜像<a href="https://github.com/bitcraze/toolbelt">toolbelt</a>和本机安装相应的ARM工具链来搭建开发环境。 ### 虚拟机镜像 #### 概述 本文采用 VirtualBox 虚拟机软件，该软件属于自由软件，方便安装。 #### VirtualBox - 下载<a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a> - 安装软件 #### 下载bitcraze镜像 - <a href="https://wiki.bitcraze.io/projects:virtualmachine:index">Bitcraze Virtual Machine Image</a> #### 导入镜像 <img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE1NTQyNC5wbmc?x-oss-process=image/format,png" alt="镜像导入过程" /></p>
+<p>官方提供三种环境搭建方式，分别使用虚拟机镜像<a href="https://github.com/bitcraze/bitcraze-vm">Crazyflie VM</a>、Docker镜像<a href="https://github.com/bitcraze/toolbelt">toolbelt</a>和本机安装相应的ARM工具链来搭建开发环境。</p>
+<h3 id="虚拟机镜像">虚拟机镜像</h3>
+<h4 id="概述-1">概述</h4>
+<p>本文采用 VirtualBox 虚拟机软件，该软件属于自由软件，方便安装。</p>
+<h4 id="virtualbox">VirtualBox</h4>
+<ul>
+<li>下载<a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a></li>
+<li>安装软件</li>
+</ul>
+<h4 id="下载bitcraze镜像">下载bitcraze镜像</h4>
+<ul>
+<li><a href="https://wiki.bitcraze.io/projects:virtualmachine:index">Bitcraze Virtual Machine Image</a></li>
+</ul>
+<h4 id="导入镜像">导入镜像</h4>
+<figure>
+<img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE1NTQyNC5wbmc?x-oss-process=image/format,png" alt="镜像导入过程" /><figcaption aria-hidden="true">镜像导入过程</figcaption>
+</figure>
 <h4 id="启动镜像">启动镜像</h4>
 <figure>
 <img src="https://i.loli.net/2021/08/30/BxSWetJvMy7R1uG.png" alt="启动镜像" /><figcaption aria-hidden="true">启动镜像</figcaption>
@@ -29,13 +45,23 @@
 <ol type="1">
 <li><a href="https://docs.docker.com/docker-for-windows/install/">Docker Hub下载</a></li>
 <li>双击安装文件，一直Next。</li>
-<li>注册Docker账号 #### 下载Docker镜像</li>
+<li>注册Docker账号</li>
 </ol>
+<h4 id="下载docker镜像">下载Docker镜像</h4>
 <ul>
 <li>关于<a href="https://hub.docker.com/r/bitcraze/builder">bitcraze/builder镜像</a></li>
 <li>打开PowerShell客户端</li>
-<li>拉取远程镜像 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker pull bitcraze/builder</span><br></pre></td></tr></table></figure> 下载过程如下所示，由于文件较大可能需要一段时间。 <img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE2NTYzMC5naWY" /> #### 进入交互模式</li>
-<li>查看镜像是否下载成功 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure></li>
+<li>拉取远程镜像</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker pull bitcraze/builder</span><br></pre></td></tr></table></figure>
+<p>下载过程如下所示，由于文件较大可能需要一段时间。</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE2NTYzMC5naWY" /></p>
+<h4 id="进入交互模式">进入交互模式</h4>
+<ul>
+<li>查看镜像是否下载成功</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure>
+<ul>
 <li>进入项目目录</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ./crazyflie-firmware</span><br></pre></td></tr></table></figure>
@@ -43,7 +69,10 @@
 <li>进入交互式环境</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --rm -it -v <span class="variable">$&#123;PWD&#125;</span>:/module bitcraze/builder bash</span><br></pre></td></tr></table></figure>
-<p>该命令用法参考<a href="https://blog.csdn.net/zghforever/article/details/100087437">Docker 常用命令</a> ### 本地工具链配置 待补充 ## 编译</p>
+<p>该命令用法参考<a href="https://blog.csdn.net/zghforever/article/details/100087437">Docker 常用命令</a></p>
+<h3 id="本地工具链配置">本地工具链配置</h3>
+<p>待补充</p>
+<h2 id="编译">编译</h2>
 <table>
 <colgroup>
 <col style="width: 50%" />
@@ -109,10 +138,13 @@
 <p><strong><em>Versions:</em></strong></p>
 <ul>
 <li>Ubuntu 18.04.2 LTS (64 bit)</li>
-<li>Eclipse 2019-03 (Eclipse IDE for C/C++ Developers) #### 安装依赖</li>
-<li>安装<strong>GDB</strong>和<strong>openocd</strong></li>
+<li>Eclipse 2019-03 (Eclipse IDE for C/C++ Developers)</li>
 </ul>
 </blockquote>
+<h4 id="安装依赖">安装依赖</h4>
+<ul>
+<li>安装<strong>GDB</strong>和<strong>openocd</strong></li>
+</ul>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install gdb</span><br><span class="line">sudo apt-get install openocd</span><br></pre></td></tr></table></figure>
 <ul>
 <li>安装java运行环境</li>
@@ -121,10 +153,11 @@
 <ul>
 <li>安装eclipse</li>
 </ul>
-<p><a href="https://www.eclipse.org/downloads/download.php?file=/oomph/epp/2019-12/R/eclipse-inst-win64.exe">eclipse 下载页</a></p>
-<p>进入下载文件目录，解压文件</p>
+<p>进入<a href="https://www.eclipse.org/downloads/download.php?file=/oomph/epp/2019-12/R/eclipse-inst-win64.exe">eclipse 下载页</a>下载文件目录，并解压文件</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tar -zxvf <span class="string">&quot;your-downloaded-file&quot;</span>.tar.gz</span><br></pre></td></tr></table></figure>
-<p>开始eclipse安装</p>
+<ul>
+<li>开始eclipse安装</li>
+</ul>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="string">&quot;your-unzip-folder&quot;</span>/.eclipse_inst</span><br></pre></td></tr></table></figure>
 <h2 id="下载">下载</h2>
 ]]></content>
@@ -421,41 +454,68 @@ a_x = \dot{v}_x + g\sin(\theta) \tag{4}
 <h2 id="基于纵向动力学坡度计算">基于纵向动力学坡度计算</h2>
 <h3 id="车辆纵向动力学模型">车辆纵向动力学模型</h3>
 <p><img src="https://i.loli.net/2021/08/30/U8Ae7RSxg6OhcYv.png" style="zoom:80%;" /></p>
-<p>如上图所示，车辆纵向方向主要受到发动机产生的牵引力<span class="math inline">\(F_x\)</span>的影响，同时也受到重力分量、迎风阻力和地面摩擦力的影响。通过对车辆对上述力的分析，车辆的动力学模型可以表示如下： <span class="math display">\[
+<p>如上图所示，车辆纵向方向主要受到发动机产生的牵引力<span class="math inline">\(F_x\)</span>的影响，同时也受到重力分量、迎风阻力和地面摩擦力的影响。通过对车辆对上述力的分析，车辆的动力学模型可以表示如下：</p>
+<p><span class="math display">\[
 F_x - mg\sin(\theta) - fmg\cos(\theta) - \frac{1}{2}\rho C_dAv_x^2 = m\dot{v}_x\tag{6}
-\]</span> 其中，<span class="math inline">\(m\)</span>为车辆质量，<span class="math inline">\(\rho\)</span>为空气密度，<span class="math inline">\(C_d\)</span>为风阻系数，<span class="math inline">\(A\)</span>为迎风面积，<span class="math inline">\(g\)</span>为重力加速度，<span class="math inline">\(\theta\)</span>为路面坡度，<span class="math inline">\(f\)</span>为路面滚阻系数。上述等式(6)中，路面坡度<span class="math inline">\(\theta\)</span>为待求参数，其它参数对于某一车辆来说均可以认为是已知的或者通过测量能够得到。</p>
-<p>令 <span class="math inline">\(y = F_x\)</span>，<span class="math inline">\(u = m\dot{v}_x + \frac{1}{2}\rho C_dAv_x^2\)</span>，<span class="math inline">\(b = mg(\sin(\theta) + f\cos(\theta))\)</span>，将公式(6)简化为： <span class="math display">\[
+\]</span></p>
+<p>其中，<span class="math inline">\(m\)</span>为车辆质量，<span class="math inline">\(\rho\)</span>为空气密度，<span class="math inline">\(C_d\)</span>为风阻系数，<span class="math inline">\(A\)</span>为迎风面积，<span class="math inline">\(g\)</span>为重力加速度，<span class="math inline">\(\theta\)</span>为路面坡度，<span class="math inline">\(f\)</span>为路面滚阻系数。上述等式(6)中，路面坡度<span class="math inline">\(\theta\)</span>为待求参数，其它参数对于某一车辆来说均可以认为是已知的或者通过测量能够得到。</p>
+<p>令 <span class="math inline">\(y = F_x\)</span>，<span class="math inline">\(u = m\dot{v}_x + \frac{1}{2}\rho C_dAv_x^2\)</span>，<span class="math inline">\(b = mg(\sin(\theta) + f\cos(\theta))\)</span>，将公式(6)简化为：</p>
+<p><span class="math display">\[
 y = u + b \tag{7}
-\]</span> 上式中，<span class="math inline">\(y\)</span>、<span class="math inline">\(u\)</span>为已知量，<span class="math inline">\(b\)</span>为未知量，由于<span class="math inline">\(b\)</span>是参数<span class="math inline">\(\theta\)</span>的函数，因此对路面坡度的估计可以通过估算<span class="math inline">\(\hat{b}\)</span>的值求得。</p>
+\]</span></p>
+<p>上式中，<span class="math inline">\(y\)</span>、<span class="math inline">\(u\)</span>为已知量，<span class="math inline">\(b\)</span>为未知量，由于<span class="math inline">\(b\)</span>是参数<span class="math inline">\(\theta\)</span>的函数，因此对路面坡度的估计可以通过估算<span class="math inline">\(\hat{b}\)</span>的值求得。</p>
 <h3 id="参数估计">参数估计</h3>
-<p>采用带有遗忘因子的最小二乘法估计<span class="math inline">\(b\)</span>的值，假设代价函数为<span class="math inline">\(V(\hat{b},k)\)</span>，那么采用最小二乘法估计<span class="math inline">\(b\)</span>的值，相当于求解参数<span class="math inline">\(\hat{b}\)</span>，使得函数<span class="math inline">\(V(\hat{b},k)\)</span>在某一时刻<span class="math inline">\(k\)</span>取得最小值。 <span class="math display">\[
+<p>采用带有遗忘因子的最小二乘法估计<span class="math inline">\(b\)</span>的值，假设代价函数为<span class="math inline">\(V(\hat{b},k)\)</span>，那么采用最小二乘法估计<span class="math inline">\(b\)</span>的值，相当于求解参数<span class="math inline">\(\hat{b}\)</span>，使得函数<span class="math inline">\(V(\hat{b},k)\)</span>在某一时刻<span class="math inline">\(k\)</span>取得最小值。</p>
+<p><span class="math display">\[
 V(\hat{b},k) = \frac{1}{2}\sum_{i=1}^{k} \lambda^{k-i}(y_i - u_i - \hat{b}_k)^2 \tag{8}
-\]</span> 其中，<span class="math inline">\(\lambda\)</span>为遗忘因子，<span class="math inline">\(k\)</span>为采样时刻。</p>
-<p>函数极小值的计算可以通过求解函数导数为0的参数，及 <span class="math display">\[
+\]</span></p>
+<p>其中，<span class="math inline">\(\lambda\)</span>为遗忘因子，<span class="math inline">\(k\)</span>为采样时刻。</p>
+<p>函数极小值的计算可以通过求解函数导数为0的参数，及</p>
+<p><span class="math display">\[
 \frac{\partial V}{\partial \hat{b}_k} = 0 \tag{9}
-\]</span> 结合等式(8)、(9)得 <span class="math display">\[
+\]</span></p>
+<p>结合等式(8)、(9)得</p>
+<p><span class="math display">\[
 \sum_{i=1}^{k}\lambda^{k-i}(y_i - u_i - \hat{b}_k)=0\tag{10}
-\]</span> 对等式(10)化简得 <span class="math display">\[
+\]</span></p>
+<p>对等式(10)化简得</p>
+<p><span class="math display">\[
 \sum_{i=1}^{k}\lambda^{k-i}(y_i-u_i) - \sum_{i=1}^{k}\lambda^{k-i}\hat{b}_k=0 \tag{11}
-\]</span> 移项得 <span class="math display">\[
+\]</span></p>
+<p>移项得</p>
+<p><span class="math display">\[
 \hat{b}_k \sum_{i=1}^{k}\lambda^{k-i} =\sum_{i=1}^{k}\lambda^{k-i}(y_i-u_i) \tag{12}
-\]</span> 基于等式(12)，提取<span class="math inline">\(\hat{b}_k\)</span>得 <span class="math display">\[
+\]</span></p>
+<p>基于等式(12)，提取<span class="math inline">\(\hat{b}_k\)</span>得</p>
+<p><span class="math display">\[
 \hat{b}_k = (\sum_{i=1}^{k}\lambda^{k-i})^{-1}\bigl(\sum_{i=1}^{k}\lambda^{k-i}(y_i-u_i)\bigr) \tag{13}
-\]</span> 从等式(13)可以看出，随着采样时刻<span class="math inline">\(k\)</span>不断增加，估计值<span class="math inline">\(\hat{b}\)</span>的计算量也不断增加。由于车辆行驶过程中的路面坡度估计需要实时计算，因此在实际应用中一般采用递推最小二乘估计来实时估计每一采样时刻<span class="math inline">\(b\)</span>的估计值<span class="math inline">\(\hat{b}\)</span>。 <span class="math display">\[
+\]</span></p>
+<p>从等式(13)可以看出，随着采样时刻<span class="math inline">\(k\)</span>不断增加，估计值<span class="math inline">\(\hat{b}\)</span>的计算量也不断增加。由于车辆行驶过程中的路面坡度估计需要实时计算，因此在实际应用中一般采用递推最小二乘估计来实时估计每一采样时刻<span class="math inline">\(b\)</span>的估计值<span class="math inline">\(\hat{b}\)</span>。</p>
+<p><span class="math display">\[
 \hat{b}_k = \hat{b}_{k-1} + L_k(y_k -u_k)\tag{14}
-\]</span> 增益系数<span class="math inline">\(L_k\)</span>为 <span class="math display">\[
+\]</span></p>
+<p>增益系数<span class="math inline">\(L_k\)</span>为</p>
+<p><span class="math display">\[
 L_k = \frac{P_{k-1}}{\lambda + P_{k-1}} \tag{15}
-\]</span> 误差协方差<span class="math inline">\(P_k\)</span>为 <span class="math display">\[
+\]</span></p>
+<p>误差协方差<span class="math inline">\(P_k\)</span>为</p>
+<p><span class="math display">\[
 P_k = \frac{1}{\lambda}(1 - L_k)P_{k-1} \tag{16}
-\]</span> 根据公式(14)、(15)、(16)的更新过程 <span class="math display">\[
+\]</span></p>
+<p>根据公式(14)、(15)、(16)的更新过程</p>
+<p><span class="math display">\[
 D = \frac{\hat{b}}{mg} \tag{17}
-\]</span> 坡度角为 <span class="math display">\[
+\]</span></p>
+<p>坡度角为</p>
+<p><span class="math display">\[
 \theta = \arcsin(\frac{D-f\sqrt{1-D^2 + f^2}}{1 + f^2}) \tag{18}
 \]</span></p>
 <h2 id="坡度角融合">坡度角融合</h2>
-<p>车辆行驶过程中路面坡度<span class="math inline">\(\theta\)</span>可以认为是高频信号和低频信号两部分组成，在对路面坡度进行估计时，基于纵向动力学估计方法依赖于车辆的多个参数，车辆的各个参数受高频噪声影响大；基于加速度偏差坡度估计的缺点是受惯性传感器的静态偏差影响较大，惯性传感器的静态偏差属于低频噪声，为了保证路面坡度估算结果的准确性，对<span class="math inline">\(\theta_1\)</span>采用低通滤波器除去其高频部分，对<span class="math inline">\(\theta_2\)</span>采用高通滤波器滤除其低频部分，最终得到更加准确的实时估计值<span class="math inline">\(\hat{\theta}\)</span>为： <span class="math display">\[
+<p>车辆行驶过程中路面坡度<span class="math inline">\(\theta\)</span>可以认为是高频信号和低频信号两部分组成，在对路面坡度进行估计时，基于纵向动力学估计方法依赖于车辆的多个参数，车辆的各个参数受高频噪声影响大；基于加速度偏差坡度估计的缺点是受惯性传感器的静态偏差影响较大，惯性传感器的静态偏差属于低频噪声，为了保证路面坡度估算结果的准确性，对<span class="math inline">\(\theta_1\)</span>采用低通滤波器除去其高频部分，对<span class="math inline">\(\theta_2\)</span>采用高通滤波器滤除其低频部分，最终得到更加准确的实时估计值<span class="math inline">\(\hat{\theta}\)</span>为：</p>
+<p><span class="math display">\[
 \hat{\theta} = \frac{1}{\tau s + 1}\theta_1 + \frac{\tau s}{\tau s + 1}\theta_2 \tag{19}
-\]</span> 其中，<span class="math inline">\(\tau\)</span>为时间常数，<span class="math inline">\(s\)</span>为拉普拉斯算子，<span class="math inline">\(\frac{1}{\tau s + 1}\)</span>为低通滤波器，<span class="math inline">\(\frac{\tau s}{\tau s + 1}\)</span>为高通滤波器。</p>
+\]</span></p>
+<p>其中，<span class="math inline">\(\tau\)</span>为时间常数，<span class="math inline">\(s\)</span>为拉普拉斯算子，<span class="math inline">\(\frac{1}{\tau s + 1}\)</span>为低通滤波器，<span class="math inline">\(\frac{\tau s}{\tau s + 1}\)</span>为高通滤波器。</p>
 ]]></content>
       <categories>
         <category>传感器融合算法</category>
@@ -552,14 +612,19 @@ D = \frac{\hat{b}}{mg} \tag{17}
 <p>本文介绍离散时间有限范围内的<strong>LQR(Linear Quadratic Regulator)</strong>算法求解过程. <img src="https://i.loli.net/2021/08/30/erFAJgdV85LWOvI.jpg" alt="蝴蝶花" /></p>
 <span id="more"></span>
 <h2 id="lqr问题背景">LQR问题背景</h2>
-<p>对于一个离散时间系统： <span class="math display">\[
+<p>对于一个离散时间系统：</p>
+<p><span class="math display">\[
 x_{t+1}=Ax_t + Bu_t,x_0=x_{init}\tag{1}
-\]</span> 其中，<span class="math inline">\(A\in R^{n\times n}\)</span>，<span class="math inline">\(B\in R^{n\times m}\)</span></p>
+\]</span></p>
+<p>其中，<span class="math inline">\(A\in R^{n\times n}\)</span>，<span class="math inline">\(B\in R^{n\times m}\)</span></p>
 <p>关于最优问题，就在于如何选择合适的<span class="math inline">\(u_0,u_1,...\)</span>，使得状态量<span class="math inline">\(x_0,x_1,...\)</span>足够小，因此得到好的调节和控制；或者使得<span class="math inline">\(u_0,u_1,...\)</span>足够小，以使用更少的能量。这两个量通常相互制约，如果采用更大的输入<span class="math inline">\(u\)</span>，就会驱使状态量<span class="math inline">\(x\)</span>更快达到0。采用线性二次调节原理可以解决这个问题。</p>
 <h2 id="lqr代价函数">LQR代价函数</h2>
-<p>为了表示控制系统达到稳定控制所付出的代价，定义如下二次型代价函数： <span class="math display">\[
+<p>为了表示控制系统达到稳定控制所付出的代价，定义如下二次型代价函数：</p>
+<p><span class="math display">\[
 J(U)=\sum^{N-1}_{\tau=0}(x^{T}_{\tau}Qx_{\tau} + u^{T}_{\tau}Ru_{\tau})+ x^{T}_{N}Q_{f}x_{N}\tag{2}
-\]</span> 其中函数参数<span class="math inline">\(U = (u_0,u_1,..,u_N)\)</span>，并且矩阵<span class="math inline">\(Q,Q_f,R\)</span>为正定矩阵，及 <span class="math display">\[
+\]</span></p>
+<p>其中函数参数<span class="math inline">\(U = (u_0,u_1,..,u_N)\)</span>，并且矩阵<span class="math inline">\(Q,Q_f,R\)</span>为正定矩阵，及</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 Q=Q^{T}\geq0,&amp;Q_f=Q_{f}^{T}\geq0,&amp;R=R^{T}&gt;0
 \end{array}
@@ -592,21 +657,26 @@ Q=Q^{T}\geq0,&amp;Q_f=Q_{f}^{T}\geq0,&amp;R=R^{T}&gt;0
 <h2 id="求解lqr方法">求解LQR方法</h2>
 <p>本文主要介绍两种求解LQR的方法，分别为最小二乘法和动态规划算法。</p>
 <h3 id="最小二乘法">最小二乘法</h3>
-<p>根据公式(1)可知，<span class="math inline">\(x_0\)</span>是<span class="math inline">\(X = (x_0,...,x_N)\)</span>的线性函数，并且<span class="math inline">\(U = (u_0,...,u_{N-1})\)</span>，可以得出如下关系： <span class="math display">\[
+<p>根据公式(1)可知，<span class="math inline">\(x_0\)</span>是<span class="math inline">\(X = (x_0,...,x_N)\)</span>的线性函数，并且<span class="math inline">\(U = (u_0,...,u_{N-1})\)</span>，可以得出如下关系：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x_1 &amp;= Ax_0 + Bu_0\\
 x_2 &amp;= Ax_1 + Bu_1\\
 \vdots\\
 x_n &amp;= Ax_{N-1} + Bu_{N-1}
 \end{array}\tag{3}
-\]</span> 将上述公式(3)逐个带入得 <span class="math display">\[
+\]</span></p>
+<p>将上述公式(3)逐个带入得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x_1 &amp;= Ax_0 + Bu_0\\
 x_2 &amp;= A^{2}x_0 + ABu_0 + Bu_1\\
 \vdots\\
 x_n &amp;= A^{N}x_0 + A^{N-1}Bu_0 + A^{N-2}Bu_1 + \dots+ Bu_{N-1}
 \end{array} \tag{4}
-\]</span> 整理得 <span class="math display">\[
+\]</span></p>
+<p>整理得</p>
+<p><span class="math display">\[
 \left[\begin{array}{cl}
 x_0\\
 x_1\\
@@ -636,7 +706,9 @@ A\\
 A^{N}
 \end{array}
 \right]x_0 \tag{5}
-\]</span> 其中 <span class="math display">\[
+\]</span></p>
+<p>其中</p>
+<p><span class="math display">\[
 G=\left[ \begin{array}{cl}
 0 &amp; \dots \\
 B &amp; 0 &amp; \dots \\
@@ -652,29 +724,39 @@ A^{N}
 \end{array}
 \right]
 \]</span></p>
-<p>等式(5)可以进一步表示为 <span class="math display">\[
+<p>等式(5)可以进一步表示为</p>
+<p><span class="math display">\[
 X= GU + Hx_0 \tag{6}
-\]</span> 其中，<span class="math inline">\(G\in R^{Nn\times Nm}\)</span>，<span class="math inline">\(H\in R^{Nn\times n}\)</span>。</p>
-<p>从而等式(2)所表示得代价函数可以表示为 <span class="math display">\[
+\]</span></p>
+<p>其中，<span class="math inline">\(G\in R^{Nn\times Nm}\)</span>，<span class="math inline">\(H\in R^{Nn\times n}\)</span>。</p>
+<p>从而等式(2)所表示得代价函数可以表示为</p>
+<p><span class="math display">\[
 J(U)=\parallel diag(Q^{1/2},\dots,Q^{1/2},Q^{1/2}_{f})(GU+Hx_0)\parallel^2+
 \parallel diag(R^{1/2},\dots,R^{1/2})U\parallel^2 \tag{7}
-\]</span> 这就转化成一个求解最小二乘法的问题，其问题大小为<span class="math inline">\(N(n + m)\times Nm\)</span>。</p>
+\]</span></p>
+<p>这就转化成一个求解最小二乘法的问题，其问题大小为<span class="math inline">\(N(n + m)\times Nm\)</span>。</p>
 <h3 id="动态规划法dynamic-programming">动态规划法(Dynamic Programming)</h3>
 <p>动态规划算法是解决多阶段决策过程最优化的一种有效的数学方法。</p>
 <h4 id="值函数">值函数</h4>
-<p>首先定义一个值函数<span class="math inline">\(V_t:R^n \to R\)</span>,其中<span class="math inline">\(t=(0,\dots,N)\)</span>： <span class="math display">\[
+<p>首先定义一个值函数<span class="math inline">\(V_t:R^n \to R\)</span>,其中<span class="math inline">\(t=(0,\dots,N)\)</span>：</p>
+<p><span class="math display">\[
 V_t(z)=\min_{u_t,\dots,u_{N-1}}\Bigl(\sum_{\tau=t}^{N-1}(x^T_\tau Qx_\tau + u^t_\tau Ru_\tau) + x_N^TQ_fx_N\Bigr) \tag{8}
-\]</span> 如果设置<span class="math inline">\(x_t = z\)</span>，根据公式(1)的关系，<span class="math inline">\(x_{\tau+1} = Ax_{\tau} + Bu_{\tau}\)</span>,并且<span class="math inline">\(\tau=t,\dots,N\)</span>。</p>
+\]</span></p>
+<p>如果设置<span class="math inline">\(x_t = z\)</span>，根据公式(1)的关系，<span class="math inline">\(x_{\tau+1} = Ax_{\tau} + Bu_{\tau}\)</span>,并且<span class="math inline">\(\tau=t,\dots,N\)</span>。</p>
 <ul>
 <li><span class="math inline">\(V_t(z)\)</span>可以表示在<span class="math inline">\(t\)</span>时刻，从状态<span class="math inline">\(z\)</span>开始的LQR最小代价值</li>
 <li><span class="math inline">\(V_0(x_0)\)</span>表示在0时刻，从状态<span class="math inline">\(x_0\)</span>开始的LQR最小代价值</li>
 </ul>
-<p><span class="math inline">\(V_t\)</span>可以表示为二次型的形式，即<span class="math inline">\(V_T(z)=z^TP_tz\)</span>, 其中<span class="math inline">\(P_t=P_t^T \geq 0\)</span>。当<span class="math inline">\(t=N\)</span>时，代价值函数为： <span class="math display">\[
+<p><span class="math inline">\(V_t\)</span>可以表示为二次型的形式，即<span class="math inline">\(V_T(z)=z^TP_tz\)</span>, 其中<span class="math inline">\(P_t=P_t^T \geq 0\)</span>。当<span class="math inline">\(t=N\)</span>时，代价值函数为：</p>
+<p><span class="math display">\[
 V_N(z) = z^TQ_f z \tag{9}
-\]</span> 因此<span class="math inline">\(P_N = Q_f\)</span>。</p>
-<p>根据动态规划原理，等式(8)可以写成如下递归关系式： <span class="math display">\[
+\]</span></p>
+<p>因此<span class="math inline">\(P_N = Q_f\)</span>。</p>
+<p>根据动态规划原理，等式(8)可以写成如下递归关系式：</p>
+<p><span class="math display">\[
 V_t(z)=\min_w\bigl(z^TQz + w^TRw + V_{t+1}(Az+Bw)\bigr)\tag{10}
-\]</span> 其中，</p>
+\]</span></p>
+<p>其中，</p>
 <ul>
 <li><span class="math inline">\(z^TQz + w^TRw\)</span>：如果<span class="math inline">\(u_t = w\)</span>,则代表<span class="math inline">\(t\)</span>时刻产生的代价值；</li>
 <li><span class="math inline">\(V_{t+1}(Az+Bw)\)</span>：代表从<span class="math inline">\(t+1\)</span>时刻开始，引起的最小代价值；</li>
@@ -684,7 +766,8 @@ V_t(z)=\min_w\bigl(z^TQz + w^TRw + V_{t+1}(Az+Bw)\bigr)\tag{10}
 V_t(z)=z^TQz + \min_w\bigl(w^TRw + V_{t+1}(Az+Bw)\bigr)\tag{11}
 \]</span></p>
 <p>等式(11)描述了<span class="math inline">\(V_t(z)\)</span>与<span class="math inline">\(V_{t+1}(z)\)</span>之间的递归关系。</p>
-<p>最优控制率<span class="math inline">\(u_t\)</span>可以表示为 <span class="math display">\[
+<p>最优控制率<span class="math inline">\(u_t\)</span>可以表示为</p>
+<p><span class="math display">\[
 u_t^{lqr}=arg\min_w\bigl(w^TRw + V_{t+1}(Az+Bw)\bigr)
 \]</span></p>
 <h4 id="求极值">求极值</h4>
@@ -731,8 +814,10 @@ V_t(z)
 &amp;= &amp;z^T(Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A)z\\
 &amp;= &amp;z^TP_tz
 \end{array}\tag{17}
-\]</span> 上述公式化简过程中，由于<span class="math inline">\(P_{t+1}=P^{T}_{t+1},R=R^T\)</span>，所以<span class="math inline">\(\bigl((R+B^TP_{t+1}B)^{-1}\bigr)^T = (R + B^TP_{t+1}B)^{-1}\)</span>。</p>
-<p>由等式(17)可知 <span class="math display">\[
+\]</span></p>
+<p>上述公式化简过程中，由于<span class="math inline">\(P_{t+1}=P^{T}_{t+1},R=R^T\)</span>，所以<span class="math inline">\(\bigl((R+B^TP_{t+1}B)^{-1}\bigr)^T = (R + B^TP_{t+1}B)^{-1}\)</span>。</p>
+<p>由等式(17)可知</p>
+<p><span class="math display">\[
 P_t = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A \tag{18}
 \]</span></p>
 <h4 id="求解过程">求解过程</h4>
@@ -976,7 +1061,8 @@ a_1
 <img src="https://i.loli.net/2021/08/30/Q7SMVU8LzrANGlv.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
 </figure>
 <span id="more"></span>
-<p>直线方程可以表示为 <span class="math display">\[
+<p>直线方程可以表示为</p>
+<p><span class="math display">\[
 r = \cos\theta*x + \sin\theta*y
 \]</span></p>
 <p>几何关系如下图所示</p>
@@ -1032,9 +1118,9 @@ f(\theta,r) = \sum_{S_k}(\cos\theta*x_i + \sin\theta*y_i - r)^2 \tag{4}
 \]</span></p>
 <p>由上述得</p>
 <p><span class="math display">\[
-\begin{array}{}
-\sum_{i=0}^{k}r = \cos\theta\sum_{i=0}^kx_i + \sin\theta\sum_{i=0}^ky_i \\
- r = \cos\theta\frac{\sum_{i=0}^kx_i}{k} + \sin\theta\frac{\sum_{i=0}^ky_i}{k} \tag{10}
+\begin{array}{l}
+\sum_{i=0}^{k}r &amp;= \cos\theta\sum_{i=0}^kx_i + \sin\theta\sum_{i=0}^ky_i \\
+ r &amp;= \cos\theta\frac{\sum_{i=0}^kx_i}{k} + \sin\theta\frac{\sum_{i=0}^ky_i}{k} \tag{10}
 \end{array}
 \]</span></p>
 <p>令</p>
@@ -1232,7 +1318,9 @@ V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \tag{25}
 <p><img src="https://i.loli.net/2021/08/30/mC9TIKJhZdqGfMB.png" /></p>
 <h3 id="数据滤波">数据滤波</h3>
 <h4 id="状态滤波">状态滤波</h4>
-<p>传感器本身会输出一些状态信号，如噪声干扰、硬件故障、盲区、振玲故障、通信故障和正常等状态。可以通过传感器输出的这些状态信号进行数据的一级滤波，只保留状态输出为正常的信号。 #### 幅值滤波 超声波的<strong>Level</strong>值反应了声波的回波强度，因此可以使用回波强度的大小，去滤除一部分无效信号，比如回波为0值数据。这些数据反应了未探测到障碍物，或者是障碍物的特殊结构反射了声波，特殊的材料吸收了声波。 比如某些车型的车头设计有很大的进气栅格，这种结构就会减少反射声波的强度，从而导致强度降低。</p>
+<p>传感器本身会输出一些状态信号，如噪声干扰、硬件故障、盲区、振玲故障、通信故障和正常等状态。可以通过传感器输出的这些状态信号进行数据的一级滤波，只保留状态输出为正常的信号。</p>
+<h4 id="幅值滤波">幅值滤波</h4>
+<p>超声波的<strong>Level</strong>值反应了声波的回波强度，因此可以使用回波强度的大小，去滤除一部分无效信号，比如回波为0值数据。这些数据反应了未探测到障碍物，或者是障碍物的特殊结构反射了声波，特殊的材料吸收了声波。 比如某些车型的车头设计有很大的进气栅格，这种结构就会减少反射声波的强度，从而导致强度降低。</p>
 <p><img src="https://i.loli.net/2021/08/30/OVlckaCFD34UqPY.png" alt="幅值滤波" style="zoom: 80%;" /></p>
 <p>当超声波探测到车辆边沿时，此时由于很多回波反射方向变化，所以传感器接收到的强度变低。</p>
 <p><img src="https://i.loli.net/2021/08/30/M9wzFi37mrlEYku.png" style="zoom:80%;" /></p>
@@ -1240,7 +1328,9 @@ V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \tag{25}
 <hr />
 <h3 id="边沿检测">边沿检测</h3>
 <h4 id="概述-2">概述</h4>
-<p>对原始数据进行处理后，可以得到一组有效的超声信号，基于这组数据，可以进行车辆边沿的检测。 #### 距离疏密程度 由于所有的坐标点都已经转化到了地面坐标系下，所以只需要进行x方向的疏密度分析。从下图可知，在车辆边沿处，点比较稀疏，有的地方存在很长一段距离无数据点。这种情况一般是车头处存在镂空的结构，或者声波发生了散射，导致声波强度减小。所以在确定车辆边沿点时，需设置一个疏密距离阀值，当距离值大于阀值时，才认为该点是边界的跳变点。 <img src="https://img-blog.csdnimg.cn/20190513192450664.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
+<p>对原始数据进行处理后，可以得到一组有效的超声信号，基于这组数据，可以进行车辆边沿的检测。</p>
+<h4 id="距离疏密程度">距离疏密程度</h4>
+<p>由于所有的坐标点都已经转化到了地面坐标系下，所以只需要进行x方向的疏密度分析。从下图可知，在车辆边沿处，点比较稀疏，有的地方存在很长一段距离无数据点。这种情况一般是车头处存在镂空的结构，或者声波发生了散射，导致声波强度减小。所以在确定车辆边沿点时，需设置一个疏密距离阀值，当距离值大于阀值时，才认为该点是边界的跳变点。 <img src="https://img-blog.csdnimg.cn/20190513192450664.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
 <h3 id="数据分布">数据分布</h3>
 <p>对于后车的边沿定位，使用的是车辆后方的短距传感器，该传感器使用三角定位原理，确定后车边沿的坐标值。可以从图中看出，图片左侧数据点描绘的是后车的边沿，可以通过数据的分布情况，及集中程度，确定最有可能车辆边沿的值。 <img src="https://img-blog.csdnimg.cn/20190513194816201.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /> 如下图所示，是对上图x轴做了数值分布分析，可以看出，大部分点的x轴坐标都分布于区域5中，所以最后取区域5中的点作为可信的坐标点。 <img src="https://img-blog.csdnimg.cn/20190513201643149.PNG#pic_center" /></p>
 <h2 id="结论">结论</h2>
@@ -1305,14 +1395,21 @@ V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \tag{25}
 <span id="more"></span>
 <h2 id="stanley方法">Stanley方法</h2>
 <p><img src="https://i.loli.net/2021/08/30/kVdqQai6KhGrelT.png" style="zoom:80%;" /></p>
-<p>Stanley方法是一种基于航迹误差<span class="math inline">\(e_{f}\)</span>的非线性反馈函数,该航向误差是车辆前轴中心点与目标路径最近点<span class="math inline">\((c_x,c_y)\)</span>的距离。由上图几何关系得 <span class="math display">\[
+<p>Stanley方法是一种基于航迹误差<span class="math inline">\(e_{f}\)</span>的非线性反馈函数,该航向误差是车辆前轴中心点与目标路径最近点<span class="math inline">\((c_x,c_y)\)</span>的距离。由上图几何关系得</p>
+<p><span class="math display">\[
 \psi_e = \psi - \psi_{t} \tag{1}
-\]</span> 其中，<span class="math inline">\(\psi\)</span>表示车辆横向角，<span class="math inline">\(\psi_{t}\)</span>表示离车辆前轴中心最近目标路径点处的航向角。</p>
-<p>前轮速度轴与目标路径航向之间的夹角<span class="math inline">\(\beta\)</span>为 <span class="math display">\[
+\]</span></p>
+<p>其中，<span class="math inline">\(\psi\)</span>表示车辆横向角，<span class="math inline">\(\psi_{t}\)</span>表示离车辆前轴中心最近目标路径点处的航向角。</p>
+<p>前轮速度轴与目标路径航向之间的夹角<span class="math inline">\(\beta\)</span>为</p>
+<p><span class="math display">\[
 \beta = \arcsin(\frac{k\cdot e_{f}}{v_x}) \tag{2}
-\]</span> 但是在论文中都是使用反正切函数求<span class="math inline">\(\beta\)</span>角，可能原因是系数<span class="math inline">\(k\)</span>可以任意选择，选择可是的系数<span class="math inline">\(k\)</span>，确实可以转化为 <span class="math display">\[
+\]</span></p>
+<p>但是在论文中都是使用反正切函数求<span class="math inline">\(\beta\)</span>角，可能原因是系数<span class="math inline">\(k\)</span>可以任意选择，选择可是的系数<span class="math inline">\(k\)</span>，确实可以转化为</p>
+<p><span class="math display">\[
 \beta = \arctan(\frac{k\cdot e_{f}}{v_x}) \tag{3}
-\]</span> 结合等式(1)和(3)得 <span class="math display">\[
+\]</span></p>
+<p>结合等式(1)和(3)得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \delta &amp;= \psi_e + \beta \\
 &amp;= \psi - \psi_{t} +  \arctan(\dfrac{k\cdot e_{f}}{v_x})
@@ -1337,17 +1434,21 @@ V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \tag{25}
 <span id="more"></span>
 <h2 id="受力分析">受力分析</h2>
 <h3 id="平动">平动</h3>
-<p>首先假设车辆为一个质点，对该质点进行受力分析，并根据牛顿第二定律得 <span class="math display">\[
+<p>首先假设车辆为一个质点，对该质点进行受力分析，并根据牛顿第二定律得</p>
+<p><span class="math display">\[
 ma_y = F_{yf}+F_{yr} \tag{1}
 \]</span></p>
-<p>其中，<span class="math inline">\(a_y\)</span>为车辆重心处<span class="math inline">\(y\)</span>轴方向的惯性加速度，<span class="math inline">\(F_{yf}\)</span>和<span class="math inline">\(F_{yr}\)</span>为前后轮横向受到的力。平动过程中，有两种力共同作用于加速度<span class="math inline">\(a_y\)</span>：车辆延<span class="math inline">\(y\)</span>轴产生的惯性加速度<span class="math inline">\(\ddot{y}\)</span>和车辆绕旋转中心<span class="math inline">\(O\)</span>旋转产生的向心加速度<span class="math inline">\(a_c=V_x\dot{\psi}\)</span>。 <span class="math display">\[
+<p>其中，<span class="math inline">\(a_y\)</span>为车辆重心处<span class="math inline">\(y\)</span>轴方向的惯性加速度，<span class="math inline">\(F_{yf}\)</span>和<span class="math inline">\(F_{yr}\)</span>为前后轮横向受到的力。平动过程中，有两种力共同作用于加速度<span class="math inline">\(a_y\)</span>：车辆延<span class="math inline">\(y\)</span>轴产生的惯性加速度<span class="math inline">\(\ddot{y}\)</span>和车辆绕旋转中心<span class="math inline">\(O\)</span>旋转产生的向心加速度<span class="math inline">\(a_c=V_x\dot{\psi}\)</span>。</p>
+<p><span class="math display">\[
 a_y = \ddot{y} + V_x\dot{\psi} \tag{2}
 \]</span></p>
-<p>将公式(2)带入公式(1)得 <span class="math display">\[
+<p>将公式(2)带入公式(1)得</p>
+<p><span class="math display">\[
 m(\ddot{y} + V_x\dot{\psi}) = F_{yf}+F_{yr} \tag{3}
 \]</span></p>
 <h3 id="转动">转动</h3>
-<p>假设车辆为刚体，刚体绕重心转动，该运动过程使用力矩和转动惯量进行描述。 车辆绕z轴旋转产生的力矩平衡，对应的偏航动力学方程为 <span class="math display">\[
+<p>假设车辆为刚体，刚体绕重心转动，该运动过程使用力矩和转动惯量进行描述。 车辆绕z轴旋转产生的力矩平衡，对应的偏航动力学方程为</p>
+<p><span class="math display">\[
 I_z\ddot{\psi} = l_fF_{yf} - l_rF_{yr} \tag{4}
 \]</span></p>
 <p>其中，<span class="math inline">\(l_f\)</span>和<span class="math inline">\(l_r\)</span>代表前后轮胎到重心的距离。</p>
@@ -1365,29 +1466,38 @@ I_z\ddot{\psi} = l_fF_{yf} - l_rF_{yr} \tag{4}
 <p><span class="math display">\[
 F_{yf} = 2C_{\alpha f}(\delta - \theta_{Vf} ) \tag{7}
 \]</span></p>
-<p>其中，比例常数<span class="math inline">\(C_{\alpha f}\)</span>代表每个前轮的侧偏刚度。 同理后轮的横向力可以写为 <span class="math display">\[
+<p>其中，比例常数<span class="math inline">\(C_{\alpha f}\)</span>代表每个前轮的侧偏刚度。</p>
+<p>同理后轮的横向力可以写为</p>
+<p><span class="math display">\[
 F_{yr} = 2C_{\alpha r}(-\theta_{Vr}) \tag{8}
 \]</span></p>
 <p>其中，比例常数<span class="math inline">\(C_{\alpha r}\)</span>代表每个后轮的侧偏刚度。</p>
 <h3 id="速度方向">速度方向</h3>
 <p><img src="https://i.loli.net/2021/08/30/qBMO6K81ZVT2QNt.png" /></p>
-<p>车辆平动产生的速度分量<span class="math inline">\(V_x\)</span>和<span class="math inline">\(V_y\)</span>，以及绕点<span class="math inline">\(C\)</span>转动产生的线速度<span class="math inline">\(l_f\dot{\psi}\)</span>和<span class="math inline">\(l_r\dot{\psi}\)</span>组成。根据上图得 <span class="math display">\[
+<p>车辆平动产生的速度分量<span class="math inline">\(V_x\)</span>和<span class="math inline">\(V_y\)</span>，以及绕点<span class="math inline">\(C\)</span>转动产生的线速度<span class="math inline">\(l_f\dot{\psi}\)</span>和<span class="math inline">\(l_r\dot{\psi}\)</span>组成。根据上图得</p>
+<p><span class="math display">\[
 \tan(\theta_{Vf})=\frac{V_y + l_f\dot{\psi}}{V_x} \tag{9}
 \]</span></p>
 <p><span class="math display">\[
 \tan(\theta_{Vr})=\frac{V_y - l_r\dot{\psi}}{V_x} \tag{10}
-\]</span> 由于通常情况下速度矢量的夹角很小，可以使用小角度近似原理得 <span class="math display">\[
+\]</span></p>
+<p>由于通常情况下速度矢量的夹角很小，可以使用小角度近似原理得 <span class="math display">\[
 \theta_{Vf}=\frac{\dot{y} + l_f\dot{\psi}}{V_x} \tag{11}
 \]</span></p>
 <p><span class="math display">\[
 \theta_{Vr}=\frac{\dot{y} - l_r\dot{\psi}}{V_x} \tag{12}
 \]</span></p>
 <h2 id="微分方程">微分方程</h2>
-<p>将等式(7)、(8)、(9)和(10)代入等式(3)中得 <span class="math display">\[
+<p>将等式(7)、(8)、(9)和(10)代入等式(3)中得</p>
+<p><span class="math display">\[
 m(\ddot{y} + V_x\dot{\psi}) = 2C_{\alpha f}(\delta - \frac{\dot{y} + l_f\dot{\psi}}{V_x} ) +2C_{\alpha r}(-\frac{\dot{y} - l_r\dot{\psi}}{V_x}) \tag{13}
-\]</span> 等式(13)左右两边同时除以<span class="math inline">\(m\)</span>，分别提取 <span class="math inline">\(\ddot{y}\)</span>、<span class="math inline">\(\dot{y}\)</span>、<span class="math inline">\(\dot{\psi}\)</span>和<span class="math inline">\(\delta\)</span>项得 <span class="math display">\[
+\]</span></p>
+<p>等式(13)左右两边同时除以<span class="math inline">\(m\)</span>，分别提取 <span class="math inline">\(\ddot{y}\)</span>、<span class="math inline">\(\dot{y}\)</span>、<span class="math inline">\(\dot{\psi}\)</span>和<span class="math inline">\(\delta\)</span>项得</p>
+<p><span class="math display">\[
 \ddot{y} = -\frac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x}\dot{y}   - ( V_x +  \frac{2C_{\alpha f}l_f- 2C_{\alpha r}l_r}{mV_x})\dot{\psi}  + \frac{2C_{\alpha f}}{m} \delta \tag{14}
-\]</span> 转化为矩阵形式如下 <span class="math display">\[
+\]</span></p>
+<p>转化为矩阵形式如下</p>
+<p><span class="math display">\[
 \frac{\mathrm{d}}{\mathrm{d}t} \dot{y} = 
 \begin{bmatrix}
 0 &amp; -\dfrac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x} &amp; 0 &amp; - ( V_x +  \dfrac{2C_{\alpha f}l_f- 2C_{\alpha r}l_r}{mV_x})
@@ -1398,11 +1508,17 @@ y\\
 \psi\\
 \dot{\psi}
 \end{bmatrix} + \frac{2C_{\alpha f}}{m}\delta \tag{15}
-\]</span> 同理，将等式(7)、(8)、(9)和(10)代入等式(4)中得 <span class="math display">\[
+\]</span></p>
+<p>同理，将等式(7)、(8)、(9)和(10)代入等式(4)中得</p>
+<p><span class="math display">\[
 I_z\ddot{\psi} = 2l_fC_{\alpha f}(\delta - \frac{\dot{y} + l_f\dot{\psi}}{V_x} )  - 2l_rC_{\alpha r}(-\frac{\dot{y} - l_r\dot{\psi}}{V_x}) \tag{16}
-\]</span> 等式(13)左右两边同时除以<span class="math inline">\(I_z\)</span>，分别提取<span class="math inline">\(\dot{y}\)</span>、 <span class="math inline">\(\ddot{\psi}\)</span>、<span class="math inline">\(\dot{\psi}\)</span>和<span class="math inline">\(\delta\)</span>项得 <span class="math display">\[
+\]</span></p>
+<p>等式(13)左右两边同时除以<span class="math inline">\(I_z\)</span>，分别提取<span class="math inline">\(\dot{y}\)</span>、 <span class="math inline">\(\ddot{\psi}\)</span>、<span class="math inline">\(\dot{\psi}\)</span>和<span class="math inline">\(\delta\)</span>项得</p>
+<p><span class="math display">\[
 \ddot{\psi} = - \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x}\dot{y}  - \frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi} + \frac{2l_fC_{\alpha f}}{I_z}\delta\tag{17}
-\]</span> 等效的矩阵形式为 <span class="math display">\[
+\]</span></p>
+<p>等效的矩阵形式为</p>
+<p><span class="math display">\[
 \frac{\mathrm{d}}{\mathrm{d}t} \dot{\psi} = 
 \begin{bmatrix}
 0 &amp; - \dfrac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x} &amp; 0 &amp; -\dfrac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}
@@ -1413,7 +1529,9 @@ y\\
 \psi\\
 \dot{\psi}
 \end{bmatrix} + \frac{2l_fC_{\alpha f}}{I_z}\delta \tag{18}
-\]</span> 根据等式(15)和(18)得 <span class="math display">\[
+\]</span></p>
+<p>根据等式(15)和(18)得</p>
+<p><span class="math display">\[
 \frac{\mathrm{d}}{\mathrm{d}t}\left \{ \begin{array}{cccc}
 y\\
 \dot{y}\\
@@ -1438,7 +1556,10 @@ y\\
 0\\
  \dfrac{2l_fC_{\alpha f}}{I_z}
 \end{bmatrix}\delta \tag{19}
-\]</span> - 注意：上述动力学方程的推导建立在车辆滑移角很小的情况下，这时的轮胎作用力与滑移角可以近似为线性关系。当滑移角很大时，轮胎作用力与滑移角就不再是线性关系。</p>
+\]</span></p>
+<ul>
+<li>注意：上述动力学方程的推导建立在车辆滑移角很小的情况下，这时的轮胎作用力与滑移角可以近似为线性关系。当滑移角很大时，轮胎作用力与滑移角就不再是线性关系。</li>
+</ul>
 <h2 id="参考">参考</h2>
 <ol type="1">
 <li>“vehicle dynamics and control”</li>
@@ -1467,10 +1588,13 @@ y\\
 <h2 id="误差">误差</h2>
 <p><img src="https://i.loli.net/2021/08/30/yxLlDEZFpgoi5cj.png" alt="后轮位置跟踪示意图" style="zoom:80%;" /></p>
 <h3 id="位置误差">位置误差</h3>
-<p>关于位置误差的计算，首先搜寻参考路径与车辆后轴中心距离最近的点： <span class="math display">\[
+<p>关于位置误差的计算，首先搜寻参考路径与车辆后轴中心距离最近的点：</p>
+<p><span class="math display">\[
 s(t) = arg\min_{\gamma}\|\bigl(x_r(t),y_r(t)\bigr)-\bigl(x_{ref}(\gamma),y_{ref}(\gamma)\bigr) \| \tag{1}
-\]</span> 其中，<span class="math inline">\(\bigl(x_r(t),y_r(t)\bigr)\)</span>代表<span class="math inline">\(t\)</span>时刻车辆后轴中心位置坐标，<span class="math inline">\(\bigl(x_{ref}(\gamma),y_{ref}(\gamma)\bigr)\)</span>代表参考路径上离车辆后轴距离最近点的位置坐标，<span class="math inline">\(s(t)\)</span>代表<span class="math inline">\(t\)</span>时刻与车辆后轴中心点距离最近参考路径点的位置参数<span class="math inline">\(\gamma\)</span>。</p>
-<p>关于参考路径在<span class="math inline">\(s(t)\)</span>参数处的单位切向量为 <span class="math display">\[
+\]</span></p>
+<p>其中，<span class="math inline">\(\bigl(x_r(t),y_r(t)\bigr)\)</span>代表<span class="math inline">\(t\)</span>时刻车辆后轴中心位置坐标，<span class="math inline">\(\bigl(x_{ref}(\gamma),y_{ref}(\gamma)\bigr)\)</span>代表参考路径上离车辆后轴距离最近点的位置坐标，<span class="math inline">\(s(t)\)</span>代表<span class="math inline">\(t\)</span>时刻与车辆后轴中心点距离最近参考路径点的位置参数<span class="math inline">\(\gamma\)</span>。</p>
+<p>关于参考路径在<span class="math inline">\(s(t)\)</span>参数处的单位切向量为</p>
+<p><span class="math display">\[
 \hat{t}=
 \frac{
 \Bigl(\dfrac{\partial x_{ref}}{\partial s}\|_{s(t)},\dfrac{\partial y_{ref}}{ \partial s}\|_{s(t)}
@@ -1504,19 +1628,26 @@ d_x &amp; d_y
 <h3 id="参考曲线最近点">参考曲线最近点</h3>
 <p>关于参考曲线与车辆后轴中心最近点处的速度<span class="math inline">\(\dot{s}(t)\)</span>可以通过下图求得</p>
 <p><img src="https://i.loli.net/2021/08/30/YbBKN6kUmxnAuWL.png" alt="最近点" style="zoom:80%;" /></p>
-<p>如上图所示，车辆沿目标路径顺时针运动，点<span class="math inline">\(O\)</span>代表当前目标曲线点对应的旋转中心。很明显此时曲率为负值，即<span class="math inline">\(R &lt; 0\)</span>。根据矢量叉乘性质得，<span class="math inline">\(e &gt; 0\)</span>。假设以点<span class="math inline">\(O\)</span>为旋转中心的车辆后轴中心角速度<span class="math inline">\(\omega_r\)</span>和最近参考路径点处的角速度<span class="math inline">\(\omega_s\)</span>近似相等，得 <span class="math display">\[
+<p>如上图所示，车辆沿目标路径顺时针运动，点<span class="math inline">\(O\)</span>代表当前目标曲线点对应的旋转中心。很明显此时曲率为负值，即<span class="math inline">\(R &lt; 0\)</span>。根据矢量叉乘性质得，<span class="math inline">\(e &gt; 0\)</span>。假设以点<span class="math inline">\(O\)</span>为旋转中心的车辆后轴中心角速度<span class="math inline">\(\omega_r\)</span>和最近参考路径点处的角速度<span class="math inline">\(\omega_s\)</span>近似相等，得</p>
+<p><span class="math display">\[
 \omega_r = \omega_s &lt; 0\tag{6}
-\]</span> 根据车辆旋转角速度的计算等式<span class="math inline">\(\frac{V}{R}\)</span>，结合等式(6)得 <span class="math display">\[
+\]</span></p>
+<p>根据车辆旋转角速度的计算等式<span class="math inline">\(\frac{V}{R}\)</span>，结合等式(6)得</p>
+<p><span class="math display">\[
 \frac{v_{rx}}{R-e} = \frac{\dot{s}}{R} \tag{7}
-\]</span> 故<span class="math inline">\(\dot{s}\)</span>结果如下 <span class="math display">\[
+\]</span></p>
+<p>故<span class="math inline">\(\dot{s}\)</span>结果如下</p>
+<p><span class="math display">\[
 \dot{s} = \frac{R \cdot v_{rx}}{R - e}=\frac{v_{r}\cdot\cos(\psi_e)}{1-k(s)e}\tag{8}
 \]</span></p>
 <h3 id="横向误差">横向误差</h3>
-<p>车辆横向移动的速度<span class="math inline">\(\dot{e}\)</span>可以表示如下： <span class="math display">\[
+<p>车辆横向移动的速度<span class="math inline">\(\dot{e}\)</span>可以表示如下：</p>
+<p><span class="math display">\[
 \dot{e} = v_r \cdot \sin(\psi_e)\tag{9}
 \]</span></p>
 <h3 id="航向角误差">航向角误差</h3>
-<p>关于车辆航向角误差的变化率表示如下： <span class="math display">\[
+<p>关于车辆航向角误差的变化率表示如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \dot{\psi_e} &amp;= \dot{\psi} - \dot{\psi_{ref}} \\
 &amp;= \dot{\psi} - \dot{s}\cdot k(s)\\
@@ -1524,7 +1655,8 @@ d_x &amp; d_y
 \end{array}\tag{10}
 \]</span></p>
 <h3 id="综述">综述</h3>
-<p>基于上述参考曲线处的速度、横向误差变化率和航向角误差变化率，整理如下微分方程形式： <span class="math display">\[
+<p>基于上述参考曲线处的速度、横向误差变化率和航向角误差变化率，整理如下微分方程形式：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \dot{s} &amp;= \dfrac{v_{r}\cdot\cos(\psi_e)}{1-k(s)e}\\
 \dot{e} &amp;= v_r \cdot \sin(\psi_e)\\
@@ -1539,8 +1671,8 @@ V(e,\psi_e) = \frac{1}{2}e^2 + \frac{1}{2k_2}\psi_e^2 \tag{12}
 \]</span></p>
 <p>其中<span class="math inline">\(k_2 &gt; 0\)</span>，为了使<span class="math inline">\((e,\psi_e)\)</span>在平衡点<span class="math inline">\((0,0)\)</span>处稳定，根据李亚普洛夫稳定判据，必须满足一下两个条件：</p>
 <ol type="1">
-<li><p><span class="math inline">\(\lim_{\rvert e,\psi_e \rvert \to \infty}V = \infty\)</span></p></li>
-<li><p><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(e \neq 0,\psi_e \neq 0)\end{array}\)</span></p></li>
+<li><span class="math inline">\(\lim_{\rvert e,\psi_e \rvert \to \infty}V = \infty\)</span></li>
+<li><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(e \neq 0,\psi_e \neq 0)\end{array}\)</span></li>
 </ol>
 <p>对于条件1，等式(12)明显成立，所以李亚普洛夫稳定判据第一条满足。</p>
 <p>对于<span class="math inline">\(\dot{V}\)</span>,结合等式(11)的微分方程，推导形式如下：</p>
@@ -1565,7 +1697,8 @@ k_2 v_r \dfrac{\sin(\psi_e)}{\psi_e}e + \dot{\psi} - \dfrac{v_{r}\cdot\cos(\psi_
 <p><span class="math display">\[
 \dot{\psi} = \dot{\psi}^* - g(e,\psi_e,t)\psi_e\tag{16}
 \]</span></p>
-<p>设置<span class="math inline">\(g(e,{\psi}_e,t)= k_{\psi}|v_r|\)</span> ，其中<span class="math inline">\(k_{\psi} &gt; 0\)</span>。 <span class="math display">\[
+<p>设置<span class="math inline">\(g(e,{\psi}_e,t)= k_{\psi}|v_r|\)</span> ，其中<span class="math inline">\(k_{\psi} &gt; 0\)</span>。</p>
+<p><span class="math display">\[
 \dot{\psi} = \dfrac{v_{r}\cdot\cos(\psi_e)\cdot k(s)}{1-k(s)e} - k_2 v_r \dfrac{\sin(\psi_e)}{\psi_e}e - k_{\psi}|v_r|\psi_e \tag{17}
 \]</span></p>
 <p>将等式(17)带入等式(13)得</p>
@@ -1635,37 +1768,46 @@ k_2 v_r \dfrac{\sin(\psi_e)}{\psi_e}e + \dot{\psi} - \dfrac{v_{r}\cdot\cos(\psi_
 <h2 id="分析">分析</h2>
 <p><img src="https://i.loli.net/2021/08/30/YbBKN6kUmxnAuWL.png" /></p>
 <h3 id="运动学微分方程">运动学微分方程</h3>
-<p>根据上图运动学特性易得 <span class="math display">\[
+<p>根据上图运动学特性易得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \dot{s} &amp;= \dfrac{v_{r}\cdot\cos(\psi_e)}{1-k(s)e}\\
 \dot{e} &amp;= v_r \cdot \sin(\psi_e)\\
 \dot{\psi_e} &amp;=\dfrac{v_r}{L}\tan(\delta) - \dfrac{v_{r}\cdot\cos(\psi_e)\cdot k(s)}{1-k(s)e}
 \end{array}\tag{1}
-\]</span> 其中关于误差的微分方程如下： <span class="math display">\[
+\]</span></p>
+<p>其中关于误差的微分方程如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \dot{e}_s      &amp;= v_r \cdot \sin(e_\psi)\\
 \dot{e}_\psi &amp;= \dfrac{v_r}{L}\tan(\delta) - \dfrac{v_{r}\cdot\cos(e_\psi)\cdot k(s)}{1-k(s)e_s}
 \end{array}\tag{2}
 \]</span></p>
 <h3 id="线性化">线性化</h3>
-<p>将上述等式(2)中的<span class="math inline">\(\sin\)</span>和<span class="math inline">\(\cos\)</span>函数在<span class="math inline">\(e_\psi = 0\)</span>处线性化，<span class="math inline">\(\tan\)</span>函数在<span class="math inline">\(\delta = 0\)</span>处线性化得 <span class="math display">\[
+<p>将上述等式(2)中的<span class="math inline">\(\sin\)</span>和<span class="math inline">\(\cos\)</span>函数在<span class="math inline">\(e_\psi = 0\)</span>处线性化，<span class="math inline">\(\tan\)</span>函数在<span class="math inline">\(\delta = 0\)</span>处线性化得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \dot{e}_s    &amp;= v_r \cdot e_\psi \\
 \dot{e}_\psi &amp;= \dfrac{v_r}{L}\delta - \dfrac{v_{r}}{R-e_s}
 \end{array}\tag{3}
-\]</span> 对等式(3)中<span class="math inline">\(e_s\)</span>在<span class="math inline">\(e_s = 0\)</span>处线性化得 <span class="math display">\[
+\]</span></p>
+<p>对等式(3)中<span class="math inline">\(e_s\)</span>在<span class="math inline">\(e_s = 0\)</span>处线性化得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \dot{e}_s    &amp;= v_r \cdot e_\psi \\
 \dot{e}_\psi &amp;= \dfrac{v_r}{L}\delta - \dfrac{v_{r}}{R} - \dfrac{v_r}{R^2}e_s 
 \end{array}\tag{4}
 \]</span></p>
-<p>则相应的二阶导数为 <span class="math display">\[
+<p>则相应的二阶导数为</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \ddot{e}_s    &amp;= \dot{v}_r \cdot e_\psi \\
 \ddot{e}_\psi &amp;= \dfrac{\dot{v}_r}{L}\delta - \dfrac{\dot{v}_{r}}{R} - \dfrac{\dot{v}_r}{R^2}e_s 
 \end{array}\tag{5}
-\]</span> ### 状态空间方程</p>
-<p>整理等式(5)，状态空间方程如下： <span class="math display">\[
+\]</span></p>
+<h3 id="状态空间方程">状态空间方程</h3>
+<p>整理等式(5)，状态空间方程如下：</p>
+<p><span class="math display">\[
 \frac{\mathrm{d}}{\mathrm{d}t}
 \left[\begin{array}{cl}
 e_s\\
@@ -1697,15 +1839,21 @@ e_{\psi}\\
 \dfrac{\dot{v}}{L}
 \end{array}
 \right]\delta \tag{6}
-\]</span> 其中<span class="math inline">\(A=\left [ \begin{array}{cl} 0 &amp; 1 &amp; 0 &amp; 0\\ 0 &amp; 0 &amp; \dot{v}_r &amp; 0\\ 0 &amp; 0 &amp; 0 &amp; 1\\ -\dot{v}_r \cdot k^2 &amp; 0 &amp; 0 &amp; 0 \end{array}\right ]\)</span>，<span class="math inline">\(B=\left[ \begin{array}{cl} 0\\ 0\\ 0\\ \dfrac{\dot{v}}{L} \end{array}\right]\)</span>，<span class="math inline">\(X= \left[ \begin{array}{cl} e_s\\ \dot{e}_s\\ e_{\psi}\\ \dot{e}_{\psi} \end{array} \right]\)</span>，<span class="math inline">\(U=\delta\)</span>，等式(6)简写如下：</p>
+\]</span></p>
+<p>其中<span class="math inline">\(A=\left [ \begin{array}{cl} 0 &amp; 1 &amp; 0 &amp; 0\\ 0 &amp; 0 &amp; \dot{v}_r &amp; 0\\ 0 &amp; 0 &amp; 0 &amp; 1\\ -\dot{v}_r \cdot k^2 &amp; 0 &amp; 0 &amp; 0 \end{array}\right ]\)</span>，<span class="math inline">\(B=\left[ \begin{array}{cl} 0\\ 0\\ 0\\ \dfrac{\dot{v}}{L} \end{array}\right]\)</span>，<span class="math inline">\(X= \left[ \begin{array}{cl} e_s\\ \dot{e}_s\\ e_{\psi}\\ \dot{e}_{\psi} \end{array} \right]\)</span>，<span class="math inline">\(U=\delta\)</span>，等式(6)简写如下：</p>
 <p><span class="math display">\[
 \dot{X} = AX + BU \tag{7}
-\]</span> ### 离散化</p>
-<p>对上述(7)的连续状态空间方程离散化处理，得到如下离散化状态空间方程形式： <span class="math display">\[
+\]</span></p>
+<h3 id="离散化">离散化</h3>
+<p>对上述(7)的连续状态空间方程离散化处理，得到如下离散化状态空间方程形式：</p>
+<p><span class="math display">\[
 X[k+1]=GX[k] + HU[k] \tag{8}
-\]</span> 其中，<span class="math inline">\(G = I + AT\)</span>、<span class="math inline">\(H = BT\)</span>，采用常规离散化方法得 <span class="math display">\[
+\]</span></p>
+<p>其中，<span class="math inline">\(G = I + AT\)</span>、<span class="math inline">\(H = BT\)</span>，采用常规离散化方法得</p>
+<p><span class="math display">\[
 X[k+1] = (I + AT)X[k] + BTU[k] \tag{9}
-\]</span> 其中<span class="math inline">\(A\)</span>矩阵离散化得</p>
+\]</span></p>
+<p>其中<span class="math inline">\(A\)</span>矩阵离散化得</p>
 <p><span class="math display">\[
 \begin{array}{cl}
 G &amp;= I + AT\\
@@ -1731,7 +1879,8 @@ T\\
 -\dot{v}_{r(k)} k^2T &amp; 0 &amp; 0 &amp; 1
 \end{array}\right]
 \end{array} \tag{10}
-\]</span> 其中<span class="math inline">\(B\)</span>矩阵离散化得</p>
+\]</span></p>
+<p>其中<span class="math inline">\(B\)</span>矩阵离散化得</p>
 <p><span class="math display">\[
 \begin{array}{cl}
 H &amp;= BT\\
@@ -1743,7 +1892,8 @@ H &amp;= BT\\
 \dfrac{\dot{v}_{r(k)}T}{L}
 \end{array}\right]
 \end{array} \tag{11}
-\]</span> 整理离散空间方程得</p>
+\]</span></p>
+<p>整理离散空间方程得</p>
 <p><span class="math display">\[
 \left[\begin{array}{cl}
 e_{s(k+1)}\\
@@ -1777,14 +1927,17 @@ e_{\psi(k)}\\
 \right]\delta \tag{12}
 \]</span></p>
 <h3 id="相关简化">相关简化</h3>
-<p>对上述(12)离散空间方程整理得 <span class="math display">\[
+<p>对上述(12)离散空间方程整理得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 e_{s(k+1)} &amp;= e_{s(k)} + \dot{e}_{s(k)}T\\
 \dot{e}_{s(k+1)} &amp;= \dot{e}_{s(k)} + \dot{v}_{r(k)} T e_{\psi(k)}\\
 e_{\psi(k+1)}&amp;=e_{\psi(k)} + \dot{e}_{\psi(k)}T\\
 \dot{e}_{\psi(k+1)} &amp;=  \dot{e}_{\psi(k)} + \dot{v}_{r(k)}T(\dfrac{\delta}{L} -k^2e_{s(k)})
 \end{array} \tag{13}
-\]</span> 等式(13)中<span class="math inline">\(\dot{e}_{s(k+1)}\)</span>项结合等式(4)可进一步化简得 <span class="math display">\[
+\]</span></p>
+<p>等式(13)中<span class="math inline">\(\dot{e}_{s(k+1)}\)</span>项结合等式(4)可进一步化简得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \dot{e}_{s(k)} + \dot{v}_{r(k)} T e_{\psi(k)} &amp;= v_{r(k)}e_{\psi(k)} + dv_{r(k)}e_{\psi(k)}\\
 &amp;= (v_{r(k)} + dv_{r(k)})e_{\psi(k)}\\
@@ -1808,7 +1961,9 @@ e_{s(k+1)} &amp;= e_{s(k)} + \dot{e}_{s(k)}T\\
 e_{\psi(k+1)}&amp;=e_{\psi(k)} + \dot{e}_{\psi(k)}T\\
 \dot{e}_{\psi(k+1)} &amp;=  - v_{r(k+1)}k^2e_{s(k)} + \dfrac{v_{r(k+1)}}{L}\delta
 \end{array}\tag{16}
-\]</span> 上述等式(16)整理为状态空间方程的形式为 <span class="math display">\[
+\]</span></p>
+<p>上述等式(16)整理为状态空间方程的形式为</p>
+<p><span class="math display">\[
 \left[\begin{array}{cl}
 e_{s(k+1)}\\
 \dot{e}_{s(k+1)}\\
@@ -2076,14 +2231,19 @@ u = -c \cdot x_2 - \rho \cdot sign(\sigma) \tag{20}
 <span id="more"></span>
 <h2 id="消抖方法">消抖方法</h2>
 <h3 id="抖振消除">抖振消除</h3>
-<p>一个显而易见使控制函数连续且平滑的解决方案就是通过一些连续或平滑函数代替非连续函数<span class="math inline">\(v(\sigma) = -\rho sign(\sigma)\)</span>。进一步说，它可以被"sigmoid function"替代。 <span class="math display">\[
+<p>一个显而易见使控制函数连续且平滑的解决方案就是通过一些连续或平滑函数代替非连续函数<span class="math inline">\(v(\sigma) = -\rho sign(\sigma)\)</span>。进一步说，它可以被"sigmoid function"替代。</p>
+<p><span class="math display">\[
 sign(\sigma) \approx \frac{\sigma}{\rvert \sigma \rvert + \varepsilon} \tag{1}
-\]</span> 其中，<span class="math inline">\(\varepsilon\)</span>是一个很小的正标量。可以看出，对于所有<span class="math inline">\(\sigma \neq 0\)</span>，下述等式成立： <span class="math display">\[
+\]</span></p>
+<p>其中，<span class="math inline">\(\varepsilon\)</span>是一个很小的正标量。可以看出，对于所有<span class="math inline">\(\sigma \neq 0\)</span>，下述等式成立：</p>
+<p><span class="math display">\[
 \lim_{\varepsilon \to 0}\frac{\sigma}{\rvert \sigma \rvert + \varepsilon} = sign(\sigma) \tag{2}
-\]</span> 对于<span class="math inline">\(\varepsilon\)</span>的选择需要权衡既要保持系统的性能理想又要确保控制的平滑。</p>
+\]</span></p>
+<p>对于<span class="math inline">\(\varepsilon\)</span>的选择需要权衡既要保持系统的性能理想又要确保控制的平滑。</p>
 <p>关于 Sigmoid Function 的图形如下：</p>
 <p><img src="https://i.loli.net/2021/08/30/NoXcDfzSPqBFMQJ.png" /></p>
-<p>使用伪滑动模态控制率如下： <span class="math display">\[
+<p>使用伪滑动模态控制率如下：</p>
+<p><span class="math display">\[
 u = -c \cdot x_2 - \rho\frac{\sigma}{\rvert \sigma \rvert + \varepsilon} \tag{3}
 \]</span></p>
 <h4 id="仿真结果">仿真结果</h4>
@@ -2094,7 +2254,8 @@ u = -c \cdot x_2 - \rho\frac{\sigma}{\rvert \sigma \rvert + \varepsilon} \tag{3}
 <h3 id="抖振衰减">抖振衰减</h3>
 <p>考虑设计另一种对边界干扰具有鲁棒性的连续控制器，设计思想就是根据控制函数的微分形式设计滑模控制器。在这种情况下，高频切换函数的积分作为实际控制是连续的。这种方法叫做 <strong>抖振衰减</strong>(<em>chattering attenuation</em>)，这是因为在高频切换函数积分后仍然能在滑模控制中观察到一些周期性残差。</p>
 <h4 id="微分方程">微分方程</h4>
-<p>系统微分方程如下： <span class="math display">\[
+<p>系统微分方程如下：</p>
+<p><span class="math display">\[
 \left \{
 \begin{array}{rl}
 &amp;\dot{x}_1 = x_2 &amp;x_1(0) &amp;= x_{10}\\
@@ -2102,21 +2263,29 @@ u = -c \cdot x_2 - \rho\frac{\sigma}{\rvert \sigma \rvert + \varepsilon} \tag{3}
 &amp;\dot{u} = v &amp;u(0) &amp;= 0
 \end{array}
 \right. \tag{4}
-\]</span> 如果滑模变量 <span class="math inline">\(\sigma = x_2 + c \cdot x_1\)</span>被限制在有限时间<span class="math inline">\(t = t_r\)</span>内收敛于0，同样对于所有<span class="math inline">\(t \geq t_r\)</span>,状态变量渐进收敛于0。这里假设<span class="math inline">\(\rvert f(x_1,x_2,t) \leq L\)</span>，此外其有界导数<span class="math inline">\(\rvert \dot{f}(x_1,x_2,t) \rvert \leq \bar{L}\)</span>是平滑的。</p>
+\]</span></p>
+<p>如果滑模变量 <span class="math inline">\(\sigma = x_2 + c \cdot x_1\)</span>被限制在有限时间<span class="math inline">\(t = t_r\)</span>内收敛于0，同样对于所有<span class="math inline">\(t \geq t_r\)</span>,状态变量渐进收敛于0。这里假设<span class="math inline">\(\rvert f(x_1,x_2,t) \leq L\)</span>，此外其有界导数<span class="math inline">\(\rvert \dot{f}(x_1,x_2,t) \rvert \leq \bar{L}\)</span>是平滑的。</p>
 <h4 id="辅助滑动变量">辅助滑动变量</h4>
-<p>为了达到抖振衰减，定义如下辅助滑动变量 <span class="math display">\[
+<p>为了达到抖振衰减，定义如下辅助滑动变量</p>
+<p><span class="math display">\[
 s = \dot{\sigma} + \bar{c}\sigma \tag{5}
-\]</span> 如果设计一个控制率<span class="math inline">\(v\)</span>使得在有限时间内收敛<span class="math inline">\(s \to 0\)</span>，那么理想的滑动模态发生在如下滑模面上： <span class="math display">\[
+\]</span></p>
+<p>如果设计一个控制率<span class="math inline">\(v\)</span>使得在有限时间内收敛<span class="math inline">\(s \to 0\)</span>，那么理想的滑动模态发生在如下滑模面上：</p>
+<p><span class="math display">\[
 s = \dot{\sigma} + \bar{c}\sigma = 0 \tag{6}
-\]</span> 随着时间的递增，即使存在有界的干扰<span class="math inline">\(f(x_1,x_2,t)\)</span>，只要<span class="math inline">\(\sigma,\dot{\sigma} \to 0\)</span>,与此同时<span class="math inline">\(x_1,x_2 \to 0\)</span>。但是因为原始滑模变量<span class="math inline">\(\sigma\)</span>只是渐进收敛于0，所以对于系统(4)而言，这不是理想的滑动模态，而是 <strong>渐进滑动模态</strong>(<em>asymptotic sliding mode</em>)，这就是衰减抖振所付出的代价。</p>
-<p>根据等式(4)对辅组滑动变量<span class="math inline">\(s\)</span>拆解得 <span class="math display">\[
+\]</span></p>
+<p>随着时间的递增，即使存在有界的干扰<span class="math inline">\(f(x_1,x_2,t)\)</span>，只要<span class="math inline">\(\sigma,\dot{\sigma} \to 0\)</span>,与此同时<span class="math inline">\(x_1,x_2 \to 0\)</span>。但是因为原始滑模变量<span class="math inline">\(\sigma\)</span>只是渐进收敛于0，所以对于系统(4)而言，这不是理想的滑动模态，而是 <strong>渐进滑动模态</strong>(<em>asymptotic sliding mode</em>)，这就是衰减抖振所付出的代价。</p>
+<p>根据等式(4)对辅组滑动变量<span class="math inline">\(s\)</span>拆解得</p>
+<p><span class="math display">\[
 \begin{array}{rl}
 s &amp;= \dot{\sigma} + \bar{c}\sigma\\
 &amp;= \dot{x}_2 + c\dot{x}_1 + \bar{c}(x_2 + cx_1)\\
 &amp;= u + f(x_1,x_2,t) + cx_2 + \bar{c}x_2 + c\bar{c}x_1\\
 &amp;=u + (c + \bar{c})x_2 + c\bar{c}x_1 + f(x_1,x_2,t)
 \end{array} \tag{7}
-\]</span> 辅组滑动变量<span class="math inline">\(s\)</span>求导得 <span class="math display">\[
+\]</span></p>
+<p>辅组滑动变量<span class="math inline">\(s\)</span>求导得</p>
+<p><span class="math display">\[
 \begin{array}{rl}
 \dot{s} 
 &amp;= \dot{u} + (c + \bar{c})\dot{x}_2 + c\bar{c}\dot{x}_1 + \dot{f}(x_1,x_2,t)\\
@@ -2130,23 +2299,36 @@ s\dot{s} = s
 \bigl(
 v + (c + \bar{c})u + c\bar{c}x_2 + (c + \bar{c})f(x_1,x_2,t) + \dot{f}(x_1,x_2,t)
 \bigr) \tag{9}
-\]</span> 选择如下控制率：</p>
+\]</span></p>
+<p>选择如下控制率：</p>
 <p><span class="math display">\[
 v = -c\bar{c}x_2 - (c + \bar{c})u + v_1 \tag{10}
-\]</span> 将等式(10)带入等式(9)得 <span class="math display">\[
+\]</span></p>
+<p>将等式(10)带入等式(9)得</p>
+<p><span class="math display">\[
 s\dot{s} = s
 \bigl(
 v_1 + (c + \bar{c})f(x_1,x_2,t) + \dot{f}(x_1,x_2,t)
 \bigr) \tag{11}
-\]</span> 由于有界干扰项<span class="math inline">\(\rvert f(x_1,x_2,t) \leq L\)</span>且<span class="math inline">\(\rvert \dot{f(x_1,x_2,t)} \rvert \leq \bar{L}\)</span>，故得 <span class="math display">\[
+\]</span></p>
+<p>由于有界干扰项<span class="math inline">\(\rvert f(x_1,x_2,t) \leq L\)</span>且<span class="math inline">\(\rvert \dot{f(x_1,x_2,t)} \rvert \leq \bar{L}\)</span>，故得</p>
+<p><span class="math display">\[
 s\dot{s} \leq sv_1 + \rvert s \rvert \bigl( (c + \bar{c})L + \bar{L}\bigr) \tag{12}
-\]</span> 选择切换函数为<span class="math inline">\(v_1 = - \rho sign(s)\)</span>，其中<span class="math inline">\(\rho &gt; 0\)</span>，带入等式(12)得 <span class="math display">\[
+\]</span></p>
+<p>选择切换函数为<span class="math inline">\(v_1 = - \rho sign(s)\)</span>，其中<span class="math inline">\(\rho &gt; 0\)</span>，带入等式(12)得</p>
+<p><span class="math display">\[
 s\dot{s} \leq \rvert s \rvert \bigl(-\rho + \bar{L} + (c + \bar{c})L \bigr) \tag{13}
-\]</span> 根据有限时间收敛条件 <span class="math display">\[
+\]</span></p>
+<p>根据有限时间收敛条件</p>
+<p><span class="math display">\[
 s\dot{s} \leq -\frac{\alpha}{\sqrt{2}}\rvert s\rvert \tag{14}
-\]</span> 结合等式(13)和(14),计算控制增益<span class="math inline">\(\rho\)</span>如下： <span class="math display">\[
+\]</span></p>
+<p>结合等式(13)和(14),计算控制增益<span class="math inline">\(\rho\)</span>如下：</p>
+<p><span class="math display">\[
 \rho = \bar{L} + (c + \bar{c})L + \frac{\alpha}{\sqrt{2}} \tag{15}
-\]</span> 驱使<span class="math inline">\(s\)</span>在有限时间<span class="math inline">\(t_r \leq \frac{\sqrt{2}\rvert s(0) \rvert}{\alpha}\)</span>内使<span class="math inline">\(s\)</span>收敛于0的控制率<span class="math inline">\(v\)</span>为 <span class="math display">\[
+\]</span></p>
+<p>驱使<span class="math inline">\(s\)</span>在有限时间<span class="math inline">\(t_r \leq \frac{\sqrt{2}\rvert s(0) \rvert}{\alpha}\)</span>内使<span class="math inline">\(s\)</span>收敛于0的控制率<span class="math inline">\(v\)</span>为</p>
+<p><span class="math display">\[
 v = -c\bar{c}x_2 - (c + \bar{c})u - \rho \cdot sign(s) \tag{16}
 \]</span></p>
 <h4 id="仿真结果-1">仿真结果</h4>
@@ -2180,22 +2362,35 @@ v = -c\bar{c}x_2 - (c + \bar{c})u - \rho \cdot sign(s) \tag{16}
 <h2 id="几何车辆模型">几何车辆模型</h2>
 <p><img src="https://i.loli.net/2021/08/30/XA45nZvx1sIiMUD.jpg" alt="荷花"  /></p>
 <span id="more"></span>
-<p>对于几何路径跟踪一般简化车辆模型为单车模型，如上图所示，前轮转向角和后轴跟随曲线之间的几何关系可以表示如下： <span class="math display">\[
+<p>对于几何路径跟踪一般简化车辆模型为单车模型，如上图所示，前轮转向角和后轴跟随曲线之间的几何关系可以表示如下：</p>
+<p><span class="math display">\[
 \tan(\delta) = \frac{L}{R}\tag{1}
-\]</span> 其中，<span class="math inline">\(\delta\)</span>代表前轮转向角、<span class="math inline">\(L\)</span>代表车辆轴距、<span class="math inline">\(R\)</span>代表转弯半径。</p>
+\]</span></p>
+<p>其中，<span class="math inline">\(\delta\)</span>代表前轮转向角、<span class="math inline">\(L\)</span>代表车辆轴距、<span class="math inline">\(R\)</span>代表转弯半径。</p>
 <h2 id="纯追踪">纯追踪</h2>
 <p><img src="https://i.loli.net/2021/08/30/prkjiz1ZAaHyW4u.png" alt="纯追踪" style="zoom:80%;" /></p>
-<p>纯追踪算法包括几何关系计算出后轴位置与车辆前方目标曲线上目标点之间圆弧的曲率，其中目标点由从当前车辆后轴位置到目标路径的超前距离<span class="math inline">\(l_d\)</span>决定。而车辆的转向角<span class="math inline">\(\delta\)</span>只能使用目标点位置和车辆航向量与超前向量之间的夹角<span class="math inline">\(\alpha\)</span>。由正弦定理得 <span class="math display">\[
+<p>纯追踪算法包括几何关系计算出后轴位置与车辆前方目标曲线上目标点之间圆弧的曲率，其中目标点由从当前车辆后轴位置到目标路径的超前距离<span class="math inline">\(l_d\)</span>决定。而车辆的转向角<span class="math inline">\(\delta\)</span>只能使用目标点位置和车辆航向量与超前向量之间的夹角<span class="math inline">\(\alpha\)</span>。由正弦定理得</p>
+<p><span class="math display">\[
 \frac{l_d}{\sin(2\alpha)} = \frac{R}{\sin(\frac{\pi}{2}-\alpha)}\tag{2}
-\]</span> 根据三角函数性质，对等式(2)化简得 <span class="math display">\[
+\]</span></p>
+<p>根据三角函数性质，对等式(2)化简得</p>
+<p><span class="math display">\[
 \frac{l_d}{2\sin(\alpha)\cos(\alpha)} = \frac{R}{\cos(\alpha)} \tag{3}
-\]</span> 由于<span class="math inline">\(\cos(\alpha) \neq 0\)</span>，对等式(3)进一步化简得 <span class="math display">\[
+\]</span></p>
+<p>由于<span class="math inline">\(\cos(\alpha) \neq 0\)</span>，对等式(3)进一步化简得</p>
+<p><span class="math display">\[
 R = \frac{l_d}{2\sin(\alpha)} \tag{4}
-\]</span> 故曲率表示为 <span class="math display">\[
+\]</span></p>
+<p>故曲率表示为</p>
+<p><span class="math display">\[
 k = \frac{2\sin(\alpha)}{l_d} \tag{5}
-\]</span> 根据等式(1)所示的车辆几何关系得 <span class="math display">\[
+\]</span></p>
+<p>根据等式(1)所示的车辆几何关系得</p>
+<p><span class="math display">\[
 \delta = \arctan(k\cdot L) \tag{6}
-\]</span> 将等式(5)带入等式(6)得 <span class="math display">\[
+\]</span></p>
+<p>将等式(5)带入等式(6)得</p>
+<p><span class="math display">\[
 \delta = \arctan(\frac{2\sin(\alpha)L}{l_d})\tag{7}
 \]</span></p>
 ]]></content>
@@ -2269,12 +2464,17 @@ e_{\psi} = \psi - \psi_{des} \tag{3}
 <p>根据<a href="https://blog.csdn.net/zghforever/article/details/103352211">车辆模型-动力学模型(Dynamics Model)</a>章节中的等式(14) <span class="math display">\[
 \ddot{y} = -\frac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x}\dot{y}   - ( V_x +  \frac{2C_{\alpha f}l_f- 2C_{\alpha r}l_r}{mV_x})\dot{\psi}  + \frac{2C_{\alpha f}}{m} \delta \tag{10}
 \]</span></p>
-<p>将等式(8)和(9)代入等式(10)得 <span class="math display">\[
+<p>将等式(8)和(9)代入等式(10)得</p>
+<p><span class="math display">\[
 \ddot{e}_y + V_x\dot{\psi}_{des} = -\frac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x}(\dot{e}_y - V_xe_{\psi})   - ( V_x +  \frac{2C_{\alpha f}l_f- 2C_{\alpha r}l_r}{mV_x})\dot{\psi}  + \frac{2C_{\alpha f}}{m} \delta \tag{11}
-\]</span> 对等式(11)进行简化，提取<span class="math inline">\(\ddot{e}_y\)</span>、<span class="math inline">\(\dot{e}_y\)</span>、<span class="math inline">\(e_y\)</span>、<span class="math inline">\(\dot{\psi}_{des}\)</span>和<span class="math inline">\(\delta\)</span>项得 <span class="math display">\[
+\]</span></p>
+<p>对等式(11)进行简化，提取<span class="math inline">\(\ddot{e}_y\)</span>、<span class="math inline">\(\dot{e}_y\)</span>、<span class="math inline">\(e_y\)</span>、<span class="math inline">\(\dot{\psi}_{des}\)</span>和<span class="math inline">\(\delta\)</span>项得</p>
+<p><span class="math display">\[
 \ddot{e}_y = \frac{-2C_{\alpha f}-2C_{\alpha r}}{mV_x}\dot{e}_y + \frac{2C_{\alpha f}+2C_{\alpha r}}{m}e_{\psi} +
 \frac{-2C_{\alpha f}l_f + 2C_{\alpha r}l_r}{mV_x}\dot{e}_{\psi} \\+ (\frac{-2C_{\alpha f}l_f + 2C_{\alpha r}l_r}{mV_x}-V_x)\dot{\psi}_{des} +\frac{2C_{\alpha f}}{m}\delta \tag{12}
-\]</span> 整理成矩阵形式为 <span class="math display">\[
+\]</span></p>
+<p>整理成矩阵形式为</p>
+<p><span class="math display">\[
 \frac{\mathrm{d}}{\mathrm{d}t}\dot{e}_y =
 \begin{bmatrix}
 0 &amp;
@@ -2289,15 +2489,23 @@ e_{\psi}\\
 \dot{e}_{\psi}
 \end{bmatrix}\\
 +(\dfrac{-2C_{\alpha f}l_f + 2C_{\alpha r}l_r}{mV_x} - V_x)\dot{\psi}_{des}+\frac{2C_{\alpha f}}{m}\delta \tag{13}
-\]</span> 同理根据<a href="https://blog.csdn.net/zghforever/article/details/103352211">车辆模型-动力学模型(Dynamics Model)</a>章节中的等式(17) <span class="math display">\[
+\]</span></p>
+<p>同理根据<a href="https://blog.csdn.net/zghforever/article/details/103352211">车辆模型-动力学模型(Dynamics Model)</a>章节中的等式(17)</p>
+<p><span class="math display">\[
 \ddot{\psi} = - \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x}\dot{y}  - \frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi} + \frac{2l_fC_{\alpha f}}{I_z}\delta\tag{14}
-\]</span> 将等式(5)、(8)和(9)代入等式(14)得 <span class="math display">\[
+\]</span></p>
+<p>将等式(5)、(8)和(9)代入等式(14)得</p>
+<p><span class="math display">\[
 \ddot{e}_{\psi}+ \ddot{\psi}_{des} = - \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x}(\dot{e}_y - V_xe_{\psi})  - \frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi} + \frac{2l_fC_{\alpha f}}{I_z}\delta\tag{15}
-\]</span> 对等式(15)进行简化，提取<span class="math inline">\(\ddot{e}_y\)</span>、<span class="math inline">\(\dot{e}_y\)</span>、<span class="math inline">\(e_y\)</span>、<span class="math inline">\(\dot{\psi}_{des}\)</span>和<span class="math inline">\(\delta\)</span>项得 <span class="math display">\[
+\]</span></p>
+<p>对等式(15)进行简化，提取<span class="math inline">\(\ddot{e}_y\)</span>、<span class="math inline">\(\dot{e}_y\)</span>、<span class="math inline">\(e_y\)</span>、<span class="math inline">\(\dot{\psi}_{des}\)</span>和<span class="math inline">\(\delta\)</span>项得</p>
+<p><span class="math display">\[
 \ddot{e}_{\psi} = - \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x}\dot{e}_y + \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_z}e_{\psi}\\
 -\frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{e}_{\psi}
 -\frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi}_{des} + \frac{2l_fC_{\alpha f}}{I_z}\delta - \ddot{\psi}_{des} \tag{16}
-\]</span> 由于上述假设为<strong>线性时不变系统(LTI)</strong>(<span class="math inline">\(\dot{V}_x = 0\)</span>)，故<span class="math inline">\(\ddot{\psi}_{des}=\frac{\dot{V}_x}{R} = 0\)</span>，将上述等式整理成矩阵形式得 <span class="math display">\[
+\]</span></p>
+<p>由于上述假设为<strong>线性时不变系统(LTI)</strong>(<span class="math inline">\(\dot{V}_x = 0\)</span>)，故<span class="math inline">\(\ddot{\psi}_{des}=\frac{\dot{V}_x}{R} = 0\)</span>，将上述等式整理成矩阵形式得</p>
+<p><span class="math display">\[
 \frac{\mathrm{d}}{\mathrm{d}t}\dot{e}_{\psi} =
 \begin{bmatrix}
 0 &amp;
@@ -2312,7 +2520,9 @@ e_{\psi}\\
 \dot{e}_{\psi}
 \end{bmatrix}\\
 -\frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi}_{des}+\frac{2l_fC_{\alpha f}}{I_z}\delta \tag{17}
-\]</span> 根据等式(13)和(17)，基于跟踪误差变量的状态空间模型表示为 <span class="math display">\[
+\]</span></p>
+<p>根据等式(13)和(17)，基于跟踪误差变量的状态空间模型表示为</p>
+<p><span class="math display">\[
 \frac{\mathrm{d}}{\mathrm{d}t}
 \begin{bmatrix}
 e_y\\
@@ -2351,7 +2561,9 @@ e_{\psi}\\
 0\\
 -\dfrac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}
 \end{bmatrix}\dot{\psi}_{des}\tag{18}
-\]</span> 上述状态空间模型，将转向控制系统的目标跟踪问题转化为动力学的稳定性问题。 状态空间模型一般形式如下： <span class="math display">\[
+\]</span></p>
+<p>上述状态空间模型，将转向控制系统的目标跟踪问题转化为动力学的稳定性问题。 状态空间模型一般形式如下：</p>
+<p><span class="math display">\[
 \dot{x} = Ax + B_1\delta + B_2\dot{\psi}_{des}
 \]</span></p>
 ]]></content>
@@ -2477,17 +2689,24 @@ v_0 - \int_0^{t}a*dt = v \Longrightarrow v_0 - \frac{1}{2}\dot{a}*t^2 = v \tag{2
 <figure>
 <img src="https://i.loli.net/2021/08/30/peAHWyGjz6cCm8L.png" alt="速度曲线" /><figcaption aria-hidden="true">速度曲线</figcaption>
 </figure>
-<p>图中速度曲线下方的面积<span class="math inline">\(S\)</span>为行驶的位移，根据上述速度曲线，车辆运动模型如下： <span class="math display">\[
+<p>图中速度曲线下方的面积<span class="math inline">\(S\)</span>为行驶的位移，根据上述速度曲线，车辆运动模型如下：</p>
+<p><span class="math display">\[
 \int_0^{t}vdt = S \Longrightarrow v_0*t - \frac{1}{6}\dot{a}t^3 = S
-\]</span> 当速度从<span class="math inline">\(v_0\)</span>下降到0的过程中，时间<span class="math inline">\(t_0\)</span>为： <span class="math display">\[
+\]</span></p>
+<p>当速度从<span class="math inline">\(v_0\)</span>下降到0的过程中，时间<span class="math inline">\(t_0\)</span>为：</p>
+<p><span class="math display">\[
 v_0 - \frac{1}{2}\dot{a}*t^2 = 0 \Longrightarrow t_0 = {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}
-\]</span> 将时间<span class="math inline">\(t_0\)</span>代入得： <span class="math display">\[
+\]</span></p>
+<p>将时间<span class="math inline">\(t_0\)</span>代入得：</p>
+<p><span class="math display">\[
 t_0*(v_0 - \frac{1}{6}\dot{a}{t_0}^2) = S \Longrightarrow {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}} * (v_0 - \frac{1}{6}\dot{a}\frac{2*v_0}{\dot{a}}) = S\\
 {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}*\frac{2*v_0}{3} = S
 \]</span></p>
-<p>计算<span class="math inline">\(\dot{a}\)</span>得： <span class="math display">\[
+<p>计算<span class="math inline">\(\dot{a}\)</span>得：</p>
+<p><span class="math display">\[
 \dot{a} = \frac{8 {v_0}^3}{9S^2}
-\]</span> 所以当控制车辆减速时，根据当前车辆速度<span class="math inline">\(v_0\)</span>和距离停车点的位移<span class="math inline">\(S\)</span>，计算出减速度的增量<span class="math inline">\(\dot{a}\)</span>，控制输出的减速度<span class="math inline">\(a = a - \dot{a}*dt\)</span>。</p>
+\]</span></p>
+<p>所以当控制车辆减速时，根据当前车辆速度<span class="math inline">\(v_0\)</span>和距离停车点的位移<span class="math inline">\(S\)</span>，计算出减速度的增量<span class="math inline">\(\dot{a}\)</span>，控制输出的减速度<span class="math inline">\(a = a - \dot{a}*dt\)</span>。</p>
 ]]></content>
       <categories>
         <category>控制算法</category>
@@ -2684,7 +2903,8 @@ a = \frac{mV^2}{R} \tag{26}
 <span id="more"></span>
 <h2 id="非时间参考量下的微分方程">非时间参考量下的微分方程</h2>
 <h3 id="定义">定义</h3>
-<p>定义一个非时间参考的标量<span class="math inline">\(s\)</span>,该<span class="math inline">\(s\)</span>为时间t的单调递增函数。 <span class="math display">\[
+<p>定义一个非时间参考的标量<span class="math inline">\(s\)</span>,该<span class="math inline">\(s\)</span>为时间t的单调递增函数。</p>
+<p><span class="math display">\[
 \left\{
 \begin{array}{rl} 
 &amp;s = S(t)\\
@@ -2692,11 +2912,15 @@ a = \frac{mV^2}{R} \tag{26}
 \end{array} 
 \right.\tag{1}
 \]</span></p>
-<p>在车辆控制中，可以定义车辆的位移<span class="math inline">\(x\)</span>为非时间参考量，为了满足随时间递增的要求，且泊车时速度为负值<span class="math inline">\((v&lt;0)\)</span>，选取的非时间参考量为 <span class="math display">\[
+<p>在车辆控制中，可以定义车辆的位移<span class="math inline">\(x\)</span>为非时间参考量，为了满足随时间递增的要求，且泊车时速度为负值<span class="math inline">\((v&lt;0)\)</span>，选取的非时间参考量为</p>
+<p><span class="math display">\[
 f = -x(t) \tag{2}
-\]</span> 对上式求导得 <span class="math display">\[
+\]</span></p>
+<p>对上式求导得</p>
+<p><span class="math display">\[
 \dot{f}(t) = -v(t)\cos\psi(t) \tag{3}
-\]</span> 由于车辆泊车过程中偏航角<span class="math inline">\(\psi \in (-\frac{\pi}{2},\frac{\pi}{2})\)</span>，故<span class="math inline">\(\dot{f}(t)&gt;0\)</span>，满足非时间参考量随时间变化单调递增得要求。</p>
+\]</span></p>
+<p>由于车辆泊车过程中偏航角<span class="math inline">\(\psi \in (-\frac{\pi}{2},\frac{\pi}{2})\)</span>，故<span class="math inline">\(\dot{f}(t)&gt;0\)</span>，满足非时间参考量随时间变化单调递增得要求。</p>
 <p>基于非时间参考的车辆运动学方程可表示为: <span class="math display">\[
 \left \{
 \begin{array}{cl}
@@ -2711,28 +2935,36 @@ f = -x(t) \tag{2}
 <ul>
 <li>目标航向角<span class="math inline">\(\psi_r\)</span>计算</li>
 </ul>
-<p>目标航向角<span class="math inline">\(\psi_r\)</span>可以看作是函数<span class="math inline">\(y_r = F(x_r)\)</span>在点<span class="math inline">\(x_r\)</span>处的斜率所对应的航向角度，即 <span class="math display">\[
+<p>目标航向角<span class="math inline">\(\psi_r\)</span>可以看作是函数<span class="math inline">\(y_r = F(x_r)\)</span>在点<span class="math inline">\(x_r\)</span>处的斜率所对应的航向角度，即</p>
+<p><span class="math display">\[
 \tan(\psi_r) = \dot{F}(x_r)= \frac{dy_r}{dx_r} \tag{5}
-\]</span> 通过反三角函数求得目标航向角为 <span class="math display">\[
+\]</span></p>
+<p>通过反三角函数求得目标航向角为</p>
+<p><span class="math display">\[
 \psi_r = \arctan\bigl(\dot{F}(x_r)\bigr)= \arctan(\frac{dy_r}{dx_r}) \tag{6}
 \]</span></p>
 <ul>
 <li>目标转向角<span class="math inline">\(\delta_r\)</span>计算</li>
 </ul>
-<p>根据转向角的几何关系得 <span class="math display">\[
+<p>根据转向角的几何关系得</p>
+<p><span class="math display">\[
 \delta_r = \arctan(l*k) \tag{7}
 \]</span></p>
 <p>其中，<span class="math inline">\(l\)</span>代表车辆轴距、<span class="math inline">\(k\)</span>代表点<span class="math inline">\(x_r\)</span>处的目标路径曲线的曲率。</p>
-<p>根据轨迹函数<span class="math inline">\(y_r = F(x_r)\)</span>的一阶导数和二阶导数，曲率计算公式表示如下： <span class="math display">\[
+<p>根据轨迹函数<span class="math inline">\(y_r = F(x_r)\)</span>的一阶导数和二阶导数，曲率计算公式表示如下：</p>
+<p><span class="math display">\[
 k = \frac{\rvert\ddot{F}(x_r)\rvert}{[1+\dot{F}(x_r)^{2}]^\frac{3}{2}} \tag{8}
 \]</span></p>
 <p>根据目标路径曲线，如果某段曲线是凸的，对应的二阶导数<span class="math inline">\(\ddot{F}(x_r) &lt; 0\)</span>。很明显，当偏航角满足<span class="math inline">\(\psi \in (-\frac{\pi}{2},\frac{\pi}{2})\)</span>时，如果希望车辆跟踪凸形路线，对应的转向角应该为负值。同理，当曲线某段是凹形，对应的二阶导数<span class="math inline">\(\ddot{F}(x_r) &gt; 0\)</span>，要想继续跟踪路线，转向角应该为正值。考虑<span class="math inline">\(\delta_r\)</span>的正负性与曲线函数<span class="math inline">\(\ddot{F}(x_r)\)</span>的二阶导数符号一致，等式(8)的绝对值符号可以消除，将其带入等式(7)得</p>
 <p><span class="math display">\[
 \delta_r = \arctan\Biggl( l*\frac{\ddot{F}(x_r)}{[1+\dot{F}(x_r)^{2}]^\frac{3}{2}}\Biggr)\tag{9}
 \]</span></p>
-<p>将等式(5)带入等式(9)得 <span class="math display">\[
+<p>将等式(5)带入等式(9)得</p>
+<p><span class="math display">\[
 \delta_r = \arctan\Bigl(l*\cos(\psi_r)^{3}\ddot{F}(x_r)\Bigr) \tag{10}
-\]</span> 通过等式(6)和(10)可知，已知目标路径函数的前提下，可以计算得到横坐标为<span class="math inline">\(x_r\)</span>下的车辆理想状态参数。 <span class="math display">\[
+\]</span></p>
+<p>通过等式(6)和(10)可知，已知目标路径函数的前提下，可以计算得到横坐标为<span class="math inline">\(x_r\)</span>下的车辆理想状态参数。</p>
+<p><span class="math display">\[
 \left \{
 \begin{array}{cl}
 &amp;\psi_r = \arctan\bigl(\dot{F}(x_r)\bigr)\\
@@ -2749,7 +2981,8 @@ k = \frac{\rvert\ddot{F}(x_r)\rvert}{[1+\dot{F}(x_r)^{2}]^\frac{3}{2}} \tag{8}
 &amp;e_\psi = \psi_r - \psi
 \end{array}
 \right.\tag{12}
-\]</span> 其中，<span class="math inline">\(y\)</span>和<span class="math inline">\(\psi\)</span>为车辆后轴中心点横坐标为<span class="math inline">\(x_r\)</span>时，对应的车辆实际状态参数。<span class="math inline">\(e_x\)</span>、<span class="math inline">\(e_y\)</span>和<span class="math inline">\(e_\psi\)</span>分别表示纵向误差、横向误差和航向角误差。</p>
+\]</span></p>
+<p>其中，<span class="math inline">\(y\)</span>和<span class="math inline">\(\psi\)</span>为车辆后轴中心点横坐标为<span class="math inline">\(x_r\)</span>时，对应的车辆实际状态参数。<span class="math inline">\(e_x\)</span>、<span class="math inline">\(e_y\)</span>和<span class="math inline">\(e_\psi\)</span>分别表示纵向误差、横向误差和航向角误差。</p>
 <p>则以非时间参考量<span class="math inline">\(f = -x(t)\)</span>为参考的路径跟踪误差微分方程如下：</p>
 <ul>
 <li>纵向距离误差的微分方程</li>
@@ -2764,23 +2997,34 @@ k = \frac{\rvert\ddot{F}(x_r)\rvert}{[1+\dot{F}(x_r)^{2}]^\frac{3}{2}} \tag{8}
 <ul>
 <li>偏航角误差微分方程</li>
 </ul>
-<p>由等式(10)得 <span class="math display">\[
+<p>由等式(10)得</p>
+<p><span class="math display">\[
 \tan(\delta_r) = l*\cos(\varphi_r)^{3}\ddot{F}(x_r) \tag{14}
-\]</span> 等式(5)对<span class="math inline">\(x\)</span>求导得 <span class="math display">\[
+\]</span></p>
+<p>等式(5)对<span class="math inline">\(x\)</span>求导得</p>
+<p><span class="math display">\[
 [1 + \tan(\psi_r)^2]*\frac{d\psi_r}{dx} = \ddot{F}(x_r) \tag{15}
-\]</span> 等式(15)带入等式(14)得 <span class="math display">\[
+\]</span></p>
+<p>等式(15)带入等式(14)得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \tan(\delta_r) &amp;= l*\cos(\psi_r)^{3}*[1+\tan(\psi_r)^{2}]*\dfrac{d\psi_r}{dx}\\
 &amp;= l*\cos(\psi_r)*\dfrac{d\psi_r}{dx}
 \end{array} \tag{16}
-\]</span> 由于<span class="math inline">\(\psi \in (-\frac{\pi}{2},\frac{\pi}{2})\)</span>，故<span class="math inline">\(\cos(\psi_r) \neq 0\)</span>，等式(16)移项整理得 <span class="math display">\[
+\]</span></p>
+<p>由于<span class="math inline">\(\psi \in (-\frac{\pi}{2},\frac{\pi}{2})\)</span>，故<span class="math inline">\(\cos(\psi_r) \neq 0\)</span>，等式(16)移项整理得</p>
+<p><span class="math display">\[
 \frac{d\psi_r}{dx} = \frac{\tan(\delta_r)}{l*\cos(\psi_r)} \tag{17}
-\]</span> 根据等式(17)，可得航向角误差的微分方程为 <span class="math display">\[
+\]</span></p>
+<p>根据等式(17)，可得航向角误差的微分方程为</p>
+<p><span class="math display">\[
 \begin{array}{rl}
 \dfrac{d\psi_e}{-dx} &amp;= -\dfrac{d\psi_r}{dx} + \dfrac{d\psi}{dx}\\
 &amp;=-\dfrac{\tan(\delta_r)}{l*\cos(\psi_r)} + \dfrac{\tan(\delta)}{l*\cos(\psi)}
 \end{array}\tag{18}
-\]</span> 整理等式(13)和(18)得 <span class="math display">\[
+\]</span></p>
+<p>整理等式(13)和(18)得</p>
+<p><span class="math display">\[
 \left \{
 \begin{array}{rl}
 &amp; \dfrac{de_y}{-dx} = -tan(\psi_r) + \tan(\psi)\\
@@ -2791,14 +3035,17 @@ k = \frac{\rvert\ddot{F}(x_r)\rvert}{[1+\dot{F}(x_r)^{2}]^\frac{3}{2}} \tag{8}
 <h2 id="滑模控制器设计">滑模控制器设计</h2>
 <p>滑模控制算法因算法简单、鲁棒性好、适应性强、实用性而被广泛运用。滑模控制的核心是设计处合适的切换函数和变结构控制率，使系统状态轨迹线能快速到达设计的切换面进行滑动模态运动。</p>
 <h3 id="微分方程">微分方程</h3>
-<p>系统参考状态量为： <span class="math display">\[
+<p>系统参考状态量为：</p>
+<p><span class="math display">\[
 \left \{
 \begin{array}{rl}
 &amp;x_1 = y_r - y\\
 &amp;x_2 = -tan(\psi_r) + \tan(\psi)
 \end{array}
 \right. \tag{20}
-\]</span> 结合等式(12)、(17)，对应的微分方程为： <span class="math display">\[
+\]</span></p>
+<p>结合等式(12)、(17)，对应的微分方程为：</p>
+<p><span class="math display">\[
 \left \{
 \begin{array}{rl}
 &amp;\dot{x_1} &amp;= \dfrac{dx_1}{-dx} &amp;= \dfrac{y_r - y}{-dx} &amp;= x_2\\
@@ -2808,35 +3055,47 @@ k = \frac{\rvert\ddot{F}(x_r)\rvert}{[1+\dot{F}(x_r)^{2}]^\frac{3}{2}} \tag{8}
 \right. \tag{21}
 \]</span></p>
 <h3 id="滑模面">滑模面</h3>
-<p>定义滑模变量<span class="math inline">\(s\)</span>为： <span class="math display">\[
+<p>定义滑模变量<span class="math inline">\(s\)</span>为：</p>
+<p><span class="math display">\[
 s = x_2 + c \cdot x_1 \tag{22}
-\]</span> 其中<span class="math inline">\(c &gt; 0\)</span>，结合等式(20)和(21)，对等式(22)求导得： <span class="math display">\[
+\]</span></p>
+<p>其中<span class="math inline">\(c &gt; 0\)</span>，结合等式(20)和(21)，对等式(22)求导得：</p>
+<p><span class="math display">\[
 \dot{s}=\frac{ds}{-dx} = \dfrac{\tan(\delta_r)}{l*\cos(\psi_r)^3} -\dfrac{\tan(\delta)}{l*\cos(\psi)^3} + c \cdot \bigl(\tan(\psi)-tan(\psi_r)\bigr) \tag{23}
 \]</span></p>
 <h3 id="基于趋近律的滑模控制">基于趋近律的滑模控制</h3>
 <p>采用指数趋近率<span class="math inline">\(\dot{s} = -\rho \cdot sign(s) - k\cdot s\)</span>，可以减弱变结构控制系统的抖振。通过调整趋近率参数<span class="math inline">\(\rho\)</span>和<span class="math inline">\(k\)</span>，既可以保证滑动模态到达过程的动态品质，又可以减弱控制信号的高频抖振，但是较大的<span class="math inline">\(\rho\)</span>会引起抖振。</p>
-<p>采用指数趋近率为 <span class="math display">\[
+<p>采用指数趋近率为</p>
+<p><span class="math display">\[
 \dot{s} = -\rho \cdot sign(s) - k\cdot s \tag{24}
-\]</span> 其中<span class="math inline">\(\rho &gt; 0\)</span>、<span class="math inline">\(k &gt; 0\)</span>、<span class="math inline">\(sign(s)\)</span>为符号函数。</p>
+\]</span></p>
+<p>其中<span class="math inline">\(\rho &gt; 0\)</span>、<span class="math inline">\(k &gt; 0\)</span>、<span class="math inline">\(sign(s)\)</span>为符号函数。</p>
 <h3 id="稳定判据">稳定判据</h3>
-<p>定义李亚普洛夫函数(<strong>Lyapunov</strong>)形式如下： <span class="math display">\[
+<p>定义李亚普洛夫函数(<strong>Lyapunov</strong>)形式如下：</p>
+<p><span class="math display">\[
 V = \frac{1}{2}s^2 \tag{25}
-\]</span> 为了使滑模变量在平衡点<span class="math inline">\(s = 0\)</span>处渐进稳定，根据李亚普洛夫稳定判据，必须满足下面两个条件：</p>
+\]</span></p>
+<p>为了使滑模变量在平衡点<span class="math inline">\(s = 0\)</span>处渐进稳定，根据李亚普洛夫稳定判据，必须满足下面两个条件：</p>
 <ol type="1">
-<li><p><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(s \neq 0)\end{array}\)</span></p></li>
-<li><p><span class="math inline">\(\lim_{\rvert s\rvert \to \infty}V = \infty\)</span></p></li>
+<li><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(s \neq 0)\end{array}\)</span></li>
+<li><span class="math inline">\(\lim_{\rvert s\rvert \to \infty}V = \infty\)</span></li>
 </ol>
-<p>由等式(25)的形式可知，条件2明显满足。将等式(24)所示的指数趋近率代入，并计算<span class="math inline">\(\dot{V}\)</span>得 <span class="math display">\[
+<p>由等式(25)的形式可知，条件2明显满足。将等式(24)所示的指数趋近率代入，并计算<span class="math inline">\(\dot{V}\)</span>得</p>
+<p><span class="math display">\[
 \begin{array}{rl}
 \dot{V} = s\dot{s} &amp;= s(-\rho \cdot sign(s) - k\cdot s)\\
 &amp;=-k \cdot s^2 - \rho \cdot sign(s) \cdot s\\
 &amp;= -k \cdot \rvert s \rvert ^2 - \rho \cdot \rvert s \rvert
 \end{array} \tag{26}
-\]</span> 其中<span class="math inline">\(k &gt; 0\)</span>，<span class="math inline">\(\rho &gt; 0\)</span>，很明显等式(26)中<span class="math inline">\(\dot{V} &lt; 0\)</span>，即满足条件1。因此采用等式(24)的指数趋近率可以使滑模变量渐进稳定。</p>
+\]</span></p>
+<p>其中<span class="math inline">\(k &gt; 0\)</span>，<span class="math inline">\(\rho &gt; 0\)</span>，很明显等式(26)中<span class="math inline">\(\dot{V} &lt; 0\)</span>，即满足条件1。因此采用等式(24)的指数趋近率可以使滑模变量渐进稳定。</p>
 <h3 id="控制率">控制率</h3>
-<p>驱使滑模变量<span class="math inline">\(s\)</span>变为0的控制率可以根据等式(23)和(24)得： <span class="math display">\[
+<p>驱使滑模变量<span class="math inline">\(s\)</span>变为0的控制率可以根据等式(23)和(24)得：</p>
+<p><span class="math display">\[
 \dfrac{\tan(\delta_r)}{l*\cos(\psi_r)^3} -\dfrac{\tan(\delta)}{l*\cos(\psi)^3} + c \cdot \bigl(\tan(\psi)-tan(\psi_r)\bigr) = -\rho \cdot sign(s) - k\cdot s \tag{27}
-\]</span> 根据等式(27)，提取<span class="math inline">\(\delta\)</span>项得 <span class="math display">\[
+\]</span></p>
+<p>根据等式(27)，提取<span class="math inline">\(\delta\)</span>项得</p>
+<p><span class="math display">\[
 \delta = \arctan 
 \Biggl(
     l*\cos(\psi)^3 \cdot 
@@ -2847,7 +3106,9 @@ V = \frac{1}{2}s^2 \tag{25}
         k\cdot s
     \Bigr)
 \Biggr) \tag{28}
-\]</span> 等式(28)进一步化简为如下形式： <span class="math display">\[
+\]</span></p>
+<p>等式(28)进一步化简为如下形式：</p>
+<p><span class="math display">\[
 \delta = \arctan
 \Biggl(
 l*\cos(\psi)^3 \cdot 
@@ -2937,7 +3198,8 @@ Sat(\frac{x}{\Delta}) =
 <span id="more"></span>
 <h2 id="碰撞判断">碰撞判断</h2>
 <h3 id="点与矩形盒">点与矩形盒</h3>
-<p>关于点与矩形盒子的位置关系,可能情况为点在矩形盒内,点在矩形边框上和点在矩形盒外部,如果点在矩形盒的外部,可以求取点到矩形盒的距离值. #### 判定点是否在矩形盒内</p>
+<p>关于点与矩形盒子的位置关系,可能情况为点在矩形盒内,点在矩形边框上和点在矩形盒外部,如果点在矩形盒的外部,可以求取点到矩形盒的距离值.</p>
+<h4 id="判定点是否在矩形盒内">判定点是否在矩形盒内</h4>
 <p>如下图所示,红色圆点与矩形盒的关系如下图左侧,为了便于判定红点是否在矩形盒内,将下图左侧整体按照航向角顺时针旋转<span class="math inline">\(\theta\)</span>角度,得到下图右侧状态.此时,只需要判定红点的坐标<span class="math inline">\((dx,dy)\)</span>是否满足<span class="math inline">\(\mid dx \mid &lt;= length_h\)</span> 或者 <span class="math inline">\(\mid dy \mid &lt;= width_h\)</span>，则说明红点位于矩形盒内.</p>
 <p><img src="https://i.loli.net/2020/11/04/NwXoO1iQdxHSm4R.png" alt="point_in_box" style="zoom:80%;" /></p>
 <p>其中, - <span class="math inline">\(length_{half}\)</span>:车长的一半; - <span class="math inline">\(width_{half}\)</span>: 车宽的一半;</p>
@@ -2964,7 +3226,8 @@ Sat(\frac{x}{\Delta}) =
 <h4 id="计算线段到矩形盒的距离">计算线段到矩形盒的距离</h4>
 <h5 id="区域划分">区域划分</h5>
 <p>如下图所示,将矩形盒的外围分成如下8个区域,关于区域的划分,可以根据线段起始点和终点分别在<span class="math inline">\(x\)</span>轴和<span class="math inline">\(y\)</span>轴的投影,表示为<span class="math inline">\((p_x,p_y)\)</span>;以车辆中心<span class="math inline">\(o\)</span>为原点,则四个边角点可以表示为<span class="math inline">\((box_x,box_y)\)</span>,<span class="math inline">\((box_x,-box_y)\)</span>,<span class="math inline">\((-box_x,box_y)\)</span>,<span class="math inline">\((-box_x,-box_y)\)</span>.</p>
-<p>其中,根据点在<span class="math inline">\(x\)</span>轴的投影,可以将区域值表示如下: <span class="math display">\[
+<p>其中,根据点在<span class="math inline">\(x\)</span>轴的投影,可以将区域值表示如下:</p>
+<p><span class="math display">\[
 g_x=\begin{cases}
 1  &amp; \text{if } (p_x &gt;= box_x),\\
 0  &amp; \text{if } (-box_x &lt; p_x &lt; box_x),\\
@@ -3111,11 +3374,20 @@ g_x=\begin{cases}
 <p>实际需求要将<code>x</code>和<code>y</code>方向的梯度拆分为两个字节，具体形式如下：</p>
 <p><img src="https://i.loli.net/2021/03/22/bvPYqLWknwjQdu9.png" alt="sobel_result_form_xy" style="zoom:150%;" /></p>
 <h3 id="nfsu16tou8withtwo函数实现">2.1. NfsU16ToU8WithTwo函数实现</h3>
-<p>该函数实现将<code>16bit</code>的高低位拆分为两个独立的字节，并将拆分后的字节单独输出。 #### 2.1.1 C语言代码 使用C语言编写代码如下： <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int32_t</span> i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">	sobel_x[i] =  data_sobel[i]       &amp; <span class="number">0xff</span>;</span><br><span class="line">	sobel_y[i] = (data_sobel[i] &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xff</span>;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure> &gt; <strong>Running Time</strong> : 14.3ms</p>
+<p>该函数实现将<code>16bit</code>的高低位拆分为两个独立的字节，并将拆分后的字节单独输出。</p>
+<h4 id="c语言代码">2.1.1 C语言代码</h4>
+<p>使用C语言编写代码如下 ： <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int32_t</span> i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">	sobel_x[i] =  data_sobel[i]       &amp; <span class="number">0xff</span>;</span><br><span class="line">	sobel_y[i] = (data_sobel[i] &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xff</span>;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p><strong>Running Time</strong> : 14.3ms</p>
+</blockquote>
 <h3 id="nfsu16tou8square-函数实现">2.2. NfsU16ToU8Square 函数实现</h3>
 <p>该函数实现将<code>16bit</code>的高低位拆分为两个独立的字节(x,y)，并计算<span class="math inline">\(x^2 + y^2\)</span>，将<code>x</code>和<code>y</code>轴的梯度求平方和后按照<code>16bit</code>输出结果。</p>
-<h4 id="c语言代码">2.2.1. C语言代码</h4>
-<p>使用C语言编写代码如下： <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">uint8_t</span> temp_x, temp_y; </span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int32_t</span> i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">     temp_x =  data_sobel[i]       &amp; <span class="number">0xff</span>;</span><br><span class="line">     temp_y = (data_sobel[i] &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xff</span>;</span><br><span class="line">     output_sobel[i] = temp_x * temp_x + temp_y * temp_y;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure> &gt; <strong>Running Time</strong> : 18.2ms</p>
+<h4 id="c语言代码-1">2.2.1. C语言代码</h4>
+<p>使用C语言编写代码如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">uint8_t</span> temp_x, temp_y; </span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int32_t</span> i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">     temp_x =  data_sobel[i]       &amp; <span class="number">0xff</span>;</span><br><span class="line">     temp_y = (data_sobel[i] &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xff</span>;</span><br><span class="line">     output_sobel[i] = temp_x * temp_x + temp_y * temp_y;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>Running Time</strong> : 18.2ms</p>
+</blockquote>
 <h4 id="intrinsics优化">2.2.2. Intrinsics优化</h4>
 <p>首先想到的优化方式是采用<strong>NEON Intrinsics</strong>方式对上述<strong>C</strong>语言代码进行重构，该方式相比于编写汇编代码更加简单，且便于移植。</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int32_t</span> i = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">uint16x8_t</span> v_in;</span><br><span class="line"><span class="keyword">uint8x8_t</span> x, y;</span><br><span class="line"><span class="keyword">uint16x8_t</span> x2;</span><br><span class="line"><span class="keyword">uint16x8_t</span> xy_square;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i + <span class="number">7</span> &lt; size; i += <span class="number">8</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// load the input data</span></span><br><span class="line">    v_in = vld1q_u8(input + i);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// seprate the u16 to two u8</span></span><br><span class="line">    x = vmovn_u16(v_in); <span class="comment">// mov low 8bit to the x </span></span><br><span class="line">    y = vshrn_n_u16(v_in, <span class="number">8</span>); <span class="comment">// the element right shift 8bit </span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// calculate the x^2 + y^2</span></span><br><span class="line">    x2 = vmull_u8(x, x);</span><br><span class="line">    xy_square = vmlal_u8(x2, y, y);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// store the result</span></span><br><span class="line">    vst1q_u16(output + i, xy_square);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -3143,8 +3415,9 @@ g_x=\begin{cases}
 <img src="https://i.loli.net/2021/03/22/NwAekVfE3v18PF7.png" alt="one_bit_to_byte_split" /><figcaption aria-hidden="true">one_bit_to_byte_split</figcaption>
 </figure>
 <h3 id="nfsonebittou8函数实现">3.1.NfsOneBitToU8函数实现</h3>
-<h4 id="c语言代码-1">3.1.1. C语言代码</h4>
-<p>使用C语言编写代码如下： <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">	data_canny_8bit[i]  = ((data_canny[i/<span class="number">8</span>] &gt;&gt; (i % <span class="number">8</span>)) &amp; <span class="number">0x01</span>) &lt;&lt; <span class="number">7</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="c语言代码-2">3.1.1. C语言代码</h4>
+<p>使用C语言编写代码如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">	data_canny_8bit[i]  = ((data_canny[i/<span class="number">8</span>] &gt;&gt; (i % <span class="number">8</span>)) &amp; <span class="number">0x01</span>) &lt;&lt; <span class="number">7</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h4 id="汇编语言代码">3.1.2. 汇编语言代码</h4>
 <h5 id="算法思路">3.1.2.1 算法思路</h5>
 <p>上述功能可以使用NEON汇编进行加速，具体思路如下：</p>
@@ -3189,7 +3462,8 @@ g_x=\begin{cases}
 </ol>
 <p><img src="https://i.loli.net/2021/03/22/gtaHZXzmK685opf.png" alt="one_bit_to_byte_neon7" style="zoom:80%;" /></p>
 <h5 id="汇编代码">3.1.2.2 汇编代码</h5>
-<p>使用<strong>NEON Assembly</strong>编写上述功能代码如下： <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">NfsOneBitToU8Asm</span><span class="params">(<span class="keyword">uint8_t</span>* <span class="keyword">restrict</span> input, <span class="keyword">uint8_t</span>* <span class="keyword">restrict</span> output, <span class="keyword">uint32_t</span> size)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">uint8_t</span>* input_temp = input;</span><br><span class="line">  <span class="keyword">uint8_t</span>* output_temp = output;</span><br><span class="line">  <span class="keyword">uint32_t</span> size_tmp = size;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">asm</span> <span class="title">volatile</span><span class="params">(<span class="string">&quot;vmov.i8      q4, #0x01         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vmov.i8      q5, #0x00         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;100:                           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vld1.8      &#123;q6&#125;, [%0]!        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;pld         [%0, #128]         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q9, q6, #1         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q10, q6, #2        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q11, q6, #3        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q12, q6, #4        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q13, q6, #5        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q14, q6, #6        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q15, q6, #7        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q8, q6, q4         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q9, q9, q4         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q10, q10, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q11, q11, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q12, q12, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q13, q13, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q14, q14, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q15, q15, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q8, q8, q5         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q9, q9, q5         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q10, q10, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q11, q11, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q12, q12, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q13, q13, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q14, q14, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q15, q15, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q8, q12            \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q9, q13            \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q10, q14           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q11, q15           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d16, d18, d20, d22&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d17, d19, d21, d23&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d24, d26, d28, d30&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d25, d27, d29, d31&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;subs        %2, #16             \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;bgt         100b                \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;=r&quot;</span>(input_temp), <span class="string">&quot;=r&quot;</span>(output_temp), <span class="string">&quot;=r&quot;</span>(size_tmp)</span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;0&quot;</span>(input_temp), <span class="string">&quot;1&quot;</span>(output_temp), <span class="string">&quot;2&quot;</span>(size_tmp)</span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;memory&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;cc&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q4&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q5&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q6&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q7&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q8&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q9&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q10&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q11&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q12&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q13&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q14&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q15&quot;</span>)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用<strong>NEON Assembly</strong>编写上述功能代码如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">NfsOneBitToU8Asm</span><span class="params">(<span class="keyword">uint8_t</span>* <span class="keyword">restrict</span> input, <span class="keyword">uint8_t</span>* <span class="keyword">restrict</span> output, <span class="keyword">uint32_t</span> size)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">uint8_t</span>* input_temp = input;</span><br><span class="line">  <span class="keyword">uint8_t</span>* output_temp = output;</span><br><span class="line">  <span class="keyword">uint32_t</span> size_tmp = size;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">asm</span> <span class="title">volatile</span><span class="params">(<span class="string">&quot;vmov.i8      q4, #0x01         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vmov.i8      q5, #0x00         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;100:                           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vld1.8      &#123;q6&#125;, [%0]!        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;pld         [%0, #128]         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q9, q6, #1         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q10, q6, #2        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q11, q6, #3        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q12, q6, #4        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q13, q6, #5        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q14, q6, #6        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q15, q6, #7        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q8, q6, q4         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q9, q9, q4         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q10, q10, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q11, q11, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q12, q12, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q13, q13, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q14, q14, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q15, q15, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q8, q8, q5         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q9, q9, q5         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q10, q10, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q11, q11, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q12, q12, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q13, q13, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q14, q14, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q15, q15, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q8, q12            \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q9, q13            \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q10, q14           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q11, q15           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d16, d18, d20, d22&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d17, d19, d21, d23&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d24, d26, d28, d30&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d25, d27, d29, d31&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;subs        %2, #16             \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;bgt         100b                \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;=r&quot;</span>(input_temp), <span class="string">&quot;=r&quot;</span>(output_temp), <span class="string">&quot;=r&quot;</span>(size_tmp)</span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;0&quot;</span>(input_temp), <span class="string">&quot;1&quot;</span>(output_temp), <span class="string">&quot;2&quot;</span>(size_tmp)</span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;memory&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;cc&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q4&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q5&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q6&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q7&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q8&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q9&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q10&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q11&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q12&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q13&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q14&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q15&quot;</span>)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="性能对比">4. 性能对比</h2>
 <p>如下表所示，上述代码在联咏<strong>NT96565A</strong>平台运行时间如下：</p>
 <table>
@@ -3237,7 +3511,8 @@ g_x=\begin{cases}
     <title>车辆术语缩写</title>
     <url>/2020/01/07/%E8%BD%A6%E8%BE%86%E6%9C%AF%E8%AF%AD%E7%BC%A9%E5%86%99/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
-<p>本文总结了汽车领域常用汽车术语的缩写，后续会继续补偿完善。 ## 泊车辅助系统</p>
+<p>本文总结了汽车领域常用汽车术语的缩写，后续会继续补偿完善。</p>
+<h2 id="泊车辅助系统">泊车辅助系统</h2>
 <table>
 <thead>
 <tr class="header">
@@ -3510,7 +3785,8 @@ g_x=\begin{cases}
 <span id="more"></span>
 <h2 id="曲线">曲线</h2>
 <h3 id="dubins曲线">Dubins曲线</h3>
-<p>关于<strong>Dubins</strong>曲线，不考虑车辆后退，且不允许出现尖瓣。<strong>Dubins</strong>给出了充分的路径集合，该集合里所包含的曲线叫做<strong>测地线</strong>或<strong>最佳路径</strong>。但是这个充分集合很小，对于每种特定终点情况下的集合中，最多只有6个可选曲线,分别表示如下： <span class="math display">\[
+<p>关于<strong>Dubins</strong>曲线，不考虑车辆后退，且不允许出现尖瓣。<strong>Dubins</strong>给出了充分的路径集合，该集合里所包含的曲线叫做<strong>测地线</strong>或<strong>最佳路径</strong>。但是这个充分集合很小，对于每种特定终点情况下的集合中，最多只有6个可选曲线,分别表示如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \{&amp;LRL  &amp;LSL  &amp;LSR  &amp;RLR  &amp;RSR  &amp;RSL &amp;\} \tag{1}
 \end{array}
@@ -3542,12 +3818,14 @@ g_x=\begin{cases}
 </tr>
 </tbody>
 </table>
-<p><strong>Dubins</strong>证明，一个最优路径一定是由分段圆弧(单位圆)和线段组成的平滑曲线，且最多3部分组成。可以进一步简化表示为如下形式： <span class="math display">\[
+<p><strong>Dubins</strong>证明，一个最优路径一定是由分段圆弧(单位圆)和线段组成的平滑曲线，且最多3部分组成。可以进一步简化表示为如下形式：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 CCC&amp;\to&amp;\{&amp;LRL &amp;RLR &amp;&amp;&amp;\} \\
 CSC&amp;\to&amp;\{&amp;LSL &amp;RSR &amp;LSR &amp;RSL&amp;\}
 \end{array} \tag{2}
-\]</span> 等式(2)中符号含义如下：</p>
+\]</span></p>
+<p>等式(2)中符号含义如下：</p>
 <table>
 <thead>
 <tr class="header">
@@ -3614,7 +3892,8 @@ CSC&amp;\to&amp;\{&amp;LSL &amp;RSR &amp;LSR &amp;RSL&amp;\}
 <blockquote>
 <p>在车辆中，字母L、R、S参考方向盘转角，符号<span class="math inline">\(+\)</span>和<span class="math inline">\(-\)</span>参考挡位切换</p>
 </blockquote>
-<p>使用C、S字符可以给出如下集合： <span class="math display">\[
+<p>使用C、S字符可以给出如下集合：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 CCC \gets \{&amp;C^+C^-C^+ &amp;C^+C^-C^-  &amp;C^+C^+C^- &amp;C^+C^+_uC^-_uC^- &amp;C^+C^-_uC^-_uC^+&amp;\}\\
 CSC \gets \{&amp;C^+S^+C^+ &amp;C^-C^+_{\pi/2}S^+C^+ &amp;C^+S^+C^+_{\pi/2}C^- &amp;C^-C^+_{\pi/2}S^+C^+_{\pi/2}C^-&amp;&amp;\}
@@ -3624,18 +3903,19 @@ CSC \gets \{&amp;C^+S^+C^+ &amp;C^-C^+_{\pi/2}S^+C^+ &amp;C^+S^+C^+_{\pi/2}C^- &
 <h4 id="下标符号">下标符号</h4>
 <p>为了更加缜密表示，在<span class="math inline">\(C^\pm_t,L^\pm_t,R^\pm_t,S^\pm_t\)</span>中使用有点多余的约定，规定<span class="math inline">\(t\)</span>的符号与方向匹配。</p>
 <blockquote>
-<p>如果<span class="math inline">\(t &gt; 0\)</span>：车辆前进，符号<span class="math inline">\(+\)</span></p>
-<p>如果<span class="math inline">\(t&lt;0\)</span>：车辆后退，符号<span class="math inline">\(-\)</span></p>
+<p>如果<span class="math inline">\(t &gt; 0\)</span>：车辆前进，符号<span class="math inline">\(+\)</span> 如果<span class="math inline">\(t&lt;0\)</span>：车辆后退，符号<span class="math inline">\(-\)</span></p>
 </blockquote>
 <h4 id="自由参数数量">自由参数数量</h4>
 <p>在等式(3)的曲线族中，<span class="math inline">\(C^+_tC^-_uC^-_vC^+_w\)</span>具有自由参数<span class="math inline">\((t,u,v,w)\)</span>的数量比最终情形的数量多一个。优化路径族通过给定额外的方程式，例如<span class="math inline">\(u=v\)</span>或者<span class="math inline">\(v = \pi/2\)</span>。确保等式(3)中的每个情形只有3个自由参数。</p>
 <h4 id="紧凑表示">紧凑表示</h4>
-<p>为了以紧凑的表示，避免<span class="math inline">\(\pm\)</span>，可以写出充分路径的列表如下： <span class="math display">\[
+<p>为了以紧凑的表示，避免<span class="math inline">\(\pm\)</span>，可以写出充分路径的列表如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 CCC \gets \{&amp;C\mid C\mid C &amp;C\mid CC  &amp;CC\mid C &amp;CC_u\mid C_uC &amp;C\mid C_uC_u\mid C&amp;\}\\
 CSC \gets \{&amp;CSC &amp;C\mid C_{\pi/2}SC &amp;CSC_{\pi/2}\mid C &amp;C\mid C_{\pi/2}SC_{\pi/2}\mid C&amp;&amp;\}\\
 \end{array}\tag{4}
-\]</span> 其中，<span class="math inline">\(|\)</span>表示方向反转。当等式(3)和(4)中的<span class="math inline">\(C\)</span>被替换为<span class="math inline">\(C = L\)</span>或<span class="math inline">\(C=R\)</span>，共有48种字段，以<span class="math inline">\(L^\pm,R^\pm,S^\pm\)</span>的形式表示。这48个字段中的一些对于字段类型的实际路径存在两种公式。对于给定的任意情形，至多68个公式。</p>
+\]</span></p>
+<p>其中，<span class="math inline">\(|\)</span>表示方向反转。当等式(3)和(4)中的<span class="math inline">\(C\)</span>被替换为<span class="math inline">\(C = L\)</span>或<span class="math inline">\(C=R\)</span>，共有48种字段，以<span class="math inline">\(L^\pm,R^\pm,S^\pm\)</span>的形式表示。这48个字段中的一些对于字段类型的实际路径存在两种公式。对于给定的任意情形，至多68个公式。</p>
 <p>任何长度小于<span class="math inline">\(\pi/8\)</span>的最佳路径一定是<span class="math inline">\(CSC\)</span>形式。很容易得出结论，任何最佳路径一定是由<span class="math inline">\(C\)</span>和<span class="math inline">\(S\)</span>的字段组成。使用一系列的特殊参数，可将所有有限的字段简化为<span class="math inline">\(CCC\)</span>或<span class="math inline">\(CSC\)</span>的形式。</p>
 <h4 id="充分集合">充分集合</h4>
 <p>下表列出了充分集合中的48个字段，以及相应的缩写形式<span class="math inline">\(C \mid C\)</span>和<span class="math inline">\(C^\pm\)</span>，最后一列给出了给定字段的长度公式。</p>
@@ -3701,14 +3981,17 @@ CSC \gets \{&amp;CSC &amp;C\mid C_{\pi/2}SC &amp;CSC_{\pi/2}\mid C &amp;C\mid C_
 </tbody>
 </table>
 <h2 id="允许路径">允许路径</h2>
-<p>根据车辆运动学模型的微分方程如下： <span class="math display">\[
+<p>根据车辆运动学模型的微分方程如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \dot{x}(t) &amp;= V(t)\cos\bigl(\psi(t)\bigr) \quad\\
 \dot{y}(t) &amp;= V(t)\sin\bigl(\psi(t)\bigr) \quad\\
 \dot{\psi}(t) &amp;= \dfrac{V(t)}{R(t)}
 \end{array}\tag{5}
-\]</span> 为了更好的表示路径，对车辆行驶路径进行归一化处理，简化路径的表示方法。即限制<span class="math inline">\(V(t)= \pm1\)</span>、<span class="math inline">\(|\dot{\psi}(t)| =1\)</span>，所以车辆只能在自身方向<span class="math inline">\(\psi(t)\)</span>上以速度<span class="math inline">\(|V(t)=1|\)</span>前进或后退，并且变化率<span class="math inline">\(\dot{\psi}(t)\leq1\)</span><strong>rad/s</strong>。对于车辆的转弯半径可以通过缩放变换到1，即车辆绕单位圆行驶。这样表示的好处在于车辆行驶的弧长与变化的角度一致。如果直线行驶，则<span class="math inline">\(\dot{\psi}(t) = 0\)</span>，令<span class="math inline">\(\dot{\psi}\)</span></p>
-<p>其积分形式如下： <span class="math display">\[
+\]</span></p>
+<p>为了更好的表示路径，对车辆行驶路径进行归一化处理，简化路径的表示方法。即限制<span class="math inline">\(V(t)= \pm1\)</span>、<span class="math inline">\(|\dot{\psi}(t)| =1\)</span>，所以车辆只能在自身方向<span class="math inline">\(\psi(t)\)</span>上以速度<span class="math inline">\(|V(t)=1|\)</span>前进或后退，并且变化率<span class="math inline">\(\dot{\psi}(t)\leq1\)</span><strong>rad/s</strong>。对于车辆的转弯半径可以通过缩放变换到1，即车辆绕单位圆行驶。这样表示的好处在于车辆行驶的弧长与变化的角度一致。如果直线行驶，则<span class="math inline">\(\dot{\psi}(t) = 0\)</span>，令<span class="math inline">\(\dot{\psi}\)</span></p>
+<p>其积分形式如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x(t) &amp;= x(0) + \int^t_0V(\tau)\cos\bigl(\psi(\tau)\bigr)d\tau\\
 y(t) &amp;= y(0) + \int^t_0V(\tau)\sin\bigl(\psi(\tau)\bigr)d\tau\\
@@ -3717,19 +4000,24 @@ y(t) &amp;= y(0) + \int^t_0V(\tau)\sin\bigl(\psi(\tau)\bigr)d\tau\\
 \]</span></p>
 <p>一个允许的路径或者曲线可以表示成函数<span class="math inline">\(\gamma(t) = \bigl(x(t),y(t),\psi(t)\bigr)\)</span>的形式。对于任意曲线从<span class="math inline">\(t_0\)</span>到<span class="math inline">\(t_1\)</span>，其中<span class="math inline">\(t_0 &lt; t_1\)</span>，<span class="math inline">\(\gamma(t_0) = a\)</span>，<span class="math inline">\(\gamma(t_1)=b\)</span>，则路径的长度为<span class="math inline">\(L(\gamma)= t_1 - t_0\)</span>。所以关于最短路径的问题，就转换为求取对于任意a和b<span class="math inline">\(\in \Re^3\)</span>,使得<span class="math inline">\(L(\gamma)\)</span>最小的<span class="math inline">\(\gamma\)</span>。</p>
 <h3 id="可行路径">可行路径</h3>
-<p>对于时间<span class="math inline">\(t \in \Re\)</span>，使用 <span class="math display">\[
+<p>对于时间<span class="math inline">\(t \in \Re\)</span>，使用</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 L_t:\Re^3 \to \Re^3\\
 R_t: \Re^3 \to \Re^3\\
 S_t: \Re^3 \to \Re^3
 \end{array}\tag{7}
-\]</span> 表示单位圆<span class="math inline">\(L_t\)</span>或<span class="math inline">\(R_t\)</span>和线段<span class="math inline">\(S_t\)</span>的位置和方向信息，起始坐标表示为<span class="math inline">\((x,y,\psi)\)</span>，所以经过时间<span class="math inline">\(t\)</span>，根据等式(6)积分得： <span class="math display">\[
+\]</span></p>
+<p>表示单位圆<span class="math inline">\(L_t\)</span>或<span class="math inline">\(R_t\)</span>和线段<span class="math inline">\(S_t\)</span>的位置和方向信息，起始坐标表示为<span class="math inline">\((x,y,\psi)\)</span>，所以经过时间<span class="math inline">\(t\)</span>，根据等式(6)积分得：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x(t) &amp;= x + \sin(\tau)|^{\psi+t}_{\psi}\\
 y(t) &amp;= y - \cos(\tau)|^{\psi+t}_{\psi}\\
 \psi(t) &amp;= t
 \end{array}
-\]</span> 对应的路径如下： <span class="math display">\[
+\]</span></p>
+<p>对应的路径如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 L_t^+(x,y,\psi) &amp;= \bigl(x + \sin(\psi+t)- \sin(\psi),y - \cos(\psi+t)+\cos(\psi),\psi + t\bigr)\\
 R_t^+(x,y,\psi) &amp;= \bigl(x - \sin(\psi-t)+ \sin(\psi),y + \cos(\psi-t)-\cos(\psi),\psi - t\bigr)\\
@@ -3746,7 +4034,8 @@ S_t^-(x,y,\psi) &amp;= (x-t\cos(\psi),y - t\sin(\psi),\psi)
 <ul>
 <li>举例</li>
 </ul>
-<p>假设一个曲线<span class="math inline">\(L^+_tR^-_uS^-_vL^-_w\)</span>，起始于点<span class="math inline">\((0,0,0)\)</span>，一定终止于 <span class="math display">\[
+<p>假设一个曲线<span class="math inline">\(L^+_tR^-_uS^-_vL^-_w\)</span>，起始于点<span class="math inline">\((0,0,0)\)</span>，一定终止于</p>
+<p><span class="math display">\[
 \bigl(X(t,u,v,w),Y(t,u,v,w),\Psi(t,u,v,w)\bigr)= R_w(S_v(R_u(L_t(0,0,0))))
 \]</span></p>
 <p>其长度为<span class="math inline">\(L(t,u,v,w) = |t|+ |u| + |v| + |w|\)</span>。</p>
@@ -3778,7 +4067,8 @@ S_t^-(x,y,\psi) &amp;= (x-t\cos(\psi),y - t\sin(\psi),\psi)
 <ul>
 <li>平移</li>
 </ul>
-<p>首先将向量<span class="math inline">\(\vec{q_iq_g}\)</span>平移到远点<span class="math inline">\((0,0)\)</span>，平移向量为<span class="math inline">\((-x_1,-y_1)\)</span>。则<span class="math inline">\(q_i\)</span>平移到<span class="math inline">\((0,0)\)</span>，<span class="math inline">\(q_g\)</span>平移到<span class="math inline">\((x_2-x_1,y_2-y_1)\)</span>，最终得到的平移向量： <span class="math display">\[
+<p>首先将向量<span class="math inline">\(\vec{q_iq_g}\)</span>平移到远点<span class="math inline">\((0,0)\)</span>，平移向量为<span class="math inline">\((-x_1,-y_1)\)</span>。则<span class="math inline">\(q_i\)</span>平移到<span class="math inline">\((0,0)\)</span>，<span class="math inline">\(q_g\)</span>平移到<span class="math inline">\((x_2-x_1,y_2-y_1)\)</span>，最终得到的平移向量：</p>
+<p><span class="math display">\[
 \vec{q_iq_g}=
 \left[
 \begin{array}{cl}
@@ -3795,14 +4085,17 @@ y
 <ul>
 <li>旋转</li>
 </ul>
-<p>应用旋转矩阵，将车辆的起始点朝向转到x轴正向，对应得旋转角度为<span class="math inline">\(\psi_1\)</span>，旋转矩阵如下： <span class="math display">\[
+<p>应用旋转矩阵，将车辆的起始点朝向转到x轴正向，对应得旋转角度为<span class="math inline">\(\psi_1\)</span>，旋转矩阵如下：</p>
+<p><span class="math display">\[
 \left[
 \begin{array}{cl}
 \cos(\psi_1) &amp;\sin(\psi_1)\\
 -\sin(\psi_1) &amp;\cos(\psi_1)
 \end{array}
 \right]\tag{10}
-\]</span> 则向量<span class="math inline">\(\vec{q_iq_g}\)</span>旋转后得 <span class="math display">\[
+\]</span></p>
+<p>则向量<span class="math inline">\(\vec{q_iq_g}\)</span>旋转后得</p>
+<p><span class="math display">\[
 \vec{q_iq_g}=
 \left[
 \begin{array}{cl}
@@ -3829,11 +4122,13 @@ x\cos(\psi_1) + y\sin(\psi_1)\\
 \end{array}
 \right]
 \tag{11}
-\]</span> 通过上述旋转后，目标位置朝向为<span class="math inline">\(\psi = \psi_2 - \psi_1\)</span>。</p>
+\]</span></p>
+<p>通过上述旋转后，目标位置朝向为<span class="math inline">\(\psi = \psi_2 - \psi_1\)</span>。</p>
 <ul>
 <li>缩放</li>
 </ul>
-<p>对于车辆的转弯半径<span class="math inline">\(\rho\)</span>，将车辆转向半径缩放到1，得到最终的车辆其实姿态为: <span class="math display">\[
+<p>对于车辆的转弯半径<span class="math inline">\(\rho\)</span>，将车辆转向半径缩放到1，得到最终的车辆其实姿态为:</p>
+<p><span class="math display">\[
 q_i=
 \left[
 \begin{array}{cl}
@@ -3842,7 +4137,9 @@ q_i=
 0
 \end{array}
 \right]\tag{12}
-\]</span> 目标姿态为： <span class="math display">\[
+\]</span></p>
+<p>目标姿态为：</p>
+<p><span class="math display">\[
 q_g=
 \left[
 \begin{array}{cl}
@@ -3858,11 +4155,14 @@ q_g=
 <p>时间变换通过交换字母上标符号<span class="math inline">\(+\)</span>和<span class="math inline">\(-\)</span>，即车取反辆的行进方向。也就是说，<span class="math inline">\(L^-R^+S^+L^+\)</span>表达式可以通过<span class="math inline">\(L^+R^-S^-L^-\)</span>表达式通过时间变换获得。其中<span class="math inline">\(+\)</span>和<span class="math inline">\(-\)</span>交换。如果原始路径从<span class="math inline">\((0,0,0)\)</span>到<span class="math inline">\((x,y,\psi)\)</span>，显而易见时间变换的路径将从<span class="math inline">\((0,0,0)\)</span>到<span class="math inline">\((-x,y,-\psi)\)</span>。因此，如果一个路径表达式<span class="math inline">\(L^+_tR^-_{-\pi/2}S^-_uL^-_v\)</span>从点<span class="math inline">\((0,0,0)\)</span>到<span class="math inline">\((-x,y,-\psi)\)</span>，查找的合适弧长为t、u、v。这就等效于路径表达式<span class="math inline">\(L^-_tR^+_{\pi/2}S^+_uL^+_v\)</span>从点<span class="math inline">\((0,0,0)\)</span>到<span class="math inline">\((x,y,\psi)\)</span>查找相应的弧长。所以，通过时间变换将上述列表中第一个字母符号为"<span class="math inline">\(-\)</span>"的字段消除。</p>
 <h3 id="反射变换reflect">反射变换(reflect)</h3>
 <p>反射变换通过交换字母<span class="math inline">\(L\)</span>和<span class="math inline">\(R\)</span>，即取反车辆转向。也就是说，一个路径表达式<span class="math inline">\(R^+L^-S^-R^-\)</span>的解可以通过反射变换从路径表达式<span class="math inline">\(L^+R^-S^-L^-\)</span>的解中获得，即沿着该路径交换<span class="math inline">\(L\)</span>和<span class="math inline">\(R\)</span>。相应的参考路径由<span class="math inline">\((x,y,\psi)\)</span>变为<span class="math inline">\((x,-y,-\psi)\)</span>。</p>
-<p>假设已知路径<span class="math inline">\(L^+_tR^-_{-\pi/2}S^-_uL^-_v\)</span>解的表达式，从点<span class="math inline">\((0,0,0) \to (x,-y,-\psi)\)</span>的最优弧长为t、u、v。 <span class="math display">\[
+<p>假设已知路径<span class="math inline">\(L^+_tR^-_{-\pi/2}S^-_uL^-_v\)</span>解的表达式，从点<span class="math inline">\((0,0,0) \to (x,-y,-\psi)\)</span>的最优弧长为t、u、v。</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 &amp;L^+_tR^-_{-\pi/2}S^-_uL^-_v :(0,0,0) \to (x,-y,-\psi)\\
 \end{array}
-\]</span> 则从点<span class="math inline">\((0,0,0) \to (x,y,\psi)\)</span>的最优弧长为t、u、v，对应路径<span class="math inline">\(R^+_tL^-_{-\pi/2}S^-_uR^-_v\)</span>的解， <span class="math display">\[
+\]</span></p>
+<p>则从点<span class="math inline">\((0,0,0) \to (x,y,\psi)\)</span>的最优弧长为t、u、v，对应路径<span class="math inline">\(R^+_tL^-_{-\pi/2}S^-_uR^-_v\)</span>的解，</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 &amp;R^+_tL^-_{-\pi/2}S^-_uR^-_v :(0,0,0) \to (x,y,\psi)\\
 \end{array}
@@ -3878,7 +4178,8 @@ q_g=
 <ul>
 <li>极坐标</li>
 </ul>
-<p>由笛卡尔坐标系<span class="math inline">\((x,y)\)</span>与极坐标系的转化可以写为<span class="math inline">\((r,\theta) = R(x,y)\)</span>，展开如下： <span class="math display">\[
+<p>由笛卡尔坐标系<span class="math inline">\((x,y)\)</span>与极坐标系的转化可以写为<span class="math inline">\((r,\theta) = R(x,y)\)</span>，展开如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x = r \cdot\cos(\theta)\\
 y = r \cdot\sin(\theta)
@@ -3887,7 +4188,8 @@ y = r \cdot\sin(\theta)
 r &amp;= \sqrt{x^2 + y^2}\\
 \theta &amp;= \arctan(\dfrac{y}{x})
 \end{array}
-\]</span> 其中，<span class="math inline">\(r \geq 0\)</span>，<span class="math inline">\(-\pi \leq \theta &lt; \pi\)</span>。</p>
+\]</span></p>
+<p>其中，<span class="math inline">\(r \geq 0\)</span>，<span class="math inline">\(-\pi \leq \theta &lt; \pi\)</span>。</p>
 <ul>
 <li>偏航角标准化</li>
 </ul>
@@ -3897,13 +4199,15 @@ r &amp;= \sqrt{x^2 + y^2}\\
 <li>推导</li>
 </ul>
 <p>第一个公式详细推导计算过程，后面的公式由于原理相同，就不详细推导，直接给出结论。</p>
-<p>推导过程，主要结合等式(8)种的结论: <span class="math display">\[
+<p>推导过程，主要结合等式(8)种的结论:</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 L_t^+(x,y,\psi) &amp;= \bigl(x + \sin(\psi+t)- \sin(\psi),y - \cos(\psi+t)+\cos(\psi),\psi + t\bigr)\\
 R_t^+(x,y,\psi) &amp;= \bigl(x - \sin(\psi-t)+ \sin(\psi),y + \cos(\psi-t)-\cos(\psi),\psi - t\bigr)\\
 S_t^+(x,y,\psi) &amp;= (x+t\cos(\psi),y + t\sin(\psi),\psi)
 \end{array}
-\]</span> 起始坐标<span class="math inline">\((0,0,0)\)</span>，目标坐标<span class="math inline">\((x,y,\psi)\)</span></p>
+\]</span></p>
+<p>起始坐标<span class="math inline">\((0,0,0)\)</span>，目标坐标<span class="math inline">\((x,y,\psi)\)</span></p>
 <table>
 <thead>
 <tr class="header">
@@ -3946,36 +4250,47 @@ S_t^+(x,y,\psi) &amp;= (x+t\cos(\psi),y + t\sin(\psi),\psi)
 </tr>
 </tbody>
 </table>
-<p>从上述表格可知 <span class="math display">\[
+<p>从上述表格可知</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x &amp;=   u\cos{t} + \sin{(t+v)} \\
 y &amp;=   1 + u\sin{t} - \cos{(t + v)} \\
 \psi &amp;=   t + v 
 \end{array}
-\]</span> 将$= t + v $带入得 <span class="math display">\[
+\]</span></p>
+<p>将$= t + v $带入得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x &amp;=   u\cos{t} + \sin{\psi} \\
 y &amp;=   1 + u\sin{t} - \cos{\psi}
 \end{array}
-\]</span> 移项得 <span class="math display">\[
+\]</span></p>
+<p>移项得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 u\cos{t} &amp;=  x  - \sin{\psi} \\
 u\sin{t} &amp;=  y  + \cos{\psi}- 1
 \end{array}
-\]</span> 使用极坐标表示得 <span class="math display">\[
+\]</span></p>
+<p>使用极坐标表示得</p>
+<p><span class="math display">\[
 (u,t) = R(x  - \sin{\psi},y  + \cos{\psi}- 1)
-\]</span> 则 <span class="math display">\[
+\]</span></p>
+<p>则</p>
+<p><span class="math display">\[
 v = M(\psi - t)
 \]</span></p>
 <ul>
 <li>结论</li>
 </ul>
-<p>已知起始坐标<span class="math inline">\((0,0,0)\)</span>和目标坐标<span class="math inline">\((x,y,\psi)\)</span>，则<span class="math inline">\(L^+_tS^+_uL^+_v\)</span>的最优解为 <span class="math display">\[
+<p>已知起始坐标<span class="math inline">\((0,0,0)\)</span>和目标坐标<span class="math inline">\((x,y,\psi)\)</span>，则<span class="math inline">\(L^+_tS^+_uL^+_v\)</span>的最优解为</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 (u,t) &amp;= R(x  - \sin{\psi},y  + \cos{\psi}- 1)\\
 v &amp;= M(\psi - t)
 \end{array}
-\]</span> 总长度为<span class="math inline">\(L = |t| + |u| + |v|\)</span>。</p>
+\]</span></p>
+<p>总长度为<span class="math inline">\(L = |t| + |u| + |v|\)</span>。</p>
 <h3 id="公式-l_ts_ur_v">公式 <span class="math inline">\(L^+_tS^+_uR^+_v\)</span></h3>
 <p>下表描述了计算过程：</p>
 <table style="width:100%;">
@@ -4026,26 +4341,34 @@ v &amp;= M(\psi - t)
 </tr>
 </tbody>
 </table>
-<p>整理得 <span class="math display">\[
+<p>整理得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x &amp;= u\cos{t} - \sin{(t-v)}+2\sin{t}   \\
 y &amp;= u\sin{t} + \cos{(t - v)}-2\cos{t} +1 \\
 \psi &amp;=    t - v 
 \end{array}
-\]</span> 将<span class="math inline">\(\psi = t -v\)</span>带入得 <span class="math display">\[
+\]</span></p>
+<p>将<span class="math inline">\(\psi = t -v\)</span>带入得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x &amp;= u\cos{t} - \sin{\psi}+2\sin{t}   \\
 y &amp;= u\sin{t} + \cos{\psi}-2\cos{t} +1
 \end{array}
-\]</span> 移项得 <span class="math display">\[
+\]</span></p>
+<p>移项得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 u\cos{t} &amp;= x + \sin{\psi} - 2\sin{t}   \\
 u\sin{t} &amp;= y - \cos{\psi} + 2\cos{t} -1
 \end{array}
-\]</span> 令$ P_1(u_1,t_1) = R(x + ,y - ) <span class="math inline">\(，\)</span>P_2(2,t-)=R(2,-2)<span class="math inline">\(，\)</span>P(u,t)=R(u,u)$。</p>
-<p>由等式得 <span class="math display">\[
+\]</span></p>
+<p>令$ P_1(u_1,t_1) = R(x + ,y - ) <span class="math inline">\(，\)</span>P_2(2,t-)=R(2,-2)<span class="math inline">\(，\)</span>P(u,t)=R(u,u)$。</p>
+<p>由等式得</p>
+<p><span class="math display">\[
 P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
-\]</span> 由上式可知，极向量<span class="math inline">\(P\)</span>与<span class="math inline">\(P_2\)</span>必须垂直，由于向量<span class="math inline">\(P_2\)</span>的长度为2，为了满足上述关系，向量<span class="math inline">\(P_1\)</span>的长度不能小于2，否则无解。</p>
+\]</span></p>
+<p>由上式可知，极向量<span class="math inline">\(P\)</span>与<span class="math inline">\(P_2\)</span>必须垂直，由于向量<span class="math inline">\(P_2\)</span>的长度为2，为了满足上述关系，向量<span class="math inline">\(P_1\)</span>的长度不能小于2，否则无解。</p>
 <ul>
 <li>如果<span class="math inline">\(u_1^2 &lt; 4\)</span></li>
 </ul>

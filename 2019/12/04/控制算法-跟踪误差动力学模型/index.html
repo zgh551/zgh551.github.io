@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/SxsNHoFEdQjv5bP.jpg">
 <meta property="article:published_time" content="2019-12-04T12:20:23.000Z">
-<meta property="article:modified_time" content="2021-08-30T06:27:52.517Z">
+<meta property="article:modified_time" content="2021-08-30T07:54:34.960Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="跟踪误差模型">
 <meta property="article:tag" content="动力学模型">
@@ -264,7 +264,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 14:27:52" itemprop="dateModified" datetime="2021-08-30T14:27:52+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 15:54:34" itemprop="dateModified" datetime="2021-08-30T15:54:34+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -347,12 +347,17 @@ e_{\psi} = \psi - \psi_{des} \tag{3}
 <p>根据<a target="_blank" rel="noopener" href="https://blog.csdn.net/zghforever/article/details/103352211">车辆模型-动力学模型(Dynamics Model)</a>章节中的等式(14) <span class="math display">\[
 \ddot{y} = -\frac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x}\dot{y}   - ( V_x +  \frac{2C_{\alpha f}l_f- 2C_{\alpha r}l_r}{mV_x})\dot{\psi}  + \frac{2C_{\alpha f}}{m} \delta \tag{10}
 \]</span></p>
-<p>将等式(8)和(9)代入等式(10)得 <span class="math display">\[
+<p>将等式(8)和(9)代入等式(10)得</p>
+<p><span class="math display">\[
 \ddot{e}_y + V_x\dot{\psi}_{des} = -\frac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x}(\dot{e}_y - V_xe_{\psi})   - ( V_x +  \frac{2C_{\alpha f}l_f- 2C_{\alpha r}l_r}{mV_x})\dot{\psi}  + \frac{2C_{\alpha f}}{m} \delta \tag{11}
-\]</span> 对等式(11)进行简化，提取<span class="math inline">\(\ddot{e}_y\)</span>、<span class="math inline">\(\dot{e}_y\)</span>、<span class="math inline">\(e_y\)</span>、<span class="math inline">\(\dot{\psi}_{des}\)</span>和<span class="math inline">\(\delta\)</span>项得 <span class="math display">\[
+\]</span></p>
+<p>对等式(11)进行简化，提取<span class="math inline">\(\ddot{e}_y\)</span>、<span class="math inline">\(\dot{e}_y\)</span>、<span class="math inline">\(e_y\)</span>、<span class="math inline">\(\dot{\psi}_{des}\)</span>和<span class="math inline">\(\delta\)</span>项得</p>
+<p><span class="math display">\[
 \ddot{e}_y = \frac{-2C_{\alpha f}-2C_{\alpha r}}{mV_x}\dot{e}_y + \frac{2C_{\alpha f}+2C_{\alpha r}}{m}e_{\psi} +
 \frac{-2C_{\alpha f}l_f + 2C_{\alpha r}l_r}{mV_x}\dot{e}_{\psi} \\+ (\frac{-2C_{\alpha f}l_f + 2C_{\alpha r}l_r}{mV_x}-V_x)\dot{\psi}_{des} +\frac{2C_{\alpha f}}{m}\delta \tag{12}
-\]</span> 整理成矩阵形式为 <span class="math display">\[
+\]</span></p>
+<p>整理成矩阵形式为</p>
+<p><span class="math display">\[
 \frac{\mathrm{d}}{\mathrm{d}t}\dot{e}_y =
 \begin{bmatrix}
 0 &amp;
@@ -367,15 +372,23 @@ e_{\psi}\\
 \dot{e}_{\psi}
 \end{bmatrix}\\
 +(\dfrac{-2C_{\alpha f}l_f + 2C_{\alpha r}l_r}{mV_x} - V_x)\dot{\psi}_{des}+\frac{2C_{\alpha f}}{m}\delta \tag{13}
-\]</span> 同理根据<a target="_blank" rel="noopener" href="https://blog.csdn.net/zghforever/article/details/103352211">车辆模型-动力学模型(Dynamics Model)</a>章节中的等式(17) <span class="math display">\[
+\]</span></p>
+<p>同理根据<a target="_blank" rel="noopener" href="https://blog.csdn.net/zghforever/article/details/103352211">车辆模型-动力学模型(Dynamics Model)</a>章节中的等式(17)</p>
+<p><span class="math display">\[
 \ddot{\psi} = - \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x}\dot{y}  - \frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi} + \frac{2l_fC_{\alpha f}}{I_z}\delta\tag{14}
-\]</span> 将等式(5)、(8)和(9)代入等式(14)得 <span class="math display">\[
+\]</span></p>
+<p>将等式(5)、(8)和(9)代入等式(14)得</p>
+<p><span class="math display">\[
 \ddot{e}_{\psi}+ \ddot{\psi}_{des} = - \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x}(\dot{e}_y - V_xe_{\psi})  - \frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi} + \frac{2l_fC_{\alpha f}}{I_z}\delta\tag{15}
-\]</span> 对等式(15)进行简化，提取<span class="math inline">\(\ddot{e}_y\)</span>、<span class="math inline">\(\dot{e}_y\)</span>、<span class="math inline">\(e_y\)</span>、<span class="math inline">\(\dot{\psi}_{des}\)</span>和<span class="math inline">\(\delta\)</span>项得 <span class="math display">\[
+\]</span></p>
+<p>对等式(15)进行简化，提取<span class="math inline">\(\ddot{e}_y\)</span>、<span class="math inline">\(\dot{e}_y\)</span>、<span class="math inline">\(e_y\)</span>、<span class="math inline">\(\dot{\psi}_{des}\)</span>和<span class="math inline">\(\delta\)</span>项得</p>
+<p><span class="math display">\[
 \ddot{e}_{\psi} = - \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x}\dot{e}_y + \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_z}e_{\psi}\\
 -\frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{e}_{\psi}
 -\frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi}_{des} + \frac{2l_fC_{\alpha f}}{I_z}\delta - \ddot{\psi}_{des} \tag{16}
-\]</span> 由于上述假设为<strong>线性时不变系统(LTI)</strong>(<span class="math inline">\(\dot{V}_x = 0\)</span>)，故<span class="math inline">\(\ddot{\psi}_{des}=\frac{\dot{V}_x}{R} = 0\)</span>，将上述等式整理成矩阵形式得 <span class="math display">\[
+\]</span></p>
+<p>由于上述假设为<strong>线性时不变系统(LTI)</strong>(<span class="math inline">\(\dot{V}_x = 0\)</span>)，故<span class="math inline">\(\ddot{\psi}_{des}=\frac{\dot{V}_x}{R} = 0\)</span>，将上述等式整理成矩阵形式得</p>
+<p><span class="math display">\[
 \frac{\mathrm{d}}{\mathrm{d}t}\dot{e}_{\psi} =
 \begin{bmatrix}
 0 &amp;
@@ -390,7 +403,9 @@ e_{\psi}\\
 \dot{e}_{\psi}
 \end{bmatrix}\\
 -\frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi}_{des}+\frac{2l_fC_{\alpha f}}{I_z}\delta \tag{17}
-\]</span> 根据等式(13)和(17)，基于跟踪误差变量的状态空间模型表示为 <span class="math display">\[
+\]</span></p>
+<p>根据等式(13)和(17)，基于跟踪误差变量的状态空间模型表示为</p>
+<p><span class="math display">\[
 \frac{\mathrm{d}}{\mathrm{d}t}
 \begin{bmatrix}
 e_y\\
@@ -429,7 +444,9 @@ e_{\psi}\\
 0\\
 -\dfrac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}
 \end{bmatrix}\dot{\psi}_{des}\tag{18}
-\]</span> 上述状态空间模型，将转向控制系统的目标跟踪问题转化为动力学的稳定性问题。 状态空间模型一般形式如下： <span class="math display">\[
+\]</span></p>
+<p>上述状态空间模型，将转向控制系统的目标跟踪问题转化为动力学的稳定性问题。 状态空间模型一般形式如下：</p>
+<p><span class="math display">\[
 \dot{x} = Ax + B_1\delta + B_2\dot{\psi}_{des}
 \]</span></p>
 

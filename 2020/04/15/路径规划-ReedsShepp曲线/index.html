@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/08/30/ESWCixm4uDdRv61.jpg">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/yCQc9YA6UNxbdqH.png">
 <meta property="article:published_time" content="2020-04-15T08:06:11.000Z">
-<meta property="article:modified_time" content="2021-08-30T03:21:11.275Z">
+<meta property="article:modified_time" content="2021-08-30T08:11:50.798Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="路径规划">
 <meta property="article:tag" content="ReedsSheep">
@@ -267,7 +267,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 11:21:11" itemprop="dateModified" datetime="2021-08-30T11:21:11+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 16:11:50" itemprop="dateModified" datetime="2021-08-30T16:11:50+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -301,7 +301,8 @@
 <span id="more"></span>
 <h2 id="曲线">曲线</h2>
 <h3 id="dubins曲线">Dubins曲线</h3>
-<p>关于<strong>Dubins</strong>曲线，不考虑车辆后退，且不允许出现尖瓣。<strong>Dubins</strong>给出了充分的路径集合，该集合里所包含的曲线叫做<strong>测地线</strong>或<strong>最佳路径</strong>。但是这个充分集合很小，对于每种特定终点情况下的集合中，最多只有6个可选曲线,分别表示如下： <span class="math display">\[
+<p>关于<strong>Dubins</strong>曲线，不考虑车辆后退，且不允许出现尖瓣。<strong>Dubins</strong>给出了充分的路径集合，该集合里所包含的曲线叫做<strong>测地线</strong>或<strong>最佳路径</strong>。但是这个充分集合很小，对于每种特定终点情况下的集合中，最多只有6个可选曲线,分别表示如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \{&amp;LRL  &amp;LSL  &amp;LSR  &amp;RLR  &amp;RSR  &amp;RSL &amp;\} \tag{1}
 \end{array}
@@ -333,12 +334,14 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Dubins</strong>证明，一个最优路径一定是由分段圆弧(单位圆)和线段组成的平滑曲线，且最多3部分组成。可以进一步简化表示为如下形式： <span class="math display">\[
+<p><strong>Dubins</strong>证明，一个最优路径一定是由分段圆弧(单位圆)和线段组成的平滑曲线，且最多3部分组成。可以进一步简化表示为如下形式：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 CCC&amp;\to&amp;\{&amp;LRL &amp;RLR &amp;&amp;&amp;\} \\
 CSC&amp;\to&amp;\{&amp;LSL &amp;RSR &amp;LSR &amp;RSL&amp;\}
 \end{array} \tag{2}
-\]</span> 等式(2)中符号含义如下：</p>
+\]</span></p>
+<p>等式(2)中符号含义如下：</p>
 <table>
 <thead>
 <tr class="header">
@@ -405,7 +408,8 @@ CSC&amp;\to&amp;\{&amp;LSL &amp;RSR &amp;LSR &amp;RSL&amp;\}
 <blockquote>
 <p>在车辆中，字母L、R、S参考方向盘转角，符号<span class="math inline">\(+\)</span>和<span class="math inline">\(-\)</span>参考挡位切换</p>
 </blockquote>
-<p>使用C、S字符可以给出如下集合： <span class="math display">\[
+<p>使用C、S字符可以给出如下集合：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 CCC \gets \{&amp;C^+C^-C^+ &amp;C^+C^-C^-  &amp;C^+C^+C^- &amp;C^+C^+_uC^-_uC^- &amp;C^+C^-_uC^-_uC^+&amp;\}\\
 CSC \gets \{&amp;C^+S^+C^+ &amp;C^-C^+_{\pi/2}S^+C^+ &amp;C^+S^+C^+_{\pi/2}C^- &amp;C^-C^+_{\pi/2}S^+C^+_{\pi/2}C^-&amp;&amp;\}
@@ -415,18 +419,19 @@ CSC \gets \{&amp;C^+S^+C^+ &amp;C^-C^+_{\pi/2}S^+C^+ &amp;C^+S^+C^+_{\pi/2}C^- &
 <h4 id="下标符号">下标符号</h4>
 <p>为了更加缜密表示，在<span class="math inline">\(C^\pm_t,L^\pm_t,R^\pm_t,S^\pm_t\)</span>中使用有点多余的约定，规定<span class="math inline">\(t\)</span>的符号与方向匹配。</p>
 <blockquote>
-<p>如果<span class="math inline">\(t &gt; 0\)</span>：车辆前进，符号<span class="math inline">\(+\)</span></p>
-<p>如果<span class="math inline">\(t&lt;0\)</span>：车辆后退，符号<span class="math inline">\(-\)</span></p>
+<p>如果<span class="math inline">\(t &gt; 0\)</span>：车辆前进，符号<span class="math inline">\(+\)</span> 如果<span class="math inline">\(t&lt;0\)</span>：车辆后退，符号<span class="math inline">\(-\)</span></p>
 </blockquote>
 <h4 id="自由参数数量">自由参数数量</h4>
 <p>在等式(3)的曲线族中，<span class="math inline">\(C^+_tC^-_uC^-_vC^+_w\)</span>具有自由参数<span class="math inline">\((t,u,v,w)\)</span>的数量比最终情形的数量多一个。优化路径族通过给定额外的方程式，例如<span class="math inline">\(u=v\)</span>或者<span class="math inline">\(v = \pi/2\)</span>。确保等式(3)中的每个情形只有3个自由参数。</p>
 <h4 id="紧凑表示">紧凑表示</h4>
-<p>为了以紧凑的表示，避免<span class="math inline">\(\pm\)</span>，可以写出充分路径的列表如下： <span class="math display">\[
+<p>为了以紧凑的表示，避免<span class="math inline">\(\pm\)</span>，可以写出充分路径的列表如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 CCC \gets \{&amp;C\mid C\mid C &amp;C\mid CC  &amp;CC\mid C &amp;CC_u\mid C_uC &amp;C\mid C_uC_u\mid C&amp;\}\\
 CSC \gets \{&amp;CSC &amp;C\mid C_{\pi/2}SC &amp;CSC_{\pi/2}\mid C &amp;C\mid C_{\pi/2}SC_{\pi/2}\mid C&amp;&amp;\}\\
 \end{array}\tag{4}
-\]</span> 其中，<span class="math inline">\(|\)</span>表示方向反转。当等式(3)和(4)中的<span class="math inline">\(C\)</span>被替换为<span class="math inline">\(C = L\)</span>或<span class="math inline">\(C=R\)</span>，共有48种字段，以<span class="math inline">\(L^\pm,R^\pm,S^\pm\)</span>的形式表示。这48个字段中的一些对于字段类型的实际路径存在两种公式。对于给定的任意情形，至多68个公式。</p>
+\]</span></p>
+<p>其中，<span class="math inline">\(|\)</span>表示方向反转。当等式(3)和(4)中的<span class="math inline">\(C\)</span>被替换为<span class="math inline">\(C = L\)</span>或<span class="math inline">\(C=R\)</span>，共有48种字段，以<span class="math inline">\(L^\pm,R^\pm,S^\pm\)</span>的形式表示。这48个字段中的一些对于字段类型的实际路径存在两种公式。对于给定的任意情形，至多68个公式。</p>
 <p>任何长度小于<span class="math inline">\(\pi/8\)</span>的最佳路径一定是<span class="math inline">\(CSC\)</span>形式。很容易得出结论，任何最佳路径一定是由<span class="math inline">\(C\)</span>和<span class="math inline">\(S\)</span>的字段组成。使用一系列的特殊参数，可将所有有限的字段简化为<span class="math inline">\(CCC\)</span>或<span class="math inline">\(CSC\)</span>的形式。</p>
 <h4 id="充分集合">充分集合</h4>
 <p>下表列出了充分集合中的48个字段，以及相应的缩写形式<span class="math inline">\(C \mid C\)</span>和<span class="math inline">\(C^\pm\)</span>，最后一列给出了给定字段的长度公式。</p>
@@ -492,14 +497,17 @@ CSC \gets \{&amp;CSC &amp;C\mid C_{\pi/2}SC &amp;CSC_{\pi/2}\mid C &amp;C\mid C_
 </tbody>
 </table>
 <h2 id="允许路径">允许路径</h2>
-<p>根据车辆运动学模型的微分方程如下： <span class="math display">\[
+<p>根据车辆运动学模型的微分方程如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \dot{x}(t) &amp;= V(t)\cos\bigl(\psi(t)\bigr) \quad\\
 \dot{y}(t) &amp;= V(t)\sin\bigl(\psi(t)\bigr) \quad\\
 \dot{\psi}(t) &amp;= \dfrac{V(t)}{R(t)}
 \end{array}\tag{5}
-\]</span> 为了更好的表示路径，对车辆行驶路径进行归一化处理，简化路径的表示方法。即限制<span class="math inline">\(V(t)= \pm1\)</span>、<span class="math inline">\(|\dot{\psi}(t)| =1\)</span>，所以车辆只能在自身方向<span class="math inline">\(\psi(t)\)</span>上以速度<span class="math inline">\(|V(t)=1|\)</span>前进或后退，并且变化率<span class="math inline">\(\dot{\psi}(t)\leq1\)</span><strong>rad/s</strong>。对于车辆的转弯半径可以通过缩放变换到1，即车辆绕单位圆行驶。这样表示的好处在于车辆行驶的弧长与变化的角度一致。如果直线行驶，则<span class="math inline">\(\dot{\psi}(t) = 0\)</span>，令<span class="math inline">\(\dot{\psi}\)</span></p>
-<p>其积分形式如下： <span class="math display">\[
+\]</span></p>
+<p>为了更好的表示路径，对车辆行驶路径进行归一化处理，简化路径的表示方法。即限制<span class="math inline">\(V(t)= \pm1\)</span>、<span class="math inline">\(|\dot{\psi}(t)| =1\)</span>，所以车辆只能在自身方向<span class="math inline">\(\psi(t)\)</span>上以速度<span class="math inline">\(|V(t)=1|\)</span>前进或后退，并且变化率<span class="math inline">\(\dot{\psi}(t)\leq1\)</span><strong>rad/s</strong>。对于车辆的转弯半径可以通过缩放变换到1，即车辆绕单位圆行驶。这样表示的好处在于车辆行驶的弧长与变化的角度一致。如果直线行驶，则<span class="math inline">\(\dot{\psi}(t) = 0\)</span>，令<span class="math inline">\(\dot{\psi}\)</span></p>
+<p>其积分形式如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x(t) &amp;= x(0) + \int^t_0V(\tau)\cos\bigl(\psi(\tau)\bigr)d\tau\\
 y(t) &amp;= y(0) + \int^t_0V(\tau)\sin\bigl(\psi(\tau)\bigr)d\tau\\
@@ -508,19 +516,24 @@ y(t) &amp;= y(0) + \int^t_0V(\tau)\sin\bigl(\psi(\tau)\bigr)d\tau\\
 \]</span></p>
 <p>一个允许的路径或者曲线可以表示成函数<span class="math inline">\(\gamma(t) = \bigl(x(t),y(t),\psi(t)\bigr)\)</span>的形式。对于任意曲线从<span class="math inline">\(t_0\)</span>到<span class="math inline">\(t_1\)</span>，其中<span class="math inline">\(t_0 &lt; t_1\)</span>，<span class="math inline">\(\gamma(t_0) = a\)</span>，<span class="math inline">\(\gamma(t_1)=b\)</span>，则路径的长度为<span class="math inline">\(L(\gamma)= t_1 - t_0\)</span>。所以关于最短路径的问题，就转换为求取对于任意a和b<span class="math inline">\(\in \Re^3\)</span>,使得<span class="math inline">\(L(\gamma)\)</span>最小的<span class="math inline">\(\gamma\)</span>。</p>
 <h3 id="可行路径">可行路径</h3>
-<p>对于时间<span class="math inline">\(t \in \Re\)</span>，使用 <span class="math display">\[
+<p>对于时间<span class="math inline">\(t \in \Re\)</span>，使用</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 L_t:\Re^3 \to \Re^3\\
 R_t: \Re^3 \to \Re^3\\
 S_t: \Re^3 \to \Re^3
 \end{array}\tag{7}
-\]</span> 表示单位圆<span class="math inline">\(L_t\)</span>或<span class="math inline">\(R_t\)</span>和线段<span class="math inline">\(S_t\)</span>的位置和方向信息，起始坐标表示为<span class="math inline">\((x,y,\psi)\)</span>，所以经过时间<span class="math inline">\(t\)</span>，根据等式(6)积分得： <span class="math display">\[
+\]</span></p>
+<p>表示单位圆<span class="math inline">\(L_t\)</span>或<span class="math inline">\(R_t\)</span>和线段<span class="math inline">\(S_t\)</span>的位置和方向信息，起始坐标表示为<span class="math inline">\((x,y,\psi)\)</span>，所以经过时间<span class="math inline">\(t\)</span>，根据等式(6)积分得：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x(t) &amp;= x + \sin(\tau)|^{\psi+t}_{\psi}\\
 y(t) &amp;= y - \cos(\tau)|^{\psi+t}_{\psi}\\
 \psi(t) &amp;= t
 \end{array}
-\]</span> 对应的路径如下： <span class="math display">\[
+\]</span></p>
+<p>对应的路径如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 L_t^+(x,y,\psi) &amp;= \bigl(x + \sin(\psi+t)- \sin(\psi),y - \cos(\psi+t)+\cos(\psi),\psi + t\bigr)\\
 R_t^+(x,y,\psi) &amp;= \bigl(x - \sin(\psi-t)+ \sin(\psi),y + \cos(\psi-t)-\cos(\psi),\psi - t\bigr)\\
@@ -537,7 +550,8 @@ S_t^-(x,y,\psi) &amp;= (x-t\cos(\psi),y - t\sin(\psi),\psi)
 <ul>
 <li>举例</li>
 </ul>
-<p>假设一个曲线<span class="math inline">\(L^+_tR^-_uS^-_vL^-_w\)</span>，起始于点<span class="math inline">\((0,0,0)\)</span>，一定终止于 <span class="math display">\[
+<p>假设一个曲线<span class="math inline">\(L^+_tR^-_uS^-_vL^-_w\)</span>，起始于点<span class="math inline">\((0,0,0)\)</span>，一定终止于</p>
+<p><span class="math display">\[
 \bigl(X(t,u,v,w),Y(t,u,v,w),\Psi(t,u,v,w)\bigr)= R_w(S_v(R_u(L_t(0,0,0))))
 \]</span></p>
 <p>其长度为<span class="math inline">\(L(t,u,v,w) = |t|+ |u| + |v| + |w|\)</span>。</p>
@@ -569,7 +583,8 @@ S_t^-(x,y,\psi) &amp;= (x-t\cos(\psi),y - t\sin(\psi),\psi)
 <ul>
 <li>平移</li>
 </ul>
-<p>首先将向量<span class="math inline">\(\vec{q_iq_g}\)</span>平移到远点<span class="math inline">\((0,0)\)</span>，平移向量为<span class="math inline">\((-x_1,-y_1)\)</span>。则<span class="math inline">\(q_i\)</span>平移到<span class="math inline">\((0,0)\)</span>，<span class="math inline">\(q_g\)</span>平移到<span class="math inline">\((x_2-x_1,y_2-y_1)\)</span>，最终得到的平移向量： <span class="math display">\[
+<p>首先将向量<span class="math inline">\(\vec{q_iq_g}\)</span>平移到远点<span class="math inline">\((0,0)\)</span>，平移向量为<span class="math inline">\((-x_1,-y_1)\)</span>。则<span class="math inline">\(q_i\)</span>平移到<span class="math inline">\((0,0)\)</span>，<span class="math inline">\(q_g\)</span>平移到<span class="math inline">\((x_2-x_1,y_2-y_1)\)</span>，最终得到的平移向量：</p>
+<p><span class="math display">\[
 \vec{q_iq_g}=
 \left[
 \begin{array}{cl}
@@ -586,14 +601,17 @@ y
 <ul>
 <li>旋转</li>
 </ul>
-<p>应用旋转矩阵，将车辆的起始点朝向转到x轴正向，对应得旋转角度为<span class="math inline">\(\psi_1\)</span>，旋转矩阵如下： <span class="math display">\[
+<p>应用旋转矩阵，将车辆的起始点朝向转到x轴正向，对应得旋转角度为<span class="math inline">\(\psi_1\)</span>，旋转矩阵如下：</p>
+<p><span class="math display">\[
 \left[
 \begin{array}{cl}
 \cos(\psi_1) &amp;\sin(\psi_1)\\
 -\sin(\psi_1) &amp;\cos(\psi_1)
 \end{array}
 \right]\tag{10}
-\]</span> 则向量<span class="math inline">\(\vec{q_iq_g}\)</span>旋转后得 <span class="math display">\[
+\]</span></p>
+<p>则向量<span class="math inline">\(\vec{q_iq_g}\)</span>旋转后得</p>
+<p><span class="math display">\[
 \vec{q_iq_g}=
 \left[
 \begin{array}{cl}
@@ -620,11 +638,13 @@ x\cos(\psi_1) + y\sin(\psi_1)\\
 \end{array}
 \right]
 \tag{11}
-\]</span> 通过上述旋转后，目标位置朝向为<span class="math inline">\(\psi = \psi_2 - \psi_1\)</span>。</p>
+\]</span></p>
+<p>通过上述旋转后，目标位置朝向为<span class="math inline">\(\psi = \psi_2 - \psi_1\)</span>。</p>
 <ul>
 <li>缩放</li>
 </ul>
-<p>对于车辆的转弯半径<span class="math inline">\(\rho\)</span>，将车辆转向半径缩放到1，得到最终的车辆其实姿态为: <span class="math display">\[
+<p>对于车辆的转弯半径<span class="math inline">\(\rho\)</span>，将车辆转向半径缩放到1，得到最终的车辆其实姿态为:</p>
+<p><span class="math display">\[
 q_i=
 \left[
 \begin{array}{cl}
@@ -633,7 +653,9 @@ q_i=
 0
 \end{array}
 \right]\tag{12}
-\]</span> 目标姿态为： <span class="math display">\[
+\]</span></p>
+<p>目标姿态为：</p>
+<p><span class="math display">\[
 q_g=
 \left[
 \begin{array}{cl}
@@ -649,11 +671,14 @@ q_g=
 <p>时间变换通过交换字母上标符号<span class="math inline">\(+\)</span>和<span class="math inline">\(-\)</span>，即车取反辆的行进方向。也就是说，<span class="math inline">\(L^-R^+S^+L^+\)</span>表达式可以通过<span class="math inline">\(L^+R^-S^-L^-\)</span>表达式通过时间变换获得。其中<span class="math inline">\(+\)</span>和<span class="math inline">\(-\)</span>交换。如果原始路径从<span class="math inline">\((0,0,0)\)</span>到<span class="math inline">\((x,y,\psi)\)</span>，显而易见时间变换的路径将从<span class="math inline">\((0,0,0)\)</span>到<span class="math inline">\((-x,y,-\psi)\)</span>。因此，如果一个路径表达式<span class="math inline">\(L^+_tR^-_{-\pi/2}S^-_uL^-_v\)</span>从点<span class="math inline">\((0,0,0)\)</span>到<span class="math inline">\((-x,y,-\psi)\)</span>，查找的合适弧长为t、u、v。这就等效于路径表达式<span class="math inline">\(L^-_tR^+_{\pi/2}S^+_uL^+_v\)</span>从点<span class="math inline">\((0,0,0)\)</span>到<span class="math inline">\((x,y,\psi)\)</span>查找相应的弧长。所以，通过时间变换将上述列表中第一个字母符号为"<span class="math inline">\(-\)</span>"的字段消除。</p>
 <h3 id="反射变换reflect">反射变换(reflect)</h3>
 <p>反射变换通过交换字母<span class="math inline">\(L\)</span>和<span class="math inline">\(R\)</span>，即取反车辆转向。也就是说，一个路径表达式<span class="math inline">\(R^+L^-S^-R^-\)</span>的解可以通过反射变换从路径表达式<span class="math inline">\(L^+R^-S^-L^-\)</span>的解中获得，即沿着该路径交换<span class="math inline">\(L\)</span>和<span class="math inline">\(R\)</span>。相应的参考路径由<span class="math inline">\((x,y,\psi)\)</span>变为<span class="math inline">\((x,-y,-\psi)\)</span>。</p>
-<p>假设已知路径<span class="math inline">\(L^+_tR^-_{-\pi/2}S^-_uL^-_v\)</span>解的表达式，从点<span class="math inline">\((0,0,0) \to (x,-y,-\psi)\)</span>的最优弧长为t、u、v。 <span class="math display">\[
+<p>假设已知路径<span class="math inline">\(L^+_tR^-_{-\pi/2}S^-_uL^-_v\)</span>解的表达式，从点<span class="math inline">\((0,0,0) \to (x,-y,-\psi)\)</span>的最优弧长为t、u、v。</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 &amp;L^+_tR^-_{-\pi/2}S^-_uL^-_v :(0,0,0) \to (x,-y,-\psi)\\
 \end{array}
-\]</span> 则从点<span class="math inline">\((0,0,0) \to (x,y,\psi)\)</span>的最优弧长为t、u、v，对应路径<span class="math inline">\(R^+_tL^-_{-\pi/2}S^-_uR^-_v\)</span>的解， <span class="math display">\[
+\]</span></p>
+<p>则从点<span class="math inline">\((0,0,0) \to (x,y,\psi)\)</span>的最优弧长为t、u、v，对应路径<span class="math inline">\(R^+_tL^-_{-\pi/2}S^-_uR^-_v\)</span>的解，</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 &amp;R^+_tL^-_{-\pi/2}S^-_uR^-_v :(0,0,0) \to (x,y,\psi)\\
 \end{array}
@@ -669,7 +694,8 @@ q_g=
 <ul>
 <li>极坐标</li>
 </ul>
-<p>由笛卡尔坐标系<span class="math inline">\((x,y)\)</span>与极坐标系的转化可以写为<span class="math inline">\((r,\theta) = R(x,y)\)</span>，展开如下： <span class="math display">\[
+<p>由笛卡尔坐标系<span class="math inline">\((x,y)\)</span>与极坐标系的转化可以写为<span class="math inline">\((r,\theta) = R(x,y)\)</span>，展开如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x = r \cdot\cos(\theta)\\
 y = r \cdot\sin(\theta)
@@ -678,7 +704,8 @@ y = r \cdot\sin(\theta)
 r &amp;= \sqrt{x^2 + y^2}\\
 \theta &amp;= \arctan(\dfrac{y}{x})
 \end{array}
-\]</span> 其中，<span class="math inline">\(r \geq 0\)</span>，<span class="math inline">\(-\pi \leq \theta &lt; \pi\)</span>。</p>
+\]</span></p>
+<p>其中，<span class="math inline">\(r \geq 0\)</span>，<span class="math inline">\(-\pi \leq \theta &lt; \pi\)</span>。</p>
 <ul>
 <li>偏航角标准化</li>
 </ul>
@@ -688,13 +715,15 @@ r &amp;= \sqrt{x^2 + y^2}\\
 <li>推导</li>
 </ul>
 <p>第一个公式详细推导计算过程，后面的公式由于原理相同，就不详细推导，直接给出结论。</p>
-<p>推导过程，主要结合等式(8)种的结论: <span class="math display">\[
+<p>推导过程，主要结合等式(8)种的结论:</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 L_t^+(x,y,\psi) &amp;= \bigl(x + \sin(\psi+t)- \sin(\psi),y - \cos(\psi+t)+\cos(\psi),\psi + t\bigr)\\
 R_t^+(x,y,\psi) &amp;= \bigl(x - \sin(\psi-t)+ \sin(\psi),y + \cos(\psi-t)-\cos(\psi),\psi - t\bigr)\\
 S_t^+(x,y,\psi) &amp;= (x+t\cos(\psi),y + t\sin(\psi),\psi)
 \end{array}
-\]</span> 起始坐标<span class="math inline">\((0,0,0)\)</span>，目标坐标<span class="math inline">\((x,y,\psi)\)</span></p>
+\]</span></p>
+<p>起始坐标<span class="math inline">\((0,0,0)\)</span>，目标坐标<span class="math inline">\((x,y,\psi)\)</span></p>
 <table>
 <thead>
 <tr class="header">
@@ -737,36 +766,47 @@ S_t^+(x,y,\psi) &amp;= (x+t\cos(\psi),y + t\sin(\psi),\psi)
 </tr>
 </tbody>
 </table>
-<p>从上述表格可知 <span class="math display">\[
+<p>从上述表格可知</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x &amp;=   u\cos{t} + \sin{(t+v)} \\
 y &amp;=   1 + u\sin{t} - \cos{(t + v)} \\
 \psi &amp;=   t + v 
 \end{array}
-\]</span> 将$= t + v $带入得 <span class="math display">\[
+\]</span></p>
+<p>将$= t + v $带入得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x &amp;=   u\cos{t} + \sin{\psi} \\
 y &amp;=   1 + u\sin{t} - \cos{\psi}
 \end{array}
-\]</span> 移项得 <span class="math display">\[
+\]</span></p>
+<p>移项得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 u\cos{t} &amp;=  x  - \sin{\psi} \\
 u\sin{t} &amp;=  y  + \cos{\psi}- 1
 \end{array}
-\]</span> 使用极坐标表示得 <span class="math display">\[
+\]</span></p>
+<p>使用极坐标表示得</p>
+<p><span class="math display">\[
 (u,t) = R(x  - \sin{\psi},y  + \cos{\psi}- 1)
-\]</span> 则 <span class="math display">\[
+\]</span></p>
+<p>则</p>
+<p><span class="math display">\[
 v = M(\psi - t)
 \]</span></p>
 <ul>
 <li>结论</li>
 </ul>
-<p>已知起始坐标<span class="math inline">\((0,0,0)\)</span>和目标坐标<span class="math inline">\((x,y,\psi)\)</span>，则<span class="math inline">\(L^+_tS^+_uL^+_v\)</span>的最优解为 <span class="math display">\[
+<p>已知起始坐标<span class="math inline">\((0,0,0)\)</span>和目标坐标<span class="math inline">\((x,y,\psi)\)</span>，则<span class="math inline">\(L^+_tS^+_uL^+_v\)</span>的最优解为</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 (u,t) &amp;= R(x  - \sin{\psi},y  + \cos{\psi}- 1)\\
 v &amp;= M(\psi - t)
 \end{array}
-\]</span> 总长度为<span class="math inline">\(L = |t| + |u| + |v|\)</span>。</p>
+\]</span></p>
+<p>总长度为<span class="math inline">\(L = |t| + |u| + |v|\)</span>。</p>
 <h3 id="公式-l_ts_ur_v">公式 <span class="math inline">\(L^+_tS^+_uR^+_v\)</span></h3>
 <p>下表描述了计算过程：</p>
 <table style="width:100%;">
@@ -817,26 +857,34 @@ v &amp;= M(\psi - t)
 </tr>
 </tbody>
 </table>
-<p>整理得 <span class="math display">\[
+<p>整理得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x &amp;= u\cos{t} - \sin{(t-v)}+2\sin{t}   \\
 y &amp;= u\sin{t} + \cos{(t - v)}-2\cos{t} +1 \\
 \psi &amp;=    t - v 
 \end{array}
-\]</span> 将<span class="math inline">\(\psi = t -v\)</span>带入得 <span class="math display">\[
+\]</span></p>
+<p>将<span class="math inline">\(\psi = t -v\)</span>带入得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x &amp;= u\cos{t} - \sin{\psi}+2\sin{t}   \\
 y &amp;= u\sin{t} + \cos{\psi}-2\cos{t} +1
 \end{array}
-\]</span> 移项得 <span class="math display">\[
+\]</span></p>
+<p>移项得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 u\cos{t} &amp;= x + \sin{\psi} - 2\sin{t}   \\
 u\sin{t} &amp;= y - \cos{\psi} + 2\cos{t} -1
 \end{array}
-\]</span> 令$ P_1(u_1,t_1) = R(x + ,y - ) <span class="math inline">\(，\)</span>P_2(2,t-)=R(2,-2)<span class="math inline">\(，\)</span>P(u,t)=R(u,u)$。</p>
-<p>由等式得 <span class="math display">\[
+\]</span></p>
+<p>令$ P_1(u_1,t_1) = R(x + ,y - ) <span class="math inline">\(，\)</span>P_2(2,t-)=R(2,-2)<span class="math inline">\(，\)</span>P(u,t)=R(u,u)$。</p>
+<p>由等式得</p>
+<p><span class="math display">\[
 P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
-\]</span> 由上式可知，极向量<span class="math inline">\(P\)</span>与<span class="math inline">\(P_2\)</span>必须垂直，由于向量<span class="math inline">\(P_2\)</span>的长度为2，为了满足上述关系，向量<span class="math inline">\(P_1\)</span>的长度不能小于2，否则无解。</p>
+\]</span></p>
+<p>由上式可知，极向量<span class="math inline">\(P\)</span>与<span class="math inline">\(P_2\)</span>必须垂直，由于向量<span class="math inline">\(P_2\)</span>的长度为2，为了满足上述关系，向量<span class="math inline">\(P_1\)</span>的长度不能小于2，否则无解。</p>
 <ul>
 <li>如果<span class="math inline">\(u_1^2 &lt; 4\)</span></li>
 </ul>

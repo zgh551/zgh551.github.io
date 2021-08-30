@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/erFAJgdV85LWOvI.jpg">
 <meta property="article:published_time" content="2020-02-20T03:23:45.000Z">
-<meta property="article:modified_time" content="2021-08-30T02:39:42.880Z">
+<meta property="article:modified_time" content="2021-08-30T08:14:45.150Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="LQR">
 <meta property="article:tag" content="Linear quadratic regulator">
@@ -265,7 +265,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 10:39:42" itemprop="dateModified" datetime="2021-08-30T10:39:42+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 16:14:45" itemprop="dateModified" datetime="2021-08-30T16:14:45+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -295,14 +295,19 @@
 <p>本文介绍离散时间有限范围内的<strong>LQR(Linear Quadratic Regulator)</strong>算法求解过程. <img src="https://i.loli.net/2021/08/30/erFAJgdV85LWOvI.jpg" alt="蝴蝶花" /></p>
 <span id="more"></span>
 <h2 id="lqr问题背景">LQR问题背景</h2>
-<p>对于一个离散时间系统： <span class="math display">\[
+<p>对于一个离散时间系统：</p>
+<p><span class="math display">\[
 x_{t+1}=Ax_t + Bu_t,x_0=x_{init}\tag{1}
-\]</span> 其中，<span class="math inline">\(A\in R^{n\times n}\)</span>，<span class="math inline">\(B\in R^{n\times m}\)</span></p>
+\]</span></p>
+<p>其中，<span class="math inline">\(A\in R^{n\times n}\)</span>，<span class="math inline">\(B\in R^{n\times m}\)</span></p>
 <p>关于最优问题，就在于如何选择合适的<span class="math inline">\(u_0,u_1,...\)</span>，使得状态量<span class="math inline">\(x_0,x_1,...\)</span>足够小，因此得到好的调节和控制；或者使得<span class="math inline">\(u_0,u_1,...\)</span>足够小，以使用更少的能量。这两个量通常相互制约，如果采用更大的输入<span class="math inline">\(u\)</span>，就会驱使状态量<span class="math inline">\(x\)</span>更快达到0。采用线性二次调节原理可以解决这个问题。</p>
 <h2 id="lqr代价函数">LQR代价函数</h2>
-<p>为了表示控制系统达到稳定控制所付出的代价，定义如下二次型代价函数： <span class="math display">\[
+<p>为了表示控制系统达到稳定控制所付出的代价，定义如下二次型代价函数：</p>
+<p><span class="math display">\[
 J(U)=\sum^{N-1}_{\tau=0}(x^{T}_{\tau}Qx_{\tau} + u^{T}_{\tau}Ru_{\tau})+ x^{T}_{N}Q_{f}x_{N}\tag{2}
-\]</span> 其中函数参数<span class="math inline">\(U = (u_0,u_1,..,u_N)\)</span>，并且矩阵<span class="math inline">\(Q,Q_f,R\)</span>为正定矩阵，及 <span class="math display">\[
+\]</span></p>
+<p>其中函数参数<span class="math inline">\(U = (u_0,u_1,..,u_N)\)</span>，并且矩阵<span class="math inline">\(Q,Q_f,R\)</span>为正定矩阵，及</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 Q=Q^{T}\geq0,&amp;Q_f=Q_{f}^{T}\geq0,&amp;R=R^{T}&gt;0
 \end{array}
@@ -335,21 +340,26 @@ Q=Q^{T}\geq0,&amp;Q_f=Q_{f}^{T}\geq0,&amp;R=R^{T}&gt;0
 <h2 id="求解lqr方法">求解LQR方法</h2>
 <p>本文主要介绍两种求解LQR的方法，分别为最小二乘法和动态规划算法。</p>
 <h3 id="最小二乘法">最小二乘法</h3>
-<p>根据公式(1)可知，<span class="math inline">\(x_0\)</span>是<span class="math inline">\(X = (x_0,...,x_N)\)</span>的线性函数，并且<span class="math inline">\(U = (u_0,...,u_{N-1})\)</span>，可以得出如下关系： <span class="math display">\[
+<p>根据公式(1)可知，<span class="math inline">\(x_0\)</span>是<span class="math inline">\(X = (x_0,...,x_N)\)</span>的线性函数，并且<span class="math inline">\(U = (u_0,...,u_{N-1})\)</span>，可以得出如下关系：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x_1 &amp;= Ax_0 + Bu_0\\
 x_2 &amp;= Ax_1 + Bu_1\\
 \vdots\\
 x_n &amp;= Ax_{N-1} + Bu_{N-1}
 \end{array}\tag{3}
-\]</span> 将上述公式(3)逐个带入得 <span class="math display">\[
+\]</span></p>
+<p>将上述公式(3)逐个带入得</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 x_1 &amp;= Ax_0 + Bu_0\\
 x_2 &amp;= A^{2}x_0 + ABu_0 + Bu_1\\
 \vdots\\
 x_n &amp;= A^{N}x_0 + A^{N-1}Bu_0 + A^{N-2}Bu_1 + \dots+ Bu_{N-1}
 \end{array} \tag{4}
-\]</span> 整理得 <span class="math display">\[
+\]</span></p>
+<p>整理得</p>
+<p><span class="math display">\[
 \left[\begin{array}{cl}
 x_0\\
 x_1\\
@@ -379,7 +389,9 @@ A\\
 A^{N}
 \end{array}
 \right]x_0 \tag{5}
-\]</span> 其中 <span class="math display">\[
+\]</span></p>
+<p>其中</p>
+<p><span class="math display">\[
 G=\left[ \begin{array}{cl}
 0 &amp; \dots \\
 B &amp; 0 &amp; \dots \\
@@ -395,29 +407,39 @@ A^{N}
 \end{array}
 \right]
 \]</span></p>
-<p>等式(5)可以进一步表示为 <span class="math display">\[
+<p>等式(5)可以进一步表示为</p>
+<p><span class="math display">\[
 X= GU + Hx_0 \tag{6}
-\]</span> 其中，<span class="math inline">\(G\in R^{Nn\times Nm}\)</span>，<span class="math inline">\(H\in R^{Nn\times n}\)</span>。</p>
-<p>从而等式(2)所表示得代价函数可以表示为 <span class="math display">\[
+\]</span></p>
+<p>其中，<span class="math inline">\(G\in R^{Nn\times Nm}\)</span>，<span class="math inline">\(H\in R^{Nn\times n}\)</span>。</p>
+<p>从而等式(2)所表示得代价函数可以表示为</p>
+<p><span class="math display">\[
 J(U)=\parallel diag(Q^{1/2},\dots,Q^{1/2},Q^{1/2}_{f})(GU+Hx_0)\parallel^2+
 \parallel diag(R^{1/2},\dots,R^{1/2})U\parallel^2 \tag{7}
-\]</span> 这就转化成一个求解最小二乘法的问题，其问题大小为<span class="math inline">\(N(n + m)\times Nm\)</span>。</p>
+\]</span></p>
+<p>这就转化成一个求解最小二乘法的问题，其问题大小为<span class="math inline">\(N(n + m)\times Nm\)</span>。</p>
 <h3 id="动态规划法dynamic-programming">动态规划法(Dynamic Programming)</h3>
 <p>动态规划算法是解决多阶段决策过程最优化的一种有效的数学方法。</p>
 <h4 id="值函数">值函数</h4>
-<p>首先定义一个值函数<span class="math inline">\(V_t:R^n \to R\)</span>,其中<span class="math inline">\(t=(0,\dots,N)\)</span>： <span class="math display">\[
+<p>首先定义一个值函数<span class="math inline">\(V_t:R^n \to R\)</span>,其中<span class="math inline">\(t=(0,\dots,N)\)</span>：</p>
+<p><span class="math display">\[
 V_t(z)=\min_{u_t,\dots,u_{N-1}}\Bigl(\sum_{\tau=t}^{N-1}(x^T_\tau Qx_\tau + u^t_\tau Ru_\tau) + x_N^TQ_fx_N\Bigr) \tag{8}
-\]</span> 如果设置<span class="math inline">\(x_t = z\)</span>，根据公式(1)的关系，<span class="math inline">\(x_{\tau+1} = Ax_{\tau} + Bu_{\tau}\)</span>,并且<span class="math inline">\(\tau=t,\dots,N\)</span>。</p>
+\]</span></p>
+<p>如果设置<span class="math inline">\(x_t = z\)</span>，根据公式(1)的关系，<span class="math inline">\(x_{\tau+1} = Ax_{\tau} + Bu_{\tau}\)</span>,并且<span class="math inline">\(\tau=t,\dots,N\)</span>。</p>
 <ul>
 <li><span class="math inline">\(V_t(z)\)</span>可以表示在<span class="math inline">\(t\)</span>时刻，从状态<span class="math inline">\(z\)</span>开始的LQR最小代价值</li>
 <li><span class="math inline">\(V_0(x_0)\)</span>表示在0时刻，从状态<span class="math inline">\(x_0\)</span>开始的LQR最小代价值</li>
 </ul>
-<p><span class="math inline">\(V_t\)</span>可以表示为二次型的形式，即<span class="math inline">\(V_T(z)=z^TP_tz\)</span>, 其中<span class="math inline">\(P_t=P_t^T \geq 0\)</span>。当<span class="math inline">\(t=N\)</span>时，代价值函数为： <span class="math display">\[
+<p><span class="math inline">\(V_t\)</span>可以表示为二次型的形式，即<span class="math inline">\(V_T(z)=z^TP_tz\)</span>, 其中<span class="math inline">\(P_t=P_t^T \geq 0\)</span>。当<span class="math inline">\(t=N\)</span>时，代价值函数为：</p>
+<p><span class="math display">\[
 V_N(z) = z^TQ_f z \tag{9}
-\]</span> 因此<span class="math inline">\(P_N = Q_f\)</span>。</p>
-<p>根据动态规划原理，等式(8)可以写成如下递归关系式： <span class="math display">\[
+\]</span></p>
+<p>因此<span class="math inline">\(P_N = Q_f\)</span>。</p>
+<p>根据动态规划原理，等式(8)可以写成如下递归关系式：</p>
+<p><span class="math display">\[
 V_t(z)=\min_w\bigl(z^TQz + w^TRw + V_{t+1}(Az+Bw)\bigr)\tag{10}
-\]</span> 其中，</p>
+\]</span></p>
+<p>其中，</p>
 <ul>
 <li><span class="math inline">\(z^TQz + w^TRw\)</span>：如果<span class="math inline">\(u_t = w\)</span>,则代表<span class="math inline">\(t\)</span>时刻产生的代价值；</li>
 <li><span class="math inline">\(V_{t+1}(Az+Bw)\)</span>：代表从<span class="math inline">\(t+1\)</span>时刻开始，引起的最小代价值；</li>
@@ -427,7 +449,8 @@ V_t(z)=\min_w\bigl(z^TQz + w^TRw + V_{t+1}(Az+Bw)\bigr)\tag{10}
 V_t(z)=z^TQz + \min_w\bigl(w^TRw + V_{t+1}(Az+Bw)\bigr)\tag{11}
 \]</span></p>
 <p>等式(11)描述了<span class="math inline">\(V_t(z)\)</span>与<span class="math inline">\(V_{t+1}(z)\)</span>之间的递归关系。</p>
-<p>最优控制率<span class="math inline">\(u_t\)</span>可以表示为 <span class="math display">\[
+<p>最优控制率<span class="math inline">\(u_t\)</span>可以表示为</p>
+<p><span class="math display">\[
 u_t^{lqr}=arg\min_w\bigl(w^TRw + V_{t+1}(Az+Bw)\bigr)
 \]</span></p>
 <h4 id="求极值">求极值</h4>
@@ -474,8 +497,10 @@ V_t(z)
 &amp;= &amp;z^T(Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A)z\\
 &amp;= &amp;z^TP_tz
 \end{array}\tag{17}
-\]</span> 上述公式化简过程中，由于<span class="math inline">\(P_{t+1}=P^{T}_{t+1},R=R^T\)</span>，所以<span class="math inline">\(\bigl((R+B^TP_{t+1}B)^{-1}\bigr)^T = (R + B^TP_{t+1}B)^{-1}\)</span>。</p>
-<p>由等式(17)可知 <span class="math display">\[
+\]</span></p>
+<p>上述公式化简过程中，由于<span class="math inline">\(P_{t+1}=P^{T}_{t+1},R=R^T\)</span>，所以<span class="math inline">\(\bigl((R+B^TP_{t+1}B)^{-1}\bigr)^T = (R + B^TP_{t+1}B)^{-1}\)</span>。</p>
+<p>由等式(17)可知</p>
+<p><span class="math display">\[
 P_t = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A \tag{18}
 \]</span></p>
 <h4 id="求解过程">求解过程</h4>

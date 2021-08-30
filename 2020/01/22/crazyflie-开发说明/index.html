@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/08/30/BxSWetJvMy7R1uG.png">
 <meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE2NTYzMC5naWY">
 <meta property="article:published_time" content="2020-01-22T03:10:47.000Z">
-<meta property="article:modified_time" content="2021-08-30T06:14:13.279Z">
+<meta property="article:modified_time" content="2021-08-30T08:00:30.750Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="crazyflie">
 <meta property="article:tag" content="开发说明">
@@ -154,7 +154,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E6%BA%90%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">准备源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">3.</span> <span class="nav-text">环境搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E9%95%9C%E5%83%8F"><span class="nav-number">3.0.1.</span> <span class="nav-text">启动镜像</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker%E9%95%9C%E5%83%8F%E6%96%B9%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">Docker镜像方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85docker"><span class="nav-number">3.1.1.</span> <span class="nav-text">安装Docker</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95"><span class="nav-number">4.</span> <span class="nav-text">调试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ubuntu"><span class="nav-number">4.1.</span> <span class="nav-text">Ubuntu</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD"><span class="nav-number">5.</span> <span class="nav-text">下载</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E6%BA%90%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">准备源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">3.</span> <span class="nav-text">环境搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F"><span class="nav-number">3.1.</span> <span class="nav-text">虚拟机镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">3.1.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#virtualbox"><span class="nav-number">3.1.2.</span> <span class="nav-text">VirtualBox</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BDbitcraze%E9%95%9C%E5%83%8F"><span class="nav-number">3.1.3.</span> <span class="nav-text">下载bitcraze镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%BC%E5%85%A5%E9%95%9C%E5%83%8F"><span class="nav-number">3.1.4.</span> <span class="nav-text">导入镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E9%95%9C%E5%83%8F"><span class="nav-number">3.1.5.</span> <span class="nav-text">启动镜像</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker%E9%95%9C%E5%83%8F%E6%96%B9%E5%BC%8F"><span class="nav-number">3.2.</span> <span class="nav-text">Docker镜像方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85docker"><span class="nav-number">3.2.1.</span> <span class="nav-text">安装Docker</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BDdocker%E9%95%9C%E5%83%8F"><span class="nav-number">3.2.2.</span> <span class="nav-text">下载Docker镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9B%E5%85%A5%E4%BA%A4%E4%BA%92%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.2.3.</span> <span class="nav-text">进入交互模式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E5%B7%A5%E5%85%B7%E9%93%BE%E9%85%8D%E7%BD%AE"><span class="nav-number">3.3.</span> <span class="nav-text">本地工具链配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">4.</span> <span class="nav-text">编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95"><span class="nav-number">5.</span> <span class="nav-text">调试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ubuntu"><span class="nav-number">5.1.</span> <span class="nav-text">Ubuntu</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="nav-number">5.1.1.</span> <span class="nav-text">安装依赖</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD"><span class="nav-number">6.</span> <span class="nav-text">下载</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -267,7 +267,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 14:14:13" itemprop="dateModified" datetime="2021-08-30T14:14:13+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 16:00:30" itemprop="dateModified" datetime="2021-08-30T16:00:30+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -302,7 +302,23 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> crazyflie-firmware</span><br><span class="line">git submodule init</span><br><span class="line">git submodule update</span><br></pre></td></tr></table></figure>
 <p>具体更新哪些子项目模块可以查看<code>.gitmodules</code>文件。 &gt; 注意： &gt; - 问题：如果编译时出现如下错误：<code>make[1]: *** No rule to make target 'libdw1000.o', needed by 'cf2.elf'.  Stop. &gt; Makefile:350: recipe for target 'build' failed</code> &gt; - 解决办法：上述错误原因是因为缺少<code>libdw1000</code>文件，输入<code>git submodule deinit</code>，并删除<code>libdw1000</code>目录里面的<code>.git</code>文件，重新拉取该项目源码。</p>
 <h2 id="环境搭建">环境搭建</h2>
-<p>官方提供三种环境搭建方式，分别使用虚拟机镜像<a target="_blank" rel="noopener" href="https://github.com/bitcraze/bitcraze-vm">Crazyflie VM</a>、Docker镜像<a target="_blank" rel="noopener" href="https://github.com/bitcraze/toolbelt">toolbelt</a>和本机安装相应的ARM工具链来搭建开发环境。 ### 虚拟机镜像 #### 概述 本文采用 VirtualBox 虚拟机软件，该软件属于自由软件，方便安装。 #### VirtualBox - 下载<a target="_blank" rel="noopener" href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a> - 安装软件 #### 下载bitcraze镜像 - <a target="_blank" rel="noopener" href="https://wiki.bitcraze.io/projects:virtualmachine:index">Bitcraze Virtual Machine Image</a> #### 导入镜像 <img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE1NTQyNC5wbmc?x-oss-process=image/format,png" alt="镜像导入过程" /></p>
+<p>官方提供三种环境搭建方式，分别使用虚拟机镜像<a target="_blank" rel="noopener" href="https://github.com/bitcraze/bitcraze-vm">Crazyflie VM</a>、Docker镜像<a target="_blank" rel="noopener" href="https://github.com/bitcraze/toolbelt">toolbelt</a>和本机安装相应的ARM工具链来搭建开发环境。</p>
+<h3 id="虚拟机镜像">虚拟机镜像</h3>
+<h4 id="概述-1">概述</h4>
+<p>本文采用 VirtualBox 虚拟机软件，该软件属于自由软件，方便安装。</p>
+<h4 id="virtualbox">VirtualBox</h4>
+<ul>
+<li>下载<a target="_blank" rel="noopener" href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a></li>
+<li>安装软件</li>
+</ul>
+<h4 id="下载bitcraze镜像">下载bitcraze镜像</h4>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://wiki.bitcraze.io/projects:virtualmachine:index">Bitcraze Virtual Machine Image</a></li>
+</ul>
+<h4 id="导入镜像">导入镜像</h4>
+<figure>
+<img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE1NTQyNC5wbmc?x-oss-process=image/format,png" alt="镜像导入过程" /><figcaption aria-hidden="true">镜像导入过程</figcaption>
+</figure>
 <h4 id="启动镜像">启动镜像</h4>
 <figure>
 <img src="https://i.loli.net/2021/08/30/BxSWetJvMy7R1uG.png" alt="启动镜像" /><figcaption aria-hidden="true">启动镜像</figcaption>
@@ -315,13 +331,23 @@
 <ol type="1">
 <li><a target="_blank" rel="noopener" href="https://docs.docker.com/docker-for-windows/install/">Docker Hub下载</a></li>
 <li>双击安装文件，一直Next。</li>
-<li>注册Docker账号 #### 下载Docker镜像</li>
+<li>注册Docker账号</li>
 </ol>
+<h4 id="下载docker镜像">下载Docker镜像</h4>
 <ul>
 <li>关于<a target="_blank" rel="noopener" href="https://hub.docker.com/r/bitcraze/builder">bitcraze/builder镜像</a></li>
 <li>打开PowerShell客户端</li>
-<li>拉取远程镜像 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull bitcraze/builder</span><br></pre></td></tr></table></figure> 下载过程如下所示，由于文件较大可能需要一段时间。 <img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE2NTYzMC5naWY" /> #### 进入交互模式</li>
-<li>查看镜像是否下载成功 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure></li>
+<li>拉取远程镜像</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull bitcraze/builder</span><br></pre></td></tr></table></figure>
+<p>下载过程如下所示，由于文件较大可能需要一段时间。</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE2NTYzMC5naWY" /></p>
+<h4 id="进入交互模式">进入交互模式</h4>
+<ul>
+<li>查看镜像是否下载成功</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure>
+<ul>
 <li>进入项目目录</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ./crazyflie-firmware</span><br></pre></td></tr></table></figure>
@@ -329,7 +355,10 @@
 <li>进入交互式环境</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --rm -it -v <span class="variable">$&#123;PWD&#125;</span>:/module bitcraze/builder bash</span><br></pre></td></tr></table></figure>
-<p>该命令用法参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/zghforever/article/details/100087437">Docker 常用命令</a> ### 本地工具链配置 待补充 ## 编译</p>
+<p>该命令用法参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/zghforever/article/details/100087437">Docker 常用命令</a></p>
+<h3 id="本地工具链配置">本地工具链配置</h3>
+<p>待补充</p>
+<h2 id="编译">编译</h2>
 <table>
 <colgroup>
 <col style="width: 50%" />
@@ -395,10 +424,13 @@
 <p><strong><em>Versions:</em></strong></p>
 <ul>
 <li>Ubuntu 18.04.2 LTS (64 bit)</li>
-<li>Eclipse 2019-03 (Eclipse IDE for C/C++ Developers) #### 安装依赖</li>
-<li>安装<strong>GDB</strong>和<strong>openocd</strong></li>
+<li>Eclipse 2019-03 (Eclipse IDE for C/C++ Developers)</li>
 </ul>
 </blockquote>
+<h4 id="安装依赖">安装依赖</h4>
+<ul>
+<li>安装<strong>GDB</strong>和<strong>openocd</strong></li>
+</ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install gdb</span><br><span class="line">sudo apt-get install openocd</span><br></pre></td></tr></table></figure>
 <ul>
 <li>安装java运行环境</li>
@@ -407,10 +439,11 @@
 <ul>
 <li>安装eclipse</li>
 </ul>
-<p><a target="_blank" rel="noopener" href="https://www.eclipse.org/downloads/download.php?file=/oomph/epp/2019-12/R/eclipse-inst-win64.exe">eclipse 下载页</a></p>
-<p>进入下载文件目录，解压文件</p>
+<p>进入<a target="_blank" rel="noopener" href="https://www.eclipse.org/downloads/download.php?file=/oomph/epp/2019-12/R/eclipse-inst-win64.exe">eclipse 下载页</a>下载文件目录，并解压文件</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf <span class="string">&quot;your-downloaded-file&quot;</span>.tar.gz</span><br></pre></td></tr></table></figure>
-<p>开始eclipse安装</p>
+<ul>
+<li>开始eclipse安装</li>
+</ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;your-unzip-folder&quot;</span>/.eclipse_inst</span><br></pre></td></tr></table></figure>
 <h2 id="下载">下载</h2>
 

@@ -38,7 +38,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/08/30/FZNv236WHmxlnqw.png">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/5FTyLDrlSiWg7tM.png">
 <meta property="article:published_time" content="2020-02-26T09:00:18.000Z">
-<meta property="article:modified_time" content="2021-08-30T06:09:02.685Z">
+<meta property="article:modified_time" content="2021-08-30T08:02:04.008Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="Rear Wheel Position Base Feedback">
 <meta property="article:tag" content="后轮位置反馈">
@@ -273,7 +273,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 14:09:02" itemprop="dateModified" datetime="2021-08-30T14:09:02+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 16:02:04" itemprop="dateModified" datetime="2021-08-30T16:02:04+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -308,10 +308,13 @@
 <h2 id="误差">误差</h2>
 <p><img src="https://i.loli.net/2021/08/30/yxLlDEZFpgoi5cj.png" alt="后轮位置跟踪示意图" style="zoom:80%;" /></p>
 <h3 id="位置误差">位置误差</h3>
-<p>关于位置误差的计算，首先搜寻参考路径与车辆后轴中心距离最近的点： <span class="math display">\[
+<p>关于位置误差的计算，首先搜寻参考路径与车辆后轴中心距离最近的点：</p>
+<p><span class="math display">\[
 s(t) = arg\min_{\gamma}\|\bigl(x_r(t),y_r(t)\bigr)-\bigl(x_{ref}(\gamma),y_{ref}(\gamma)\bigr) \| \tag{1}
-\]</span> 其中，<span class="math inline">\(\bigl(x_r(t),y_r(t)\bigr)\)</span>代表<span class="math inline">\(t\)</span>时刻车辆后轴中心位置坐标，<span class="math inline">\(\bigl(x_{ref}(\gamma),y_{ref}(\gamma)\bigr)\)</span>代表参考路径上离车辆后轴距离最近点的位置坐标，<span class="math inline">\(s(t)\)</span>代表<span class="math inline">\(t\)</span>时刻与车辆后轴中心点距离最近参考路径点的位置参数<span class="math inline">\(\gamma\)</span>。</p>
-<p>关于参考路径在<span class="math inline">\(s(t)\)</span>参数处的单位切向量为 <span class="math display">\[
+\]</span></p>
+<p>其中，<span class="math inline">\(\bigl(x_r(t),y_r(t)\bigr)\)</span>代表<span class="math inline">\(t\)</span>时刻车辆后轴中心位置坐标，<span class="math inline">\(\bigl(x_{ref}(\gamma),y_{ref}(\gamma)\bigr)\)</span>代表参考路径上离车辆后轴距离最近点的位置坐标，<span class="math inline">\(s(t)\)</span>代表<span class="math inline">\(t\)</span>时刻与车辆后轴中心点距离最近参考路径点的位置参数<span class="math inline">\(\gamma\)</span>。</p>
+<p>关于参考路径在<span class="math inline">\(s(t)\)</span>参数处的单位切向量为</p>
+<p><span class="math display">\[
 \hat{t}=
 \frac{
 \Bigl(\dfrac{\partial x_{ref}}{\partial s}\|_{s(t)},\dfrac{\partial y_{ref}}{ \partial s}\|_{s(t)}
@@ -345,19 +348,26 @@ d_x &amp; d_y
 <h3 id="参考曲线最近点">参考曲线最近点</h3>
 <p>关于参考曲线与车辆后轴中心最近点处的速度<span class="math inline">\(\dot{s}(t)\)</span>可以通过下图求得</p>
 <p><img src="https://i.loli.net/2021/08/30/YbBKN6kUmxnAuWL.png" alt="最近点" style="zoom:80%;" /></p>
-<p>如上图所示，车辆沿目标路径顺时针运动，点<span class="math inline">\(O\)</span>代表当前目标曲线点对应的旋转中心。很明显此时曲率为负值，即<span class="math inline">\(R &lt; 0\)</span>。根据矢量叉乘性质得，<span class="math inline">\(e &gt; 0\)</span>。假设以点<span class="math inline">\(O\)</span>为旋转中心的车辆后轴中心角速度<span class="math inline">\(\omega_r\)</span>和最近参考路径点处的角速度<span class="math inline">\(\omega_s\)</span>近似相等，得 <span class="math display">\[
+<p>如上图所示，车辆沿目标路径顺时针运动，点<span class="math inline">\(O\)</span>代表当前目标曲线点对应的旋转中心。很明显此时曲率为负值，即<span class="math inline">\(R &lt; 0\)</span>。根据矢量叉乘性质得，<span class="math inline">\(e &gt; 0\)</span>。假设以点<span class="math inline">\(O\)</span>为旋转中心的车辆后轴中心角速度<span class="math inline">\(\omega_r\)</span>和最近参考路径点处的角速度<span class="math inline">\(\omega_s\)</span>近似相等，得</p>
+<p><span class="math display">\[
 \omega_r = \omega_s &lt; 0\tag{6}
-\]</span> 根据车辆旋转角速度的计算等式<span class="math inline">\(\frac{V}{R}\)</span>，结合等式(6)得 <span class="math display">\[
+\]</span></p>
+<p>根据车辆旋转角速度的计算等式<span class="math inline">\(\frac{V}{R}\)</span>，结合等式(6)得</p>
+<p><span class="math display">\[
 \frac{v_{rx}}{R-e} = \frac{\dot{s}}{R} \tag{7}
-\]</span> 故<span class="math inline">\(\dot{s}\)</span>结果如下 <span class="math display">\[
+\]</span></p>
+<p>故<span class="math inline">\(\dot{s}\)</span>结果如下</p>
+<p><span class="math display">\[
 \dot{s} = \frac{R \cdot v_{rx}}{R - e}=\frac{v_{r}\cdot\cos(\psi_e)}{1-k(s)e}\tag{8}
 \]</span></p>
 <h3 id="横向误差">横向误差</h3>
-<p>车辆横向移动的速度<span class="math inline">\(\dot{e}\)</span>可以表示如下： <span class="math display">\[
+<p>车辆横向移动的速度<span class="math inline">\(\dot{e}\)</span>可以表示如下：</p>
+<p><span class="math display">\[
 \dot{e} = v_r \cdot \sin(\psi_e)\tag{9}
 \]</span></p>
 <h3 id="航向角误差">航向角误差</h3>
-<p>关于车辆航向角误差的变化率表示如下： <span class="math display">\[
+<p>关于车辆航向角误差的变化率表示如下：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \dot{\psi_e} &amp;= \dot{\psi} - \dot{\psi_{ref}} \\
 &amp;= \dot{\psi} - \dot{s}\cdot k(s)\\
@@ -365,7 +375,8 @@ d_x &amp; d_y
 \end{array}\tag{10}
 \]</span></p>
 <h3 id="综述">综述</h3>
-<p>基于上述参考曲线处的速度、横向误差变化率和航向角误差变化率，整理如下微分方程形式： <span class="math display">\[
+<p>基于上述参考曲线处的速度、横向误差变化率和航向角误差变化率，整理如下微分方程形式：</p>
+<p><span class="math display">\[
 \begin{array}{cl}
 \dot{s} &amp;= \dfrac{v_{r}\cdot\cos(\psi_e)}{1-k(s)e}\\
 \dot{e} &amp;= v_r \cdot \sin(\psi_e)\\
@@ -380,8 +391,8 @@ V(e,\psi_e) = \frac{1}{2}e^2 + \frac{1}{2k_2}\psi_e^2 \tag{12}
 \]</span></p>
 <p>其中<span class="math inline">\(k_2 &gt; 0\)</span>，为了使<span class="math inline">\((e,\psi_e)\)</span>在平衡点<span class="math inline">\((0,0)\)</span>处稳定，根据李亚普洛夫稳定判据，必须满足一下两个条件：</p>
 <ol type="1">
-<li><p><span class="math inline">\(\lim_{\rvert e,\psi_e \rvert \to \infty}V = \infty\)</span></p></li>
-<li><p><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(e \neq 0,\psi_e \neq 0)\end{array}\)</span></p></li>
+<li><span class="math inline">\(\lim_{\rvert e,\psi_e \rvert \to \infty}V = \infty\)</span></li>
+<li><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(e \neq 0,\psi_e \neq 0)\end{array}\)</span></li>
 </ol>
 <p>对于条件1，等式(12)明显成立，所以李亚普洛夫稳定判据第一条满足。</p>
 <p>对于<span class="math inline">\(\dot{V}\)</span>,结合等式(11)的微分方程，推导形式如下：</p>
@@ -406,7 +417,8 @@ k_2 v_r \dfrac{\sin(\psi_e)}{\psi_e}e + \dot{\psi} - \dfrac{v_{r}\cdot\cos(\psi_
 <p><span class="math display">\[
 \dot{\psi} = \dot{\psi}^* - g(e,\psi_e,t)\psi_e\tag{16}
 \]</span></p>
-<p>设置<span class="math inline">\(g(e,{\psi}_e,t)= k_{\psi}|v_r|\)</span> ，其中<span class="math inline">\(k_{\psi} &gt; 0\)</span>。 <span class="math display">\[
+<p>设置<span class="math inline">\(g(e,{\psi}_e,t)= k_{\psi}|v_r|\)</span> ，其中<span class="math inline">\(k_{\psi} &gt; 0\)</span>。</p>
+<p><span class="math display">\[
 \dot{\psi} = \dfrac{v_{r}\cdot\cos(\psi_e)\cdot k(s)}{1-k(s)e} - k_2 v_r \dfrac{\sin(\psi_e)}{\psi_e}e - k_{\psi}|v_r|\psi_e \tag{17}
 \]</span></p>
 <p>将等式(17)带入等式(13)得</p>
