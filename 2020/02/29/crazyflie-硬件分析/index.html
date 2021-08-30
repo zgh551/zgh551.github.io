@@ -28,14 +28,13 @@
 <meta property="og:description" content="概述 本文主要对crazyflie飞控硬件原理图设计进行简单的分析，包括电路原理、参数选型和PCB设计等。  青岛啤酒">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/7zyoK5FNvTxCY8I.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200301222549.jpg">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/mco3YEdsp4qAfJ5.jpg">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/7ztr64V1gkHPG9B.jpg">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/N6ZWCRBPi7JhQ92.jpg">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/njYsXcdS4FPWaGN.png">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/TPBn7pdRXvlcO5f.png">
 <meta property="article:published_time" content="2020-02-29T08:43:38.000Z">
-<meta property="article:modified_time" content="2021-08-30T03:44:01.169Z">
+<meta property="article:modified_time" content="2021-08-30T06:06:48.537Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="crazyflie">
 <meta property="article:tag" content="硬件设计">
@@ -271,7 +270,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 11:44:01" itemprop="dateModified" datetime="2021-08-30T11:44:01+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 14:06:48" itemprop="dateModified" datetime="2021-08-30T14:06:48+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -307,9 +306,6 @@
 <h3 id="微处理器单元">微处理器单元</h3>
 <h4 id="选型">选型</h4>
 <p>关于主控芯片的选型采用<a target="_blank" rel="noopener" href="https://www.st.com/content/st_com/en/products/microcontrollers-microprocessors/stm32-32-bit-arm-cortex-mcus/stm32-high-performance-mcus/stm32f4-series.html"><strong>ST</strong></a>公司F4系列处理器,该系列处理器主要有三个产线，分别为进阶产线、基础产线和入门产线。基于性能和成本考虑，飞控设计选用基础产线系类，该系类主控拥有210 <strong>DMIPS</strong>，与进阶产线的225 <strong>DMIPS</strong>差距不大。由于摄像头接口外设并不需要，所以选择最基本的<strong>STM32F405</strong>系列主控就可以满足性能要求。</p>
-<figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200301222549.jpg" alt="产品对比图" /><figcaption aria-hidden="true">产品对比图</figcaption>
-</figure>
 <figure>
 <img src="https://i.loli.net/2021/08/30/mco3YEdsp4qAfJ5.jpg" alt="产品对比图" /><figcaption aria-hidden="true">产品对比图</figcaption>
 </figure>
@@ -477,9 +473,9 @@
 <h3 id="电机驱动单元">电机驱动单元</h3>
 <p>由于mini四轴一般采用空心杯电机，驱动电路相对简单。方案设计中选用简单的<strong>MOS</strong>电路驱动，具体形式如下：</p>
 <p><img src="https://i.loli.net/2021/08/30/njYsXcdS4FPWaGN.png" /></p>
-<p>由上图可知，选用NMOS搭建驱动电路，参考CJ2302数据手册知，<span class="math display">\[V_{gs}\]</span>阀值为<span class="math display">\[0.95V\]</span>，<span class="math display">\[GS\]</span>驱动电流<span class="math display">\[I_{gss}=\pm100nA\]</span>。所以选取电阻<span class="math display">\[R1\]</span>和<span class="math display">\[R2\]</span>参数时，为了减小<span class="math display">\[DS\]</span>端的导通电阻，需要保证<span class="math display">\[V_{gs}\]</span>尽可能大。</p>
-<p>为了满足驱动电流<span class="math display">\[I_{gss}\]</span>的需求，电阻<span class="math display">\[R1\]</span>需要足够小，几欧姆的数量级即可。电阻<span class="math display">\[R1\]</span> 如果选取太小数值，又会增大导通过程产生的振铃，太大可能会不满足瞬间驱动电流，无法导通。</p>
-<p>图中二极管<span class="math display">\[D1\]</span>用于续流二极管，当NMOS管关闭时，电机内部可以等效为一个电感，与二极管<span class="math display">\[D1\]</span>组成一个放电回路，释放电机停止过程中的电流，避免对MOS管的损坏。</p>
+<p>由上图可知，选用<strong>NMOS</strong>搭建驱动电路，参考<code>CJ2302</code>数据手册知，<span class="math inline">\(V_{gs}\)</span>阀值为<span class="math inline">\(0.95V\)</span>，<span class="math inline">\(GS\)</span>驱动电流<span class="math inline">\(I_{gss}=\pm100nA\)</span>。所以选取电阻<span class="math inline">\(R1\)</span>和<span class="math inline">\(R2\)</span>参数时，为了减小<span class="math inline">\(DS\)</span>端的导通电阻，需要保证<span class="math inline">\(V_{gs}\)</span>尽可能大。</p>
+<p>为了满足驱动电流<span class="math inline">\(I_{gss}\)</span>的需求，电阻<span class="math inline">\(R1\)</span>需要足够小，几欧姆的数量级即可。电阻<span class="math inline">\(R1\)</span> 如果选取太小数值，又会增大导通过程产生的振铃，太大可能会不满足瞬间驱动电流，无法导通。</p>
+<p>图中二极管<span class="math inline">\(D1\)</span>用于续流二极管，当<strong>NMOS</strong>管关闭时，电机内部可以等效为一个电感，与二极管<span class="math inline">\(D1\)</span>组成一个放电回路，释放电机停止过程中的电流，避免对MOS管的损坏。</p>
 <h3 id="无线通信单元">无线通信单元</h3>
 <p><img src="https://i.loli.net/2021/08/30/TPBn7pdRXvlcO5f.png" /></p>
 <p>如上图所示，51与52系列的主要功能对比，对于mini飞控来说，51系列芯片性能已经足够使用。目前由于对车规级认证无要求，且无需ANT协议，所以选取<strong>nRF51</strong>系列无线芯片中的<strong>nRF51822</strong> SoC。</p>

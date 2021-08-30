@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/08/30/5WUADE8QVGmFRcT.jpg">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/Ndk897wgDTzBcJR.png">
 <meta property="article:published_time" content="2020-01-22T02:56:03.000Z">
-<meta property="article:modified_time" content="2021-08-30T04:35:50.205Z">
+<meta property="article:modified_time" content="2021-08-30T06:19:04.414Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="crazyflie">
 <meta property="article:tag" content="目录分析">
@@ -152,7 +152,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">目录结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#doc"><span class="nav-number">2.1.</span> <span class="nav-text">[doc]</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">目录结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#doc"><span class="nav-number">2.1.</span> <span class="nav-text">[doc]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#blobs"><span class="nav-number">2.2.</span> <span class="nav-text">[blobs]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#generated-test"><span class="nav-number">2.3.</span> <span class="nav-text">[generated-test]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#test"><span class="nav-number">2.4.</span> <span class="nav-text">[test]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#vender"><span class="nav-number">2.5.</span> <span class="nav-text">[vender]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#src"><span class="nav-number">2.6.</span> <span class="nav-text">[src]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tool"><span class="nav-number">2.7.</span> <span class="nav-text">[tool]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bin"><span class="nav-number">2.8.</span> <span class="nav-text">[bin]</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -265,7 +265,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 12:35:50" itemprop="dateModified" datetime="2021-08-30T12:35:50+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 14:19:04" itemprop="dateModified" datetime="2021-08-30T14:19:04+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -297,7 +297,21 @@
 <p>下图所示是飞控项目的目录结构，项目中的包含文档说明、代码测试、项目所需的开源项目、飞控源码、编译工具和输出文件等。</p>
 <p><img src="https://i.loli.net/2021/08/30/Ndk897wgDTzBcJR.png" /></p>
 <h3 id="doc">[doc]</h3>
-<p>该目录包含项目相关的说明文档，主要说明项目编译方式、CRTP包说明、扩展板开发说明等。 ### [blobs] 该目录包含灯塔固件。 ### [generated-test] 该目录包含产生测试文件的脚本，但是从仓库拉取下来是空的。 ### [test] 该目录包含各个模块的测试用例文件。 ### [vender] 该目录包含项目所依赖的其它项目文件，包括测试工具、实时操作系统和开源定位库等； - <strong>cmock</strong>：用于项目的mock测试； - <strong>unity</strong>：用于项目的单元测试； - <strong>CMSIS</strong>：用于实现Cortex-M 系列处理器与供应商无关的硬件抽象层； - <strong>FreeRTOS</strong>：用于实现系统的任务调度和消息管理； - <strong>libdw1000</strong>：用于驱动dw1000芯片，实现室内定位功能。 ### [src] 该目录包含飞控相关的源文件，具体说明如下： - <strong>drivers</strong>：目录包含实现硬件底层驱动的文件，实现主控芯片外设驱动和外部芯片驱动的开发； - <strong>hal</strong>：目录包含对硬件抽象的功能文件，将系统的某些硬件抽象成功能模块； - <strong>modules</strong>：目录包含所有的功能模块，包括CRTP通信模块、姿态估计模块、位置控制模块、姿态稳定控制模块和传感器融合模块等； - <strong>lib</strong>：目录包含供应商相关标准开发库、文件系统库等； - <strong>utils</strong>：目录包含可以公用的实用程序，如CRC校验、滤波等； - <strong>platform</strong>：目录包含平台配置的相关文件； - <strong>deck</strong>：目录包含扩展板接口文件； - <strong>config</strong>：目录包含系统配置相关文件； - <strong>init</strong>：目录包含主函数文件； ### [tool] 该目录包含编译源文件相关的脚本； ### [bin] 该目录包含编译生成的输出文件；</p>
+<p>该目录包含项目相关的说明文档，主要说明项目编译方式、CRTP包说明、扩展板开发说明等。</p>
+<h3 id="blobs">[blobs]</h3>
+<p>该目录包含灯塔固件。</p>
+<h3 id="generated-test">[generated-test]</h3>
+<p>该目录包含产生测试文件的脚本，但是从仓库拉取下来是空的。</p>
+<h3 id="test">[test]</h3>
+<p>该目录包含各个模块的测试用例文件。</p>
+<h3 id="vender">[vender]</h3>
+<p>该目录包含项目所依赖的其它项目文件，包括测试工具、实时操作系统和开源定位库等； - <strong>cmock</strong>：用于项目的mock测试； - <strong>unity</strong>：用于项目的单元测试； - <strong>CMSIS</strong>：用于实现Cortex-M 系列处理器与供应商无关的硬件抽象层； - <strong>FreeRTOS</strong>：用于实现系统的任务调度和消息管理； - <strong>libdw1000</strong>：用于驱动dw1000芯片，实现室内定位功能。</p>
+<h3 id="src">[src]</h3>
+<p>该目录包含飞控相关的源文件，具体说明如下： - <strong>drivers</strong>：目录包含实现硬件底层驱动的文件，实现主控芯片外设驱动和外部芯片驱动的开发； - <strong>hal</strong>：目录包含对硬件抽象的功能文件，将系统的某些硬件抽象成功能模块； - <strong>modules</strong>：目录包含所有的功能模块，包括CRTP通信模块、姿态估计模块、位置控制模块、姿态稳定控制模块和传感器融合模块等； - <strong>lib</strong>：目录包含供应商相关标准开发库、文件系统库等； - <strong>utils</strong>：目录包含可以公用的实用程序，如CRC校验、滤波等； - <strong>platform</strong>：目录包含平台配置的相关文件； - <strong>deck</strong>：目录包含扩展板接口文件； - <strong>config</strong>：目录包含系统配置相关文件； - <strong>init</strong>：目录包含主函数文件；</p>
+<h3 id="tool">[tool]</h3>
+<p>该目录包含编译源文件相关的脚本；</p>
+<h3 id="bin">[bin]</h3>
+<p>该目录包含编译生成的输出文件；</p>
 
     </div>
 
