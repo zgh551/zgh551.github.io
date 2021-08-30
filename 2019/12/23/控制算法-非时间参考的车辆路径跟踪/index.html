@@ -28,16 +28,16 @@
 <meta property="og:description" content="概述 基于非时间的参考的路径跟踪方法最早应用于机器人的路径跟踪系统，通过引入非时间参考量代替时间参考量，解决传统路径跟踪方法中将期望轨迹视为时间函数的问题。该方法选择移动机器人实际路径在某参考系下的x 轴投影作为非时间参考量。  国家会议中心">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/KaPA5HQMmo8WnDZ.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191226105628.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191226105632.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225194515.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201717.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201732.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201746.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201811.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201827.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/NoXcDfzSPqBFMQJ.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/Uag93Qfq14nL6uh.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/i8oHQE4J5k1UPeq.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/F4KWyDJEi8BwRbC.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/gOeB8KIDYdZkQoP.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/PmykNo5iZcAXsap.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/6UVk2o1cSsT5iym.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/J4fnwU5QmtpLS78.png">
 <meta property="article:published_time" content="2019-12-23T08:22:46.000Z">
-<meta property="article:modified_time" content="2021-08-30T02:45:15.169Z">
+<meta property="article:modified_time" content="2021-08-30T04:47:46.487Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="路径跟踪">
 <meta property="article:tag" content="滑模控制">
@@ -273,7 +273,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 10:45:15" itemprop="dateModified" datetime="2021-08-30T10:45:15+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 12:47:46" itemprop="dateModified" datetime="2021-08-30T12:47:46+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -488,7 +488,7 @@ Sigmoid(x) = \frac{x}{\rvert x \rvert + \varepsilon} \tag{30}
 \]</span></li>
 </ul>
 <p>其中<span class="math inline">\(\varepsilon\)</span>是很小的正标量，下图为<span class="math inline">\(\varepsilon = 0.001\)</span>时，<span class="math inline">\(Sigmoid(x)\)</span>函数的波形图入下：</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191226105628.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/NoXcDfzSPqBFMQJ.png" /></p>
 <ul>
 <li><strong>Sat Function</strong>:</li>
 </ul>
@@ -503,37 +503,37 @@ Sat(\frac{x}{\Delta}) =
 \right. \tag{31}
 \]</span></p>
 <p>其中，<span class="math inline">\(\Delta\)</span>为很小的正标量，代表边界层的厚度，当<span class="math inline">\(\Delta = 0.05\)</span>时，<span class="math inline">\(Sat(x)\)</span>波形图如下：</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191226105632.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/Uag93Qfq14nL6uh.png" /></p>
 <h2 id="性能分析">性能分析</h2>
 <p>根据如下控制系统框图，搭建仿真环境。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225194515.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/i8oHQE4J5k1UPeq.png" style="zoom:67%;" /></p>
 <ul>
 <li>滑模变量<span class="math inline">\(s\)</span> 下图所示，是滑模变量<span class="math inline">\(s\)</span>随距离<span class="math inline">\(x\)</span>变化的图形。随着距离的增大，滑模变量<span class="math inline">\(s\)</span>趋近于0，系统也趋近于稳定，但是滑模变量在0附近存在抖振。</li>
 </ul>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201717.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/F4KWyDJEi8BwRbC.png" /></p>
 <ul>
 <li>相图 如下图所示，是系统的相图，可以看出，系统逐渐收敛于原点。</li>
 </ul>
 <figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201732.png" alt="相图" /><figcaption aria-hidden="true">相图</figcaption>
+<img src="https://i.loli.net/2021/08/30/gOeB8KIDYdZkQoP.png" alt="相图" /><figcaption aria-hidden="true">相图</figcaption>
 </figure>
 <ul>
 <li>路径跟踪图 如下图所示，是系统的路径跟踪波形图。刚开始时，跟踪存在偏差。经过一段时间的修正，跟踪路径趋近于一致。</li>
 </ul>
 <figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201746.png" alt="路径跟踪图" /><figcaption aria-hidden="true">路径跟踪图</figcaption>
+<img src="https://i.loli.net/2021/08/30/PmykNo5iZcAXsap.png" alt="路径跟踪图" /><figcaption aria-hidden="true">路径跟踪图</figcaption>
 </figure>
 <ul>
 <li>转向角图 如下图所示，是系统控制产生的转向角信号。从图中可以发现，系统在趋于稳定时，控制信号存在抖振现象。</li>
 </ul>
 <figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201811.png" alt="转向角图" /><figcaption aria-hidden="true">转向角图</figcaption>
+<img src="https://i.loli.net/2021/08/30/6UVk2o1cSsT5iym.png" alt="转向角图" /><figcaption aria-hidden="true">转向角图</figcaption>
 </figure>
 <ul>
 <li>轨迹误差图 如下图所示，是系统产生的轨迹误差图，随着时间推移，估计误差趋近于0。</li>
 </ul>
 <figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201827.png" alt="轨迹误差图" /><figcaption aria-hidden="true">轨迹误差图</figcaption>
+<img src="https://i.loli.net/2021/08/30/J4fnwU5QmtpLS78.png" alt="轨迹误差图" /><figcaption aria-hidden="true">轨迹误差图</figcaption>
 </figure>
 
     </div>

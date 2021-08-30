@@ -139,7 +139,8 @@
 </figure>
 <span id="more"></span>
 <h2 id="目录结构">目录结构</h2>
-<p>下图所示是飞控项目的目录结构，项目中的包含文档说明、代码测试、项目所需的开源项目、飞控源码、编译工具和输出文件等。 <img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200121160732.png" /></p>
+<p>下图所示是飞控项目的目录结构，项目中的包含文档说明、代码测试、项目所需的开源项目、飞控源码、编译工具和输出文件等。</p>
+<p><img src="https://i.loli.net/2021/08/30/Ndk897wgDTzBcJR.png" /></p>
 <h3 id="doc">[doc]</h3>
 <p>该目录包含项目相关的说明文档，主要说明项目编译方式、CRTP包说明、扩展板开发说明等。 ### [blobs] 该目录包含灯塔固件。 ### [generated-test] 该目录包含产生测试文件的脚本，但是从仓库拉取下来是空的。 ### [test] 该目录包含各个模块的测试用例文件。 ### [vender] 该目录包含项目所依赖的其它项目文件，包括测试工具、实时操作系统和开源定位库等； - <strong>cmock</strong>：用于项目的mock测试； - <strong>unity</strong>：用于项目的单元测试； - <strong>CMSIS</strong>：用于实现Cortex-M 系列处理器与供应商无关的硬件抽象层； - <strong>FreeRTOS</strong>：用于实现系统的任务调度和消息管理； - <strong>libdw1000</strong>：用于驱动dw1000芯片，实现室内定位功能。 ### [src] 该目录包含飞控相关的源文件，具体说明如下： - <strong>drivers</strong>：目录包含实现硬件底层驱动的文件，实现主控芯片外设驱动和外部芯片驱动的开发； - <strong>hal</strong>：目录包含对硬件抽象的功能文件，将系统的某些硬件抽象成功能模块； - <strong>modules</strong>：目录包含所有的功能模块，包括CRTP通信模块、姿态估计模块、位置控制模块、姿态稳定控制模块和传感器融合模块等； - <strong>lib</strong>：目录包含供应商相关标准开发库、文件系统库等； - <strong>utils</strong>：目录包含可以公用的实用程序，如CRC校验、滤波等； - <strong>platform</strong>：目录包含平台配置的相关文件； - <strong>deck</strong>：目录包含扩展板接口文件； - <strong>config</strong>：目录包含系统配置相关文件； - <strong>init</strong>：目录包含主函数文件； ### [tool] 该目录包含编译源文件相关的脚本； ### [bin] 该目录包含编译生成的输出文件；</p>
 ]]></content>
@@ -167,10 +168,15 @@
 <figure>
 <img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200301222549.jpg" alt="产品对比图" /><figcaption aria-hidden="true">产品对比图</figcaption>
 </figure>
+<figure>
+<img src="https://i.loli.net/2021/08/30/mco3YEdsp4qAfJ5.jpg" alt="产品对比图" /><figcaption aria-hidden="true">产品对比图</figcaption>
+</figure>
 <p>由于迷你四轴对引脚需求较少，可以选择下图64引脚的RG系列封装。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200314235344.jpg" /></p>
+<p><img src="https://i.loli.net/2021/08/30/7ztr64V1gkHPG9B.jpg" /></p>
 <p>芯片外设如下：</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200314235400.jpg" /></p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/N6ZWCRBPi7JhQ92.jpg" alt="外设" /><figcaption aria-hidden="true">外设</figcaption>
+</figure>
 <p>飞控中主要用到的通信外设包括IIC、SPI、USART和USB，控制相关外设包括PWM。</p>
 <h4 id="芯片供电分析">芯片供电分析</h4>
 <h4 id="复位电路">复位电路</h4>
@@ -328,12 +334,12 @@
 </table>
 <h3 id="电机驱动单元">电机驱动单元</h3>
 <p>由于mini四轴一般采用空心杯电机，驱动电路相对简单。方案设计中选用简单的<strong>MOS</strong>电路驱动，具体形式如下：</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200328150801.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/njYsXcdS4FPWaGN.png" /></p>
 <p>由上图可知，选用NMOS搭建驱动电路，参考CJ2302数据手册知，<span class="math display">\[V_{gs}\]</span>阀值为<span class="math display">\[0.95V\]</span>，<span class="math display">\[GS\]</span>驱动电流<span class="math display">\[I_{gss}=\pm100nA\]</span>。所以选取电阻<span class="math display">\[R1\]</span>和<span class="math display">\[R2\]</span>参数时，为了减小<span class="math display">\[DS\]</span>端的导通电阻，需要保证<span class="math display">\[V_{gs}\]</span>尽可能大。</p>
 <p>为了满足驱动电流<span class="math display">\[I_{gss}\]</span>的需求，电阻<span class="math display">\[R1\]</span>需要足够小，几欧姆的数量级即可。电阻<span class="math display">\[R1\]</span> 如果选取太小数值，又会增大导通过程产生的振铃，太大可能会不满足瞬间驱动电流，无法导通。</p>
 <p>图中二极管<span class="math display">\[D1\]</span>用于续流二极管，当NMOS管关闭时，电机内部可以等效为一个电感，与二极管<span class="math display">\[D1\]</span>组成一个放电回路，释放电机停止过程中的电流，避免对MOS管的损坏。</p>
 <h3 id="无线通信单元">无线通信单元</h3>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200328160050.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/TPBn7pdRXvlcO5f.png" /></p>
 <p>如上图所示，51与52系列的主要功能对比，对于mini飞控来说，51系列芯片性能已经足够使用。目前由于对车规级认证无要求，且无需ANT协议，所以选取<strong>nRF51</strong>系列无线芯片中的<strong>nRF51822</strong> SoC。</p>
 <p>设计中采用<strong>RFX2411N</strong>收发一体的驱动器。</p>
 <h3 id="电源管理单元">电源管理单元</h3>
@@ -749,17 +755,11 @@ P_{t-1} = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A
 <p>本文基于车辆扭矩标定的应用场景来说明2维线性插值的具体应用，根据车辆的控制原理可知，车辆的目标加速度与当前车速和发动机输出扭矩有关，因此对车辆扭矩进行标定后，我们就可以得到一个根据当前目标加速度和车速，获得车辆输出扭矩的关系表。 如下表所示，只选取了目标加速度为正的部分标定数据，其中横向表示速度(m/s)，纵向表示加速度(m/s2)，表中的数据代表汽车扭矩输出(Nm)。由于速度只采样了[0.1,0.2,0.3,0.4,0.5,0.6,0.7]这几个数值点的数据，加速度也只采样了[0.06,0.09,0.1,0.12,0.13,0.15,0.2,0.21,0.24,0.26]这几组数据点的数据，如果想得到中间任意数值的数值，就需要使用双线性插值算法来获得。 <img src="https://img-blog.csdnimg.cn/20190727155601290.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /> 如下表所示，如果当前需求的目标加速度为0.094m/s2，当前车速为0.36m/s，想得到当前输出扭矩值，按照表格所圈出的扭矩值，进行多次线性插值，求得理想的输出扭矩。 <img src="https://img-blog.csdnimg.cn/20190727155822629.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
 <h3 id="双线性插值原理">双线性插值原理</h3>
 <p>双线性插值算法，是在线性插值的基础上进行多次插值的结果。 如下图所示，假设插值点<span class="math inline">\({(x_i,y_i)}\)</span>的坐标点<span class="math inline">\(x_i\)</span>和<span class="math inline">\(y_i\)</span>范围满足，<span class="math inline">\(x_1\le x_i \le x_2\)</span>，<span class="math inline">\(y_1\le y_i \le y_2\)</span>，其中<span class="math inline">\((x_1,y_1)\)</span>对应数值为<span class="math inline">\(z_1\)</span>，<span class="math inline">\((x_2,y_1)\)</span>对应数值为<span class="math inline">\(z_2\)</span>，<span class="math inline">\((x_2,y_2)\)</span>对应数值为<span class="math inline">\(z_3\)</span>，<span class="math inline">\((x_1,y_2)\)</span>对应数值为<span class="math inline">\(z_4\)</span>。</p>
-<figure>
-<img src="https://img-blog.csdnimg.cn/20190729105119489.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
-</figure>
+<p><img src="https://img-blog.csdnimg.cn/20190729105119489.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
 <p>第一步，进行x轴方向的线性插值。当y取值<span class="math inline">\(y_1\)</span>时，进行点<span class="math inline">\((x_1,z_1)\)</span>和点<span class="math inline">\((x_2,z_2)\)</span>之间的插值，得到插值点<span class="math inline">\((x_i,z5)\)</span>；同理y取值<span class="math inline">\(y_2\)</span>时，进行点<span class="math inline">\((x_1,z_4)\)</span>和点<span class="math inline">\((x_2,z_3)\)</span>之间的插值，可得第二个插值点<span class="math inline">\((x_i,z_6)\)</span>。</p>
-<figure>
-<img src="https://img-blog.csdnimg.cn/20190727171729916.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
-</figure>
+<p><img src="https://img-blog.csdnimg.cn/20190727171729916.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
 <p>第二步，进行y轴方向的插值。依据新的插值点<span class="math inline">\((y_1,z5)\)</span>和<span class="math inline">\((y_2,z_6)\)</span>，进行线性插值，得到插值点<span class="math inline">\((x_i,y_i,z_7)\)</span>。此时的点<span class="math inline">\((x_i,y_i,z_7)\)</span>就是双线性插值的最终结果。</p>
-<figure>
-<img src="https://img-blog.csdnimg.cn/20190727171818236.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
-</figure>
+<p><img src="https://img-blog.csdnimg.cn/20190727171818236.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
 <h2 id="软件实现">软件实现</h2>
 <h3 id="概述-1">概述</h3>
 <p>本文基于c语言去实现插值算法，数据结构采用简单的数组结构，不使用C++的关联容器属性去实现数据表的存储。</p>
@@ -916,7 +916,9 @@ a_1
 r = \cos\theta*x + \sin\theta*y
 \]</span></p>
 <p>几何关系如下图所示</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy9SX3RoZXRhX2xpbmUuR0lG?x-oss-process=image/format,png#pic_center" /></p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/qEJyiMoPC2jwhLn.gif" alt="几何关系" /><figcaption aria-hidden="true">几何关系</figcaption>
+</figure>
 <p>假设一组数据集合为 <span class="math display">\[
 S_k= \{ (x_0,y_0),...,(x_k,y_k)\}
 \]</span> 该数据集符合直线分布，那么满足<span class="math inline">\(S_k\)</span>数据的最优直线<span class="math inline">\(L\)</span>为 <span class="math display">\[
@@ -1032,9 +1034,14 @@ V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\
 <span id="more"></span>
 <h2 id="数据处理">数据处理</h2>
 <h3 id="概述-1">概述</h3>
-<p>超声波的数据处理，主要将冗余的数据剔除和一些无效数据滤除。下面介绍了一些实际采用的超声波数据的滤波算法。 ### 原始数据 如下图所示，是车辆垂直进库过程中实际采集的数据，蓝色代表车辆左侧采集到的数据，橘黄色代表车辆右侧采集的数据。从图中可以看出，原始超声数据比较杂乱，很多无效数据都记录了下来。比如未检测到超声回波的数据，首先应该把这些无效数据滤除。 <img src="https://img-blog.csdnimg.cn/20190522172808439.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /> ### 第一级滤波 如下图所示，是超声波数据第一级滤波后的结果，第一级滤波主要滤波无效的超声波数据，包括超声无回波的数据、超声回波幅值小于阀值的数据和车辆停止采集的冗余数据。将这些无效数据滤除后，得到如下比较整洁的数据图。图中绿色数据代表车辆后轴中心的轨迹坐标。虽然经过一级滤波后数据趋势有所改善，但仍然不便于直接进行线性拟合。因为图中存在车头的弧线段和一些突变边沿数据，所以数据还需进一步的滤波。 <img src="https://img-blog.csdnimg.cn/20190522173940224.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+<p>超声波的数据处理，主要将冗余的数据剔除和一些无效数据滤除。下面介绍了一些实际采用的超声波数据的滤波算法。 ### 原始数据 如下图所示，是车辆垂直进库过程中实际采集的数据，蓝色代表车辆左侧采集到的数据，橘黄色代表车辆右侧采集的数据。从图中可以看出，原始超声数据比较杂乱，很多无效数据都记录了下来。比如未检测到超声回波的数据，首先应该把这些无效数据滤除。 <img src="https://img-blog.csdnimg.cn/20190522172808439.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="原始数据" /></p>
+<h3 id="第一级滤波">第一级滤波</h3>
+<p>如下图所示，是超声波数据第一级滤波后的结果，第一级滤波主要滤波无效的超声波数据，包括超声无回波的数据、超声回波幅值小于阀值的数据和车辆停止采集的冗余数据。将这些无效数据滤除后，得到如下比较整洁的数据图。图中绿色数据代表车辆后轴中心的轨迹坐标。虽然经过一级滤波后数据趋势有所改善，但仍然不便于直接进行线性拟合。因为图中存在车头的弧线段和一些突变边沿数据，所以数据还需进一步的滤波。 <img src="https://img-blog.csdnimg.cn/20190522173940224.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="第一级滤波" /></p>
 <h3 id="第二级滤波">第二级滤波</h3>
-<p>如下图所示，是超声数据进行二级滤波后的效果。从图中可以看出二级滤波后，数据更加平滑，可以进行线性拟合。二级滤波的算法，主要采用数据的分布特性，提取数据中分布集中的数据点，将分散的数据剔除，这样就可以得到平滑的车辆边沿曲线，最后采用最小二乘法拟合直线。 <img src="https://img-blog.csdnimg.cn/2019052217495454.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /> 根据库位边沿拟合的两个直线，求得新的中心线所在的直线，然后根据求得的中心线与车辆轨迹的偏差去调整车辆的入库轨迹。 ## 软件实现 ### 概述 软件实现部分使用<strong>Python</strong>进行前期的算法验证，利用python具有的强大的数学运算库，可以方便地进行前期的算法验证。 ### 代码实现 #### 第一级滤波 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 第一级滤波</span></span><br><span class="line"><span class="comment"># 滤除无效的数据</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ValidDataProcess</span>(<span class="params">datx,daty,level,level_threshold</span>):</span>   </span><br><span class="line">    valid_process_x = []</span><br><span class="line">    valid_process_y = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(level)):</span><br><span class="line">        <span class="keyword">if</span> level[i] &gt; level_threshold:</span><br><span class="line">            valid_process_x.append(datx[i])</span><br><span class="line">            valid_process_y.append(daty[i])</span><br><span class="line">    <span class="keyword">return</span> valid_process_x,valid_process_y</span><br></pre></td></tr></table></figure> #### 第二级滤波</p>
+<p>如下图所示，是超声数据进行二级滤波后的效果。从图中可以看出二级滤波后，数据更加平滑，可以进行线性拟合。二级滤波的算法，主要采用数据的分布特性，提取数据中分布集中的数据点，将分散的数据剔除，这样就可以得到平滑的车辆边沿曲线，最后采用最小二乘法拟合直线。 <img src="https://img-blog.csdnimg.cn/2019052217495454.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="第二级滤波" /> 根据库位边沿拟合的两个直线，求得新的中心线所在的直线，然后根据求得的中心线与车辆轨迹的偏差去调整车辆的入库轨迹。</p>
+<h2 id="软件实现">软件实现</h2>
+<h3 id="概述-2">概述</h3>
+<p>软件实现部分使用<strong>Python</strong>进行前期的算法验证，利用python具有的强大的数学运算库，可以方便地进行前期的算法验证。 ### 代码实现 #### 第一级滤波 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 第一级滤波</span></span><br><span class="line"><span class="comment"># 滤除无效的数据</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ValidDataProcess</span>(<span class="params">datx,daty,level,level_threshold</span>):</span>   </span><br><span class="line">    valid_process_x = []</span><br><span class="line">    valid_process_y = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(level)):</span><br><span class="line">        <span class="keyword">if</span> level[i] &gt; level_threshold:</span><br><span class="line">            valid_process_x.append(datx[i])</span><br><span class="line">            valid_process_y.append(daty[i])</span><br><span class="line">    <span class="keyword">return</span> valid_process_x,valid_process_y</span><br></pre></td></tr></table></figure> #### 第二级滤波</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 第二级滤波</span></span><br><span class="line"><span class="comment"># 根据数据的分布特性滤除分布比较零散的数据</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">FitDataProcess</span>(<span class="params">datx,daty,threshold,step</span>):</span></span><br><span class="line">    valid_fit_x =[]</span><br><span class="line">    valid_fit_y =[]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(daty)):</span><br><span class="line">        <span class="keyword">if</span> (daty[i] &gt;= threshold) <span class="keyword">and</span> (daty[i] &lt; (threshold + step)):</span><br><span class="line">            valid_fit_x.append(datx[i])</span><br><span class="line">            valid_fit_y.append(daty[i])</span><br><span class="line">    <span class="keyword">return</span> valid_fit_x,valid_fit_y</span><br></pre></td></tr></table></figure>
 <h4 id="数据分布">数据分布</h4>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#数值分布求取函数 该进版本v2</span></span><br><span class="line"><span class="function"><span class="keyword">def</span>  <span class="title">ValueDistributed_v2</span>(<span class="params">step,dat</span>):</span></span><br><span class="line">    <span class="comment">#获取数值范围</span></span><br><span class="line">    value_max = <span class="built_in">max</span>(dat)</span><br><span class="line">    value_min = <span class="built_in">min</span>(dat)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;最大值:&quot;</span>,value_max)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;最小值:&quot;</span>,value_min)</span><br><span class="line">    array_cnt = <span class="built_in">int</span>((value_max - value_min)/step) + <span class="number">1</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;分组数:&quot;</span>,array_cnt)</span><br><span class="line">    </span><br><span class="line">    DistributedCnt = np.zeros(array_cnt)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> v <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(dat)):</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>,array_cnt):</span><br><span class="line">            <span class="keyword">if</span> (dat[v] &gt;= (value_min + step * i)) <span class="keyword">and</span> (dat[v] &lt; (value_min + step * (i+<span class="number">1</span>))):</span><br><span class="line">                DistributedCnt[i] = DistributedCnt[i] + <span class="number">1</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>,array_cnt):           </span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;分布:&quot;</span>,i,<span class="string">&quot;，值：&quot;</span>,DistributedCnt[i])</span><br><span class="line">    list_distribute_max_cnt = DistributedCnt.tolist()</span><br><span class="line">    distribute_max_cnt = list_distribute_max_cnt.index(<span class="built_in">max</span>(list_distribute_max_cnt))</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;最高分布索引:&quot;</span>,distribute_max_cnt)</span><br><span class="line">    <span class="keyword">return</span> value_min + step * distribute_max_cnt</span><br></pre></td></tr></table></figure>
@@ -1079,13 +1086,20 @@ V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\
 <h2 id="超声重定位">超声重定位</h2>
 <h3 id="概述-1">概述</h3>
 <p>首先车辆先通过超声波传感器确定车位的大概位置，然后规划车辆进行倒车入库，在入库的过程中，进行前车车头边沿的重新检测，并通过尾部超声波进行后车的检测，当车辆离后车距离达到30~40cm时，车辆停止。通过后置的短距超声波，使用三角定位算法实现，进行后车边沿数据的采集。等待数据量足够时，一般可以设定50个数据点左右。停止超声数据的推送，开始进行边沿算法的计算，从而实现垂直车位的二次定位。</p>
+<p><img src="https://i.loli.net/2021/08/30/mC9TIKJhZdqGfMB.png" /></p>
 <h3 id="数据滤波">数据滤波</h3>
 <h4 id="状态滤波">状态滤波</h4>
-<p>传感器本身会输出一些状态信号，如噪声干扰、硬件故障、盲区、振玲故障、通信故障和正常等状态。可以通过传感器输出的这些状态信号进行数据的一级滤波，只保留状态输出为正常的信号。 #### 幅值滤波 超声波的<strong>Level</strong>值反应了声波的回波强度，因此可以使用回波强度的大小，去滤除一部分无效信号，比如回波为0值数据。这些数据反应了未探测到障碍物，或者是障碍物的特殊结构反射了声波，特殊的材料吸收了声波。 比如某些车型的车头设计有很大的进气栅格，这种结构就会减少反射声波的强度，从而导致强度降低。 <img src="https://img-blog.csdnimg.cn/20190513165426203.png#pic_center" alt="在这里插入图片描述" /> 当超声波探测到车辆边沿时，此时由于很多回波反射方向变化，所以传感器接收到的强度变低。 <img src="https://img-blog.csdnimg.cn/20190513170131667.png#pic_center" alt="在这里插入图片描述" /> 通过一系列的滤波操作，可以得出以下图形。其中蓝色是滤波前的原始数据，黄色是滤波后的数据。可以从下图看出，通过滤波操作可以滤除一些无效信号点。 <img src="https://img-blog.csdnimg.cn/20190513171545723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+<p>传感器本身会输出一些状态信号，如噪声干扰、硬件故障、盲区、振玲故障、通信故障和正常等状态。可以通过传感器输出的这些状态信号进行数据的一级滤波，只保留状态输出为正常的信号。 #### 幅值滤波 超声波的<strong>Level</strong>值反应了声波的回波强度，因此可以使用回波强度的大小，去滤除一部分无效信号，比如回波为0值数据。这些数据反应了未探测到障碍物，或者是障碍物的特殊结构反射了声波，特殊的材料吸收了声波。 比如某些车型的车头设计有很大的进气栅格，这种结构就会减少反射声波的强度，从而导致强度降低。</p>
+<p><img src="https://i.loli.net/2021/08/30/OVlckaCFD34UqPY.png" alt="幅值滤波" style="zoom: 80%;" /></p>
+<p>当超声波探测到车辆边沿时，此时由于很多回波反射方向变化，所以传感器接收到的强度变低。</p>
+<p><img src="https://i.loli.net/2021/08/30/M9wzFi37mrlEYku.png" style="zoom:80%;" /></p>
+<p>通过一系列的滤波操作，可以得出以下图形。其中蓝色是滤波前的原始数据，黄色是滤波后的数据。可以从下图看出，通过滤波操作可以滤除一些无效信号点。 <img src="https://img-blog.csdnimg.cn/20190513171545723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt=""  /></p>
 <hr />
 <h3 id="边沿检测">边沿检测</h3>
 <h4 id="概述-2">概述</h4>
-<p>对原始数据进行处理后，可以得到一组有效的超声信号，基于这组数据，可以进行车辆边沿的检测。 #### 距离疏密程度 由于所有的坐标点都已经转化到了地面坐标系下，所以只需要进行x方向的疏密度分析。从下图可知，在车辆边沿处，点比较稀疏，有的地方存在很长一段距离无数据点。这种情况一般是车头处存在镂空的结构，或者声波发生了散射，导致声波强度减小。所以在确定车辆边沿点时，需设置一个疏密距离阀值，当距离值大于阀值时，才认为该点是边界的跳变点。 <img src="https://img-blog.csdnimg.cn/20190513192450664.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /> ### 数据分布 对于后车的边沿定位，使用的是车辆后方的短距传感器，该传感器使用三角定位原理，确定后车边沿的坐标值。可以从图中看出，图片左侧数据点描绘的是后车的边沿，可以通过数据的分布情况，及集中程度，确定最有可能车辆边沿的值。 <img src="https://img-blog.csdnimg.cn/20190513194816201.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /> 如下图所示，是对上图x轴做了数值分布分析，可以看出，大部分点的x轴坐标都分布于区域5中，所以最后取区域5中的点作为可信的坐标点。 <img src="https://img-blog.csdnimg.cn/20190513201643149.PNG#pic_center" alt="在这里插入图片描述" /></p>
+<p>对原始数据进行处理后，可以得到一组有效的超声信号，基于这组数据，可以进行车辆边沿的检测。 #### 距离疏密程度 由于所有的坐标点都已经转化到了地面坐标系下，所以只需要进行x方向的疏密度分析。从下图可知，在车辆边沿处，点比较稀疏，有的地方存在很长一段距离无数据点。这种情况一般是车头处存在镂空的结构，或者声波发生了散射，导致声波强度减小。所以在确定车辆边沿点时，需设置一个疏密距离阀值，当距离值大于阀值时，才认为该点是边界的跳变点。 <img src="https://img-blog.csdnimg.cn/20190513192450664.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
+<h3 id="数据分布">数据分布</h3>
+<p>对于后车的边沿定位，使用的是车辆后方的短距传感器，该传感器使用三角定位原理，确定后车边沿的坐标值。可以从图中看出，图片左侧数据点描绘的是后车的边沿，可以通过数据的分布情况，及集中程度，确定最有可能车辆边沿的值。 <img src="https://img-blog.csdnimg.cn/20190513194816201.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /> 如下图所示，是对上图x轴做了数值分布分析，可以看出，大部分点的x轴坐标都分布于区域5中，所以最后取区域5中的点作为可信的坐标点。 <img src="https://img-blog.csdnimg.cn/20190513201643149.PNG#pic_center" /></p>
 <h2 id="结论">结论</h2>
 ]]></content>
       <categories>
@@ -1124,11 +1138,13 @@ V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\
     <title>控制算法-Stanley法</title>
     <url>/2020/02/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-Stanley%E6%B3%95/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
-<p>本文主要介绍Stanley方法的推导，该方法也称为前轮位置反馈。该方法基于车辆几何关系，算法简单，适合低速下的车辆路劲跟踪。 ## Stanley方法</p>
+<p>本文主要介绍Stanley方法的推导，该方法也称为前轮位置反馈。该方法基于车辆几何关系，算法简单，适合低速下的车辆路劲跟踪。</p>
 <figure>
 <img src="https://i.loli.net/2021/08/30/hk7PBu8asVmbpox.jpg" alt="扬州廋西湖" /><figcaption aria-hidden="true">扬州廋西湖</figcaption>
 </figure>
 <span id="more"></span>
+<h2 id="stanley方法">Stanley方法</h2>
+<p><img src="https://i.loli.net/2021/08/30/kVdqQai6KhGrelT.png" style="zoom:80%;" /></p>
 <p>Stanley方法是一种基于航迹误差<span class="math inline">\(e_{f}\)</span>的非线性反馈函数,该航向误差是车辆前轴中心点与目标路径最近点<span class="math inline">\((c_x,c_y)\)</span>的距离。由上图几何关系得 <span class="math display">\[
 \psi_e = \psi - \psi_{t} \tag{1}
 \]</span> 其中，<span class="math inline">\(\psi\)</span>表示车辆横向角，<span class="math inline">\(\psi_{t}\)</span>表示离车辆前轴中心最近目标路径点处的航向角。</p>
@@ -1157,7 +1173,7 @@ V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\
     <title>控制算法-动力学模型</title>
     <url>/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
-<p>当车辆速度很高时，单车模型中前后轮的速度矢量不再与轮子方向一致。此时运动学模型就不能准确地描述车辆的运动状态，这就需要使用动力学模型对车辆进行建模。 车辆单车模型中需要考虑两个维度的信息，这两个维度分别指代表车辆横向位置信息的<span class="math inline">\(y\)</span>和表示车辆偏航角信息的<span class="math inline">\(\psi\)</span>。下面分析过程中，先不考虑路堤角度的影响。 <img src="https://i.loli.net/2021/08/30/fQ7RUE9SO6ADnXN.jpg" alt="菊花展" /></p>
+<p>当车辆速度很高时，单车模型中前后轮的速度矢量不再与轮子方向一致。此时运动学模型就不能准确地描述车辆的运动状态，这就需要使用动力学模型对车辆进行建模。车辆单车模型中需要考虑两个维度的信息，这两个维度分别指代表车辆横向位置信息的<span class="math inline">\(y\)</span>和表示车辆偏航角信息的<span class="math inline">\(\psi\)</span>。下面分析过程中，先不考虑路堤角度的影响。 <img src="https://i.loli.net/2021/08/30/fQ7RUE9SO6ADnXN.jpg" alt="菊花展" /></p>
 <span id="more"></span>
 <h2 id="受力分析">受力分析</h2>
 <h3 id="平动">平动</h3>
@@ -1174,7 +1190,9 @@ I_z\ddot{\psi} = l_fF_{yf} - l_rF_{yr} \tag{4}
 \]</span></p>
 <p>其中，<span class="math inline">\(l_f\)</span>和<span class="math inline">\(l_r\)</span>代表前后轮胎到重心的距离。</p>
 <h3 id="受力计算">受力计算</h3>
-<p>上述等式(3)和(4)中都用到了轮胎横向受力情况<span class="math inline">\(F_{yf}\)</span>和<span class="math inline">\(F_{yr}\)</span>，根据实验结果知，轮胎的横向力与小的滑移角存在正比例的关系,滑移角是轮胎方向与车轮速度矢量之间的夹角。 <img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200304092355.png" /> 根据上图可知 <span class="math display">\[
+<p>上述等式(3)和(4)中都用到了轮胎横向受力情况<span class="math inline">\(F_{yf}\)</span>和<span class="math inline">\(F_{yr}\)</span>，根据实验结果知，轮胎的横向力与小的滑移角存在正比例的关系,滑移角是轮胎方向与车轮速度矢量之间的夹角。</p>
+<p><img src="https://i.loli.net/2021/08/30/zaCvGEqUsRDNJ8X.png" style="zoom: 67%;" /></p>
+<p>根据上图可知 <span class="math display">\[
 \alpha_f = \delta - \theta_{Vf} \tag{5}
 \]</span></p>
 <p>其中，<span class="math inline">\(\theta_{Vf}\)</span>代表速度矢量与车辆纵轴的夹角，<span class="math inline">\(\delta\)</span>代表前轮转向角。 同理，由于后轮转向角<span class="math inline">\(\delta\)</span>为0，故后轮滑移角为</p>
@@ -1190,7 +1208,8 @@ F_{yr} = 2C_{\alpha r}(-\theta_{Vr}) \tag{8}
 \]</span></p>
 <p>其中，比例常数<span class="math inline">\(C_{\alpha r}\)</span>代表每个后轮的侧偏刚度。</p>
 <h3 id="速度方向">速度方向</h3>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8lRTYlODklQjklRTYlQjMlQTglMjAyMDE5LTEyLTAyJTIwMjAxODExLnBuZw?x-oss-process=image/format,png" /> 车辆平动产生的速度分量<span class="math inline">\(V_x\)</span>和<span class="math inline">\(V_y\)</span>，以及绕点<span class="math inline">\(C\)</span>转动产生的线速度<span class="math inline">\(l_f\dot{\psi}\)</span>和<span class="math inline">\(l_r\dot{\psi}\)</span>组成。根据上图得 <span class="math display">\[
+<p><img src="https://i.loli.net/2021/08/30/qBMO6K81ZVT2QNt.png" /></p>
+<p>车辆平动产生的速度分量<span class="math inline">\(V_x\)</span>和<span class="math inline">\(V_y\)</span>，以及绕点<span class="math inline">\(C\)</span>转动产生的线速度<span class="math inline">\(l_f\dot{\psi}\)</span>和<span class="math inline">\(l_r\dot{\psi}\)</span>组成。根据上图得 <span class="math display">\[
 \tan(\theta_{Vf})=\frac{V_y + l_f\dot{\psi}}{V_x} \tag{9}
 \]</span></p>
 <p><span class="math display">\[
@@ -1284,9 +1303,7 @@ y\\
 </figure>
 <span id="more"></span>
 <h2 id="误差">误差</h2>
-<figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200226171609.png" alt="后轮位置跟踪示意图" /><figcaption aria-hidden="true">后轮位置跟踪示意图</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2021/08/30/yxLlDEZFpgoi5cj.png" alt="后轮位置跟踪示意图" style="zoom:80%;" /></p>
 <h3 id="位置误差">位置误差</h3>
 <p>关于位置误差的计算，首先搜寻参考路径与车辆后轴中心距离最近的点： <span class="math display">\[
 s(t) = arg\min_{\gamma}\|\bigl(x_r(t),y_r(t)\bigr)-\bigl(x_{ref}(\gamma),y_{ref}(\gamma)\bigr) \| \tag{1}
@@ -1324,7 +1341,7 @@ d_x &amp; d_y
 <h2 id="微分方程">微分方程</h2>
 <h3 id="参考曲线最近点">参考曲线最近点</h3>
 <p>关于参考曲线与车辆后轴中心最近点处的速度<span class="math inline">\(\dot{s}(t)\)</span>可以通过下图求得</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200227170936.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/YbBKN6kUmxnAuWL.png" alt="最近点" style="zoom:80%;" /></p>
 <p>如上图所示，车辆沿目标路径顺时针运动，点<span class="math inline">\(O\)</span>代表当前目标曲线点对应的旋转中心。很明显此时曲率为负值，即<span class="math inline">\(R &lt; 0\)</span>。根据矢量叉乘性质得，<span class="math inline">\(e &gt; 0\)</span>。假设以点<span class="math inline">\(O\)</span>为旋转中心的车辆后轴中心角速度<span class="math inline">\(\omega_r\)</span>和最近参考路径点处的角速度<span class="math inline">\(\omega_s\)</span>近似相等，得 <span class="math display">\[
 \omega_r = \omega_s &lt; 0\tag{6}
 \]</span> 根据车辆旋转角速度的计算等式<span class="math inline">\(\frac{V}{R}\)</span>，结合等式(6)得 <span class="math display">\[
@@ -1414,18 +1431,20 @@ k_2 v_r \dfrac{\sin(\psi_e)}{\psi_e}e + \dot{\psi} - \dfrac{v_{r}\cdot\cos(\psi_
 \delta = \arctan(\frac{\dot{\psi}L}{v_r})\tag{21}
 \]</span></p>
 <h2 id="仿真">仿真</h2>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200310173756.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/8y5DujC4c3XSGWZ.png" style="zoom:80%;" /></p>
 <p>根据上述控制系统框图，搭建仿真环境，分别测试三角函数曲线和圆弧曲线的跟踪效果。</p>
 <h3 id="三角函数曲线跟踪">三角函数曲线跟踪</h3>
 <p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200312135729.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/JbyuLNvZHDlhE6q.png" /></p>
 <p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200312111356.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/qR7Zg6nM2ythaAk.png" /></p>
 <h3 id="圆弧曲线跟踪">圆弧曲线跟踪</h3>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200313145608.png" /></p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200313145612.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/1An7yMSvCTNYpJz.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/F7GJSnNzgyi6W3v.png" /></p>
 <h2 id="实测数据">实测数据</h2>
 <p>下图是实际车辆测试结果，测试条件如下： - 初始位置(0,0)，初始偏航角0° - 目标位置(5,-5)，目标偏航角-90° - 初始转向角0° - 初始速度0.5m/s - 跟踪圆弧曲率-0.2</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200316160254.png" /></p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200316160259.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/FZNv236WHmxlnqw.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/5FTyLDrlSiWg7tM.png" /></p>
 <p>基于上图可知，跟踪过程主要分为三个阶段：</p>
 <ol type="1">
 <li>第一阶段(0,0.7)m：车辆按最大角速度转到右转最大角度500°左右</li>
@@ -1454,7 +1473,7 @@ k_2 v_r \dfrac{\sin(\psi_e)}{\psi_e}e + \dot{\psi} - \dfrac{v_{r}\cdot\cos(\psi_
 </figure>
 <span id="more"></span>
 <h2 id="分析">分析</h2>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200227170936.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/YbBKN6kUmxnAuWL.png" /></p>
 <h3 id="运动学微分方程">运动学微分方程</h3>
 <p>根据上图运动学特性易得 <span class="math display">\[
 \begin{array}{cl}
@@ -1871,14 +1890,14 @@ sign(\sigma) \approx \frac{\sigma}{\rvert \sigma \rvert + \varepsilon} \tag{1}
 \lim_{\varepsilon \to 0}\frac{\sigma}{\rvert \sigma \rvert + \varepsilon} = sign(\sigma) \tag{2}
 \]</span> 对于<span class="math inline">\(\varepsilon\)</span>的选择需要权衡既要保持系统的性能理想又要确保控制的平滑。</p>
 <p>关于 Sigmoid Function 的图形如下：</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191226105628.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/NoXcDfzSPqBFMQJ.png" /></p>
 <p>使用伪滑动模态控制率如下： <span class="math display">\[
 u = -c \cdot x_2 - \rho\frac{\sigma}{\rvert \sigma \rvert + \varepsilon} \tag{3}
 \]</span></p>
 <h4 id="仿真结果">仿真结果</h4>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191230195427.png" /></p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191230195431.png" /></p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191230195652.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/gsIFvU3k7RONlBe.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/FyCmKcoS1YnELZ6.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/xA2XwCuNatFjLpk.png" /></p>
 <p>由上图可知，平滑控制函数不能够在存在外部干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>时，使得滑模变量在有限时间内收敛于0。并且滑模变量和状态变量都不能收敛于0，但由于干扰项<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>影响，使其收敛到原点附近的范围。实现平滑控制函数的代价是鲁棒性的损失和准确性降低。因为滑模变量在有限的时间内没有趋向于0，所以等式(3)所设计的平滑控制从技术上讲不是滑模控制，在系统中也不是理想的滑动模态。但是在等式(3)中平滑控制率下的系统性能接近于离散滑模控制下的系统性能。这就为我们将等式(3)对应的平滑控制率称为<strong>准滑模控制</strong>(<em>quasi-sliding mode control</em>)提供了依据，而当滑模面收敛于原点时，就叫做 <strong>准滑动模态</strong>(<em>quasi-sliding mode</em>)</p>
 <h3 id="抖振衰减">抖振衰减</h3>
 <p>考虑设计另一种对边界干扰具有鲁棒性的连续控制器，设计思想就是根据控制函数的微分形式设计滑模控制器。在这种情况下，高频切换函数的积分作为实际控制是连续的。这种方法叫做 <strong>抖振衰减</strong>(<em>chattering attenuation</em>)，这是因为在高频切换函数积分后仍然能在滑模控制中观察到一些周期性残差。</p>
@@ -1940,9 +1959,9 @@ v = -c\bar{c}x_2 - (c + \bar{c})u - \rho \cdot sign(s) \tag{16}
 \]</span></p>
 <h4 id="仿真结果-1">仿真结果</h4>
 <p>如下图所示，包含高频切换项的<span class="math inline">\(\rho sign(s)\)</span>的控制率导致了抖振。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200102150135.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/NvsdctofEuqlKni.png" /></p>
 <p>但如下图所示，抖振在实际物理控制率<span class="math inline">\(u = \int vdt\)</span>中逐步衰减。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191230195427.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/gsIFvU3k7RONlBe.png" /></p>
 ]]></content>
       <categories>
         <category>控制算法</category>
@@ -1973,7 +1992,7 @@ v = -c\bar{c}x_2 - (c + \bar{c})u - \rho \cdot sign(s) \tag{16}
 \tan(\delta) = \frac{L}{R}\tag{1}
 \]</span> 其中，<span class="math inline">\(\delta\)</span>代表前轮转向角、<span class="math inline">\(L\)</span>代表车辆轴距、<span class="math inline">\(R\)</span>代表转弯半径。</p>
 <h2 id="纯追踪">纯追踪</h2>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200302152830.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/prkjiz1ZAaHyW4u.png" alt="纯追踪" style="zoom:80%;" /></p>
 <p>纯追踪算法包括几何关系计算出后轴位置与车辆前方目标曲线上目标点之间圆弧的曲率，其中目标点由从当前车辆后轴位置到目标路径的超前距离<span class="math inline">\(l_d\)</span>决定。而车辆的转向角<span class="math inline">\(\delta\)</span>只能使用目标点位置和车辆航向量与超前向量之间的夹角<span class="math inline">\(\alpha\)</span>。由正弦定理得 <span class="math display">\[
 \frac{l_d}{\sin(2\alpha)} = \frac{R}{\sin(\frac{\pi}{2}-\alpha)}\tag{2}
 \]</span> 根据三角函数性质，对等式(2)化简得 <span class="math display">\[
@@ -2154,22 +2173,39 @@ e_{\psi}\\
 <span id="more"></span>
 <h2 id="基于几何关系设计">基于几何关系设计</h2>
 <h3 id="纯追踪算法">纯追踪算法</h3>
-<p>待补充 ### 前轴反馈 前轴反馈控制也就是常说的Stanley方法，几何关系如下： <img src="https://via.hypothes.is/https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200303102622.png" alt="前轴反馈" /> #### 三角函数曲线跟踪</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200312111352.png" /></p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200312111356.png" /></p>
+<p>待补充 ### 前轴反馈 前轴反馈控制也就是常说的Stanley方法，几何关系如下：</p>
+<p><img src="https://i.loli.net/2021/08/30/kVdqQai6KhGrelT.png" alt="前轴反馈" style="zoom:80%;" /></p>
+<h4 id="三角函数曲线跟踪">三角函数曲线跟踪</h4>
+<p><img src="https://i.loli.net/2021/08/30/to9hPGfxzk1LXnl.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/qR7Zg6nM2ythaAk.png" /></p>
 <h4 id="圆弧跟踪">圆弧跟踪</h4>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200312111029.png" /></p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200312111035.png" /> ### 后轴反馈 <img src="https://via.hypothes.is/https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200227170936.png" alt="后轴反馈" /> #### 仿真系统框图 基于下图框图，搭建仿真环境。 仿真条件： - 仿真周期20ms - 目标曲线采样间隔 5 - 初始位置(0,0) - 初始偏航角0度 <img src="https://via.hypothes.is/https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200311173918.png" alt="仿真系统框图" /> #### 余弦曲线跟踪</p>
+<p><img src="https://i.loli.net/2021/08/30/Qg3jSZLXif7Dqxc.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/Hc4Ab2qGKdvZTwV.png" /> ### 后轴反馈 <img src="https://i.loli.net/2021/08/30/YbBKN6kUmxnAuWL.png" alt="后轴反馈" style="zoom:80%;" /></p>
+<h4 id="仿真系统框图">仿真系统框图</h4>
+<p>基于下图框图，搭建仿真环境。 仿真条件： - 仿真周期20ms</p>
+<ul>
+<li><p>目标曲线采样间隔 5</p></li>
+<li><p>初始位置(0,0)</p></li>
+<li><p>初始偏航角0度</p>
+<p><img src="https://i.loli.net/2021/08/30/9YFO1wxWV3jsJuU.png" alt="仿真系统框图" /> #### 余弦曲线跟踪</p></li>
+</ul>
 <figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200312135729.png" alt="余弦曲线跟踪误差对比" /><figcaption aria-hidden="true">余弦曲线跟踪误差对比</figcaption>
+<img src="https://i.loli.net/2021/08/30/JbyuLNvZHDlhE6q.png" alt="余弦曲线跟踪误差对比" /><figcaption aria-hidden="true">余弦曲线跟踪误差对比</figcaption>
 </figure>
 <p>由上图可知，对于曲率连续变化的跟踪效果较好。</p>
 <figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200312111356.png" alt="余弦曲线跟踪控制率" /><figcaption aria-hidden="true">余弦曲线跟踪控制率</figcaption>
+<img src="https://i.loli.net/2021/08/30/qR7Zg6nM2ythaAk.png" alt="余弦曲线跟踪控制率" /><figcaption aria-hidden="true">余弦曲线跟踪控制率</figcaption>
 </figure>
 <p>输出控制抖动也较小。</p>
 <h4 id="圆弧跟踪-1">圆弧跟踪</h4>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200313145608.png" alt="圆弧跟踪误差对比" /> 由上图可知，对于曲率恒定的圆弧曲线，控制效果较差，存在较大的位置偏差。 <img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200313145612.png" alt="圆弧跟踪控制率" /> 由上图可知，控制率震荡较大。</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/1An7yMSvCTNYpJz.png" alt="圆弧跟踪误差对比" /><figcaption aria-hidden="true">圆弧跟踪误差对比</figcaption>
+</figure>
+<p>由上图可知，对于曲率恒定的圆弧曲线，控制效果较差，存在较大的位置偏差。</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/F7GJSnNzgyi6W3v.png" alt="圆弧跟踪控制率" /><figcaption aria-hidden="true">圆弧跟踪控制率</figcaption>
+</figure>
+<p>由上图可知，控制率震荡较大。</p>
 <h4 id="c仿真效果">C++仿真效果</h4>
 <p>仿真条件：</p>
 <ul>
@@ -2181,11 +2217,11 @@ e_{\psi}\\
 <p>车辆刚起步时，由于输出转向角为0，而此时的圆弧曲率为-0.2，所以存在一段转向角按照最大角速度转到目标转向角的过程。跟踪过程中，从图中转向角的振荡幅度存在小范围的变化。在两个圆弧的交界处，由于曲率由-0.2突变到0.2，方向盘转向角需要按照最大角速度转到目标角度。在该过程中存在较大误差，但是在角度达到目标角度后，误差逐渐缩小，最后完全跟踪上目标曲线。</p>
 <h5 id="圆弧前进">圆弧前进</h5>
 <figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200313132324.gif" alt="圆弧前进" /><figcaption aria-hidden="true">圆弧前进</figcaption>
+<img src="https://i.loli.net/2021/08/30/uDGjqHKANykIg4U.gif" alt="圆弧前进" /><figcaption aria-hidden="true">圆弧前进</figcaption>
 </figure>
 <h5 id="圆弧后退">圆弧后退</h5>
 <figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200313132026.gif" alt="圆弧后退" /><figcaption aria-hidden="true">圆弧后退</figcaption>
+<img src="https://i.loli.net/2021/08/30/aWeYsn983ZXRbE7.gif" alt="圆弧后退" /><figcaption aria-hidden="true">圆弧后退</figcaption>
 </figure>
 <h2 id="基于模型设计">基于模型设计</h2>
 <h3 id="运动学模型">运动学模型</h3>
@@ -2226,13 +2262,16 @@ e_{\psi}\\
 <p><span class="math display">\[
 \dot{a} * t = a \tag{1}
 \]</span></p>
-<p>对应的减速度曲线如下图所示： <img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/VehicleStopModule.png" alt="减速度曲线" /></p>
+<p>对应的减速度曲线如下图所示：</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/exlCYdmJbpOk1IA.png" alt="减速度曲线" /><figcaption aria-hidden="true">减速度曲线</figcaption>
+</figure>
 <p>对等式(1)求导得<strong>速度</strong>与<strong>加速度的变化率</strong>的关系为 <span class="math display">\[
 v_0 - \int_0^{t}a*dt = v \Longrightarrow v_0 - \frac{1}{2}\dot{a}*t^2 = v \tag{2}
 \]</span></p>
 <p>由于减速度一直变化，对应的速度曲线如下图所示：</p>
 <figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/VehicleStopModule_2.png" alt="速度曲线" /><figcaption aria-hidden="true">速度曲线</figcaption>
+<img src="https://i.loli.net/2021/08/30/peAHWyGjz6cCm8L.png" alt="速度曲线" /><figcaption aria-hidden="true">速度曲线</figcaption>
 </figure>
 <p>图中速度曲线下方的面积<span class="math inline">\(S\)</span>为行驶的位移，根据上述速度曲线，车辆运动模型如下： <span class="math display">\[
 \int_0^{t}vdt = S \Longrightarrow v_0*t - \frac{1}{6}\dot{a}t^3 = S
@@ -2263,7 +2302,7 @@ t_0*(v_0 - \frac{1}{6}\dot{a}{t_0}^2) = S \Longrightarrow {(\frac{2*v_0}{\dot{a}
 </figure>
 <span id="more"></span>
 <h2 id="单车模型">单车模型</h2>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8lRTglQkQlQTYlRTglQkUlODYlRTYlQTglQTElRTUlOUUlOEIlRTQlQjklOEIlRTUlOEQlOTUlRTglQkQlQTYlRTYlQTglQTElRTUlOUUlOEIxLlBORw?x-oss-process=image/format,png" style="zoom:80%;" /></p>
+<p><img src="https://i.loli.net/2021/08/30/vNEmAlxMSaX9cWu.png" style="zoom: 80%;" /></p>
 <p>单车模型中： - <strong>左右轮等效为单个轮子</strong> 左右前轮合并为单个轮子，其中心点为<span class="math inline">\(A\)</span>点，同样后轮等效后的中心点为<span class="math inline">\(B\)</span>点。 - <strong>转向角</strong> 前后轮的转向角用<span class="math inline">\(\delta_f\)</span>和<span class="math inline">\(\delta_r\)</span>表示，模型中前后轮都可以转向，对于只有前轮转向的系统，后轮转向角<span class="math inline">\(\delta_r\)</span>可以设置为0. - <strong>重心</strong> 点<span class="math inline">\(C\)</span>代表车辆的重心，<span class="math inline">\(A\)</span>点和<span class="math inline">\(B\)</span>点到重心的距离分别用<span class="math inline">\(l_f\)</span>和<span class="math inline">\(l_r\)</span>表示，轴距表示为<span class="math inline">\(L = l_f + l_r\)</span>。 - <strong>速度</strong> 车辆重心的速度用<span class="math inline">\(V\)</span>表示，与车辆纵向轴的夹角为<span class="math inline">\(\beta\)</span>，该角度叫做车辆的滑移角。 - <strong>运动描述</strong> 假设车辆平动，车辆运动状态可以用三个坐标量描述：<span class="math inline">\(X\)</span> 、 <span class="math inline">\(Y\)</span> 和 <span class="math inline">\(\psi\)</span>。其中<span class="math inline">\((X,Y)\)</span>代表车辆重心的位置，<span class="math inline">\(\Psi\)</span>描述了车辆的方向。</p>
 <ul>
 <li><strong>条件假设</strong> 假设速度矢量<span class="math inline">\(V\)</span>的方向在点<span class="math inline">\(A\)</span>点和<span class="math inline">\(B\)</span>点的方向与转向角的方向相同，换句话说，在A点的速度矢量与车辆纵轴的夹角为<span class="math inline">\(\delta_f\)</span>，同样<span class="math inline">\(B\)</span>点的速度矢量与车辆纵轴的夹角为<span class="math inline">\(\delta_r\)</span>。也就是说前后轮的滑移角都为0。该条件假设成立前提的是车辆速度很低(&lt;5m/s)，此时轮胎产生的横向力很小，可以忽略。</li>
@@ -2309,7 +2348,7 @@ sin(\beta)l_f - \tan(\delta_r)\cos(\beta)l_f = \frac{l_f*l_r}{R} \tag{11}
 \dot{Y} = V\sin(\beta + \psi) \tag{15}
 \]</span></p>
 <h2 id="补充">补充</h2>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E6%89%B9%E6%B3%A8%202019-12-02%20104530.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/CZdbvJf1uQzR47S.png" style="zoom: 80%;" /></p>
 <p>由上图可知，<span class="math inline">\(l_w\)</span>为车轴宽度，为了避免与上述单车模型的转向角定义重复，使用<span class="math inline">\(\delta_o\)</span>表示外部转向角，<span class="math inline">\(\delta_i\)</span>表示内部转向角。由于轴距<span class="math inline">\(L = l_f + l_r\)</span>远远小于轨迹半径<span class="math inline">\(R\)</span>，滑移角<span class="math inline">\(\beta\)</span>接近于0。一般车辆模型后轴为固定轴，故<span class="math inline">\(\delta_r\)</span>为0，所以等式(9)可以近似为 <span class="math display">\[
 \dot{\psi} = \frac{V}{L}\tan(\delta_f) \tag{16}
 \]</span> 由于<span class="math inline">\(\delta_f\)</span>很小 <span class="math display">\[
@@ -2559,7 +2598,7 @@ Sigmoid(x) = \frac{x}{\rvert x \rvert + \varepsilon} \tag{30}
 \]</span></li>
 </ul>
 <p>其中<span class="math inline">\(\varepsilon\)</span>是很小的正标量，下图为<span class="math inline">\(\varepsilon = 0.001\)</span>时，<span class="math inline">\(Sigmoid(x)\)</span>函数的波形图入下：</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191226105628.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/NoXcDfzSPqBFMQJ.png" /></p>
 <ul>
 <li><strong>Sat Function</strong>:</li>
 </ul>
@@ -2574,37 +2613,37 @@ Sat(\frac{x}{\Delta}) =
 \right. \tag{31}
 \]</span></p>
 <p>其中，<span class="math inline">\(\Delta\)</span>为很小的正标量，代表边界层的厚度，当<span class="math inline">\(\Delta = 0.05\)</span>时，<span class="math inline">\(Sat(x)\)</span>波形图如下：</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191226105632.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/Uag93Qfq14nL6uh.png" /></p>
 <h2 id="性能分析">性能分析</h2>
 <p>根据如下控制系统框图，搭建仿真环境。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225194515.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/i8oHQE4J5k1UPeq.png" style="zoom:67%;" /></p>
 <ul>
 <li>滑模变量<span class="math inline">\(s\)</span> 下图所示，是滑模变量<span class="math inline">\(s\)</span>随距离<span class="math inline">\(x\)</span>变化的图形。随着距离的增大，滑模变量<span class="math inline">\(s\)</span>趋近于0，系统也趋近于稳定，但是滑模变量在0附近存在抖振。</li>
 </ul>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201717.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/F4KWyDJEi8BwRbC.png" /></p>
 <ul>
 <li>相图 如下图所示，是系统的相图，可以看出，系统逐渐收敛于原点。</li>
 </ul>
 <figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201732.png" alt="相图" /><figcaption aria-hidden="true">相图</figcaption>
+<img src="https://i.loli.net/2021/08/30/gOeB8KIDYdZkQoP.png" alt="相图" /><figcaption aria-hidden="true">相图</figcaption>
 </figure>
 <ul>
 <li>路径跟踪图 如下图所示，是系统的路径跟踪波形图。刚开始时，跟踪存在偏差。经过一段时间的修正，跟踪路径趋近于一致。</li>
 </ul>
 <figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201746.png" alt="路径跟踪图" /><figcaption aria-hidden="true">路径跟踪图</figcaption>
+<img src="https://i.loli.net/2021/08/30/PmykNo5iZcAXsap.png" alt="路径跟踪图" /><figcaption aria-hidden="true">路径跟踪图</figcaption>
 </figure>
 <ul>
 <li>转向角图 如下图所示，是系统控制产生的转向角信号。从图中可以发现，系统在趋于稳定时，控制信号存在抖振现象。</li>
 </ul>
 <figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201811.png" alt="转向角图" /><figcaption aria-hidden="true">转向角图</figcaption>
+<img src="https://i.loli.net/2021/08/30/6UVk2o1cSsT5iym.png" alt="转向角图" /><figcaption aria-hidden="true">转向角图</figcaption>
 </figure>
 <ul>
 <li>轨迹误差图 如下图所示，是系统产生的轨迹误差图，随着时间推移，估计误差趋近于0。</li>
 </ul>
 <figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191225201827.png" alt="轨迹误差图" /><figcaption aria-hidden="true">轨迹误差图</figcaption>
+<img src="https://i.loli.net/2021/08/30/J4fnwU5QmtpLS78.png" alt="轨迹误差图" /><figcaption aria-hidden="true">轨迹误差图</figcaption>
 </figure>
 ]]></content>
       <categories>
@@ -3812,7 +3851,7 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
     <title>crazyflie-CRTP解析</title>
     <url>/2020/01/29/crazyflie-CRTP%E8%A7%A3%E6%9E%90/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
-<p>本文主要分析CRTP协议的结构，对该协议结构的理解，有助于后续的数据扩展和对软件架构的理解。为了和Crazyflie通信，<strong>Crazyflie</strong>飞控中提出一种高层次的协议叫做<strong>CRTP</strong>(<em>Crazy RealTime Protocol</em>)。这种简单的协议使用一些可以收发数据的双向目标端口，但是大都时候通信由主机发起。</p>
+<p>本文主要分析CRTP协议的结构，对该协议结构的理解，有助于后续的数据扩展和对软件架构的理解。为了和Crazyflie通信，<strong>Crazyflie</strong> 飞控中提出一种高层次的协议叫做 <strong>CRTP</strong> (<code>Crazy RealTime Protocol</code>)。这种简单的协议使用一些可以收发数据的双向目标端口，但是大都时候通信由主机发起。</p>
 <p><img src="https://i.loli.net/2021/08/30/1kaHc4AvGdPVZ3t.jpg" /></p>
 <span id="more"></span>
 <h2 id="物理载体">物理载体</h2>
@@ -3918,17 +3957,17 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
 </ul>
 <h4 id="代码分析">代码分析</h4>
 <p>参考源文件 <strong>console.c</strong>，函数调用关系如下：</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200210192236.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/co8R6P7NvJUEbd2.png" style="zoom:67%;" /></p>
 <h5 id="consoleinit函数说明">consoleInit函数说明</h5>
 <p>该函数用于初始化相关变量，并创建二值型信号量<strong>synch</strong>用于任务间，任务和中断间同步。</p>
 <h6 id="流程图">流程图</h6>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200210143407.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/UpS7EqtLHMgZTb4.png" /></p>
 <h5 id="consoletest函数说明">consoleTest函数说明</h5>
 <p>该函数返回初始化结果，初始化成功即测试通过。</p>
 <h5 id="consoleputs函数说明">consolePuts函数说明</h5>
 <p>该函数用于发送字符串。</p>
 <h6 id="流程图-1">流程图</h6>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200210151627.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/zfXnJgUK2LDhoqk.png" /></p>
 <p>该函数主要通过调用<strong>consolePutchar</strong>函数，实现字符串的发送。</p>
 <h5 id="consoleputchar函数说明">consolePutchar函数说明</h5>
 <p>该函数用于发送单字节字符。</p>
@@ -3938,11 +3977,11 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEBUG_PRINT(fmt, ...) consolePrintf(DEBUG_FMT(fmt), ##__VA_ARGS__)</span></span><br></pre></td></tr></table></figure>
 <p>使用<strong>DEBUG_PRINT</strong>宏定义映射<strong>consolePrintf</strong>函数，通过无线模块或者USB接口发送，并在控制台显示。</p>
 <h6 id="流程图-2">流程图</h6>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200210183816.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/8NzcIVtgue7W49x.png" style="zoom: 50%;" /></p>
 <h5 id="consoleputcharfromisr函数说明">consolePutcharFromISR函数说明</h5>
 <p>该函数用于在中断中运行，进行字符的发送工作。</p>
 <h6 id="流程图-3">流程图</h6>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200211145749.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/7n8b19MoajglFEZ.png" style="zoom:50%;" /></p>
 <h5 id="consolesendmessage函数说明">consoleSendMessage函数说明</h5>
 <p>该函数用于将消息缓存区的的数据<strong>messageToPrint</strong>，通过<strong>CRTP</strong>函数发送出去。</p>
 <h5 id="addbufferfullmarker">addBufferFullMarker</h5>
@@ -4341,7 +4380,7 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
 </ul>
 <h4 id="逻辑流程图">逻辑流程图</h4>
 <p>对于客户端获取信息和读写存储器是可选择的，但是Crazyflie Python 客户端总是在连接状态下载关于存储器的信息。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200202163538.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/YCcEy3ufIKjP7gW.png" style="zoom:67%;" /></p>
 <h4 id="通信协议-2">通信协议</h4>
 <p>存储器端口使用3个不同的通道：</p>
 <table>
@@ -5554,7 +5593,7 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
 <p>设置Crazyflie飞控绝对高度和俯仰/滚转角度，数据有效载荷形似如下：</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">zDistancePacket_s</span> &#123;</span></span><br><span class="line">  <span class="keyword">float</span> roll;            <span class="comment">// deg</span></span><br><span class="line">  <span class="keyword">float</span> pitch;           <span class="comment">// ...</span></span><br><span class="line">  <span class="keyword">float</span> yawrate;         <span class="comment">// deg/s</span></span><br><span class="line">  <span class="keyword">float</span> zDistance;        <span class="comment">// m in the world frame of reference</span></span><br><span class="line">&#125; __attribute__((packed));</span><br></pre></td></tr></table></figure>
 <h4 id="cppm-emulation">CPPM Emulation</h4>
-<p>CRTP数据包拥有一个<strong>CPPM</strong>(Crazyflie Pulse Position Modulation)仿真通道，该通道数据范围1000-2000，其中间值为1500，支持原始的<strong>RPYT</strong>(Roll Pitch Yaw Thrust)通道，再加上高达<strong>MAX_AUX_RC_CHANNELS</strong> 数量的辅组通道。辅组通道是可选的，并且除非给定通道被实际使用，发射器没必要传输所有的数据(<strong>numAuxChannels</strong>是设定依据)。</p>
+<p>CRTP数据包拥有一个<strong>CPPM</strong>(<code>Crazyflie Pulse Position Modulation</code>)仿真通道，该通道数据范围1000-2000，其中间值为1500，支持原始的<strong>RPYT</strong>(<code>Roll Pitch Yaw Thrust</code>)通道，再加上高达<strong>MAX_AUX_RC_CHANNELS</strong> 数量的辅组通道。辅组通道是可选的，并且除非给定通道被实际使用，发射器没必要传输所有的数据(<strong>numAuxChannels</strong>是设定依据)。</p>
 <p>有效数据载荷形式：</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAX_AUX_RC_CHANNELS 10</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">float</span> s_CppmEmuRollMaxRateDps = <span class="number">720.0f</span>; <span class="comment">// For rate mode</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">float</span> s_CppmEmuPitchMaxRateDps = <span class="number">720.0f</span>; <span class="comment">// For rate mode</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">float</span> s_CppmEmuRollMaxAngleDeg = <span class="number">50.0f</span>; <span class="comment">// For level mode</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">float</span> s_CppmEmuPitchMaxAngleDeg = <span class="number">50.0f</span>; <span class="comment">// For level mode</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">float</span> s_CppmEmuYawMaxRateDps = <span class="number">400.0f</span>; <span class="comment">// Used regardless of flight mode</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cppmEmuPacket_s</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">      <span class="keyword">uint8_t</span> numAuxChannels : <span class="number">4</span>;   <span class="comment">// Set to 0 through MAX_AUX_RC_CHANNELS</span></span><br><span class="line">      <span class="keyword">uint8_t</span> reserved : <span class="number">4</span>;</span><br><span class="line">  &#125; hdr;</span><br><span class="line">  <span class="keyword">uint16_t</span> channelRoll;</span><br><span class="line">  <span class="keyword">uint16_t</span> channelPitch;</span><br><span class="line">  <span class="keyword">uint16_t</span> channelYaw;</span><br><span class="line">  <span class="keyword">uint16_t</span> channelThrust;</span><br><span class="line">  <span class="keyword">uint16_t</span> channelAux[MAX_AUX_RC_CHANNELS];</span><br><span class="line">&#125; __attribute__((packed));</span><br></pre></td></tr></table></figure>
 <h4 id="altitude-hold">Altitude Hold</h4>
@@ -5572,7 +5611,7 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
 <p>设置绝对位置和方向，其数据有效载荷形式如下：</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">positionPacket_s</span> &#123;</span></span><br><span class="line">  <span class="keyword">float</span> x;     <span class="comment">// Position in m</span></span><br><span class="line">  <span class="keyword">float</span> y;</span><br><span class="line">  <span class="keyword">float</span> z;</span><br><span class="line">  <span class="keyword">float</span> yaw;   <span class="comment">// Orientation in degree</span></span><br><span class="line">&#125; __attribute__((packed));</span><br></pre></td></tr></table></figure>
 <h2 id="连接步骤">连接步骤</h2>
-<p>CRTP被设计为无状态模式，所以不需要握手过程。任何命令可以在任何时候被发送，但是对于一些日记/参数/存储 命令，为了主机客户端能够发送正确的信息，内容表(TOC)需要被下载。为了能够使用所有的功能，在连接的情况下，执行Python API 将会下载 参数/日记/存储 TOC 。</p>
+<p><strong>CRTP</strong>被设计为无状态模式，所以不需要握手过程。任何命令可以在任何时候被发送，但是对于一些日记/参数/存储 命令，为了主机客户端能够发送正确的信息，内容表(<strong>TOC</strong>)需要被下载。为了能够使用所有的功能，在连接的情况下，执行Python API 将会下载 参数/日记/存储 TOC 。</p>
 ]]></content>
       <categories>
         <category>crazyflie</category>

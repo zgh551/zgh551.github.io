@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190727171729916.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190727171818236.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70">
 <meta property="article:published_time" content="2019-10-19T02:03:41.000Z">
-<meta property="article:modified_time" content="2021-08-30T02:54:52.530Z">
+<meta property="article:modified_time" content="2021-08-30T05:51:54.359Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="线性插值">
 <meta property="article:tag" content="算法">
@@ -269,7 +269,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 10:54:52" itemprop="dateModified" datetime="2021-08-30T10:54:52+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 13:51:54" itemprop="dateModified" datetime="2021-08-30T13:51:54+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -301,17 +301,11 @@
 <p>本文基于车辆扭矩标定的应用场景来说明2维线性插值的具体应用，根据车辆的控制原理可知，车辆的目标加速度与当前车速和发动机输出扭矩有关，因此对车辆扭矩进行标定后，我们就可以得到一个根据当前目标加速度和车速，获得车辆输出扭矩的关系表。 如下表所示，只选取了目标加速度为正的部分标定数据，其中横向表示速度(m/s)，纵向表示加速度(m/s2)，表中的数据代表汽车扭矩输出(Nm)。由于速度只采样了[0.1,0.2,0.3,0.4,0.5,0.6,0.7]这几个数值点的数据，加速度也只采样了[0.06,0.09,0.1,0.12,0.13,0.15,0.2,0.21,0.24,0.26]这几组数据点的数据，如果想得到中间任意数值的数值，就需要使用双线性插值算法来获得。 <img src="https://img-blog.csdnimg.cn/20190727155601290.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /> 如下表所示，如果当前需求的目标加速度为0.094m/s2，当前车速为0.36m/s，想得到当前输出扭矩值，按照表格所圈出的扭矩值，进行多次线性插值，求得理想的输出扭矩。 <img src="https://img-blog.csdnimg.cn/20190727155822629.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
 <h3 id="双线性插值原理">双线性插值原理</h3>
 <p>双线性插值算法，是在线性插值的基础上进行多次插值的结果。 如下图所示，假设插值点<span class="math inline">\({(x_i,y_i)}\)</span>的坐标点<span class="math inline">\(x_i\)</span>和<span class="math inline">\(y_i\)</span>范围满足，<span class="math inline">\(x_1\le x_i \le x_2\)</span>，<span class="math inline">\(y_1\le y_i \le y_2\)</span>，其中<span class="math inline">\((x_1,y_1)\)</span>对应数值为<span class="math inline">\(z_1\)</span>，<span class="math inline">\((x_2,y_1)\)</span>对应数值为<span class="math inline">\(z_2\)</span>，<span class="math inline">\((x_2,y_2)\)</span>对应数值为<span class="math inline">\(z_3\)</span>，<span class="math inline">\((x_1,y_2)\)</span>对应数值为<span class="math inline">\(z_4\)</span>。</p>
-<figure>
-<img src="https://img-blog.csdnimg.cn/20190729105119489.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
-</figure>
+<p><img src="https://img-blog.csdnimg.cn/20190729105119489.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
 <p>第一步，进行x轴方向的线性插值。当y取值<span class="math inline">\(y_1\)</span>时，进行点<span class="math inline">\((x_1,z_1)\)</span>和点<span class="math inline">\((x_2,z_2)\)</span>之间的插值，得到插值点<span class="math inline">\((x_i,z5)\)</span>；同理y取值<span class="math inline">\(y_2\)</span>时，进行点<span class="math inline">\((x_1,z_4)\)</span>和点<span class="math inline">\((x_2,z_3)\)</span>之间的插值，可得第二个插值点<span class="math inline">\((x_i,z_6)\)</span>。</p>
-<figure>
-<img src="https://img-blog.csdnimg.cn/20190727171729916.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
-</figure>
+<p><img src="https://img-blog.csdnimg.cn/20190727171729916.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
 <p>第二步，进行y轴方向的插值。依据新的插值点<span class="math inline">\((y_1,z5)\)</span>和<span class="math inline">\((y_2,z_6)\)</span>，进行线性插值，得到插值点<span class="math inline">\((x_i,y_i,z_7)\)</span>。此时的点<span class="math inline">\((x_i,y_i,z_7)\)</span>就是双线性插值的最终结果。</p>
-<figure>
-<img src="https://img-blog.csdnimg.cn/20190727171818236.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
-</figure>
+<p><img src="https://img-blog.csdnimg.cn/20190727171818236.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
 <h2 id="软件实现">软件实现</h2>
 <h3 id="概述-1">概述</h3>
 <p>本文基于c语言去实现插值算法，数据结构采用简单的数组结构，不使用C++的关联容器属性去实现数据表的存储。</p>
