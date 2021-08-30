@@ -20,14 +20,14 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
-<meta name="description" content="概述 本文主要分析aplollo代码中关于障碍物碰撞检测相关算法，该算法通过将车辆抽象成二维矩形盒(Box)，建立点与矩形盒、线段与矩形盒、矩形盒与矩形盒的碰撞检测算法。">
+<meta name="description" content="概述 本文主要分析aplollo代码中关于障碍物碰撞检测相关算法，该算法通过将车辆抽象成二维矩形盒(Box)，建立点与矩形盒、线段与矩形盒、矩形盒与矩形盒的碰撞检测算法。  大连">
 <meta property="og:type" content="article">
 <meta property="og:title" content="碰撞检测-apollo">
 <meta property="og:url" content="https://zgh551.github.io/2020/11/04/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B-apollo/index.html">
 <meta property="og:site_name" content="Z">
-<meta property="og:description" content="概述 本文主要分析aplollo代码中关于障碍物碰撞检测相关算法，该算法通过将车辆抽象成二维矩形盒(Box)，建立点与矩形盒、线段与矩形盒、矩形盒与矩形盒的碰撞检测算法。">
+<meta property="og:description" content="概述 本文主要分析aplollo代码中关于障碍物碰撞检测相关算法，该算法通过将车辆抽象成二维矩形盒(Box)，建立点与矩形盒、线段与矩形盒、矩形盒与矩形盒的碰撞检测算法。  大连">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20201127165023.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/WiSODpuQYsy4KkC.jpg">
 <meta property="og:image" content="https://i.loli.net/2020/11/04/NwXoO1iQdxHSm4R.png">
 <meta property="og:image" content="https://i.loli.net/2020/11/04/8PclGvub46QxOrR.png">
 <meta property="og:image" content="https://i.loli.net/2020/11/06/pqGR8F4jxWJ5fCV.png">
@@ -43,14 +43,14 @@
 <meta property="og:image" content="https://i.loli.net/2020/11/06/cvArUsyTKzZHPqJ.png">
 <meta property="og:image" content="https://i.loli.net/2020/11/06/3xbcGn8ViREtNmp.png">
 <meta property="article:published_time" content="2020-11-04T06:27:53.000Z">
-<meta property="article:modified_time" content="2021-06-16T13:13:09.977Z">
+<meta property="article:modified_time" content="2021-08-30T01:25:04.350Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="collision checker">
 <meta property="article:tag" content="obstacle collision">
 <meta property="article:tag" content="碰撞检测">
 <meta property="article:tag" content="apllo碰撞检测分析">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20201127165023.png">
+<meta name="twitter:image" content="https://i.loli.net/2021/08/30/WiSODpuQYsy4KkC.jpg">
 
 
 <link rel="canonical" href="https://zgh551.github.io/2020/11/04/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B-apollo/">
@@ -280,7 +280,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-06-16 21:13:09" itemprop="dateModified" datetime="2021-06-16T21:13:09+08:00">2021-06-16</time>
+        <time title="修改时间：2021-08-30 09:25:04" itemprop="dateModified" datetime="2021-08-30T09:25:04+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -304,21 +304,19 @@
     <div class="post-body" itemprop="articleBody">
         <h2 id="概述">概述</h2>
 <p>本文主要分析<strong>aplollo</strong>代码中关于障碍物碰撞检测相关算法，该算法通过将车辆抽象成二维矩形盒(Box)，建立点与矩形盒、线段与矩形盒、矩形盒与矩形盒的碰撞检测算法。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20201127165023.png" /></p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/WiSODpuQYsy4KkC.jpg" alt="大连" /><figcaption aria-hidden="true">大连</figcaption>
+</figure>
 <span id="more"></span>
 <h2 id="碰撞判断">碰撞判断</h2>
 <h3 id="点与矩形盒">点与矩形盒</h3>
 <p>关于点与矩形盒子的位置关系,可能情况为点在矩形盒内,点在矩形边框上和点在矩形盒外部,如果点在矩形盒的外部,可以求取点到矩形盒的距离值. #### 判定点是否在矩形盒内</p>
 <p>如下图所示,红色圆点与矩形盒的关系如下图左侧,为了便于判定红点是否在矩形盒内,将下图左侧整体按照航向角顺时针旋转<span class="math inline">\(\theta\)</span>角度,得到下图右侧状态.此时,只需要判定红点的坐标<span class="math inline">\((dx,dy)\)</span>是否满足<span class="math inline">\(\mid dx \mid &lt;= length_h\)</span> 或者 <span class="math inline">\(\mid dy \mid &lt;= width_h\)</span>，则说明红点位于矩形盒内.</p>
-<figure>
-<img src="https://i.loli.net/2020/11/04/NwXoO1iQdxHSm4R.png" alt="point_in_box" /><figcaption aria-hidden="true">point_in_box</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/04/NwXoO1iQdxHSm4R.png" alt="point_in_box" style="zoom:80%;" /></p>
 <p>其中, - <span class="math inline">\(length_{half}\)</span>:车长的一半; - <span class="math inline">\(width_{half}\)</span>: 车宽的一半;</p>
 <h4 id="判定点是否在矩形盒边界上">判定点是否在矩形盒边界上</h4>
 <p>如下图所示,当红点位于矩形盒的边界上时,先以航向角顺时针旋转<span class="math inline">\(\theta\)</span>角度,然后通过判断旋转后的红点坐标<span class="math inline">\((dx,dy)\)</span>是否满足<span class="math inline">\(\mid \mid dx \mid - length_h \mid == 0\)</span> 或者 <span class="math inline">\(\mid \mid dy \mid - width_h \mid == 0\)</span>,则说明点红点位于矩形盒边界上.</p>
-<figure>
-<img src="https://i.loli.net/2020/11/04/8PclGvub46QxOrR.png" alt="point_on_box_bound" /><figcaption aria-hidden="true">point_on_box_bound</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/04/8PclGvub46QxOrR.png" alt="point_on_box_bound" style="zoom:80%;" /></p>
 <p>其中,</p>
 <ul>
 <li><span class="math inline">\(length_{half}\)</span>:车长的一半;</li>
@@ -331,15 +329,11 @@
 <li><code>dy &lt;= 0</code>:如果条件1不满足,即<code>dx &gt; 0</code>,则判断红点在<span class="math inline">\(y\)</span>轴上的投影是否小于等于车宽的一半,如果满足条件,则距离可以表示为<span class="math inline">\(\mid dx \mid\)</span>;</li>
 <li><code>dx &gt; 0 and dy &gt; 0</code>: 如果条件1和2都不满足,则距离可以表示为红点与矩形盒边角点的距离,即<span class="math inline">\(\sqrt{dx^2 + dy^2}\)</span>;</li>
 </ol>
-<figure>
-<img src="https://i.loli.net/2020/11/06/pqGR8F4jxWJ5fCV.png" alt="point_to_box_distance" /><figcaption aria-hidden="true">point_to_box_distance</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/06/pqGR8F4jxWJ5fCV.png" alt="point_to_box_distance" style="zoom:80%;" /></p>
 <h3 id="线段与矩形盒">线段与矩形盒</h3>
 <h4 id="判定线段与矩形盒是否交叠">判定线段与矩形盒是否交叠</h4>
 <p>关于某线段与矩形盒关系的判定,先计算线段的长度,如果线段的长度为0,则可以把该线段当作一个点,利用点和矩形盒的距离来判断是否交叠;如果线段的长度不为0,则先进行线段与矩形盒的粗判定,即线段的起始点与终点是否落在矩形盒的一边,如下图所示,表示线段位于矩形盒一边的四种情况.如果线段不满足如下关系,则交叠关系可以通过距离来判断.</p>
-<figure>
-<img src="https://i.loli.net/2020/11/04/9NrinbFamEds1p6.png" alt="line_to_box_outside" /><figcaption aria-hidden="true">line_to_box_outside</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/04/9NrinbFamEds1p6.png" alt="line_to_box_outside" style="zoom:50%;" /></p>
 <h4 id="计算线段到矩形盒的距离">计算线段到矩形盒的距离</h4>
 <h5 id="区域划分">区域划分</h5>
 <p>如下图所示,将矩形盒的外围分成如下8个区域,关于区域的划分,可以根据线段起始点和终点分别在<span class="math inline">\(x\)</span>轴和<span class="math inline">\(y\)</span>轴的投影,表示为<span class="math inline">\((p_x,p_y)\)</span>;以车辆中心<span class="math inline">\(o\)</span>为原点,则四个边角点可以表示为<span class="math inline">\((box_x,box_y)\)</span>,<span class="math inline">\((box_x,-box_y)\)</span>,<span class="math inline">\((-box_x,box_y)\)</span>,<span class="math inline">\((-box_x,-box_y)\)</span>.</p>
@@ -350,9 +344,7 @@ g_x=\begin{cases}
 -1 &amp; \text{if } (p_x &lt;= -box_x),\\
 \end{cases}
 \]</span></p>
-<figure>
-<img src="https://i.loli.net/2020/11/04/uriBfCcGEX3H4Sl.png" alt="line_to_box_group" /><figcaption aria-hidden="true">line_to_box_group</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/04/uriBfCcGEX3H4Sl.png" alt="line_to_box_group" style="zoom:80%;" /></p>
 <p>根据上图,区域的值表示如下:</p>
 <table>
 <thead>
@@ -419,21 +411,15 @@ g_x=\begin{cases}
 <ul>
 <li>当<span class="math inline">\(\vec{sb}\cdot\vec{sg} &lt;= 0\)</span>时,即下图浅绿色表示的区域,此时,线段与矩形盒的距离表示为<span class="math inline">\(\mid \vec{sb}\mid\)</span>.</li>
 </ul>
-<figure>
-<img src="https://i.loli.net/2020/11/05/DknoJSP8vbcrLaU.png" alt="vector_cdot_less_zero" /><figcaption aria-hidden="true">vector_cdot_less_zero</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/05/DknoJSP8vbcrLaU.png" alt="vector_cdot_less_zero" style="zoom:80%;" /></p>
 <ul>
 <li>当<span class="math inline">\(\vec{sb}\cdot\vec{sg} &gt;= \vec{sg} \cdot \vec{sg}\)</span>,即下图浅绿色区域,线段与矩形盒的距离可以表示为<span class="math inline">\(\mid \vec{sb}-\vec{sg}\mid\)</span>.</li>
 </ul>
-<figure>
-<img src="https://i.loli.net/2020/11/07/fMP1eUWuH2dngjS.png" alt="vector_cdot_length_two" /><figcaption aria-hidden="true">vector_cdot_length_two</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/07/fMP1eUWuH2dngjS.png" alt="vector_cdot_length_two" style="zoom:80%;" /></p>
 <ul>
 <li>当上述条件都不满足时,即位于下图浅黄色区域,线段与矩形盒的距离可以表示为<span class="math inline">\(\mid \vec{sb} \mid \sin{\theta}\)</span>,可使用向量叉乘得到<span class="math inline">\(\frac{\vec{sb}\times\vec{sg}}{\mid \vec{sg} \mid}\)</span>.</li>
 </ul>
-<figure>
-<img src="https://i.loli.net/2020/11/05/j1CodMGyezNSWwB.png" alt="vector_times" /><figcaption aria-hidden="true">vector_times</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/05/j1CodMGyezNSWwB.png" alt="vector_times" style="zoom:80%;" /></p>
 <h5 id="起始点区域1">起始点区域1</h5>
 <ol type="1">
 <li>当终点位于区域1时,直接使用上述方法计算距离值;</li>
@@ -461,21 +447,15 @@ g_x=\begin{cases}
 <li><p>当终点位于区域8时,选取起始点与终点中离矩形盒最近的点到矩形盒的距离,即<span class="math inline">\(\mid min(s_x,g_x) -b_x \mid\)</span>;</p></li>
 <li><p>当终点位于区域2和3时,如下图所示,通过右上边角点与线段的起始点,终点形成的矢量,进行矢量叉乘,通过数值的正负判断线段是否与矩形盒交叠;</p></li>
 </ol>
-<figure>
-<img src="https://i.loli.net/2020/11/05/dsHiLS9M5FO4xZm.png" alt="zoom8_23" /><figcaption aria-hidden="true">zoom8_23</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/05/dsHiLS9M5FO4xZm.png" alt="zoom8_23" style="zoom:80%;" /></p>
 <ol start="4" type="1">
 <li>当终点位于区域4时,线段与矩形盒一定交叠;</li>
 </ol>
 <h3 id="矩形盒与矩形盒">矩形盒与矩形盒</h3>
 <p>关于矩形盒与矩形盒的碰撞检测采用分离轴原理,即通过判断任意两个<strong>凸多边形</strong>在任意角度下的投影是否均存在重叠，来判断是否发生碰撞。若在某一角度光源下，两物体的投影存在间隙，则为不碰撞，否则为发生碰撞。 如下图所示,将左右两个矩形盒投影到左侧矩形盒长边所在轴上,从图中可以看出投影重叠;</p>
-<figure>
-<img src="https://i.loli.net/2020/11/06/cvArUsyTKzZHPqJ.png" alt="projection_1" /><figcaption aria-hidden="true">projection_1</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/06/cvArUsyTKzZHPqJ.png" alt="projection_1" style="zoom:50%;" /></p>
 <p>如下图所示,以左侧矩形盒短边为轴,将矩形盒投影到该轴上,可以发现投影无重叠,只要存在一种投影方式无重叠,则说明无碰撞。</p>
-<figure>
-<img src="https://i.loli.net/2020/11/06/3xbcGn8ViREtNmp.png" alt="projection_2" /><figcaption aria-hidden="true">projection_2</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/06/3xbcGn8ViREtNmp.png" alt="projection_2" style="zoom: 50%;" /></p>
 
     </div>
 

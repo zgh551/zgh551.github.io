@@ -2634,21 +2634,19 @@ Sat(\frac{x}{\Delta}) =
     <url>/2020/11/04/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B-apollo/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>本文主要分析<strong>aplollo</strong>代码中关于障碍物碰撞检测相关算法，该算法通过将车辆抽象成二维矩形盒(Box)，建立点与矩形盒、线段与矩形盒、矩形盒与矩形盒的碰撞检测算法。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20201127165023.png" /></p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/WiSODpuQYsy4KkC.jpg" alt="大连" /><figcaption aria-hidden="true">大连</figcaption>
+</figure>
 <span id="more"></span>
 <h2 id="碰撞判断">碰撞判断</h2>
 <h3 id="点与矩形盒">点与矩形盒</h3>
 <p>关于点与矩形盒子的位置关系,可能情况为点在矩形盒内,点在矩形边框上和点在矩形盒外部,如果点在矩形盒的外部,可以求取点到矩形盒的距离值. #### 判定点是否在矩形盒内</p>
 <p>如下图所示,红色圆点与矩形盒的关系如下图左侧,为了便于判定红点是否在矩形盒内,将下图左侧整体按照航向角顺时针旋转<span class="math inline">\(\theta\)</span>角度,得到下图右侧状态.此时,只需要判定红点的坐标<span class="math inline">\((dx,dy)\)</span>是否满足<span class="math inline">\(\mid dx \mid &lt;= length_h\)</span> 或者 <span class="math inline">\(\mid dy \mid &lt;= width_h\)</span>，则说明红点位于矩形盒内.</p>
-<figure>
-<img src="https://i.loli.net/2020/11/04/NwXoO1iQdxHSm4R.png" alt="point_in_box" /><figcaption aria-hidden="true">point_in_box</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/04/NwXoO1iQdxHSm4R.png" alt="point_in_box" style="zoom:80%;" /></p>
 <p>其中, - <span class="math inline">\(length_{half}\)</span>:车长的一半; - <span class="math inline">\(width_{half}\)</span>: 车宽的一半;</p>
 <h4 id="判定点是否在矩形盒边界上">判定点是否在矩形盒边界上</h4>
 <p>如下图所示,当红点位于矩形盒的边界上时,先以航向角顺时针旋转<span class="math inline">\(\theta\)</span>角度,然后通过判断旋转后的红点坐标<span class="math inline">\((dx,dy)\)</span>是否满足<span class="math inline">\(\mid \mid dx \mid - length_h \mid == 0\)</span> 或者 <span class="math inline">\(\mid \mid dy \mid - width_h \mid == 0\)</span>,则说明点红点位于矩形盒边界上.</p>
-<figure>
-<img src="https://i.loli.net/2020/11/04/8PclGvub46QxOrR.png" alt="point_on_box_bound" /><figcaption aria-hidden="true">point_on_box_bound</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/04/8PclGvub46QxOrR.png" alt="point_on_box_bound" style="zoom:80%;" /></p>
 <p>其中,</p>
 <ul>
 <li><span class="math inline">\(length_{half}\)</span>:车长的一半;</li>
@@ -2661,15 +2659,11 @@ Sat(\frac{x}{\Delta}) =
 <li><code>dy &lt;= 0</code>:如果条件1不满足,即<code>dx &gt; 0</code>,则判断红点在<span class="math inline">\(y\)</span>轴上的投影是否小于等于车宽的一半,如果满足条件,则距离可以表示为<span class="math inline">\(\mid dx \mid\)</span>;</li>
 <li><code>dx &gt; 0 and dy &gt; 0</code>: 如果条件1和2都不满足,则距离可以表示为红点与矩形盒边角点的距离,即<span class="math inline">\(\sqrt{dx^2 + dy^2}\)</span>;</li>
 </ol>
-<figure>
-<img src="https://i.loli.net/2020/11/06/pqGR8F4jxWJ5fCV.png" alt="point_to_box_distance" /><figcaption aria-hidden="true">point_to_box_distance</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/06/pqGR8F4jxWJ5fCV.png" alt="point_to_box_distance" style="zoom:80%;" /></p>
 <h3 id="线段与矩形盒">线段与矩形盒</h3>
 <h4 id="判定线段与矩形盒是否交叠">判定线段与矩形盒是否交叠</h4>
 <p>关于某线段与矩形盒关系的判定,先计算线段的长度,如果线段的长度为0,则可以把该线段当作一个点,利用点和矩形盒的距离来判断是否交叠;如果线段的长度不为0,则先进行线段与矩形盒的粗判定,即线段的起始点与终点是否落在矩形盒的一边,如下图所示,表示线段位于矩形盒一边的四种情况.如果线段不满足如下关系,则交叠关系可以通过距离来判断.</p>
-<figure>
-<img src="https://i.loli.net/2020/11/04/9NrinbFamEds1p6.png" alt="line_to_box_outside" /><figcaption aria-hidden="true">line_to_box_outside</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/04/9NrinbFamEds1p6.png" alt="line_to_box_outside" style="zoom:50%;" /></p>
 <h4 id="计算线段到矩形盒的距离">计算线段到矩形盒的距离</h4>
 <h5 id="区域划分">区域划分</h5>
 <p>如下图所示,将矩形盒的外围分成如下8个区域,关于区域的划分,可以根据线段起始点和终点分别在<span class="math inline">\(x\)</span>轴和<span class="math inline">\(y\)</span>轴的投影,表示为<span class="math inline">\((p_x,p_y)\)</span>;以车辆中心<span class="math inline">\(o\)</span>为原点,则四个边角点可以表示为<span class="math inline">\((box_x,box_y)\)</span>,<span class="math inline">\((box_x,-box_y)\)</span>,<span class="math inline">\((-box_x,box_y)\)</span>,<span class="math inline">\((-box_x,-box_y)\)</span>.</p>
@@ -2680,9 +2674,7 @@ g_x=\begin{cases}
 -1 &amp; \text{if } (p_x &lt;= -box_x),\\
 \end{cases}
 \]</span></p>
-<figure>
-<img src="https://i.loli.net/2020/11/04/uriBfCcGEX3H4Sl.png" alt="line_to_box_group" /><figcaption aria-hidden="true">line_to_box_group</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/04/uriBfCcGEX3H4Sl.png" alt="line_to_box_group" style="zoom:80%;" /></p>
 <p>根据上图,区域的值表示如下:</p>
 <table>
 <thead>
@@ -2749,21 +2741,15 @@ g_x=\begin{cases}
 <ul>
 <li>当<span class="math inline">\(\vec{sb}\cdot\vec{sg} &lt;= 0\)</span>时,即下图浅绿色表示的区域,此时,线段与矩形盒的距离表示为<span class="math inline">\(\mid \vec{sb}\mid\)</span>.</li>
 </ul>
-<figure>
-<img src="https://i.loli.net/2020/11/05/DknoJSP8vbcrLaU.png" alt="vector_cdot_less_zero" /><figcaption aria-hidden="true">vector_cdot_less_zero</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/05/DknoJSP8vbcrLaU.png" alt="vector_cdot_less_zero" style="zoom:80%;" /></p>
 <ul>
 <li>当<span class="math inline">\(\vec{sb}\cdot\vec{sg} &gt;= \vec{sg} \cdot \vec{sg}\)</span>,即下图浅绿色区域,线段与矩形盒的距离可以表示为<span class="math inline">\(\mid \vec{sb}-\vec{sg}\mid\)</span>.</li>
 </ul>
-<figure>
-<img src="https://i.loli.net/2020/11/07/fMP1eUWuH2dngjS.png" alt="vector_cdot_length_two" /><figcaption aria-hidden="true">vector_cdot_length_two</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/07/fMP1eUWuH2dngjS.png" alt="vector_cdot_length_two" style="zoom:80%;" /></p>
 <ul>
 <li>当上述条件都不满足时,即位于下图浅黄色区域,线段与矩形盒的距离可以表示为<span class="math inline">\(\mid \vec{sb} \mid \sin{\theta}\)</span>,可使用向量叉乘得到<span class="math inline">\(\frac{\vec{sb}\times\vec{sg}}{\mid \vec{sg} \mid}\)</span>.</li>
 </ul>
-<figure>
-<img src="https://i.loli.net/2020/11/05/j1CodMGyezNSWwB.png" alt="vector_times" /><figcaption aria-hidden="true">vector_times</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/05/j1CodMGyezNSWwB.png" alt="vector_times" style="zoom:80%;" /></p>
 <h5 id="起始点区域1">起始点区域1</h5>
 <ol type="1">
 <li>当终点位于区域1时,直接使用上述方法计算距离值;</li>
@@ -2791,21 +2777,15 @@ g_x=\begin{cases}
 <li><p>当终点位于区域8时,选取起始点与终点中离矩形盒最近的点到矩形盒的距离,即<span class="math inline">\(\mid min(s_x,g_x) -b_x \mid\)</span>;</p></li>
 <li><p>当终点位于区域2和3时,如下图所示,通过右上边角点与线段的起始点,终点形成的矢量,进行矢量叉乘,通过数值的正负判断线段是否与矩形盒交叠;</p></li>
 </ol>
-<figure>
-<img src="https://i.loli.net/2020/11/05/dsHiLS9M5FO4xZm.png" alt="zoom8_23" /><figcaption aria-hidden="true">zoom8_23</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/05/dsHiLS9M5FO4xZm.png" alt="zoom8_23" style="zoom:80%;" /></p>
 <ol start="4" type="1">
 <li>当终点位于区域4时,线段与矩形盒一定交叠;</li>
 </ol>
 <h3 id="矩形盒与矩形盒">矩形盒与矩形盒</h3>
 <p>关于矩形盒与矩形盒的碰撞检测采用分离轴原理,即通过判断任意两个<strong>凸多边形</strong>在任意角度下的投影是否均存在重叠，来判断是否发生碰撞。若在某一角度光源下，两物体的投影存在间隙，则为不碰撞，否则为发生碰撞。 如下图所示,将左右两个矩形盒投影到左侧矩形盒长边所在轴上,从图中可以看出投影重叠;</p>
-<figure>
-<img src="https://i.loli.net/2020/11/06/cvArUsyTKzZHPqJ.png" alt="projection_1" /><figcaption aria-hidden="true">projection_1</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/06/cvArUsyTKzZHPqJ.png" alt="projection_1" style="zoom:50%;" /></p>
 <p>如下图所示,以左侧矩形盒短边为轴,将矩形盒投影到该轴上,可以发现投影无重叠,只要存在一种投影方式无重叠,则说明无碰撞。</p>
-<figure>
-<img src="https://i.loli.net/2020/11/06/3xbcGn8ViREtNmp.png" alt="projection_2" /><figcaption aria-hidden="true">projection_2</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2020/11/06/3xbcGn8ViREtNmp.png" alt="projection_2" style="zoom: 50%;" /></p>
 ]]></content>
       <categories>
         <category>碰撞检测算法</category>
@@ -2821,16 +2801,18 @@ g_x=\begin{cases}
     <title>算法优化-1bit转8bit-NEON处理</title>
     <url>/2021/03/17/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96_NEON%E5%90%8E%E5%A4%84%E7%90%86/</url>
     <content><![CDATA[<h2 id="概述">1. 概述</h2>
-<p>使用IVE可以加速sobel滤波器和canny滤波器，但是IVE生成的滤波器结果格式不满足实际需求。为此，需要通过软件方式将IVE的输出结果转化成需要的形式，可以使用c语言、NEON Intrinscis和NEON汇编等方式去实现。 <span id="more"></span></p>
+<p>使用IVE可以加速sobel滤波器和canny滤波器，但是IVE生成的滤波器结果格式不满足实际需求。为此，需要通过软件方式将IVE的输出结果转化成需要的形式，可以使用c语言、NEON Intrinscis和NEON汇编等方式去实现。</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/luRx6nbg58KvOp2.jpg" alt="大连" /><figcaption aria-hidden="true">大连</figcaption>
+</figure>
+<span id="more"></span>
 <h2 id="sobel滤波">2. Sobel滤波</h2>
 <p>Sobel滤波器的结果形式如下，使用16比特存储<code>x</code>和<code>y</code>方向的梯度值，其中低8位表示<code>x</code>轴方向梯度，高8位表示<code>y</code>轴方向梯度。</p>
 <figure>
 <img src="https://i.loli.net/2021/03/22/aREjy9znB63wgOH.png" alt="IVE-sobel_result_form" /><figcaption aria-hidden="true">IVE-sobel_result_form</figcaption>
 </figure>
 <p>实际需求要将<code>x</code>和<code>y</code>方向的梯度拆分为两个字节，具体形式如下：</p>
-<figure>
-<img src="https://i.loli.net/2021/03/22/bvPYqLWknwjQdu9.png" alt="sobel_result_form_xy" /><figcaption aria-hidden="true">sobel_result_form_xy</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2021/03/22/bvPYqLWknwjQdu9.png" alt="sobel_result_form_xy" style="zoom:150%;" /></p>
 <h3 id="nfsu16tou8withtwo函数实现">2.1. NfsU16ToU8WithTwo函数实现</h3>
 <p>该函数实现将<code>16bit</code>的高低位拆分为两个独立的字节，并将拆分后的字节单独输出。 #### 2.1.1 C语言代码 使用C语言编写代码如下： <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int32_t</span> i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">	sobel_x[i] =  data_sobel[i]       &amp; <span class="number">0xff</span>;</span><br><span class="line">	sobel_y[i] = (data_sobel[i] &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xff</span>;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure> &gt; <strong>Running Time</strong> : 14.3ms</p>
 <h3 id="nfsu16tou8square-函数实现">2.2. NfsU16ToU8Square 函数实现</h3>
@@ -2847,9 +2829,7 @@ g_x=\begin{cases}
 <p>随着对NEON指令集理解的深入，可以直接使用<code>VLD2</code>指令直接在加载数据时就实现<code>x</code>和<code>y</code>通道的拆分，从而进一步提升了处理的速度。</p>
 <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int32_t</span> i = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">uint8x8x2_t</span> v_in;</span><br><span class="line"><span class="keyword">uint16x8_t</span> x2;</span><br><span class="line"><span class="keyword">uint16x8_t</span> xy_square;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i + <span class="number">7</span> &lt; size; i += <span class="number">8</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// load the input data</span></span><br><span class="line">    v_in = vld2_u8((<span class="keyword">uint8_t</span>*)input + i);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// calculate the x^2 + y^2</span></span><br><span class="line">    x2 = vmull_u8(v_in.val[<span class="number">0</span>], v_in.val[<span class="number">0</span>]);</span><br><span class="line">    xy_square = vmlal_u8(x2, v_in.val[<span class="number">1</span>], v_in.val[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// store the result</span></span><br><span class="line">    vst1q_u16(output + i, xy_square);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>通过该方式，处理器时可以减少一次<code>mov</code>操作和一次<code>shift</code>操作。如下图所示，<code>VLD2.8</code>直接加载<code>sobel_x</code>进<code>D8</code>，同时加载<code>sobel_y</code>进<code>D9</code>。</p>
-<figure>
-<img src="https://i.loli.net/2021/03/22/CSVYXb1ADeKv3M2.png" alt="IVE-u16totwobyte_load2" /><figcaption aria-hidden="true">IVE-u16totwobyte_load2</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2021/03/22/CSVYXb1ADeKv3M2.png" alt="IVE-u16totwobyte_load2" style="zoom: 50%;" /></p>
 <blockquote>
 <p><strong>Running Time</strong>: 2.64ms</p>
 </blockquote>
@@ -2910,9 +2890,7 @@ g_x=\begin{cases}
 <ol start="7" type="1">
 <li><strong>存储</strong>操作 使用<code>VST4</code>指令将上述打包好的数据，按照像素循序存储相应的内存地址。</li>
 </ol>
-<figure>
-<img src="https://i.loli.net/2021/03/22/gtaHZXzmK685opf.png" alt="one_bit_to_byte_neon7" /><figcaption aria-hidden="true">one_bit_to_byte_neon7</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2021/03/22/gtaHZXzmK685opf.png" alt="one_bit_to_byte_neon7" style="zoom:80%;" /></p>
 <h5 id="汇编代码">3.1.2.2 汇编代码</h5>
 <p>使用<strong>NEON Assembly</strong>编写上述功能代码如下： <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">NfsOneBitToU8Asm</span><span class="params">(<span class="keyword">uint8_t</span>* <span class="keyword">restrict</span> input, <span class="keyword">uint8_t</span>* <span class="keyword">restrict</span> output, <span class="keyword">uint32_t</span> size)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">uint8_t</span>* input_temp = input;</span><br><span class="line">  <span class="keyword">uint8_t</span>* output_temp = output;</span><br><span class="line">  <span class="keyword">uint32_t</span> size_tmp = size;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">asm</span> <span class="title">volatile</span><span class="params">(<span class="string">&quot;vmov.i8      q4, #0x01         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vmov.i8      q5, #0x00         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;100:                           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vld1.8      &#123;q6&#125;, [%0]!        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;pld         [%0, #128]         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q9, q6, #1         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q10, q6, #2        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q11, q6, #3        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q12, q6, #4        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q13, q6, #5        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q14, q6, #6        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q15, q6, #7        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q8, q6, q4         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q9, q9, q4         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q10, q10, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q11, q11, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q12, q12, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q13, q13, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q14, q14, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q15, q15, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q8, q8, q5         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q9, q9, q5         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q10, q10, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q11, q11, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q12, q12, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q13, q13, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q14, q14, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q15, q15, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q8, q12            \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q9, q13            \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q10, q14           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q11, q15           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d16, d18, d20, d22&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d17, d19, d21, d23&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d24, d26, d28, d30&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d25, d27, d29, d31&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;subs        %2, #16             \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;bgt         100b                \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;=r&quot;</span>(input_temp), <span class="string">&quot;=r&quot;</span>(output_temp), <span class="string">&quot;=r&quot;</span>(size_tmp)</span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;0&quot;</span>(input_temp), <span class="string">&quot;1&quot;</span>(output_temp), <span class="string">&quot;2&quot;</span>(size_tmp)</span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;memory&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;cc&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q4&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q5&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q6&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q7&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q8&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q9&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q10&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q11&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q12&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q13&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q14&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q15&quot;</span>)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <h2 id="性能对比">4. 性能对比</h2>
