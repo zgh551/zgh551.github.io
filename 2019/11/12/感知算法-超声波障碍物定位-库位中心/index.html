@@ -20,26 +20,26 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
-<meta name="description" content="概述 垂直车位的检测存在许多技术上的瓶颈，通过超声波一次性检测很难达到较高的精度，而通过车辆泊车过程中的多次的库位定位，可以有效提高车位的定位精度。本文主要介绍垂直车位情形下，车辆已经进库的情形，如何通过辆边的障碍物，重新定位库位的中心。">
+<meta name="description" content="概述 垂直车位的检测存在许多技术上的瓶颈，通过超声波一次性检测很难达到较高的精度，而通过车辆泊车过程中的多次的库位定位，可以有效提高车位的定位精度。本文主要介绍垂直车位情形下，车辆已经进库的情形，如何通过辆边的障碍物，重新定位库位的中心。  菊花展">
 <meta property="og:type" content="article">
 <meta property="og:title" content="超声波障碍物定位_库位中心">
 <meta property="og:url" content="https://zgh551.github.io/2019/11/12/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E4%B8%AD%E5%BF%83/index.html">
 <meta property="og:site_name" content="Z">
-<meta property="og:description" content="概述 垂直车位的检测存在许多技术上的瓶颈，通过超声波一次性检测很难达到较高的精度，而通过车辆泊车过程中的多次的库位定位，可以有效提高车位的定位精度。本文主要介绍垂直车位情形下，车辆已经进库的情形，如何通过辆边的障碍物，重新定位库位的中心。">
+<meta property="og:description" content="概述 垂直车位的检测存在许多技术上的瓶颈，通过超声波一次性检测很难达到较高的精度，而通过车辆泊车过程中的多次的库位定位，可以有效提高车位的定位精度。本文主要介绍垂直车位情形下，车辆已经进库的情形，如何通过辆边的障碍物，重新定位库位的中心。  菊花展">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20201127185719.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/sYMfyTvGl5WFk6V.jpg">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190522172808439.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190522173940224.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/2019052217495454.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70">
 <meta property="article:published_time" content="2019-11-12T05:48:08.000Z">
-<meta property="article:modified_time" content="2021-06-16T13:13:09.966Z">
+<meta property="article:modified_time" content="2021-08-30T02:51:24.408Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="超声波">
 <meta property="article:tag" content="感知算法">
 <meta property="article:tag" content="障碍物定位">
 <meta property="article:tag" content="库位中心">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20201127185719.png">
+<meta name="twitter:image" content="https://i.loli.net/2021/08/30/sYMfyTvGl5WFk6V.jpg">
 
 
 <link rel="canonical" href="https://zgh551.github.io/2019/11/12/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E4%B8%AD%E5%BF%83/">
@@ -171,18 +171,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-count">82</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -269,7 +269,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-06-16 21:13:09" itemprop="dateModified" datetime="2021-06-16T21:13:09+08:00">2021-06-16</time>
+        <time title="修改时间：2021-08-30 10:51:24" itemprop="dateModified" datetime="2021-08-30T10:51:24+08:00">2021-08-30</time>
       </span>
 
   
@@ -284,7 +284,9 @@
     <div class="post-body" itemprop="articleBody">
         <h2 id="概述">概述</h2>
 <p>垂直车位的检测存在许多技术上的瓶颈，通过超声波一次性检测很难达到较高的精度，而通过车辆泊车过程中的多次的库位定位，可以有效提高车位的定位精度。本文主要介绍垂直车位情形下，车辆已经进库的情形，如何通过辆边的障碍物，重新定位库位的中心。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20201127185719.png" /></p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/sYMfyTvGl5WFk6V.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
+</figure>
 <span id="more"></span>
 <h2 id="数据处理">数据处理</h2>
 <h3 id="概述-1">概述</h3>

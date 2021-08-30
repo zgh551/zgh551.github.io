@@ -27,18 +27,18 @@
 <meta property="og:site_name" content="Z">
 <meta property="og:description" content="概述 当车辆速度很高时，单车模型中前后轮的速度矢量不再与轮子方向一致。此时运动学模型就不能准确地描述车辆的运动状态，这就需要使用动力学模型对车辆进行建模。 车辆单车模型中需要考虑两个维度的信息，这两个维度分别指代表车辆横向位置信息的\(y\)和表示车辆偏航角信息的\(\psi\)。下面分析过程中，先不考虑路堤角度的影响。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%8F%8A%E8%8A%B1%E5%B1%954.jpg">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/fQ7RUE9SO6ADnXN.jpg">
 <meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20200304092355.png">
 <meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8lRTYlODklQjklRTYlQjMlQTglMjAyMDE5LTEyLTAyJTIwMjAxODExLnBuZw?x-oss-process=image/format,png">
 <meta property="article:published_time" content="2019-12-02T07:08:31.000Z">
-<meta property="article:modified_time" content="2021-06-16T13:13:09.969Z">
+<meta property="article:modified_time" content="2021-08-30T02:47:57.044Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="动力学">
 <meta property="article:tag" content="车辆模型">
 <meta property="article:tag" content="dynamics model">
 <meta property="article:tag" content="车辆控制">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%8F%8A%E8%8A%B1%E5%B1%954.jpg">
+<meta name="twitter:image" content="https://i.loli.net/2021/08/30/fQ7RUE9SO6ADnXN.jpg">
 
 
 <link rel="canonical" href="https://zgh551.github.io/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B/">
@@ -170,18 +170,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">84</span>
+        <span class="site-state-item-count">82</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -268,7 +268,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-06-16 21:13:09" itemprop="dateModified" datetime="2021-06-16T21:13:09+08:00">2021-06-16</time>
+        <time title="修改时间：2021-08-30 10:47:57" itemprop="dateModified" datetime="2021-08-30T10:47:57+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -295,7 +295,7 @@
     
     <div class="post-body" itemprop="articleBody">
         <h2 id="概述">概述</h2>
-<p>当车辆速度很高时，单车模型中前后轮的速度矢量不再与轮子方向一致。此时运动学模型就不能准确地描述车辆的运动状态，这就需要使用动力学模型对车辆进行建模。 车辆单车模型中需要考虑两个维度的信息，这两个维度分别指代表车辆横向位置信息的<span class="math inline">\(y\)</span>和表示车辆偏航角信息的<span class="math inline">\(\psi\)</span>。下面分析过程中，先不考虑路堤角度的影响。 <img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/%E8%8F%8A%E8%8A%B1%E5%B1%954.jpg" /></p>
+<p>当车辆速度很高时，单车模型中前后轮的速度矢量不再与轮子方向一致。此时运动学模型就不能准确地描述车辆的运动状态，这就需要使用动力学模型对车辆进行建模。 车辆单车模型中需要考虑两个维度的信息，这两个维度分别指代表车辆横向位置信息的<span class="math inline">\(y\)</span>和表示车辆偏航角信息的<span class="math inline">\(\psi\)</span>。下面分析过程中，先不考虑路堤角度的影响。 <img src="https://i.loli.net/2021/08/30/fQ7RUE9SO6ADnXN.jpg" alt="菊花展" /></p>
 <span id="more"></span>
 <h2 id="受力分析">受力分析</h2>
 <h3 id="平动">平动</h3>
