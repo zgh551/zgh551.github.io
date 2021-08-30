@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/08/30/Q7SMVU8LzrANGlv.jpg">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/qEJyiMoPC2jwhLn.gif">
 <meta property="article:published_time" content="2019-11-22T01:35:45.000Z">
-<meta property="article:modified_time" content="2021-08-30T07:20:01.137Z">
+<meta property="article:modified_time" content="2021-08-30T07:24:38.047Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="特征提取">
 <meta property="article:tag" content="超声波">
@@ -265,7 +265,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 15:20:01" itemprop="dateModified" datetime="2021-08-30T15:20:01+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 15:24:38" itemprop="dateModified" datetime="2021-08-30T15:24:38+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -367,26 +367,34 @@ r = \cos\theta*V_x + \sin\theta*V_y \tag{12}
 \]</span></p>
 <p>将等式(12)带入等式(13),并将等式分解为一下4个部分</p>
 <p><span class="math display">\[
+\begin{array}{rl}
 A = \sum_{i=0}^{k}\cos^2\theta*x_iy_i - \sin\theta\cos\theta*x_i^2 + \sin\theta\cos\theta*y_i^2 -\sin^2\theta*x_iy_i \\
 B = \sum_{i=0}^{k}(\cos\theta*x_i + \sin\theta*y_i) \\
 C = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y)(\cos\theta*y_i - \sin\theta*x_i) \\
 D = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y) \tag{14}
+\end{array}
 \]</span></p>
 <p>等式(14)的四个部分可化简为</p>
 <p><span class="math display">\[
+\begin{array}{rl}
 A = \sum_{i=0}^{k}\cos^2\theta*x_iy_i - \sin\theta\cos\theta*x_i^2 + \sin\theta\cos\theta*y_i^2 -\sin^2\theta*x_iy_i\\
 = (\cos^2\theta - \sin^2\theta)\sum_{i=0}^{k}x_iy_i - \sin\theta\cos\theta(\sum_{i=0}^{k}x_i^2 - \sum_{i=0}^{k}y_i^2)\\
 = \cos2\theta\sum_{i=0}^{k}x_iy_i - 0.5\sin2\theta(\sum_{i=0}^{k}x_i^2 - \sum_{i=0}^{k}y_i^2) \tag{15}
+\end{array}
 \]</span></p>
 <p><span class="math display">\[
+\begin{array}{rl}
 B = \sum_{i=0}^{k}(\cos\theta*x_i + \sin\theta*y_i) \\
-  = \cos\theta\sum_{i=0}^{k}x_i + \sin\theta\sum_{i=0}^{k}y_i \tag{16}
+= \cos\theta\sum_{i=0}^{k}x_i + \sin\theta\sum_{i=0}^{k}y_i \tag{16}
+\end{array}
 \]</span></p>
 <p><span class="math display">\[
-C = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y)(\cos\theta*y_i - \sin\theta*x_i)\\
+\begin{array}{rl}
+C = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y)(\cos\theta*y_i - \sin\theta*x_i) \\
 =\cos^2\theta*V_x\sum_{i=0}^{k}y_i - \sin\theta\cos\theta*V_x\sum_{i=0}^{k}x_i+\sin\theta\cos\theta*V_y\sum_{i=0}^{k}y_i -\sin^2\theta*V_y\sum_{i=0}^{k}x_i\\
 =(\cos^2\theta - \sin^2\theta)\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} - \sin\theta\cos\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i)\\
-=\cos2\theta\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} -0.5\sin2\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i)\tag{17}
+=\cos2\theta\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} - 0.5\sin2\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i)\tag{17}
+\end{array}
 \]</span></p>
 <p><span class="math display">\[
 \begin{array}{rl}
@@ -412,16 +420,20 @@ A - C = 0 \tag{20}
 \cos2\theta*2*(\sum_{i=0}^{k}x_iy_i - \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k}) + \sin2\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i - \sum_{i=0}^{k}x_i^2 + \sum_{i=0}^{k}y_i^2) = 0 \tag{22}
 \]</span></p>
 <p>令 <span class="math display">\[
+\begin{array}{rl}
 V_{xy} = \sum_{i=0}^{k}x_iy_i - \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k}\\
 = \sum_{i=0}^{k}x_iy_i - \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} -\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} + \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k}\\
 = \sum_{i=0}^{k}x_iy_i - \sum_{i=0}^{k}x_iV_y - \sum_{i=0}^{k}y_iV_x + \sum_{i=0}^{k}V_xV_y\\
 = \sum_{i=0}^{k}(x_i - V_x)(y_i - V_y)\tag{23}
+\end{array}
 \]</span></p>
 <p><span class="math display">\[
+\begin{array}{rl}
 V_{xx} = \sum_{i=0}^{k}x_i^2 - V_x\sum_{i=0}^{k}x_i\\
 = \sum_{i=0}^{k}x_i^2 - 2\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}x_i}{k} + \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}x_i}{k}\\
 =\sum_{i=0}^{k}x_i^2 - 2V_x\sum_{i=0}^{k}x_i + \sum_{i=0}^{k}V_xV_x\\
 =\sum_{i=0}^{k}(x_i - V_x)^2 \tag{24}
+\end{array}
 \]</span></p>
 <p><span class="math display">\[
 V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \tag{25}
