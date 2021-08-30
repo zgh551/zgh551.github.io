@@ -42,7 +42,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/08/30/uDGjqHKANykIg4U.gif">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/aWeYsn983ZXRbE7.gif">
 <meta property="article:published_time" content="2020-02-23T12:38:21.000Z">
-<meta property="article:modified_time" content="2021-08-30T04:18:27.644Z">
+<meta property="article:modified_time" content="2021-08-30T07:35:56.494Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="路径跟踪">
 <meta property="article:tag" content="纯追踪法">
@@ -168,7 +168,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%87%A0%E4%BD%95%E5%85%B3%E7%B3%BB%E8%AE%BE%E8%AE%A1"><span class="nav-number">2.</span> <span class="nav-text">基于几何关系设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%AF%E8%BF%BD%E8%B8%AA%E7%AE%97%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text">纯追踪算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0%E6%9B%B2%E7%BA%BF%E8%B7%9F%E8%B8%AA"><span class="nav-number">2.1.1.</span> <span class="nav-text">三角函数曲线跟踪</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%86%E5%BC%A7%E8%B7%9F%E8%B8%AA"><span class="nav-number">2.1.2.</span> <span class="nav-text">圆弧跟踪</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%BF%E7%9C%9F%E7%B3%BB%E7%BB%9F%E6%A1%86%E5%9B%BE"><span class="nav-number">2.1.3.</span> <span class="nav-text">仿真系统框图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%86%E5%BC%A7%E8%B7%9F%E8%B8%AA-1"><span class="nav-number">2.1.4.</span> <span class="nav-text">圆弧跟踪</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#c%E4%BB%BF%E7%9C%9F%E6%95%88%E6%9E%9C"><span class="nav-number">2.1.5.</span> <span class="nav-text">C++仿真效果</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9C%86%E5%BC%A7%E5%89%8D%E8%BF%9B"><span class="nav-number">2.1.5.1.</span> <span class="nav-text">圆弧前进</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9C%86%E5%BC%A7%E5%90%8E%E9%80%80"><span class="nav-number">2.1.5.2.</span> <span class="nav-text">圆弧后退</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1"><span class="nav-number">3.</span> <span class="nav-text">基于模型设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.1.</span> <span class="nav-text">运动学模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.2.</span> <span class="nav-text">动力学模型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%87%A0%E4%BD%95%E5%85%B3%E7%B3%BB%E8%AE%BE%E8%AE%A1"><span class="nav-number">2.</span> <span class="nav-text">基于几何关系设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%AF%E8%BF%BD%E8%B8%AA%E7%AE%97%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text">纯追踪算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%BD%B4%E5%8F%8D%E9%A6%88"><span class="nav-number">2.2.</span> <span class="nav-text">前轴反馈</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0%E6%9B%B2%E7%BA%BF%E8%B7%9F%E8%B8%AA"><span class="nav-number">2.2.1.</span> <span class="nav-text">三角函数曲线跟踪</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%86%E5%BC%A7%E8%B7%9F%E8%B8%AA"><span class="nav-number">2.2.2.</span> <span class="nav-text">圆弧跟踪</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8E%E8%BD%B4%E5%8F%8D%E9%A6%88"><span class="nav-number">2.3.</span> <span class="nav-text">后轴反馈</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%BF%E7%9C%9F%E7%B3%BB%E7%BB%9F%E6%A1%86%E5%9B%BE"><span class="nav-number">2.3.1.</span> <span class="nav-text">仿真系统框图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%99%E5%BC%A6%E6%9B%B2%E7%BA%BF%E8%B7%9F%E8%B8%AA"><span class="nav-number">2.3.2.</span> <span class="nav-text">余弦曲线跟踪</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%86%E5%BC%A7%E8%B7%9F%E8%B8%AA-1"><span class="nav-number">2.3.3.</span> <span class="nav-text">圆弧跟踪</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#c%E4%BB%BF%E7%9C%9F%E6%95%88%E6%9E%9C"><span class="nav-number">2.3.4.</span> <span class="nav-text">C++仿真效果</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9C%86%E5%BC%A7%E5%89%8D%E8%BF%9B"><span class="nav-number">2.3.4.1.</span> <span class="nav-text">圆弧前进</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9C%86%E5%BC%A7%E5%90%8E%E9%80%80"><span class="nav-number">2.3.4.2.</span> <span class="nav-text">圆弧后退</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1"><span class="nav-number">3.</span> <span class="nav-text">基于模型设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.1.</span> <span class="nav-text">运动学模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.2.</span> <span class="nav-text">动力学模型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -281,7 +281,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 12:18:27" itemprop="dateModified" datetime="2021-08-30T12:18:27+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 15:35:56" itemprop="dateModified" datetime="2021-08-30T15:35:56+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -315,22 +315,24 @@
 <span id="more"></span>
 <h2 id="基于几何关系设计">基于几何关系设计</h2>
 <h3 id="纯追踪算法">纯追踪算法</h3>
-<p>待补充 ### 前轴反馈 前轴反馈控制也就是常说的Stanley方法，几何关系如下：</p>
+<p>待补充</p>
+<h3 id="前轴反馈">前轴反馈</h3>
+<p>前轴反馈控制也就是常说的Stanley方法，几何关系如下：</p>
 <p><img src="https://i.loli.net/2021/08/30/kVdqQai6KhGrelT.png" alt="前轴反馈" style="zoom:80%;" /></p>
 <h4 id="三角函数曲线跟踪">三角函数曲线跟踪</h4>
 <p><img src="https://i.loli.net/2021/08/30/to9hPGfxzk1LXnl.png" /></p>
 <p><img src="https://i.loli.net/2021/08/30/qR7Zg6nM2ythaAk.png" /></p>
 <h4 id="圆弧跟踪">圆弧跟踪</h4>
 <p><img src="https://i.loli.net/2021/08/30/Qg3jSZLXif7Dqxc.png" /></p>
-<p><img src="https://i.loli.net/2021/08/30/Hc4Ab2qGKdvZTwV.png" /> ### 后轴反馈 <img src="https://i.loli.net/2021/08/30/YbBKN6kUmxnAuWL.png" alt="后轴反馈" style="zoom:80%;" /></p>
+<p><img src="https://i.loli.net/2021/08/30/Hc4Ab2qGKdvZTwV.png" /></p>
+<h3 id="后轴反馈">后轴反馈</h3>
+<p><img src="https://i.loli.net/2021/08/30/YbBKN6kUmxnAuWL.png" alt="后轴反馈" style="zoom:80%;" /></p>
 <h4 id="仿真系统框图">仿真系统框图</h4>
-<p>基于下图框图，搭建仿真环境。 仿真条件： - 仿真周期20ms</p>
-<ul>
-<li><p>目标曲线采样间隔 5</p></li>
-<li><p>初始位置(0,0)</p></li>
-<li><p>初始偏航角0度</p>
-<p><img src="https://i.loli.net/2021/08/30/9YFO1wxWV3jsJuU.png" alt="仿真系统框图" /> #### 余弦曲线跟踪</p></li>
-</ul>
+<p>基于下图框图，搭建仿真环境。 仿真条件： - 仿真周期20ms - 目标曲线采样间隔 5 - 初始位置(0,0) - 初始偏航角0度</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/9YFO1wxWV3jsJuU.png" alt="仿真系统框图" /><figcaption aria-hidden="true">仿真系统框图</figcaption>
+</figure>
+<h4 id="余弦曲线跟踪">余弦曲线跟踪</h4>
 <figure>
 <img src="https://i.loli.net/2021/08/30/JbyuLNvZHDlhE6q.png" alt="余弦曲线跟踪误差对比" /><figcaption aria-hidden="true">余弦曲线跟踪误差对比</figcaption>
 </figure>

@@ -2366,22 +2366,24 @@ e_{\psi}\\
 <span id="more"></span>
 <h2 id="基于几何关系设计">基于几何关系设计</h2>
 <h3 id="纯追踪算法">纯追踪算法</h3>
-<p>待补充 ### 前轴反馈 前轴反馈控制也就是常说的Stanley方法，几何关系如下：</p>
+<p>待补充</p>
+<h3 id="前轴反馈">前轴反馈</h3>
+<p>前轴反馈控制也就是常说的Stanley方法，几何关系如下：</p>
 <p><img src="https://i.loli.net/2021/08/30/kVdqQai6KhGrelT.png" alt="前轴反馈" style="zoom:80%;" /></p>
 <h4 id="三角函数曲线跟踪">三角函数曲线跟踪</h4>
 <p><img src="https://i.loli.net/2021/08/30/to9hPGfxzk1LXnl.png" /></p>
 <p><img src="https://i.loli.net/2021/08/30/qR7Zg6nM2ythaAk.png" /></p>
 <h4 id="圆弧跟踪">圆弧跟踪</h4>
 <p><img src="https://i.loli.net/2021/08/30/Qg3jSZLXif7Dqxc.png" /></p>
-<p><img src="https://i.loli.net/2021/08/30/Hc4Ab2qGKdvZTwV.png" /> ### 后轴反馈 <img src="https://i.loli.net/2021/08/30/YbBKN6kUmxnAuWL.png" alt="后轴反馈" style="zoom:80%;" /></p>
+<p><img src="https://i.loli.net/2021/08/30/Hc4Ab2qGKdvZTwV.png" /></p>
+<h3 id="后轴反馈">后轴反馈</h3>
+<p><img src="https://i.loli.net/2021/08/30/YbBKN6kUmxnAuWL.png" alt="后轴反馈" style="zoom:80%;" /></p>
 <h4 id="仿真系统框图">仿真系统框图</h4>
-<p>基于下图框图，搭建仿真环境。 仿真条件： - 仿真周期20ms</p>
-<ul>
-<li><p>目标曲线采样间隔 5</p></li>
-<li><p>初始位置(0,0)</p></li>
-<li><p>初始偏航角0度</p>
-<p><img src="https://i.loli.net/2021/08/30/9YFO1wxWV3jsJuU.png" alt="仿真系统框图" /> #### 余弦曲线跟踪</p></li>
-</ul>
+<p>基于下图框图，搭建仿真环境。 仿真条件： - 仿真周期20ms - 目标曲线采样间隔 5 - 初始位置(0,0) - 初始偏航角0度</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/9YFO1wxWV3jsJuU.png" alt="仿真系统框图" /><figcaption aria-hidden="true">仿真系统框图</figcaption>
+</figure>
+<h4 id="余弦曲线跟踪">余弦曲线跟踪</h4>
 <figure>
 <img src="https://i.loli.net/2021/08/30/JbyuLNvZHDlhE6q.png" alt="余弦曲线跟踪误差对比" /><figcaption aria-hidden="true">余弦曲线跟踪误差对比</figcaption>
 </figure>
