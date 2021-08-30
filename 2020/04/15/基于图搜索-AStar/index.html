@@ -28,19 +28,19 @@
 <meta property="og:description" content="概述 A*算法是一种基于图搜索的路径搜索算法,通过结合移动代价和启发代价,优化路径的搜索性能.">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/kMIZKgcV7PnNQEC.jpg">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-base.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-Eular_distance.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-tab_show.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-Eular_distance%20select_lowest_cost.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-Eular_distance%20generate_node.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-Eular_distance%20generate_node1.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-Eular_distance%20generate_node2.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-Eular_distance%20generate_node3.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-Eular_distance%20generate_node4.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/3agpvPEB89XTLK4.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/6sE9MRizIfejx4H.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/dk7cMlj1O5ACWNZ.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/yaH7igL1RWFxMEI.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/zdJIXQBpYuF7OAZ.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/pqgZ2vl5XixR4mU.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/JENcBzb1UmMZYLX.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/v4cL526HZYWtbXh.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/pBPmRbjvfouhLzq.png">
 <meta property="og:image" content="https://i.loli.net/2020/10/31/w3grmTFfHltY24U.png">
 <meta property="og:image" content="https://i.loli.net/2020/10/31/Eqa4sbG6jgUnXVI.png">
 <meta property="article:published_time" content="2020-04-15T02:28:37.000Z">
-<meta property="article:modified_time" content="2021-08-30T01:34:39.598Z">
+<meta property="article:modified_time" content="2021-08-30T03:35:14.698Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="路径规划">
 <meta property="article:tag" content="A Star">
@@ -276,7 +276,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-08-30 09:34:39" itemprop="dateModified" datetime="2021-08-30T09:34:39+08:00">2021-08-30</time>
+        <time title="修改时间：2021-08-30 11:35:14" itemprop="dateModified" datetime="2021-08-30T11:35:14+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -307,9 +307,7 @@
 <h2 id="算法描述">算法描述</h2>
 <h3 id="确定规划的起点和终点">确定规划的起点和终点</h3>
 <p>下图所示,红色方块代表规划<strong>起始点</strong>,绿色方块代表<strong>终点</strong>,深灰色方块代表<strong>障碍物</strong>区域,其余白色方块代表可行驶区域(free space).首先将起始点节点推送到open集合中.</p>
-<figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-base.png" alt="原始地图给定起始点和终点" /><figcaption aria-hidden="true">原始地图给定起始点和终点</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2021/08/30/3agpvPEB89XTLK4.png" alt="原始地图给定起始点和终点" style="zoom:50%;" /></p>
 <h3 id="产生临近节点">产生临近节点</h3>
 <p>每次从open集合中取出<strong>总代价值</strong>最小的节点,由于当前open集合中只有起始节点,所以此时从open集合中取出的就是起始节点,并将该节点推入close集合.</p>
 <p>如下图所示,基于起始节点生成相邻节点,并计算每个节点的代价值.其中<strong>A</strong>*节点的代价值由<strong>移动代价</strong>和<strong>启发代价</strong>组成,即<span class="math inline">\(F = G + H\)</span>.</p>
@@ -318,9 +316,7 @@
 <li><strong>移动代价</strong> 采用欧拉距离计算移动代价值</li>
 <li><strong>启动代价</strong> 采用曼哈顿距离计算启发代价值</li>
 </ul>
-<figure>
-<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-Eular_distance.png" alt="临近节点产生" /><figcaption aria-hidden="true">临近节点产生</figcaption>
-</figure>
+<p><img src="https://i.loli.net/2021/08/30/6sE9MRizIfejx4H.png" alt="临近节点产生" style="zoom:50%;" /></p>
 <h4 id="图例说明">图例说明</h4>
 <p>下图是对上图中每个节点中小方格的说明:</p>
 <ul>
@@ -329,10 +325,10 @@
 <li><strong>最上方</strong>的矩形方格代表总的代价值</li>
 <li><strong>中间</strong>的紫色方格代表父节点的方向</li>
 </ul>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-tab_show.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/dk7cMlj1O5ACWNZ.png" style="zoom: 80%;" /></p>
 <h3 id="节点选择">节点选择</h3>
 <p>A*算法下一节点的选择,是从open集合中选取总代价值最小的节点.如下图所示,位于起始点右侧的节点代价值最小,图中使用浅绿色蒙板覆盖该节点表示选中.</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-Eular_distance%20select_lowest_cost.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/yaH7igL1RWFxMEI.png" alt="选择价值最低节点" style="zoom:80%;" /></p>
 <h3 id="节点扩展">节点扩展</h3>
 <p>基于选中的节点,根据扩展规则,生成新的临近节点,计算临近节点时只需要计算<strong>移动代价</strong>.</p>
 <p>如下图中的右侧所示,对于新生成的8个节点需要做如下条件判断:</p>
@@ -349,20 +345,21 @@
 </ol></li>
 </ul>
 <p>如下图所示,当前节点的左侧的节点已经在close集合中,直接跳过该节点;当前节点左上角,左下角,上方和下方的节点已经在open集合中,所以需要比较新节点与open集合中节点的移动代价.通过比较,这四个新节点的移动代价大于相应open集合中节点的移动代价,所以跳过这些节点;当前节点右侧三个新节点都不在open集合中,所以直接将它们推入open集合.</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-Eular_distance%20generate_node.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/zdJIXQBpYuF7OAZ.png" style="zoom: 67%;" /></p>
 <p>基于扩展规则,不断推出总代价值最小的节点,并扩展这些节点.下图中,当前节点右侧三个新节点与障碍存在碰撞,所以直接跳过.</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-Eular_distance%20generate_node1.png" /></p>
-<p>如下图所示,如果存在总代价相等的情况,则先推出最新推入的节点.下图中,假设右下方总代价值为64的节点是新推进open集合的节点.<img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-Eular_distance%20generate_node2.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/pqgZ2vl5XixR4mU.png" style="zoom: 67%;" /></p>
+<p>如下图所示,如果存在总代价相等的情况,则先推出最新推入的节点.下图中,假设右下方总代价值为64的节点是新推进open集合的节点.</p>
+<p><img src="https://i.loli.net/2021/08/30/JENcBzb1UmMZYLX.png" style="zoom:67%;" /></p>
 <p>如下图所示,继续推出新的节点,并迭代更新.</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-Eular_distance%20generate_node3.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/v4cL526HZYWtbXh.png" style="zoom:67%;" /></p>
 <p>如下图所示,新的节点有的与障碍物存在碰撞,有的已经在close集合中,有的移动代价大于原先的节点;但当前节点下方的节点,其移动代价小于open集中对应节点的代价,所以需替换open集合中该节点的移动代价,并将其父节点指向当前节点.</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Astar-Eular_distance%20generate_node4.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/pBPmRbjvfouhLzq.png" style="zoom:67%;" /></p>
 <h3 id="迭代">迭代</h3>
 <p>如下图所示,直到从open集合中推出的节点是终点,表明搜索结束.浅绿色蒙板包含的区域属于close集合,其它搜索过的节点属于open集合.如果遍历所有open集合的节点都无法到达终点,则搜索失败.</p>
-<p><img src="https://i.loli.net/2020/10/31/w3grmTFfHltY24U.png" alt="搜索完成" style="zoom:80%;" /></p>
+<p><img src="https://i.loli.net/2020/10/31/w3grmTFfHltY24U.png" alt="搜索完成" style="zoom: 67%;" /></p>
 <h3 id="获取路径">获取路径</h3>
 <p>如下图所示,搜索结束后,以终点为起始节点,根据节点所指向的父节点,反向更新搜索路径,直到节点的父节点指向为空,即到达起始点.</p>
-<p><img src="https://i.loli.net/2020/10/31/Eqa4sbG6jgUnXVI.png" alt="搜索结果" style="zoom:80%;" /></p>
+<p><img src="https://i.loli.net/2020/10/31/Eqa4sbG6jgUnXVI.png" alt="搜索结果" style="zoom: 67%;" /></p>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.redblobgames.com/pathfinding/a-star/introduction.html">Introduction to the A* Algorithm</a></li>
