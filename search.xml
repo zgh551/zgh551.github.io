@@ -2507,87 +2507,150 @@ t_0*(v_0 - \frac{1}{6}\dot{a}{t_0}^2) = S \Longrightarrow {(\frac{2*v_0}{\dot{a}
 <span id="more"></span>
 <h2 id="单车模型">单车模型</h2>
 <p><img src="https://i.loli.net/2021/08/30/vNEmAlxMSaX9cWu.png" style="zoom: 80%;" /></p>
-<p>单车模型中： - <strong>左右轮等效为单个轮子</strong> 左右前轮合并为单个轮子，其中心点为<span class="math inline">\(A\)</span>点，同样后轮等效后的中心点为<span class="math inline">\(B\)</span>点。 - <strong>转向角</strong> 前后轮的转向角用<span class="math inline">\(\delta_f\)</span>和<span class="math inline">\(\delta_r\)</span>表示，模型中前后轮都可以转向，对于只有前轮转向的系统，后轮转向角<span class="math inline">\(\delta_r\)</span>可以设置为0. - <strong>重心</strong> 点<span class="math inline">\(C\)</span>代表车辆的重心，<span class="math inline">\(A\)</span>点和<span class="math inline">\(B\)</span>点到重心的距离分别用<span class="math inline">\(l_f\)</span>和<span class="math inline">\(l_r\)</span>表示，轴距表示为<span class="math inline">\(L = l_f + l_r\)</span>。 - <strong>速度</strong> 车辆重心的速度用<span class="math inline">\(V\)</span>表示，与车辆纵向轴的夹角为<span class="math inline">\(\beta\)</span>，该角度叫做车辆的滑移角。 - <strong>运动描述</strong> 假设车辆平动，车辆运动状态可以用三个坐标量描述：<span class="math inline">\(X\)</span> 、 <span class="math inline">\(Y\)</span> 和 <span class="math inline">\(\psi\)</span>。其中<span class="math inline">\((X,Y)\)</span>代表车辆重心的位置，<span class="math inline">\(\Psi\)</span>描述了车辆的方向。</p>
+<p>单车模型中：</p>
 <ul>
-<li><strong>条件假设</strong> 假设速度矢量<span class="math inline">\(V\)</span>的方向在点<span class="math inline">\(A\)</span>点和<span class="math inline">\(B\)</span>点的方向与转向角的方向相同，换句话说，在A点的速度矢量与车辆纵轴的夹角为<span class="math inline">\(\delta_f\)</span>，同样<span class="math inline">\(B\)</span>点的速度矢量与车辆纵轴的夹角为<span class="math inline">\(\delta_r\)</span>。也就是说前后轮的滑移角都为0。该条件假设成立前提的是车辆速度很低(&lt;5m/s)，此时轮胎产生的横向力很小，可以忽略。</li>
-<li><strong>轨迹半径</strong> 点<span class="math inline">\(O\)</span>代表车辆的瞬时旋转中心，线段<span class="math inline">\(AO\)</span>与<span class="math inline">\(BO\)</span>与前后两个转轮方向垂直，他们的交点即为<span class="math inline">\(O\)</span>点，线段<span class="math inline">\(OC\)</span>的长度代表车辆的轨迹半径<span class="math inline">\(R\)</span>。</li>
-<li><strong>航迹角</strong> 车辆重心处的速度垂直于<span class="math inline">\(OC\)</span>,车辆速度矢量与车辆纵轴的夹角为<span class="math inline">\(\beta\)</span>，车辆的航向角为<span class="math inline">\(\psi\)</span>，则航迹角为<span class="math inline">\(\gamma = \psi + \beta\)</span>。</li>
+<li><p><strong>左右轮等效为单个轮子</strong> 左右前轮合并为单个轮子，其中心点为<span class="math inline">\(A\)</span>点，同样后轮等效后的中心点为<span class="math inline">\(B\)</span>点。</p></li>
+<li><p><strong>转向角</strong> 前后轮的转向角用<span class="math inline">\(\delta_f\)</span>和<span class="math inline">\(\delta_r\)</span>表示，模型中前后轮都可以转向，对于只有前轮转向的系统，后轮转向角<span class="math inline">\(\delta_r\)</span>可以设置为0.</p></li>
+<li><p><strong>重心</strong> 点<span class="math inline">\(C\)</span>代表车辆的重心，<span class="math inline">\(A\)</span>点和<span class="math inline">\(B\)</span>点到重心的距离分别用<span class="math inline">\(l_f\)</span>和<span class="math inline">\(l_r\)</span>表示，轴距表示为<span class="math inline">\(L = l_f + l_r\)</span>。</p></li>
+<li><p><strong>速度</strong> 车辆重心的速度用<span class="math inline">\(V\)</span>表示，与车辆纵向轴的夹角为<span class="math inline">\(\beta\)</span>，该角度叫做车辆的滑移角。</p></li>
+<li><p><strong>运动描述</strong> 假设车辆平动，车辆运动状态可以用三个坐标量描述：<span class="math inline">\(X\)</span> 、 <span class="math inline">\(Y\)</span> 和 <span class="math inline">\(\psi\)</span>。其中<span class="math inline">\((X,Y)\)</span>代表车辆重心的位置，<span class="math inline">\(\Psi\)</span>描述了车辆的方向。</p></li>
+<li><p><strong>条件假设</strong> 假设速度矢量<span class="math inline">\(V\)</span>的方向在点<span class="math inline">\(A\)</span>点和<span class="math inline">\(B\)</span>点的方向与转向角的方向相同，换句话说，在A点的速度矢量与车辆纵轴的夹角为<span class="math inline">\(\delta_f\)</span>，同样<span class="math inline">\(B\)</span>点的速度矢量与车辆纵轴的夹角为<span class="math inline">\(\delta_r\)</span>。也就是说前后轮的滑移角都为0。该条件假设成立前提的是车辆速度很低(&lt;5m/s)，此时轮胎产生的横向力很小，可以忽略。</p></li>
+<li><p><strong>轨迹半径</strong> 点<span class="math inline">\(O\)</span>代表车辆的瞬时旋转中心，线段<span class="math inline">\(AO\)</span>与<span class="math inline">\(BO\)</span>与前后两个转轮方向垂直，他们的交点即为<span class="math inline">\(O\)</span>点，线段<span class="math inline">\(OC\)</span>的长度代表车辆的轨迹半径<span class="math inline">\(R\)</span>。</p></li>
+<li><p><strong>航迹角</strong> 车辆重心处的速度垂直于<span class="math inline">\(OC\)</span>,车辆速度矢量与车辆纵轴的夹角为<span class="math inline">\(\beta\)</span>，车辆的航向角为<span class="math inline">\(\psi\)</span>，则航迹角为<span class="math inline">\(\gamma = \psi + \beta\)</span>。</p></li>
 </ul>
 <h2 id="运动方程">运动方程</h2>
 <h3 id="概述-1">概述</h3>
 <p>运动方程可以根据单车模型几何关系推导出，下面根据单车模型的几何关系，推导出车辆运动的微分方程。</p>
 <h3 id="姿态信息偏航角">姿态信息(偏航角)</h3>
-<p>三角形<span class="math inline">\(OCA\)</span>根据正弦定理得 <span class="math display">\[
+<p>三角形<span class="math inline">\(OCA\)</span>根据正弦定理得</p>
+<p><span class="math display">\[
 \frac{\sin(\delta_f - \beta)}{l_f} = \frac{\sin(\frac{\pi}{2} - \delta_f)}{R} \tag{1}
-\]</span> 同理，三角形<span class="math inline">\(OCB\)</span>根据正弦定理可得</p>
+\]</span></p>
+<p>同理，三角形<span class="math inline">\(OCB\)</span>根据正弦定理可得</p>
 <p><span class="math display">\[
 \frac{\sin(\beta - \delta_r)}{l_r} = \frac{\sin(\frac{\pi}{2} + \delta_r)}{R} \tag{2}
-\]</span> 根据<strong>和差定理</strong>，等式(1)得 <span class="math display">\[
+\]</span></p>
+<p>根据<strong>和差定理</strong>，等式(1)得</p>
+<p><span class="math display">\[
 \frac{\sin(\delta_f)\cos(\beta) - \cos(\delta_f)\sin(\beta)}{l_f} = \frac{\cos(\delta_f)}{R} \tag{3}
-\]</span> 同理，根据等式(2)得 <span class="math display">\[
+\]</span></p>
+<p>同理，根据等式(2)得</p>
+<p><span class="math display">\[
 \frac{\cos(\delta_r)\sin(\beta) - \cos(\beta)\sin(\delta_r)}{l_r} = \frac{\cos(\delta_f)}{R} \tag{4}
-\]</span> 等式(3)两边同时乘<span class="math inline">\(\frac{l_f}{\cos(\delta_f)}\)</span>得 <span class="math display">\[
+\]</span></p>
+<p>等式(3)两边同时乘<span class="math inline">\(\frac{l_f}{\cos(\delta_f)}\)</span>得</p>
+<p><span class="math display">\[
 \tan(\delta_f)\cos(\beta) - sin(\beta) = \frac{l_f}{R} \tag{5}
-\]</span> 同理，等式(4)两边同时乘<span class="math inline">\(\frac{l_r}{\cos(\delta_r)}\)</span>得 <span class="math display">\[
+\]</span></p>
+<p>同理，等式(4)两边同时乘<span class="math inline">\(\frac{l_r}{\cos(\delta_r)}\)</span>得</p>
+<p><span class="math display">\[
 sin(\beta) - \tan(\delta_r)\cos(\beta) = \frac{l_r}{R} \tag{6}
-\]</span> 等式(5)和(6)相加得 <span class="math display">\[
+\]</span></p>
+<p>等式(5)和(6)相加得</p>
+<p><span class="math display">\[
 \{\tan(\delta_f) - \tan(\delta_r)\}\cos(\beta) = \frac{l_f + l_r}{R} \tag{7}
-\]</span> 根据条件假设，车辆速度很低，车辆的轨迹半径变化就很慢。车辆偏航角的变化率(<span class="math inline">\(\dot{\psi}\)</span>)可以近似等于车辆的角速度(<span class="math inline">\(\omega\)</span>)。根据车辆角速度<span class="math inline">\(\omega = \frac{V}{R}\)</span>得 <span class="math display">\[
+\]</span></p>
+<p>根据条件假设，车辆速度很低，车辆的轨迹半径变化就很慢。车辆偏航角的变化率(<span class="math inline">\(\dot{\psi}\)</span>)可以近似等于车辆的角速度(<span class="math inline">\(\omega\)</span>)。根据车辆角速度<span class="math inline">\(\omega = \frac{V}{R}\)</span>得</p>
+<p><span class="math display">\[
 \dot{\psi} = \frac{V}{R} \tag{8}
-\]</span> 将等式(8)带入等式(7)中，消除<span class="math inline">\(R\)</span>项得 <span class="math display">\[
+\]</span></p>
+<p>将等式(8)带入等式(7)中，消除<span class="math inline">\(R\)</span>项得</p>
+<p><span class="math display">\[
 \dot{\psi} = \frac{V\cos(\beta)}{l_f + l_r}\{\tan(\delta_f) - \tan(\delta_r)\} \tag{9}
-\]</span> 上述等式一共三个输入变量：<span class="math inline">\(\delta_f\)</span> 、<span class="math inline">\(\delta_r\)</span>和<span class="math inline">\(V\)</span>。其中<span class="math inline">\(\delta_f\)</span>和<span class="math inline">\(\delta_r\)</span>是车辆的转向角，可以通过车身传感器获得。<span class="math inline">\(V\)</span>是一个外部变量，可以假设其为时变函数，可以从纵向控制中获得。 #### 滑移角<span class="math inline">\(\beta\)</span>的计算 等式(5)乘以<span class="math inline">\(l_r\)</span>， <span class="math display">\[
+\]</span></p>
+<p>上述等式一共三个输入变量：<span class="math inline">\(\delta_f\)</span> 、<span class="math inline">\(\delta_r\)</span>和<span class="math inline">\(V\)</span>。其中<span class="math inline">\(\delta_f\)</span>和<span class="math inline">\(\delta_r\)</span>是车辆的转向角，可以通过车身传感器获得。<span class="math inline">\(V\)</span>是一个外部变量，可以假设其为时变函数，可以从纵向控制中获得。</p>
+<h4 id="滑移角beta的计算">滑移角<span class="math inline">\(\beta\)</span>的计算</h4>
+<p>等式(5)乘以<span class="math inline">\(l_r\)</span>，</p>
+<p><span class="math display">\[
 \tan(\delta_f)\cos(\beta)l_r - sin(\beta)l_r = \frac{l_f*l_r}{R} \tag{10}
-\]</span> 等式(6)乘以<span class="math inline">\(l_f\)</span>得 <span class="math display">\[
+\]</span></p>
+<p>等式(6)乘以<span class="math inline">\(l_f\)</span>得</p>
+<p><span class="math display">\[
 sin(\beta)l_f - \tan(\delta_r)\cos(\beta)l_f = \frac{l_f*l_r}{R} \tag{11}
-\]</span> 等式(10)和(11)相减得 <span class="math display">\[
+\]</span></p>
+<p>等式(10)和(11)相减得</p>
+<p><span class="math display">\[
 \cos(\beta)(l_f\tan(\delta_r) + l_r\tan(\delta_f)) = \sin(\beta)(l_f + l_r) \tag{12}
-\]</span> 等式(12)两端同时乘以<span class="math inline">\(\frac{1}{\cos(\beta)}\)</span>得 <span class="math display">\[
+\]</span></p>
+<p>等式(12)两端同时乘以<span class="math inline">\(\frac{1}{\cos(\beta)}\)</span>得</p>
+<p><span class="math display">\[
 \tan(\beta) = \frac{l_f\tan(\delta_r) + l_r\tan(\delta_f)}{l_f + l_r} \tag{13}
-\]</span> 故取反三角函数得 <span class="math display">\[
+\]</span></p>
+<p>故取反三角函数得</p>
+<p><span class="math display">\[
 \beta = \arctan(\frac{l_f\tan(\delta_r) + l_r\tan(\delta_f)}{l_f + l_r} \tag{13})
-\]</span> ### 位置信息 根据单车模型得 <span class="math display">\[
+\]</span></p>
+<h3 id="位置信息">位置信息</h3>
+<p>根据单车模型得</p>
+<p><span class="math display">\[
 \dot{X} = V\cos(\beta + \psi) \tag{14}
 \]</span> <span class="math display">\[
 \dot{Y} = V\sin(\beta + \psi) \tag{15}
 \]</span></p>
 <h2 id="补充">补充</h2>
 <p><img src="https://i.loli.net/2021/08/30/CZdbvJf1uQzR47S.png" style="zoom: 80%;" /></p>
-<p>由上图可知，<span class="math inline">\(l_w\)</span>为车轴宽度，为了避免与上述单车模型的转向角定义重复，使用<span class="math inline">\(\delta_o\)</span>表示外部转向角，<span class="math inline">\(\delta_i\)</span>表示内部转向角。由于轴距<span class="math inline">\(L = l_f + l_r\)</span>远远小于轨迹半径<span class="math inline">\(R\)</span>，滑移角<span class="math inline">\(\beta\)</span>接近于0。一般车辆模型后轴为固定轴，故<span class="math inline">\(\delta_r\)</span>为0，所以等式(9)可以近似为 <span class="math display">\[
+<p>由上图可知，<span class="math inline">\(l_w\)</span>为车轴宽度，为了避免与上述单车模型的转向角定义重复，使用<span class="math inline">\(\delta_o\)</span>表示外部转向角，<span class="math inline">\(\delta_i\)</span>表示内部转向角。由于轴距<span class="math inline">\(L = l_f + l_r\)</span>远远小于轨迹半径<span class="math inline">\(R\)</span>，滑移角<span class="math inline">\(\beta\)</span>接近于0。一般车辆模型后轴为固定轴，故<span class="math inline">\(\delta_r\)</span>为0，所以等式(9)可以近似为</p>
+<p><span class="math display">\[
 \dot{\psi} = \frac{V}{L}\tan(\delta_f) \tag{16}
-\]</span> 由于<span class="math inline">\(\delta_f\)</span>很小 <span class="math display">\[
+\]</span></p>
+<p>由于<span class="math inline">\(\delta_f\)</span>很小</p>
+<p><span class="math display">\[
 \tan(\delta_f) \approx \delta_f \tag{17}
-\]</span> 根据等式(8)和等式(16)得 <span class="math display">\[
+\]</span></p>
+<p>根据等式(8)和等式(16)得</p>
+<p><span class="math display">\[
 \frac{\dot{\psi}}{V} \approx \frac{\delta_f}{L} = \frac{1}{R} \tag{18}
-\]</span> 故不区分前后轴，等效转向角为 <span class="math display">\[
+\]</span></p>
+<p>故不区分前后轴，等效转向角为</p>
+<p><span class="math display">\[
 \delta = \frac{L}{R} \tag{19}
-\]</span> 由于内外轮的转弯半径不同，根据等式(19),外轮转角为 <span class="math display">\[
+\]</span></p>
+<p>由于内外轮的转弯半径不同，根据等式(19),外轮转角为</p>
+<p><span class="math display">\[
 \delta_o = \frac{L}{R + \frac{l_w}{2}} \tag{20}
-\]</span> 内轮转角为 <span class="math display">\[
+\]</span></p>
+<p>内轮转角为</p>
+<p><span class="math display">\[
 \delta_i = \frac{L}{R - \frac{l_w}{2}} \tag{21}
-\]</span> 故前轮平均转向角为 <span class="math display">\[
+\]</span></p>
+<p>故前轮平均转向角为</p>
+<p><span class="math display">\[
 \delta = \frac{\delta_o + \delta_i}{2} = \frac{L}{R - \frac{l_w^2}{4R}} \tag{22}
-\]</span> 由于<span class="math inline">\(\frac{l_w^2}{4R}\)</span>项中，<span class="math inline">\(l_w\)</span>远远小于<span class="math inline">\(R\)</span>,且<span class="math inline">\(l_w\)</span>的二次项更小，故 <span class="math display">\[
+\]</span></p>
+<p>由于<span class="math inline">\(\frac{l_w^2}{4R}\)</span>项中，<span class="math inline">\(l_w\)</span>远远小于<span class="math inline">\(R\)</span>,且<span class="math inline">\(l_w\)</span>的二次项更小，故</p>
+<p><span class="math display">\[
 \frac{l_w^2}{4R} \cong 0 \tag{23}
-\]</span> 所以等式(22)可以近似为 <span class="math display">\[
+\]</span></p>
+<p>所以等式(22)可以近似为</p>
+<p><span class="math display">\[
 \delta = \frac{L}{R} \tag{24}
-\]</span> 比较等式(20)和(21)知，<span class="math inline">\(\delta_i\)</span>始终大于<span class="math inline">\(\delta_o\)</span>，故 <span class="math display">\[
+\]</span></p>
+<p>比较等式(20)和(21)知，<span class="math inline">\(\delta_i\)</span>始终大于<span class="math inline">\(\delta_o\)</span>，故</p>
+<p><span class="math display">\[
 \delta_i - \delta_o = \frac{L}{R - \frac{l_w}{2}} - \frac{L}{R + \frac{l_w}{2}} \quad\\
 =\frac{Ll_w}{R^2 - \frac{l_w^2}{4}} \qquad\\
 \cong \frac{L}{R^2}l_w = \delta^2\frac{l_w}{L} \tag{25}
-\]</span> 根据等式(25)可知，前轮内外转向角的差值接近于平均转向角的二次方，所以当前轮转向角较大时，内外轮的转向角误差就越大。</p>
+\]</span></p>
+<p>根据等式(25)可知，前轮内外转向角的差值接近于平均转向角的二次方，所以当前轮转向角较大时，内外轮的转向角误差就越大。</p>
 <h2 id="结论">结论</h2>
-<p>车辆运动模型基于单车模型推导，推导过程不考虑车辆受到的横向力，故该模型只适用于车辆速度很低的情形。 <span class="math display">\[
+<p>车辆运动模型基于单车模型推导，推导过程不考虑车辆受到的横向力，故该模型只适用于车辆速度很低的情形。</p>
+<p><span class="math display">\[
 a = \frac{mV^2}{R} \tag{26}
-\]</span> 根据等式(26)知，速度很小时，车辆受到的向心力可以忽略不记，所以才有公式(8)的成立。所以当车辆的运动场景速度较低时，可以使用该模型描述车辆的运动。</p>
+\]</span></p>
+<p>根据等式(26)知，速度很小时，车辆受到的向心力可以忽略不记，所以才有公式(8)的成立。所以当车辆的运动场景速度较低时，可以使用该模型描述车辆的运动。</p>
 <h3 id="微分方程形式">微分方程形式</h3>
-<p>根据等式(9)、(14)和(15)，对于前轮转向系统，<span class="math inline">\(\delta_r = 0\)</span>，可得 <span class="math display">\[
+<p>根据等式(9)、(14)和(15)，对于前轮转向系统，<span class="math inline">\(\delta_r = 0\)</span>，可得</p>
+<p><span class="math display">\[
 \dot{X} = V\cos(\beta + \psi) \qquad\\
 \dot{Y} = V\sin(\beta + \psi) \qquad\\
 \dot{\psi} = \frac{V\cos(\beta)\tan(\delta_f)}{L}
-\]</span> 其中 <span class="math display">\[
+\]</span></p>
+<p>其中</p>
+<p><span class="math display">\[
 \beta = \arctan(\frac{l_r\tan(\delta_f)}{l_f + l_r})
-\]</span> 假设车辆重心点在后轴中心点，则<span class="math inline">\(beta \cong 0\)</span>，由上述微分方程得 <span class="math display">\[
+\]</span></p>
+<p>假设车辆重心点在后轴中心点，则<span class="math inline">\(beta \cong 0\)</span>，由上述微分方程得</p>
+<p><span class="math display">\[
 \dot{X} = V\cos(\psi) \quad\\
 \dot{Y} = V\sin(\psi) \quad\\
 \dot{\psi} = \frac{V\tan(\delta_f)}{L}
