@@ -770,7 +770,14 @@ P_{t-1} = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A
 </figure>
 <span id="more"></span>
 <h2 id="应用场景">应用场景</h2>
-<p>本文基于车辆扭矩标定的应用场景来说明2维线性插值的具体应用，根据车辆的控制原理可知，车辆的目标加速度与当前车速和发动机输出扭矩有关，因此对车辆扭矩进行标定后，我们就可以得到一个根据当前目标加速度和车速，获得车辆输出扭矩的关系表。 如下表所示，只选取了目标加速度为正的部分标定数据，其中横向表示速度(m/s)，纵向表示加速度(m/s2)，表中的数据代表汽车扭矩输出(Nm)。由于速度只采样了[0.1,0.2,0.3,0.4,0.5,0.6,0.7]这几个数值点的数据，加速度也只采样了[0.06,0.09,0.1,0.12,0.13,0.15,0.2,0.21,0.24,0.26]这几组数据点的数据，如果想得到中间任意数值的数值，就需要使用双线性插值算法来获得。 <img src="https://img-blog.csdnimg.cn/20190727155601290.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /> 如下表所示，如果当前需求的目标加速度为0.094m/s2，当前车速为0.36m/s，想得到当前输出扭矩值，按照表格所圈出的扭矩值，进行多次线性插值，求得理想的输出扭矩。 <img src="https://img-blog.csdnimg.cn/20190727155822629.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+<p>本文基于车辆扭矩标定的应用场景来说明2维线性插值的具体应用，根据车辆的控制原理可知，车辆的目标加速度与当前车速和发动机输出扭矩有关，因此对车辆扭矩进行标定后，我们就可以得到一个根据当前目标加速度和车速，获得车辆输出扭矩的关系表。 如下表所示，只选取了目标加速度为正的部分标定数据，其中横向表示速度(m/s)，纵向表示加速度(m/s2)，表中的数据代表汽车扭矩输出(Nm)。由于速度只采样了[0.1,0.2,0.3,0.4,0.5,0.6,0.7]这几个数值点的数据，加速度也只采样了[0.06,0.09,0.1,0.12,0.13,0.15,0.2,0.21,0.24,0.26]这几组数据点的数据，如果想得到中间任意数值的数值，就需要使用双线性插值算法来获得。</p>
+<figure>
+<img src="https://img-blog.csdnimg.cn/20190727155601290.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
+</figure>
+<p>如下表所示，如果当前需求的目标加速度为0.094m/s2，当前车速为0.36m/s，想得到当前输出扭矩值，按照表格所圈出的扭矩值，进行多次线性插值，求得理想的输出扭矩。</p>
+<figure>
+<img src="https://img-blog.csdnimg.cn/20190727155822629.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
+</figure>
 <h3 id="双线性插值原理">双线性插值原理</h3>
 <p>双线性插值算法，是在线性插值的基础上进行多次插值的结果。 如下图所示，假设插值点<span class="math inline">\({(x_i,y_i)}\)</span>的坐标点<span class="math inline">\(x_i\)</span>和<span class="math inline">\(y_i\)</span>范围满足，<span class="math inline">\(x_1\le x_i \le x_2\)</span>，<span class="math inline">\(y_1\le y_i \le y_2\)</span>，其中<span class="math inline">\((x_1,y_1)\)</span>对应数值为<span class="math inline">\(z_1\)</span>，<span class="math inline">\((x_2,y_1)\)</span>对应数值为<span class="math inline">\(z_2\)</span>，<span class="math inline">\((x_2,y_2)\)</span>对应数值为<span class="math inline">\(z_3\)</span>，<span class="math inline">\((x_1,y_2)\)</span>对应数值为<span class="math inline">\(z_4\)</span>。</p>
 <p><img src="https://img-blog.csdnimg.cn/20190729105119489.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
@@ -1044,30 +1051,32 @@ r = \cos\theta*V_x + \sin\theta*V_y \tag{12}
 <p>将等式(12)带入等式(13),并将等式分解为一下4个部分</p>
 <p><span class="math display">\[
 A = \sum_{i=0}^{k}\cos^2\theta*x_iy_i - \sin\theta\cos\theta*x_i^2 + \sin\theta\cos\theta*y_i^2 -\sin^2\theta*x_iy_i \\
-B = \sum_{i=0}^{k}(\cos\theta*x_i + \sin\theta*y_i) \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
-C = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y)(\cos\theta*y_i - \sin\theta*x_i)\qquad\qquad\qquad\\
-D = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y) \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\tag{14}
+B = \sum_{i=0}^{k}(\cos\theta*x_i + \sin\theta*y_i) \\
+C = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y)(\cos\theta*y_i - \sin\theta*x_i) \\
+D = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y) \tag{14}
 \]</span></p>
 <p>等式(14)的四个部分可化简为</p>
 <p><span class="math display">\[
-A = \sum_{i=0}^{k}\cos^2\theta*x_iy_i - \sin\theta\cos\theta*x_i^2 + \sin\theta\cos\theta*y_i^2 -\sin^2\theta*x_iy_i\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
-= (\cos^2\theta - \sin^2\theta)\sum_{i=0}^{k}x_iy_i - \sin\theta\cos\theta(\sum_{i=0}^{k}x_i^2 - \sum_{i=0}^{k}y_i^2)\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
-= \cos2\theta\sum_{i=0}^{k}x_iy_i - 0.5\sin2\theta(\sum_{i=0}^{k}x_i^2 - \sum_{i=0}^{k}y_i^2)\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad \tag{15}
+A = \sum_{i=0}^{k}\cos^2\theta*x_iy_i - \sin\theta\cos\theta*x_i^2 + \sin\theta\cos\theta*y_i^2 -\sin^2\theta*x_iy_i\\
+= (\cos^2\theta - \sin^2\theta)\sum_{i=0}^{k}x_iy_i - \sin\theta\cos\theta(\sum_{i=0}^{k}x_i^2 - \sum_{i=0}^{k}y_i^2)\\
+= \cos2\theta\sum_{i=0}^{k}x_iy_i - 0.5\sin2\theta(\sum_{i=0}^{k}x_i^2 - \sum_{i=0}^{k}y_i^2) \tag{15}
 \]</span></p>
 <p><span class="math display">\[
-B = \sum_{i=0}^{k}(\cos\theta*x_i + \sin\theta*y_i) 
-  = \cos\theta\sum_{i=0}^{k}x_i + \sin\theta\sum_{i=0}^{k}y_i \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\tag{16}
+B = \sum_{i=0}^{k}(\cos\theta*x_i + \sin\theta*y_i) \\
+  = \cos\theta\sum_{i=0}^{k}x_i + \sin\theta\sum_{i=0}^{k}y_i \tag{16}
 \]</span></p>
 <p><span class="math display">\[
-C = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y)(\cos\theta*y_i - \sin\theta*x_i)\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\qquad\qquad\qquad\qquad\\
-=\cos^2\theta*V_x\sum_{i=0}^{k}y_i - \sin\theta\cos\theta*V_x\sum_{i=0}^{k}x_i+\sin\theta\cos\theta*V_y\sum_{i=0}^{k}y_i -\sin^2\theta*V_y\sum_{i=0}^{k}x_i\qquad\qquad\qquad\qquad\\
-=(\cos^2\theta - \sin^2\theta)\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} - \sin\theta\cos\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i)\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
-=\cos2\theta\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} -0.5\sin2\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i)\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\tag{17}
+C = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y)(\cos\theta*y_i - \sin\theta*x_i)\\
+=\cos^2\theta*V_x\sum_{i=0}^{k}y_i - \sin\theta\cos\theta*V_x\sum_{i=0}^{k}x_i+\sin\theta\cos\theta*V_y\sum_{i=0}^{k}y_i -\sin^2\theta*V_y\sum_{i=0}^{k}x_i\\
+=(\cos^2\theta - \sin^2\theta)\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} - \sin\theta\cos\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i)\\
+=\cos2\theta\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} -0.5\sin2\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i)\tag{17}
 \]</span></p>
 <p><span class="math display">\[
-D = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y) \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\\
-=\cos\theta*V_x\sum_{i=0}^{k} + \sin\theta*V_y\sum_{i=0}^{k} \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\\
-=\cos\theta\sum_{i=0}^{k}x_i + \sin\theta\sum_{i=0}^{k}y_i\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad \tag{18}
+\begin{array}{rl}
+D = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y) \\
+=\cos\theta*V_x\sum_{i=0}^{k} + \sin\theta*V_y\sum_{i=0}^{k} \\
+=\cos\theta\sum_{i=0}^{k}x_i + \sin\theta\sum_{i=0}^{k}y_i \tag{18}
+\end{array}
 \]</span></p>
 <p>故等式(13)可以表示为</p>
 <p><span class="math display">\[
@@ -1079,26 +1088,26 @@ A - C = 0 \tag{20}
 \]</span></p>
 <p>等式(20)两端同时扩大两倍得</p>
 <p><span class="math display">\[
-2\cos2\theta\sum_{i=0}^{k}x_iy_i - \sin2\theta(\sum_{i=0}^{k}x_i^2 - \sum_{i=0}^{k}y_i^2) \\-2\cos2\theta\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} + \sin2\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i) = 0\tag{21}
+2\cos2\theta\sum_{i=0}^{k}x_iy_i - \sin2\theta(\sum_{i=0}^{k}x_i^2 - \sum_{i=0}^{k}y_i^2) -2\cos2\theta\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} + \sin2\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i) = 0\tag{21}
 \]</span></p>
 <p>合并同类项得</p>
 <p><span class="math display">\[
-\cos2\theta*2*(\sum_{i=0}^{k}x_iy_i - \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k}) + \\\sin2\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i - \sum_{i=0}^{k}x_i^2 + \sum_{i=0}^{k}y_i^2) = 0 \tag{22}
+\cos2\theta*2*(\sum_{i=0}^{k}x_iy_i - \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k}) + \sin2\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i - \sum_{i=0}^{k}x_i^2 + \sum_{i=0}^{k}y_i^2) = 0 \tag{22}
 \]</span></p>
 <p>令 <span class="math display">\[
-V_{xy} = \sum_{i=0}^{k}x_iy_i - \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k}\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
-= \sum_{i=0}^{k}x_iy_i - \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} -\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} + \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k}\qquad\qquad\qquad\qquad\qquad\quad\\
-= \sum_{i=0}^{k}x_iy_i - \sum_{i=0}^{k}x_iV_y - \sum_{i=0}^{k}y_iV_x + \sum_{i=0}^{k}V_xV_y\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
-= \sum_{i=0}^{k}(x_i - V_x)(y_i - V_y)\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\tag{23}
+V_{xy} = \sum_{i=0}^{k}x_iy_i - \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k}\\
+= \sum_{i=0}^{k}x_iy_i - \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} -\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} + \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k}\\
+= \sum_{i=0}^{k}x_iy_i - \sum_{i=0}^{k}x_iV_y - \sum_{i=0}^{k}y_iV_x + \sum_{i=0}^{k}V_xV_y\\
+= \sum_{i=0}^{k}(x_i - V_x)(y_i - V_y)\tag{23}
 \]</span></p>
 <p><span class="math display">\[
-V_{xx} = \sum_{i=0}^{k}x_i^2 - V_x\sum_{i=0}^{k}x_i\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
-= \sum_{i=0}^{k}x_i^2 - 2\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}x_i}{k} + \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}x_i}{k}\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\\
-=\sum_{i=0}^{k}x_i^2 - 2V_x\sum_{i=0}^{k}x_i + \sum_{i=0}^{k}V_xV_x\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\\
-=\sum_{i=0}^{k}(x_i - V_x)^2\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad \tag{24}
+V_{xx} = \sum_{i=0}^{k}x_i^2 - V_x\sum_{i=0}^{k}x_i\\
+= \sum_{i=0}^{k}x_i^2 - 2\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}x_i}{k} + \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}x_i}{k}\\
+=\sum_{i=0}^{k}x_i^2 - 2V_x\sum_{i=0}^{k}x_i + \sum_{i=0}^{k}V_xV_x\\
+=\sum_{i=0}^{k}(x_i - V_x)^2 \tag{24}
 \]</span></p>
 <p><span class="math display">\[
-V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\tag{25}
+V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \tag{25}
 \]</span></p>
 <p>等式(22)可以表示为</p>
 <p><span class="math display">\[
@@ -1840,76 +1849,97 @@ P_{t-1} = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A
     <url>/2019/12/21/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E4%BB%8B%E7%BB%8D/</url>
     <content><![CDATA[<h2 id="一维运动模型">一维运动模型</h2>
 <p>考虑简单的单位质量块的一维运动模型，使用位移和速度状态变量进行描述。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220200846.png" /></p>
-<p>定义位移变量<span class="math inline">\(x_1 = x\)</span>和速度变量<span class="math inline">\(x_2 = \dot{x_1} = v\)</span>，运动模型的微分形式使用<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>表示如下： <span class="math display">\[
+<p><img src="https://i.loli.net/2021/08/30/5gi8qy1jdHrvePa.png" /></p>
+<p>定义位移变量<span class="math inline">\(x_1 = x\)</span>和速度变量<span class="math inline">\(x_2 = \dot{x_1} = v\)</span>，运动模型的微分形式使用<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>表示如下：</p>
+<p><span class="math display">\[
 \left\{
 \begin{array}{rl}
 &amp;\dot{x_1} = x_2&amp; x_1(0)=x_{10}\\
 &amp;\dot{x_2} = u + f(x_1,x_2,t) &amp;x_2(0)=x_{20}
 \end{array} \right.\tag{1}
-\]</span> <span id="more"></span></p>
-<p>其中,<span class="math inline">\(u\)</span>代表控制力，干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>包括干粘摩檫力的影响和一些未知的阻力，并假定有界。 <span class="math display">\[
+\]</span></p>
+<span id="more"></span>
+<p>其中,<span class="math inline">\(u\)</span>代表控制力，干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>包括干粘摩檫力的影响和一些未知的阻力，并假定有界。</p>
+<p><span class="math display">\[
 \rvert f(x_1,x_2,t)\rvert \leqslant L \gt 0 \tag{2}
 \]</span></p>
 <p>问题关键在于设计一个反馈控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>，驱动质量块渐进到达原点。换句话说，控制变量<span class="math inline">\(u=f(x_1,x_2)\)</span>应该驱使状态变量趋近于0：<span class="math inline">\(\lim_{t \to \infty}{x_1,x_2} = 0\)</span>。</p>
 <p>这个问题看似简单，但对于存在未知的边界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，使系统渐进收敛仍然存在着挑战。</p>
 <h3 id="状态反馈控制">状态反馈控制</h3>
-<p>例如，通过一个线性状态反馈控制率 <span class="math display">\[
+<p>例如，通过一个线性状态反馈控制率</p>
+<p><span class="math display">\[
 \begin{matrix}
 u = -k_1x_1 - k_2x_2, &amp;\text{其中}(k_1&gt;0,&amp;k_2&gt;0)
 \end{matrix}\tag{3}
-\]</span> 在外界干扰项<span class="math inline">\(f(x_1,x_2,t)\equiv 0\)</span>，即不存在外界干扰时，系统可以实现渐进收敛。</p>
+\]</span></p>
+<p>在外界干扰项<span class="math inline">\(f(x_1,x_2,t)\equiv 0\)</span>，即不存在外界干扰时，系统可以实现渐进收敛。</p>
 <h3 id="仿真结果">仿真结果</h3>
 <ul>
 <li>初始条件<span class="math inline">\(x_{10}=1\)</span>、<span class="math inline">\(x_{20} = -2\)</span>、控制率参数<span class="math inline">\(k_1=3\)</span>、<span class="math inline">\(k_2=4\)</span>。</li>
 </ul>
 <p>如下图所示，是无外界干扰项时的渐近收敛效果图，图中蓝色线代表距离<span class="math inline">\(x\)</span>，橘黄色线代表速度<span class="math inline">\(v\)</span>，可以看出在反馈控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>的作用下，距离和速度值都趋近于0。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220194837.png#pic_center" /></p>
+<p><img src="https://i.loli.net/2021/08/30/ezqd9oHvbYJwhCB.png" /></p>
 <p>加入外部干扰<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>，响应波形如下：</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220194841.png#pic_center" /></p>
+<p><img src="https://i.loli.net/2021/08/30/heN7REVItMlwbqf.png" /></p>
 <p>对于干扰项<span class="math inline">\(\rvert f(x_1,x_2,t)\rvert \leq L &gt; 0\)</span>,产生的状态边界范围为<span class="math inline">\(\Omega=(k_1,k_2,L)\)</span> 。</p>
 <p>现在问题在于，仅使用未知扰动范围的知识是否可以解决规定的控制问题。</p>
 <h2 id="滑模控制的主要特性">滑模控制的主要特性</h2>
-<p>介绍对于等式(1)系统，所需的补偿动力。一个较好的替代这些动力学特性的是齐次线性时不变微分方程： <span class="math display">\[
+<p>介绍对于等式(1)系统，所需的补偿动力。一个较好的替代这些动力学特性的是齐次线性时不变微分方程：</p>
+<p><span class="math display">\[
 \begin{array}{rl}
 \dot{x}_1 + c \cdot x_1 = 0 ,&amp; c &gt; 0 \tag{4}
 \end{array}
-\]</span> 因为 <span class="math inline">\(x_2(t) = \dot{x}_1(t)\)</span>,等式(4)的通用解和它的微分形式如下： <span class="math display">\[
+\]</span></p>
+<p>因为 <span class="math inline">\(x_2(t) = \dot{x}_1(t)\)</span>,等式(4)的通用解和它的微分形式如下：</p>
+<p><span class="math display">\[
 \begin{array}{}
 &amp;x_1(t) = x_1(0)\exp(-ct)\\
 &amp;x_2(t) = \dot{x_1}(t)=-c \cdot x_1(0)\exp(-ct)
 \end{array}\tag{5}
-\]</span> 从等式(5)可以看出，<span class="math inline">\(x_1(t)\)</span>和<span class="math inline">\(x_2(t)\)</span>都是逐渐趋近于0。注意，无干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的状态补偿动力学是很明显的。如何获得这些补偿动力。</p>
+\]</span></p>
+<p>从等式(5)可以看出，<span class="math inline">\(x_1(t)\)</span>和<span class="math inline">\(x_2(t)\)</span>都是逐渐趋近于0。注意，无干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的状态补偿动力学是很明显的。如何获得这些补偿动力。</p>
 <h3 id="滑模变量">滑模变量</h3>
-<p>首先介绍一个等式(1)系统的状态空间的新变量(<strong><em>滑模变量</em></strong>)： <span class="math display">\[
+<p>首先介绍一个等式(1)系统的状态空间的新变量(<strong><em>滑模变量</em></strong>)：</p>
+<p><span class="math display">\[
 \sigma = \sigma(x_1,x_2) = x_2 + c \cdot x_1 \tag{6}
-\]</span> 在给定等式(5)收敛率且存在有界干扰<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，为了使状态变量<span class="math inline">\(x_1\)</span>，<span class="math inline">\(x_2\)</span>逐渐收敛于0，即<span class="math inline">\(\lim_{t \to \infty} x_1,x_2 = 0\)</span>，不得不通过控制率<span class="math inline">\(u\)</span>使得等式(6)的变量<span class="math inline">\(\sigma\)</span>在有限的时间内趋于0。</p>
-<p>为了完成这个任务利用李亚普洛夫函数技术，结合等式(1)和(6)推动出关于滑模变量<span class="math inline">\(\sigma\)</span>的动力学方程如下： <span class="math display">\[
+\]</span></p>
+<p>在给定等式(5)收敛率且存在有界干扰<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，为了使状态变量<span class="math inline">\(x_1\)</span>，<span class="math inline">\(x_2\)</span>逐渐收敛于0，即<span class="math inline">\(\lim_{t \to \infty} x_1,x_2 = 0\)</span>，不得不通过控制率<span class="math inline">\(u\)</span>使得等式(6)的变量<span class="math inline">\(\sigma\)</span>在有限的时间内趋于0。</p>
+<p>为了完成这个任务利用李亚普洛夫函数技术，结合等式(1)和(6)推动出关于滑模变量<span class="math inline">\(\sigma\)</span>的动力学方程如下：</p>
+<p><span class="math display">\[
 \begin{array}{rl}
 \dot{\sigma} = c \cdot x_2 + f(x_1,x_2,t) + u ,&amp;\sigma(0) = \sigma_0
 \end{array} \tag{7}
 \]</span></p>
 <h3 id="稳定判据">稳定判据</h3>
-<p>李亚普洛夫函数(Lyapunov)形式如下： <span class="math display">\[
+<p>李亚普洛夫函数(Lyapunov)形式如下：</p>
+<p><span class="math display">\[
 V = \frac{1}{2}\sigma^2 \tag{8}
-\]</span> 为了使等式(6)在平衡点<span class="math inline">\(\sigma = 0\)</span>处渐进稳定，根据李亚普洛夫稳定判据，必须满足下面两个条件：</p>
+\]</span></p>
+<p>为了使等式(6)在平衡点<span class="math inline">\(\sigma = 0\)</span>处渐进稳定，根据李亚普洛夫稳定判据，必须满足下面两个条件：</p>
 <ol type="1">
-<li><p><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(\sigma \neq 0)\end{array}\)</span></p></li>
-<li><p><span class="math inline">\(\lim_{\rvert \sigma \rvert \to \infty}V = \infty\)</span></p></li>
+<li><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(\sigma \neq 0)\end{array}\)</span></li>
+<li><span class="math inline">\(\lim_{\rvert \sigma \rvert \to \infty}V = \infty\)</span></li>
 </ol>
-<p>由等式(8)知，条件2明显满足。为了满足有限时间内渐进稳定，条件(1)可以修改为： <span class="math display">\[
+<p>由等式(8)知，条件2明显满足。为了满足有限时间内渐进稳定，条件(1)可以修改为：</p>
+<p><span class="math display">\[
 \dot{V} \leq -\alpha {V}^{\frac{1}{2}} ,\qquad \alpha &gt; 0 \tag{9}
-\]</span> 在时间间隔<span class="math inline">\(0 \leq \tau \leq t\)</span>内，对等式(9)所示的微分方程进行变量分离求积分得 <span class="math display">\[
+\]</span></p>
+<p>在时间间隔<span class="math inline">\(0 \leq \tau \leq t\)</span>内，对等式(9)所示的微分方程进行变量分离求积分得</p>
+<p><span class="math display">\[
 \begin{array}{rl}
 \int_{0}^{t} V(\tau)^{-\frac{1}{2}}dV(\tau) &amp;\leq -\alpha*\int_{0}^{t}1 d\tau\\
 2*V(\tau)^{\frac{1}{2}}|_0^t &amp;\leq -\alpha*\tau|_0^t\\
 2*[V(t)^{\frac{1}{2}} - V(0)^{\frac{1}{2}}] &amp;\leq -\alpha*t\\
 V(t)^{\frac{1}{2}} &amp;\leq -\dfrac{1}{2}\alpha*t + V(0)^{\frac{1}{2}}
 \end{array}\tag{10}
-\]</span> 故<span class="math inline">\(V(t)\)</span>在有限时间<span class="math inline">\(t_r\)</span>达到0时的边界，根据等式(26)得 <span class="math display">\[
+\]</span></p>
+<p>故<span class="math inline">\(V(t)\)</span>在有限时间<span class="math inline">\(t_r\)</span>达到0时的边界，根据等式(26)得</p>
+<p><span class="math display">\[
 t_r \leq \frac{2V(0)^{\frac{1}{2}}}{\alpha} \tag{11}
-\]</span> 因此，设计一个控制器<span class="math inline">\(u\)</span>满足等式(9)，使得变量<span class="math inline">\(s\)</span>在有限的时间内趋近于0并在之后一直保持。</p>
-<p><span class="math inline">\(V\)</span>的微分计算如下： <span class="math display">\[
+\]</span></p>
+<p>因此，设计一个控制器<span class="math inline">\(u\)</span>满足等式(9)，使得变量<span class="math inline">\(s\)</span>在有限的时间内趋近于0并在之后一直保持。</p>
+<p><span class="math inline">\(V\)</span>的微分计算如下：</p>
+<p><span class="math display">\[
 \dot{V} = \sigma\dot{\sigma}=\sigma(c \cdot x_2 + f(x_1,x_2,t) + u) \tag{12}
 \]</span> 假设 <span class="math inline">\(u = -c \cdot x_2 + v\)</span>，并将其带入等式(12)得 <span class="math display">\[
 \dot{V} 
@@ -1917,7 +1947,8 @@ t_r \leq \frac{2V(0)^{\frac{1}{2}}}{\alpha} \tag{11}
 = \sigma \cdot f(x_1,x_2,t) + \sigma v
 \leq   \rvert \sigma \rvert L + \sigma v \tag{13}
 \]</span></p>
-<p>此处选择<span class="math inline">\(v = -\rho sign(\sigma)\)</span>，该函数表示为 <span class="math display">\[
+<p>此处选择<span class="math inline">\(v = -\rho sign(\sigma)\)</span>，该函数表示为</p>
+<p><span class="math display">\[
 sign(x) = 
 \left \{
 \begin{array}{rl}
@@ -1930,18 +1961,26 @@ sign(x) =
 <p><span class="math display">\[
 sign(0) \in [-1,1] \tag{15}
 \]</span></p>
-<p>由于<span class="math inline">\(\rho &gt; 0\)</span>，将其带入等式(13)得 <span class="math display">\[
+<p>由于<span class="math inline">\(\rho &gt; 0\)</span>，将其带入等式(13)得</p>
+<p><span class="math display">\[
 \dot{V} \leq \rvert \sigma  \rvert L - \rvert \sigma \rvert \rho 
 = \rvert \sigma \rvert(L - \rho) \tag{16}
 \]</span></p>
-<p>考虑到等式(8)的形式，等式(9)可以表示为 <span class="math display">\[
+<p>考虑到等式(8)的形式，等式(9)可以表示为</p>
+<p><span class="math display">\[
 \dot{V} \leq -\alpha {V}^{\frac{1}{2}} = -\frac{\alpha}{\sqrt{2}}\rvert \sigma \rvert,\qquad \alpha &gt; 0 \tag{17}
-\]</span> 结合等式(16)和等式(17)得 <span class="math display">\[
+\]</span></p>
+<p>结合等式(16)和等式(17)得</p>
+<p><span class="math display">\[
 \dot{V} \leq \rvert \sigma \rvert(L - \rho)
 =-\frac{\alpha}{\sqrt{2}}\rvert \sigma \rvert \tag{18}
-\]</span> 最终控制增益可以表示为 <span class="math display">\[
+\]</span></p>
+<p>最终控制增益可以表示为</p>
+<p><span class="math display">\[
 \rho = L + \frac{\alpha}{\sqrt{2}} \tag{19}
-\]</span> 所以最终使滑模变量<span class="math inline">\(\sigma\)</span>在有限时间内趋近于0的控制率<span class="math inline">\(u\)</span>为 <span class="math display">\[
+\]</span></p>
+<p>所以最终使滑模变量<span class="math inline">\(\sigma\)</span>在有限时间内趋近于0的控制率<span class="math inline">\(u\)</span>为</p>
+<p><span class="math display">\[
 u = -c \cdot x_2 - \rho \cdot sign(\sigma) \tag{20}
 \]</span></p>
 <blockquote>
@@ -1954,16 +1993,18 @@ u = -c \cdot x_2 - \rho \cdot sign(\sigma) \tag{20}
 <ul>
 <li><strong>滑模变量</strong></li>
 </ul>
-<p>等式(6)中定义的变量<span class="math inline">\(\sigma\)</span>叫做 <strong>滑模变量</strong>(<em>sliding variable</em>)</p>
+<p>等式(6)中定义的变量<span class="math inline">\(\sigma\)</span>叫做 <strong>滑模变量</strong>(<code>sliding variable</code>)</p>
 <ul>
 <li><strong>滑模面</strong></li>
 </ul>
 <p>结合等式(4)和(5)，可以重新写成如下形式： <span class="math display">\[
 \sigma = x_2 + c \cdot x_1 = 0, c &gt; 0 \tag{21}
-\]</span> 相当于在系统(1)状态空间内的一条直线，这条直线被称为 <strong>滑模面</strong>(<em>sliding surface</em>)。</p>
-<p>考虑到等式(9)可以等效于 <span class="math display">\[
+\]</span> 相当于在系统(1)状态空间内的一条直线，这条直线被称为 <strong>滑模面</strong>(<code>sliding surface</code>)。</p>
+<p>考虑到等式(9)可以等效于</p>
+<p><span class="math display">\[
 \sigma\dot{\sigma} \leq - \frac{\sigma}{\sqrt{2}} \rvert \sigma\rvert \tag{22}
-\]</span> 等式(22)经常被称为 <strong>到达条件</strong>(<em>reachability condition</em>)。满足<strong>到达条件</strong>意味着等式(1)系统的轨迹趋向于<strong>滑模面</strong>，并在此后一直保持。</p>
+\]</span></p>
+<p>等式(22)经常被称为 <strong>到达条件</strong>(<code>reachability condition</code>)。满足<strong>到达条件</strong>意味着等式(1)系统的轨迹趋向于<strong>滑模面</strong>，并在此后一直保持。</p>
 <ul>
 <li><strong>滑模控制</strong></li>
 </ul>
@@ -1971,16 +2012,16 @@ u = -c \cdot x_2 - \rho \cdot sign(\sigma) \tag{20}
 <h3 id="仿真结果-1">仿真结果</h3>
 <p>初始条件为<span class="math inline">\(x_1(0) = 1，x_2(0) = -2\)</span>，控制增益为<span class="math inline">\(\sigma = 2\)</span>，滑模参数为<span class="math inline">\(c = 1.5\)</span>同时干扰项为<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>。 使用等式(20)的滑模控制率的仿真结果如下：</p>
 <p>下图表明，在有限的时间内，滑模变量趋近于0。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143643.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/LCQw2J7rU9axcKq.png" /></p>
 <p>在干扰项作用的情况下，状态变量<span class="math inline">\(x\)</span>和<span class="math inline">\(v\)</span>逐渐收敛到0。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143647.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/jk5MfqmpabEFnAO.png" /></p>
 <p>相图如下，展示了到达相位和滑移相位。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143650.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/k3HSfaLoPvgQ9C4.png" /></p>
 <p>对上面的相图进行局部放大发现，在滑模状态下，状态变量存在小幅度且高频率的蜿蜒运动。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221144252.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/7jGmgk14ruHwSOM.png" /></p>
 <p>理想的滑模切换频率应该接近于无限并且蜿蜒运动的振幅接近于0。从下图可知，符号函数<span class="math inline">\(sign\)</span>不完美表现为在滑动模态中产生了有限幅度和频率的之字形运动，原因在于计算机仿真的离散特性，这样的影响叫做 <strong>抖振</strong>(<em>chattering</em>)。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Figure_7.png" /></p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191222084921.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/xme942slagIdZNK.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/qvr8kst615cLNM4.png" /></p>
 ]]></content>
       <categories>
         <category>控制算法</category>

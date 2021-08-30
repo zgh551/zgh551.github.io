@@ -20,24 +20,24 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zgh551.github.io&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.4.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
-<meta name="description" content="一维运动模型 考虑简单的单位质量块的一维运动模型，使用位移和速度状态变量进行描述。  定义位移变量\(x_1 &#x3D; x\)和速度变量\(x_2 &#x3D; \dot{x_1} &#x3D; v\)，运动模型的微分形式使用\(x_1\)、\(x_2\)表示如下： \[ \left\{ \begin{array}{rl} &amp;\dot{x_1} &#x3D; x_2&amp; x_1(0)&#x3D;x_{10}\\ &amp;">
+<meta name="description" content="一维运动模型 考虑简单的单位质量块的一维运动模型，使用位移和速度状态变量进行描述。  定义位移变量\(x_1 &#x3D; x\)和速度变量\(x_2 &#x3D; \dot{x_1} &#x3D; v\)，运动模型的微分形式使用\(x_1\)、\(x_2\)表示如下： \[ \left\{ \begin{array}{rl} &amp;\dot{x_1} &#x3D; x_2&amp; x_1(0)&#x3D;x_{10}\\">
 <meta property="og:type" content="article">
 <meta property="og:title" content="控制算法-滑模控制介绍">
 <meta property="og:url" content="https://zgh551.github.io/2019/12/21/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E4%BB%8B%E7%BB%8D/index.html">
 <meta property="og:site_name" content="Z">
-<meta property="og:description" content="一维运动模型 考虑简单的单位质量块的一维运动模型，使用位移和速度状态变量进行描述。  定义位移变量\(x_1 &#x3D; x\)和速度变量\(x_2 &#x3D; \dot{x_1} &#x3D; v\)，运动模型的微分形式使用\(x_1\)、\(x_2\)表示如下： \[ \left\{ \begin{array}{rl} &amp;\dot{x_1} &#x3D; x_2&amp; x_1(0)&#x3D;x_{10}\\ &amp;">
+<meta property="og:description" content="一维运动模型 考虑简单的单位质量块的一维运动模型，使用位移和速度状态变量进行描述。  定义位移变量\(x_1 &#x3D; x\)和速度变量\(x_2 &#x3D; \dot{x_1} &#x3D; v\)，运动模型的微分形式使用\(x_1\)、\(x_2\)表示如下： \[ \left\{ \begin{array}{rl} &amp;\dot{x_1} &#x3D; x_2&amp; x_1(0)&#x3D;x_{10}\\">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220200846.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220194837.png#pic_center">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220194841.png#pic_center">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143643.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143647.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143650.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221144252.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Figure_7.png">
-<meta property="og:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191222084921.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/5gi8qy1jdHrvePa.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/ezqd9oHvbYJwhCB.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/heN7REVItMlwbqf.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/LCQw2J7rU9axcKq.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/jk5MfqmpabEFnAO.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/k3HSfaLoPvgQ9C4.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/7jGmgk14ruHwSOM.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/xme942slagIdZNK.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/qvr8kst615cLNM4.png">
 <meta property="article:published_time" content="2019-12-21T14:01:27.000Z">
-<meta property="article:modified_time" content="2021-06-16T14:31:06.651Z">
+<meta property="article:modified_time" content="2021-08-30T07:19:19.616Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="滑模控制">
 <meta property="article:tag" content="滑模面">
@@ -48,7 +48,7 @@
 <meta property="article:tag" content="sliding mode surface">
 <meta property="article:tag" content="chattering">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220200846.png">
+<meta name="twitter:image" content="https://i.loli.net/2021/08/30/5gi8qy1jdHrvePa.png">
 
 
 <link rel="canonical" href="https://zgh551.github.io/2019/12/21/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E4%BB%8B%E7%BB%8D/">
@@ -278,7 +278,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-06-16 22:31:06" itemprop="dateModified" datetime="2021-06-16T22:31:06+08:00">2021-06-16</time>
+        <time title="修改时间：2021-08-30 15:19:19" itemprop="dateModified" datetime="2021-08-30T15:19:19+08:00">2021-08-30</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -306,76 +306,97 @@
     <div class="post-body" itemprop="articleBody">
         <h2 id="一维运动模型">一维运动模型</h2>
 <p>考虑简单的单位质量块的一维运动模型，使用位移和速度状态变量进行描述。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220200846.png" /></p>
-<p>定义位移变量<span class="math inline">\(x_1 = x\)</span>和速度变量<span class="math inline">\(x_2 = \dot{x_1} = v\)</span>，运动模型的微分形式使用<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>表示如下： <span class="math display">\[
+<p><img src="https://i.loli.net/2021/08/30/5gi8qy1jdHrvePa.png" /></p>
+<p>定义位移变量<span class="math inline">\(x_1 = x\)</span>和速度变量<span class="math inline">\(x_2 = \dot{x_1} = v\)</span>，运动模型的微分形式使用<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>表示如下：</p>
+<p><span class="math display">\[
 \left\{
 \begin{array}{rl}
 &amp;\dot{x_1} = x_2&amp; x_1(0)=x_{10}\\
 &amp;\dot{x_2} = u + f(x_1,x_2,t) &amp;x_2(0)=x_{20}
 \end{array} \right.\tag{1}
-\]</span> <span id="more"></span></p>
-<p>其中,<span class="math inline">\(u\)</span>代表控制力，干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>包括干粘摩檫力的影响和一些未知的阻力，并假定有界。 <span class="math display">\[
+\]</span></p>
+<span id="more"></span>
+<p>其中,<span class="math inline">\(u\)</span>代表控制力，干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>包括干粘摩檫力的影响和一些未知的阻力，并假定有界。</p>
+<p><span class="math display">\[
 \rvert f(x_1,x_2,t)\rvert \leqslant L \gt 0 \tag{2}
 \]</span></p>
 <p>问题关键在于设计一个反馈控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>，驱动质量块渐进到达原点。换句话说，控制变量<span class="math inline">\(u=f(x_1,x_2)\)</span>应该驱使状态变量趋近于0：<span class="math inline">\(\lim_{t \to \infty}{x_1,x_2} = 0\)</span>。</p>
 <p>这个问题看似简单，但对于存在未知的边界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，使系统渐进收敛仍然存在着挑战。</p>
 <h3 id="状态反馈控制">状态反馈控制</h3>
-<p>例如，通过一个线性状态反馈控制率 <span class="math display">\[
+<p>例如，通过一个线性状态反馈控制率</p>
+<p><span class="math display">\[
 \begin{matrix}
 u = -k_1x_1 - k_2x_2, &amp;\text{其中}(k_1&gt;0,&amp;k_2&gt;0)
 \end{matrix}\tag{3}
-\]</span> 在外界干扰项<span class="math inline">\(f(x_1,x_2,t)\equiv 0\)</span>，即不存在外界干扰时，系统可以实现渐进收敛。</p>
+\]</span></p>
+<p>在外界干扰项<span class="math inline">\(f(x_1,x_2,t)\equiv 0\)</span>，即不存在外界干扰时，系统可以实现渐进收敛。</p>
 <h3 id="仿真结果">仿真结果</h3>
 <ul>
 <li>初始条件<span class="math inline">\(x_{10}=1\)</span>、<span class="math inline">\(x_{20} = -2\)</span>、控制率参数<span class="math inline">\(k_1=3\)</span>、<span class="math inline">\(k_2=4\)</span>。</li>
 </ul>
 <p>如下图所示，是无外界干扰项时的渐近收敛效果图，图中蓝色线代表距离<span class="math inline">\(x\)</span>，橘黄色线代表速度<span class="math inline">\(v\)</span>，可以看出在反馈控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>的作用下，距离和速度值都趋近于0。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220194837.png#pic_center" /></p>
+<p><img src="https://i.loli.net/2021/08/30/ezqd9oHvbYJwhCB.png" /></p>
 <p>加入外部干扰<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>，响应波形如下：</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191220194841.png#pic_center" /></p>
+<p><img src="https://i.loli.net/2021/08/30/heN7REVItMlwbqf.png" /></p>
 <p>对于干扰项<span class="math inline">\(\rvert f(x_1,x_2,t)\rvert \leq L &gt; 0\)</span>,产生的状态边界范围为<span class="math inline">\(\Omega=(k_1,k_2,L)\)</span> 。</p>
 <p>现在问题在于，仅使用未知扰动范围的知识是否可以解决规定的控制问题。</p>
 <h2 id="滑模控制的主要特性">滑模控制的主要特性</h2>
-<p>介绍对于等式(1)系统，所需的补偿动力。一个较好的替代这些动力学特性的是齐次线性时不变微分方程： <span class="math display">\[
+<p>介绍对于等式(1)系统，所需的补偿动力。一个较好的替代这些动力学特性的是齐次线性时不变微分方程：</p>
+<p><span class="math display">\[
 \begin{array}{rl}
 \dot{x}_1 + c \cdot x_1 = 0 ,&amp; c &gt; 0 \tag{4}
 \end{array}
-\]</span> 因为 <span class="math inline">\(x_2(t) = \dot{x}_1(t)\)</span>,等式(4)的通用解和它的微分形式如下： <span class="math display">\[
+\]</span></p>
+<p>因为 <span class="math inline">\(x_2(t) = \dot{x}_1(t)\)</span>,等式(4)的通用解和它的微分形式如下：</p>
+<p><span class="math display">\[
 \begin{array}{}
 &amp;x_1(t) = x_1(0)\exp(-ct)\\
 &amp;x_2(t) = \dot{x_1}(t)=-c \cdot x_1(0)\exp(-ct)
 \end{array}\tag{5}
-\]</span> 从等式(5)可以看出，<span class="math inline">\(x_1(t)\)</span>和<span class="math inline">\(x_2(t)\)</span>都是逐渐趋近于0。注意，无干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的状态补偿动力学是很明显的。如何获得这些补偿动力。</p>
+\]</span></p>
+<p>从等式(5)可以看出，<span class="math inline">\(x_1(t)\)</span>和<span class="math inline">\(x_2(t)\)</span>都是逐渐趋近于0。注意，无干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的状态补偿动力学是很明显的。如何获得这些补偿动力。</p>
 <h3 id="滑模变量">滑模变量</h3>
-<p>首先介绍一个等式(1)系统的状态空间的新变量(<strong><em>滑模变量</em></strong>)： <span class="math display">\[
+<p>首先介绍一个等式(1)系统的状态空间的新变量(<strong><em>滑模变量</em></strong>)：</p>
+<p><span class="math display">\[
 \sigma = \sigma(x_1,x_2) = x_2 + c \cdot x_1 \tag{6}
-\]</span> 在给定等式(5)收敛率且存在有界干扰<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，为了使状态变量<span class="math inline">\(x_1\)</span>，<span class="math inline">\(x_2\)</span>逐渐收敛于0，即<span class="math inline">\(\lim_{t \to \infty} x_1,x_2 = 0\)</span>，不得不通过控制率<span class="math inline">\(u\)</span>使得等式(6)的变量<span class="math inline">\(\sigma\)</span>在有限的时间内趋于0。</p>
-<p>为了完成这个任务利用李亚普洛夫函数技术，结合等式(1)和(6)推动出关于滑模变量<span class="math inline">\(\sigma\)</span>的动力学方程如下： <span class="math display">\[
+\]</span></p>
+<p>在给定等式(5)收敛率且存在有界干扰<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，为了使状态变量<span class="math inline">\(x_1\)</span>，<span class="math inline">\(x_2\)</span>逐渐收敛于0，即<span class="math inline">\(\lim_{t \to \infty} x_1,x_2 = 0\)</span>，不得不通过控制率<span class="math inline">\(u\)</span>使得等式(6)的变量<span class="math inline">\(\sigma\)</span>在有限的时间内趋于0。</p>
+<p>为了完成这个任务利用李亚普洛夫函数技术，结合等式(1)和(6)推动出关于滑模变量<span class="math inline">\(\sigma\)</span>的动力学方程如下：</p>
+<p><span class="math display">\[
 \begin{array}{rl}
 \dot{\sigma} = c \cdot x_2 + f(x_1,x_2,t) + u ,&amp;\sigma(0) = \sigma_0
 \end{array} \tag{7}
 \]</span></p>
 <h3 id="稳定判据">稳定判据</h3>
-<p>李亚普洛夫函数(Lyapunov)形式如下： <span class="math display">\[
+<p>李亚普洛夫函数(Lyapunov)形式如下：</p>
+<p><span class="math display">\[
 V = \frac{1}{2}\sigma^2 \tag{8}
-\]</span> 为了使等式(6)在平衡点<span class="math inline">\(\sigma = 0\)</span>处渐进稳定，根据李亚普洛夫稳定判据，必须满足下面两个条件：</p>
+\]</span></p>
+<p>为了使等式(6)在平衡点<span class="math inline">\(\sigma = 0\)</span>处渐进稳定，根据李亚普洛夫稳定判据，必须满足下面两个条件：</p>
 <ol type="1">
-<li><p><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(\sigma \neq 0)\end{array}\)</span></p></li>
-<li><p><span class="math inline">\(\lim_{\rvert \sigma \rvert \to \infty}V = \infty\)</span></p></li>
+<li><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(\sigma \neq 0)\end{array}\)</span></li>
+<li><span class="math inline">\(\lim_{\rvert \sigma \rvert \to \infty}V = \infty\)</span></li>
 </ol>
-<p>由等式(8)知，条件2明显满足。为了满足有限时间内渐进稳定，条件(1)可以修改为： <span class="math display">\[
+<p>由等式(8)知，条件2明显满足。为了满足有限时间内渐进稳定，条件(1)可以修改为：</p>
+<p><span class="math display">\[
 \dot{V} \leq -\alpha {V}^{\frac{1}{2}} ,\qquad \alpha &gt; 0 \tag{9}
-\]</span> 在时间间隔<span class="math inline">\(0 \leq \tau \leq t\)</span>内，对等式(9)所示的微分方程进行变量分离求积分得 <span class="math display">\[
+\]</span></p>
+<p>在时间间隔<span class="math inline">\(0 \leq \tau \leq t\)</span>内，对等式(9)所示的微分方程进行变量分离求积分得</p>
+<p><span class="math display">\[
 \begin{array}{rl}
 \int_{0}^{t} V(\tau)^{-\frac{1}{2}}dV(\tau) &amp;\leq -\alpha*\int_{0}^{t}1 d\tau\\
 2*V(\tau)^{\frac{1}{2}}|_0^t &amp;\leq -\alpha*\tau|_0^t\\
 2*[V(t)^{\frac{1}{2}} - V(0)^{\frac{1}{2}}] &amp;\leq -\alpha*t\\
 V(t)^{\frac{1}{2}} &amp;\leq -\dfrac{1}{2}\alpha*t + V(0)^{\frac{1}{2}}
 \end{array}\tag{10}
-\]</span> 故<span class="math inline">\(V(t)\)</span>在有限时间<span class="math inline">\(t_r\)</span>达到0时的边界，根据等式(26)得 <span class="math display">\[
+\]</span></p>
+<p>故<span class="math inline">\(V(t)\)</span>在有限时间<span class="math inline">\(t_r\)</span>达到0时的边界，根据等式(26)得</p>
+<p><span class="math display">\[
 t_r \leq \frac{2V(0)^{\frac{1}{2}}}{\alpha} \tag{11}
-\]</span> 因此，设计一个控制器<span class="math inline">\(u\)</span>满足等式(9)，使得变量<span class="math inline">\(s\)</span>在有限的时间内趋近于0并在之后一直保持。</p>
-<p><span class="math inline">\(V\)</span>的微分计算如下： <span class="math display">\[
+\]</span></p>
+<p>因此，设计一个控制器<span class="math inline">\(u\)</span>满足等式(9)，使得变量<span class="math inline">\(s\)</span>在有限的时间内趋近于0并在之后一直保持。</p>
+<p><span class="math inline">\(V\)</span>的微分计算如下：</p>
+<p><span class="math display">\[
 \dot{V} = \sigma\dot{\sigma}=\sigma(c \cdot x_2 + f(x_1,x_2,t) + u) \tag{12}
 \]</span> 假设 <span class="math inline">\(u = -c \cdot x_2 + v\)</span>，并将其带入等式(12)得 <span class="math display">\[
 \dot{V} 
@@ -383,7 +404,8 @@ t_r \leq \frac{2V(0)^{\frac{1}{2}}}{\alpha} \tag{11}
 = \sigma \cdot f(x_1,x_2,t) + \sigma v
 \leq   \rvert \sigma \rvert L + \sigma v \tag{13}
 \]</span></p>
-<p>此处选择<span class="math inline">\(v = -\rho sign(\sigma)\)</span>，该函数表示为 <span class="math display">\[
+<p>此处选择<span class="math inline">\(v = -\rho sign(\sigma)\)</span>，该函数表示为</p>
+<p><span class="math display">\[
 sign(x) = 
 \left \{
 \begin{array}{rl}
@@ -396,18 +418,26 @@ sign(x) =
 <p><span class="math display">\[
 sign(0) \in [-1,1] \tag{15}
 \]</span></p>
-<p>由于<span class="math inline">\(\rho &gt; 0\)</span>，将其带入等式(13)得 <span class="math display">\[
+<p>由于<span class="math inline">\(\rho &gt; 0\)</span>，将其带入等式(13)得</p>
+<p><span class="math display">\[
 \dot{V} \leq \rvert \sigma  \rvert L - \rvert \sigma \rvert \rho 
 = \rvert \sigma \rvert(L - \rho) \tag{16}
 \]</span></p>
-<p>考虑到等式(8)的形式，等式(9)可以表示为 <span class="math display">\[
+<p>考虑到等式(8)的形式，等式(9)可以表示为</p>
+<p><span class="math display">\[
 \dot{V} \leq -\alpha {V}^{\frac{1}{2}} = -\frac{\alpha}{\sqrt{2}}\rvert \sigma \rvert,\qquad \alpha &gt; 0 \tag{17}
-\]</span> 结合等式(16)和等式(17)得 <span class="math display">\[
+\]</span></p>
+<p>结合等式(16)和等式(17)得</p>
+<p><span class="math display">\[
 \dot{V} \leq \rvert \sigma \rvert(L - \rho)
 =-\frac{\alpha}{\sqrt{2}}\rvert \sigma \rvert \tag{18}
-\]</span> 最终控制增益可以表示为 <span class="math display">\[
+\]</span></p>
+<p>最终控制增益可以表示为</p>
+<p><span class="math display">\[
 \rho = L + \frac{\alpha}{\sqrt{2}} \tag{19}
-\]</span> 所以最终使滑模变量<span class="math inline">\(\sigma\)</span>在有限时间内趋近于0的控制率<span class="math inline">\(u\)</span>为 <span class="math display">\[
+\]</span></p>
+<p>所以最终使滑模变量<span class="math inline">\(\sigma\)</span>在有限时间内趋近于0的控制率<span class="math inline">\(u\)</span>为</p>
+<p><span class="math display">\[
 u = -c \cdot x_2 - \rho \cdot sign(\sigma) \tag{20}
 \]</span></p>
 <blockquote>
@@ -420,16 +450,18 @@ u = -c \cdot x_2 - \rho \cdot sign(\sigma) \tag{20}
 <ul>
 <li><strong>滑模变量</strong></li>
 </ul>
-<p>等式(6)中定义的变量<span class="math inline">\(\sigma\)</span>叫做 <strong>滑模变量</strong>(<em>sliding variable</em>)</p>
+<p>等式(6)中定义的变量<span class="math inline">\(\sigma\)</span>叫做 <strong>滑模变量</strong>(<code>sliding variable</code>)</p>
 <ul>
 <li><strong>滑模面</strong></li>
 </ul>
 <p>结合等式(4)和(5)，可以重新写成如下形式： <span class="math display">\[
 \sigma = x_2 + c \cdot x_1 = 0, c &gt; 0 \tag{21}
-\]</span> 相当于在系统(1)状态空间内的一条直线，这条直线被称为 <strong>滑模面</strong>(<em>sliding surface</em>)。</p>
-<p>考虑到等式(9)可以等效于 <span class="math display">\[
+\]</span> 相当于在系统(1)状态空间内的一条直线，这条直线被称为 <strong>滑模面</strong>(<code>sliding surface</code>)。</p>
+<p>考虑到等式(9)可以等效于</p>
+<p><span class="math display">\[
 \sigma\dot{\sigma} \leq - \frac{\sigma}{\sqrt{2}} \rvert \sigma\rvert \tag{22}
-\]</span> 等式(22)经常被称为 <strong>到达条件</strong>(<em>reachability condition</em>)。满足<strong>到达条件</strong>意味着等式(1)系统的轨迹趋向于<strong>滑模面</strong>，并在此后一直保持。</p>
+\]</span></p>
+<p>等式(22)经常被称为 <strong>到达条件</strong>(<code>reachability condition</code>)。满足<strong>到达条件</strong>意味着等式(1)系统的轨迹趋向于<strong>滑模面</strong>，并在此后一直保持。</p>
 <ul>
 <li><strong>滑模控制</strong></li>
 </ul>
@@ -437,16 +469,16 @@ u = -c \cdot x_2 - \rho \cdot sign(\sigma) \tag{20}
 <h3 id="仿真结果-1">仿真结果</h3>
 <p>初始条件为<span class="math inline">\(x_1(0) = 1，x_2(0) = -2\)</span>，控制增益为<span class="math inline">\(\sigma = 2\)</span>，滑模参数为<span class="math inline">\(c = 1.5\)</span>同时干扰项为<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>。 使用等式(20)的滑模控制率的仿真结果如下：</p>
 <p>下图表明，在有限的时间内，滑模变量趋近于0。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143643.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/LCQw2J7rU9axcKq.png" /></p>
 <p>在干扰项作用的情况下，状态变量<span class="math inline">\(x\)</span>和<span class="math inline">\(v\)</span>逐渐收敛到0。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143647.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/jk5MfqmpabEFnAO.png" /></p>
 <p>相图如下，展示了到达相位和滑移相位。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221143650.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/k3HSfaLoPvgQ9C4.png" /></p>
 <p>对上面的相图进行局部放大发现，在滑模状态下，状态变量存在小幅度且高频率的蜿蜒运动。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191221144252.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/7jGmgk14ruHwSOM.png" /></p>
 <p>理想的滑模切换频率应该接近于无限并且蜿蜒运动的振幅接近于0。从下图可知，符号函数<span class="math inline">\(sign\)</span>不完美表现为在滑动模态中产生了有限幅度和频率的之字形运动，原因在于计算机仿真的离散特性，这样的影响叫做 <strong>抖振</strong>(<em>chattering</em>)。</p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/Figure_7.png" /></p>
-<p><img src="https://raw.githubusercontent.com/zgh551/FigureBed/master/img/20191222084921.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/xme942slagIdZNK.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/qvr8kst615cLNM4.png" /></p>
 
     </div>
 
