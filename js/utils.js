@@ -22,7 +22,7 @@ if (typeof DOMTokenList.prototype.replace !== 'function') {
   );
 
   if (document.readyState === 'loading') {
-    document.addEventListener('readystatechange', onPageLoaded, { once: true });
+    document.addEventListener('readystatechange', onPageLoaded, {once: true});
   } else {
     onPageLoaded();
   }
@@ -30,6 +30,41 @@ if (typeof DOMTokenList.prototype.replace !== 'function') {
 })();
 
 NexT.utils = {
+
+  /**
+   * Wrap images with fancybox.
+   */
+  wrapImageWithFancyBox: function() {
+    document.querySelectorAll('.post-body :not(a) > img, .post-body > img').forEach(element => {
+      const $image = $(element);
+      const imageLink = $image.attr('data-src') || $image.attr('src');
+      const $imageWrapLink = $image.wrap(`<a class="fancybox fancybox.image" href="${imageLink}" itemscope itemtype="http://schema.org/ImageObject" itemprop="url"></a>`).parent('a');
+      if ($image.is('.post-gallery img')) {
+        $imageWrapLink.attr('data-fancybox', 'gallery').attr('rel', 'gallery');
+      } else if ($image.is('.group-picture img')) {
+        $imageWrapLink.attr('data-fancybox', 'group').attr('rel', 'group');
+      } else {
+        $imageWrapLink.attr('data-fancybox', 'default').attr('rel', 'default');
+      }
+
+      const imageTitle = $image.attr('title') || $image.attr('alt');
+      if (imageTitle) {
+        $imageWrapLink.append(`<p class="image-caption">${imageTitle}</p>`);
+        // Make sure img title tag will show correctly in fancybox
+        $imageWrapLink.attr('title', imageTitle).attr('data-caption', imageTitle);
+      }
+    });
+
+    $.fancybox.defaults.hash = false;
+    $('.fancybox').fancybox({
+      loop   : true,
+      helpers: {
+        overlay: {
+          locked: false
+        }
+      }
+    });
+  },
 
   registerExtURL: function() {
     document.querySelectorAll('span.exturl').forEach(element => {
@@ -146,7 +181,7 @@ NexT.utils = {
       }
       if (!Array.isArray(NexT.utils.sections)) return;
       let index = NexT.utils.sections.findIndex(element => {
-        return element && element.getBoundingClientRect().top > 10;
+        return element && element.getBoundingClientRect().top > 0;
       });
       if (index === -1) {
         index = NexT.utils.sections.length - 1;
@@ -154,7 +189,7 @@ NexT.utils = {
         index--;
       }
       this.activateNavByIndex(index);
-    }, { passive: true });
+    });
 
     backToTop && backToTop.addEventListener('click', () => {
       window.anime({
@@ -176,9 +211,8 @@ NexT.utils = {
         event.preventDefault();
         // Prevent selected tab to select again.
         if (element.classList.contains('active')) return;
-        const nav = element.parentNode;
         // Add & Remove active class on `nav-tabs` & `tab-content`.
-        [...nav.children].forEach(target => {
+        [...element.parentNode.children].forEach(target => {
           target.classList.toggle('active', target === element);
         });
         // https://stackoverflow.com/questions/20306204/using-queryselector-with-ids-that-are-numbers
@@ -190,14 +224,6 @@ NexT.utils = {
         tActive.dispatchEvent(new Event('tabs:click', {
           bubbles: true
         }));
-        if (!CONFIG.stickytabs) return;
-        const offset = nav.parentNode.getBoundingClientRect().top + window.scrollY + 10;
-        window.anime({
-          targets  : document.scrollingElement,
-          duration : 500,
-          easing   : 'linear',
-          scrollTop: offset
-        });
       });
     });
 
@@ -249,21 +275,10 @@ NexT.utils = {
           targets  : document.scrollingElement,
           duration : 500,
           easing   : 'linear',
-          scrollTop: offset,
-          complete : () => {
-            history.pushState(null, document.title, element.href);
-          }
+          scrollTop: offset + 10
         });
       });
       return target;
-    });
-  },
-
-  registerPostReward: function() {
-    const button = document.querySelector('.reward-container button');
-    if (!button) return;
-    button.addEventListener('click', () => {
-      document.querySelector('.post-reward').classList.toggle('active');
     });
   },
 
@@ -282,7 +297,6 @@ NexT.utils = {
     }
     // Scrolling to center active TOC element if TOC content is taller then viewport.
     const tocElement = document.querySelector('.sidebar-panel-container');
-    if (!tocElement.parentNode.classList.contains('sidebar-toc-active')) return;
     window.anime({
       targets  : tocElement,
       duration : 200,
@@ -291,7 +305,25 @@ NexT.utils = {
     });
   },
 
+  /**
+   * Init Sidebar & TOC inner dimensions on all pages and for all schemes.
+   * Need for Sidebar/TOC inner scrolling if content taller then viewport.
+   */
+  initSidebarDimension: function() {
+    const sidebarNav = document.querySelector('.sidebar-nav');
+    const sidebarb2t = document.querySelector('.sidebar-inner .back-to-top');
+    const sidebarNavHeight = sidebarNav ? sidebarNav.offsetHeight : 0;
+    const sidebarb2tHeight = sidebarb2t ? sidebarb2t.offsetHeight : 0;
+    const sidebarOffset = CONFIG.sidebar.offset || 12;
+    let sidebarSchemePadding = (CONFIG.sidebar.padding * 2) + sidebarNavHeight + sidebarb2tHeight;
+    if (CONFIG.scheme === 'Pisces' || CONFIG.scheme === 'Gemini') sidebarSchemePadding += sidebarOffset * 2;
+    // Initialize Sidebar & TOC Height.
+    const sidebarWrapperHeight = document.body.offsetHeight - sidebarSchemePadding + 'px';
+    document.documentElement.style.setProperty('--sidebar-wrapper-height', sidebarWrapperHeight);
+  },
+
   updateSidebarPosition: function() {
+    NexT.utils.initSidebarDimension();
     if (window.innerWidth < 992 || CONFIG.scheme === 'Pisces' || CONFIG.scheme === 'Gemini') return;
     // Expand sidebar on post detail page by default, when post has a toc.
     const hasTOC = document.querySelector('.post-toc');
@@ -303,34 +335,6 @@ NexT.utils = {
     if (display) {
       window.dispatchEvent(new Event('sidebar:show'));
     }
-  },
-
-  activateSidebarPanel: function(index) {
-    const duration = 200;
-    const sidebar = document.querySelector('.sidebar-inner');
-    const panel = document.querySelector('.sidebar-panel-container');
-    const activeClassName = ['sidebar-toc-active', 'sidebar-overview-active'];
-
-    if (sidebar.classList.contains(activeClassName[index])) return;
-
-    window.anime({
-      duration,
-      targets   : panel,
-      easing    : 'linear',
-      opacity   : 0,
-      translateY: [0, -20],
-      complete  : () => {
-        // Prevent adding TOC to Overview if Overview was selected when close & open sidebar.
-        sidebar.classList.replace(activeClassName[1 - index], activeClassName[index]);
-        window.anime({
-          duration,
-          targets   : panel,
-          easing    : 'linear',
-          opacity   : [0, 1],
-          translateY: [-20, 0]
-        });
-      }
-    });
   },
 
   getScript: function(src, options = {}, legacyCondition) {
@@ -388,7 +392,7 @@ NexT.utils = {
     if (legacyCallback) {
       return this.loadComments(selector).then(legacyCallback);
     }
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const element = document.querySelector(selector);
       if (!CONFIG.comments.lazyload || !element) {
         resolve();

@@ -1,6 +1,5 @@
 /* global CONFIG */
 
-// https://developers.google.com/calendar/api/v3/reference/events/list
 (function() {
   // Initialization
   const calendar = {
