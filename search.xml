@@ -636,84 +636,6 @@ D = \frac{\hat{b}}{mg} \tag{17}
       </tags>
   </entry>
   <entry>
-    <title>路径规划-AStar</title>
-    <url>/2020/04/15/%E5%9F%BA%E4%BA%8E%E5%9B%BE%E6%90%9C%E7%B4%A2-AStar/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>A*算法是一种基于图搜索的路径搜索算法,通过结合移动代价和启发代价,优化路径的搜索性能. <img src="https://i.loli.net/2021/08/30/kMIZKgcV7PnNQEC.jpg" alt="青岛" /> <span id="more"></span></p>
-<h2 id="算法描述">算法描述</h2>
-<h3 id="确定规划的起点和终点">确定规划的起点和终点</h3>
-<p>下图所示,红色方块代表规划<strong>起始点</strong>,绿色方块代表<strong>终点</strong>,深灰色方块代表<strong>障碍物</strong>区域,其余白色方块代表可行驶区域(free space).首先将起始点节点推送到open集合中.</p>
-<p><img src="https://i.loli.net/2021/08/30/3agpvPEB89XTLK4.png" alt="原始地图给定起始点和终点" style="zoom:50%;" /></p>
-<h3 id="产生临近节点">产生临近节点</h3>
-<p>每次从open集合中取出<strong>总代价值</strong>最小的节点,由于当前open集合中只有起始节点,所以此时从open集合中取出的就是起始节点,并将该节点推入close集合.</p>
-<p>如下图所示,基于起始节点生成相邻节点,并计算每个节点的代价值.其中<strong>A</strong>*节点的代价值由<strong>移动代价</strong>和<strong>启发代价</strong>组成,即<span class="math inline">\(F = G + H\)</span>.</p>
-<p>本例中,采用如下距离计算代价值:</p>
-<ul>
-<li><strong>移动代价</strong> 采用欧拉距离计算移动代价值</li>
-<li><strong>启动代价</strong> 采用曼哈顿距离计算启发代价值</li>
-</ul>
-<p><img src="https://i.loli.net/2021/08/30/6sE9MRizIfejx4H.png" alt="临近节点产生" style="zoom:50%;" /></p>
-<h4 id="图例说明">图例说明</h4>
-<p>下图是对上图中每个节点中小方格的说明:</p>
-<ul>
-<li><strong>左下角</strong>的方格代表移动代价</li>
-<li><strong>右下角</strong>的方格代表启发代价</li>
-<li><strong>最上方</strong>的矩形方格代表总的代价值</li>
-<li><strong>中间</strong>的紫色方格代表父节点的方向</li>
-</ul>
-<p><img src="https://i.loli.net/2021/08/30/dk7cMlj1O5ACWNZ.png" style="zoom: 80%;" /></p>
-<h3 id="节点选择">节点选择</h3>
-<p>A*算法下一节点的选择,是从open集合中选取总代价值最小的节点.如下图所示,位于起始点右侧的节点代价值最小,图中使用浅绿色蒙板覆盖该节点表示选中.</p>
-<p><img src="https://i.loli.net/2021/08/30/yaH7igL1RWFxMEI.png" alt="选择价值最低节点" style="zoom:80%;" /></p>
-<h3 id="节点扩展">节点扩展</h3>
-<p>基于选中的节点,根据扩展规则,生成新的临近节点,计算临近节点时只需要计算<strong>移动代价</strong>.</p>
-<p>如下图中的右侧所示,对于新生成的8个节点需要做如下条件判断:</p>
-<ul>
-<li><p>是否在<strong>close</strong>集合中:</p>
-<p>如果该节点在close集合中,直接跳过该节点,进行下一节点的判断</p></li>
-<li><p>是否<strong>碰撞</strong>:</p>
-<p>若该节点与障碍物存在碰撞可能,则跳过该节点,进行下一节点的判断;</p></li>
-<li><p>是否在<strong>open</strong>集合中:</p>
-<ol type="1">
-<li><p>如果该节点==在==open集合中,需要判断该节点的移动代价是否小于原先位置节点的移动代价:</p>
-<p>如果小于,则替换原先节点,并将节点的父节点方向指向当前节点,否则跳过该节点,进行下一节点的判断.</p></li>
-<li><p>如果该节点==不在==open集合,则直接将其加入open集合.</p></li>
-</ol></li>
-</ul>
-<p>如下图所示,当前节点的左侧的节点已经在close集合中,直接跳过该节点;当前节点左上角,左下角,上方和下方的节点已经在open集合中,所以需要比较新节点与open集合中节点的移动代价.通过比较,这四个新节点的移动代价大于相应open集合中节点的移动代价,所以跳过这些节点;当前节点右侧三个新节点都不在open集合中,所以直接将它们推入open集合.</p>
-<p><img src="https://i.loli.net/2021/08/30/zdJIXQBpYuF7OAZ.png" style="zoom: 67%;" /></p>
-<p>基于扩展规则,不断推出总代价值最小的节点,并扩展这些节点.下图中,当前节点右侧三个新节点与障碍存在碰撞,所以直接跳过.</p>
-<p><img src="https://i.loli.net/2021/08/30/pqgZ2vl5XixR4mU.png" style="zoom: 67%;" /></p>
-<p>如下图所示,如果存在总代价相等的情况,则先推出最新推入的节点.下图中,假设右下方总代价值为64的节点是新推进open集合的节点.</p>
-<p><img src="https://i.loli.net/2021/08/30/JENcBzb1UmMZYLX.png" style="zoom:67%;" /></p>
-<p>如下图所示,继续推出新的节点,并迭代更新.</p>
-<p><img src="https://i.loli.net/2021/08/30/v4cL526HZYWtbXh.png" style="zoom:67%;" /></p>
-<p>如下图所示,新的节点有的与障碍物存在碰撞,有的已经在close集合中,有的移动代价大于原先的节点;但当前节点下方的节点,其移动代价小于open集中对应节点的代价,所以需替换open集合中该节点的移动代价,并将其父节点指向当前节点.</p>
-<p><img src="https://i.loli.net/2021/08/30/pBPmRbjvfouhLzq.png" style="zoom:67%;" /></p>
-<h3 id="迭代">迭代</h3>
-<p>如下图所示,直到从open集合中推出的节点是终点,表明搜索结束.浅绿色蒙板包含的区域属于close集合,其它搜索过的节点属于open集合.如果遍历所有open集合的节点都无法到达终点,则搜索失败.</p>
-<p><img src="https://i.loli.net/2020/10/31/w3grmTFfHltY24U.png" alt="搜索完成" style="zoom: 67%;" /></p>
-<h3 id="获取路径">获取路径</h3>
-<p>如下图所示,搜索结束后,以终点为起始节点,根据节点所指向的父节点,反向更新搜索路径,直到节点的父节点指向为空,即到达起始点.</p>
-<p><img src="https://i.loli.net/2020/10/31/Eqa4sbG6jgUnXVI.png" alt="搜索结果" style="zoom: 67%;" /></p>
-<h2 id="参考">参考</h2>
-<ul>
-<li><a href="https://www.redblobgames.com/pathfinding/a-star/introduction.html">Introduction to the A* Algorithm</a></li>
-<li><a href="https://www.redblobgames.com/pathfinding/a-star/implementation.html#algorithm">Implementation of A*</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/161660932">路径规划中的Hybrid A*算法</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>规划算法</category>
-        <category>图搜索算法</category>
-      </categories>
-      <tags>
-        <tag>路径规划</tag>
-        <tag>A Star</tag>
-        <tag>A*</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>基础算法-LQR-离散时间有限边界</title>
     <url>/2020/02/20/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-LQR-%E7%A6%BB%E6%95%A3%E6%97%B6%E9%97%B4%E6%9C%89%E9%99%90%E8%BE%B9%E7%95%8C/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -954,6 +876,84 @@ P_{t-1} = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A
       </tags>
   </entry>
   <entry>
+    <title>路径规划-AStar</title>
+    <url>/2020/04/15/%E5%9F%BA%E4%BA%8E%E5%9B%BE%E6%90%9C%E7%B4%A2-AStar/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>A*算法是一种基于图搜索的路径搜索算法,通过结合移动代价和启发代价,优化路径的搜索性能. <img src="https://i.loli.net/2021/08/30/kMIZKgcV7PnNQEC.jpg" alt="青岛" /> <span id="more"></span></p>
+<h2 id="算法描述">算法描述</h2>
+<h3 id="确定规划的起点和终点">确定规划的起点和终点</h3>
+<p>下图所示,红色方块代表规划<strong>起始点</strong>,绿色方块代表<strong>终点</strong>,深灰色方块代表<strong>障碍物</strong>区域,其余白色方块代表可行驶区域(free space).首先将起始点节点推送到open集合中.</p>
+<p><img src="https://i.loli.net/2021/08/30/3agpvPEB89XTLK4.png" alt="原始地图给定起始点和终点" style="zoom:50%;" /></p>
+<h3 id="产生临近节点">产生临近节点</h3>
+<p>每次从open集合中取出<strong>总代价值</strong>最小的节点,由于当前open集合中只有起始节点,所以此时从open集合中取出的就是起始节点,并将该节点推入close集合.</p>
+<p>如下图所示,基于起始节点生成相邻节点,并计算每个节点的代价值.其中<strong>A</strong>*节点的代价值由<strong>移动代价</strong>和<strong>启发代价</strong>组成,即<span class="math inline">\(F = G + H\)</span>.</p>
+<p>本例中,采用如下距离计算代价值:</p>
+<ul>
+<li><strong>移动代价</strong> 采用欧拉距离计算移动代价值</li>
+<li><strong>启动代价</strong> 采用曼哈顿距离计算启发代价值</li>
+</ul>
+<p><img src="https://i.loli.net/2021/08/30/6sE9MRizIfejx4H.png" alt="临近节点产生" style="zoom:50%;" /></p>
+<h4 id="图例说明">图例说明</h4>
+<p>下图是对上图中每个节点中小方格的说明:</p>
+<ul>
+<li><strong>左下角</strong>的方格代表移动代价</li>
+<li><strong>右下角</strong>的方格代表启发代价</li>
+<li><strong>最上方</strong>的矩形方格代表总的代价值</li>
+<li><strong>中间</strong>的紫色方格代表父节点的方向</li>
+</ul>
+<p><img src="https://i.loli.net/2021/08/30/dk7cMlj1O5ACWNZ.png" style="zoom: 80%;" /></p>
+<h3 id="节点选择">节点选择</h3>
+<p>A*算法下一节点的选择,是从open集合中选取总代价值最小的节点.如下图所示,位于起始点右侧的节点代价值最小,图中使用浅绿色蒙板覆盖该节点表示选中.</p>
+<p><img src="https://i.loli.net/2021/08/30/yaH7igL1RWFxMEI.png" alt="选择价值最低节点" style="zoom:80%;" /></p>
+<h3 id="节点扩展">节点扩展</h3>
+<p>基于选中的节点,根据扩展规则,生成新的临近节点,计算临近节点时只需要计算<strong>移动代价</strong>.</p>
+<p>如下图中的右侧所示,对于新生成的8个节点需要做如下条件判断:</p>
+<ul>
+<li><p>是否在<strong>close</strong>集合中:</p>
+<p>如果该节点在close集合中,直接跳过该节点,进行下一节点的判断</p></li>
+<li><p>是否<strong>碰撞</strong>:</p>
+<p>若该节点与障碍物存在碰撞可能,则跳过该节点,进行下一节点的判断;</p></li>
+<li><p>是否在<strong>open</strong>集合中:</p>
+<ol type="1">
+<li><p>如果该节点==在==open集合中,需要判断该节点的移动代价是否小于原先位置节点的移动代价:</p>
+<p>如果小于,则替换原先节点,并将节点的父节点方向指向当前节点,否则跳过该节点,进行下一节点的判断.</p></li>
+<li><p>如果该节点==不在==open集合,则直接将其加入open集合.</p></li>
+</ol></li>
+</ul>
+<p>如下图所示,当前节点的左侧的节点已经在close集合中,直接跳过该节点;当前节点左上角,左下角,上方和下方的节点已经在open集合中,所以需要比较新节点与open集合中节点的移动代价.通过比较,这四个新节点的移动代价大于相应open集合中节点的移动代价,所以跳过这些节点;当前节点右侧三个新节点都不在open集合中,所以直接将它们推入open集合.</p>
+<p><img src="https://i.loli.net/2021/08/30/zdJIXQBpYuF7OAZ.png" style="zoom: 67%;" /></p>
+<p>基于扩展规则,不断推出总代价值最小的节点,并扩展这些节点.下图中,当前节点右侧三个新节点与障碍存在碰撞,所以直接跳过.</p>
+<p><img src="https://i.loli.net/2021/08/30/pqgZ2vl5XixR4mU.png" style="zoom: 67%;" /></p>
+<p>如下图所示,如果存在总代价相等的情况,则先推出最新推入的节点.下图中,假设右下方总代价值为64的节点是新推进open集合的节点.</p>
+<p><img src="https://i.loli.net/2021/08/30/JENcBzb1UmMZYLX.png" style="zoom:67%;" /></p>
+<p>如下图所示,继续推出新的节点,并迭代更新.</p>
+<p><img src="https://i.loli.net/2021/08/30/v4cL526HZYWtbXh.png" style="zoom:67%;" /></p>
+<p>如下图所示,新的节点有的与障碍物存在碰撞,有的已经在close集合中,有的移动代价大于原先的节点;但当前节点下方的节点,其移动代价小于open集中对应节点的代价,所以需替换open集合中该节点的移动代价,并将其父节点指向当前节点.</p>
+<p><img src="https://i.loli.net/2021/08/30/pBPmRbjvfouhLzq.png" style="zoom:67%;" /></p>
+<h3 id="迭代">迭代</h3>
+<p>如下图所示,直到从open集合中推出的节点是终点,表明搜索结束.浅绿色蒙板包含的区域属于close集合,其它搜索过的节点属于open集合.如果遍历所有open集合的节点都无法到达终点,则搜索失败.</p>
+<p><img src="https://i.loli.net/2020/10/31/w3grmTFfHltY24U.png" alt="搜索完成" style="zoom: 67%;" /></p>
+<h3 id="获取路径">获取路径</h3>
+<p>如下图所示,搜索结束后,以终点为起始节点,根据节点所指向的父节点,反向更新搜索路径,直到节点的父节点指向为空,即到达起始点.</p>
+<p><img src="https://i.loli.net/2020/10/31/Eqa4sbG6jgUnXVI.png" alt="搜索结果" style="zoom: 67%;" /></p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://www.redblobgames.com/pathfinding/a-star/introduction.html">Introduction to the A* Algorithm</a></li>
+<li><a href="https://www.redblobgames.com/pathfinding/a-star/implementation.html#algorithm">Implementation of A*</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/161660932">路径规划中的Hybrid A*算法</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>规划算法</category>
+        <category>图搜索算法</category>
+      </categories>
+      <tags>
+        <tag>路径规划</tag>
+        <tag>A Star</tag>
+        <tag>A*</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>双线性插值</title>
     <url>/2019/10/19/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -1000,6 +1000,164 @@ P_{t-1} = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A
       <tags>
         <tag>线性插值</tag>
         <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>最小二乘法线性拟合</title>
+    <url>/2019/10/17/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95%E7%9A%84%E7%BA%BF%E6%80%A7%E6%8B%9F%E5%90%88/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>最小二乘法是曲线拟合的常用方法，使用该方法对匹配函数的选取非常重要。 <img src="https://i.loli.net/2021/08/30/67NEhYDHezj1PX2.jpg" alt="青岛" /></p>
+<span id="more"></span>
+<h2 id="理论">理论</h2>
+<ol type="1">
+<li>假设拟合的多项式为:</li>
+</ol>
+<p><span class="math display">\[
+y = a_0 + a_1*x +a_2*x^2 + ...+a_m*x^m
+\]</span></p>
+<p>其中，<strong>m</strong>代表多项式的阶数。</p>
+<ol start="2" type="1">
+<li>离散点与该多项式的平方和<span class="math inline">\(F(a_0,a_1,,a_m)\)</span>为，其中<strong>n</strong>代表采样点数：</li>
+</ol>
+<p><span class="math display">\[
+F(a_0,a_1,,a_m) = \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)]^2
+\]</span></p>
+<ol start="3" type="1">
+<li><p>最小二乘法的思想是求平方和函数<span class="math inline">\(F(a_0,a_1,,a_m)\)</span>的最小值，而对于二次方程求最小值的问题，常见的思路就是对方程求导，倒数为零的点，及为方程的极值点。</p></li>
+<li><p>下面对<span class="math inline">\(F(a_0,a_1,,a_m)\)</span>分别求<span class="math inline">\(a_i\)</span>偏导数，得：</p></li>
+</ol>
+<p><span class="math display">\[
+-2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] = 0 \\
+-2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] x_i= 0\\
+-2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] x_i^2= 0\\
+\ldots\\
+-2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] x_i^m= 0
+\]</span></p>
+<ol start="5" type="1">
+<li>整理得</li>
+</ol>
+<p><span class="math display">\[
+a_0\sum_{i=0}^{n}+a_1\sum_{i=0}^{n} x_i+ a_2\sum_{i=0}^{n} x_i^2+...+a_m\sum_{i=0}^{n}x_i^m = \sum_{i=0}^{n}y_i\\
+a_0\sum_{i=0}^{n} x_i+a_1\sum_{i=0}^{n} x_i^2+ a_2\sum_{i=0}^{n} x_i^3+...+a_m\sum_{i=0}^{n}x_i^{m+1}  = \sum_{i=0}^{n}y_ix_i\\
+\ldots\\
+a_0\sum_{i=0}^{n} x_i^m+a_1\sum_{i=0}^{n} x_i^{m+1}+ a_2\sum_{i=0}^{n} x_i^{m+2}+...+a_m\sum_{i=0}^{n}x_i^{2m}  = \sum_{i=0}^{n}y_ix_i^m
+\]</span></p>
+<ol start="6" type="1">
+<li>使用矩阵形式表示为：</li>
+</ol>
+<p><span class="math display">\[
+\left[
+\begin{matrix}
+\sum_{i=0}^{n} &amp; \sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}x_i^2&amp;\ldots&amp;\sum_{i=0}^{n}x_i^m\\
+\sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}x_i^2&amp;\sum_{i=0}^{n}x_i^3&amp;\ldots&amp;\sum_{i=0}^{n}x_i^{m+1}\\
+\sum_{i=0}^{n}x_i^2&amp;\sum_{i=0}^{n}x_i^3&amp;\sum_{i=0}^{n}x_i^4&amp;\ldots&amp;\sum_{i=0}^{n}x_i^{m+2}\\
+\ldots&amp;\ldots&amp;\ldots&amp;\ldots&amp;\ldots\\
+\sum_{i=0}^{n}x_i^{m}&amp;\sum_{i=0}^{n}x_i^{m+1}&amp;\sum_{i=0}^{n}x_i^{m+2}&amp;\ldots&amp;\sum_{i=0}^{n}x_i^{2m}
+\end{matrix}
+\right] 
+\left[
+\begin{matrix}
+a_0\\
+a_1\\
+a_2\\
+\ldots\\
+a_m
+\end{matrix}
+\right]=\\
+\left[
+\begin{matrix}
+\sum_{i=0}^{n}y_i\\
+\sum_{i=0}^{n}y_ix_i\\
+\sum_{i=0}^{n}y_ix_i^2\\
+\ldots\\
+\sum_{i=0}^{n}y_ix_i^m\\
+\end{matrix}
+\right]
+\]</span></p>
+<ol start="7" type="1">
+<li>下面就是求解一次线性方程，常用的方法是使用高斯消元法，也可以使用求矩阵的秩或者求解逆矩阵等方式求解。</li>
+</ol>
+<h2 id="高斯消元法求解线性方程">高斯消元法求解线性方程</h2>
+<h3 id="原则">原则</h3>
+<ul>
+<li>两个方程互换解不变</li>
+<li>一个方程乘以非零K,解不变</li>
+<li>一个方程乘以非零K,加上另一个方程解不变</li>
+</ul>
+<h3 id="一阶线性函数">一阶线性函数</h3>
+<p>假设多项式得阶数<strong>m</strong>为2，则上述矩阵方程为：</p>
+<p><span class="math display">\[
+\left[
+\begin{matrix}
+\sum_{i=0}^{n} &amp; \sum_{i=0}^{n}x_i\\
+\sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}x_i^2&amp;
+\end{matrix}
+\right] 
+\left[
+\begin{matrix}
+a_0\\
+a_1
+\end{matrix}
+\right]=\\
+\left[
+\begin{matrix}
+\sum_{i=0}^{n}y_i\\
+\sum_{i=0}^{n}y_ix_i
+\end{matrix}
+\right]
+\]</span></p>
+<p>写成行列式的形式为：</p>
+<p><span class="math display">\[
+\begin{vmatrix}
+\sum_{i=0}^{n} &amp; \sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}y_i\\
+\sum_{i=0}^{n}x_i &amp; \sum_{i=0}^{n}x_i^2&amp;\sum_{i=0}^{n}y_ix_i\\
+\end{vmatrix}
+\]</span></p>
+<p>第一行乘以系数<span class="math inline">\(\sum_{i=0}^{n}\)</span>，第二行乘以系数<span class="math inline">\(\sum_{i=0}^{n}x_i\)</span></p>
+<p><span class="math display">\[
+\begin{vmatrix}
+1 &amp; \frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}} &amp; \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}\\
+1 &amp; \frac{\sum_{i=0}^{n}x_i^2}{\sum_{i=0}^{n}x_i} &amp; \frac{\sum_{i=0}^{n}y_ix_i}{\sum_{i=0}^{n}x_i}
+\end{vmatrix}
+\]</span></p>
+<p>第二行减去第一行得</p>
+<p><span class="math display">\[
+\begin{vmatrix}
+1 &amp; \frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}} &amp; \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}\\
+0 &amp; \frac{\sum_{i=0}^{n}x_i^2}{\sum_{i=0}^{n}x_i} -\frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}} &amp; \frac{\sum_{i=0}^{n}y_ix_i}{\sum_{i=0}^{n}x_i} - \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}
+\end{vmatrix}
+\]</span></p>
+<p>通过上式可得<span class="math inline">\(a_1\)</span>为</p>
+<p><span class="math display">\[
+a_1 
+= \frac{\frac{\sum_{i=0}^{n}y_ix_i}{\sum_{i=0}^{n}x_i} - \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}}{\frac{\sum_{i=0}^{n}x_i^2}{\sum_{i=0}^{n}x_i} -\frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}}}
+=\frac{\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
+\]</span></p>
+<p>同理将<span class="math inline">\(a_1\)</span>回代入得：</p>
+<p><span class="math display">\[
+a_0 
+= \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}} - \frac{(\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}x_i}{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}}\\
+=\frac{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}y_i -(\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}x_i}{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}}\\
+=\frac{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n}\sum_{i=0}^{n}y_i -\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}\sum_{i=0}^{n}x_i}{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}}\\
+=\frac{\sum_{i=0}^{n}x_i^2\sum_{i=0}^{n}y_i -\sum_{i=0}^{n}y_ix_i\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
+\]</span></p>
+<p>故最终可得</p>
+<p><span class="math display">\[
+a_0
+=\frac{\sum_{i=0}^{n}x_i^2\sum_{i=0}^{n}y_i -\sum_{i=0}^{n}y_ix_i\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
+\]</span></p>
+<p><span class="math display">\[
+a_1 
+=\frac{\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
+\]</span></p>
+]]></content>
+      <categories>
+        <category>基础算法</category>
+        <category>最优算法</category>
+      </categories>
+      <tags>
+        <tag>最小二乘法</tag>
+        <tag>C++/C</tag>
       </tags>
   </entry>
   <entry>
@@ -1188,164 +1346,6 @@ V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \tag{25}
       <tags>
         <tag>特征提取</tag>
         <tag>超声波</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>最小二乘法线性拟合</title>
-    <url>/2019/10/17/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95%E7%9A%84%E7%BA%BF%E6%80%A7%E6%8B%9F%E5%90%88/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>最小二乘法是曲线拟合的常用方法，使用该方法对匹配函数的选取非常重要。 <img src="https://i.loli.net/2021/08/30/67NEhYDHezj1PX2.jpg" alt="青岛" /></p>
-<span id="more"></span>
-<h2 id="理论">理论</h2>
-<ol type="1">
-<li>假设拟合的多项式为:</li>
-</ol>
-<p><span class="math display">\[
-y = a_0 + a_1*x +a_2*x^2 + ...+a_m*x^m
-\]</span></p>
-<p>其中，<strong>m</strong>代表多项式的阶数。</p>
-<ol start="2" type="1">
-<li>离散点与该多项式的平方和<span class="math inline">\(F(a_0,a_1,,a_m)\)</span>为，其中<strong>n</strong>代表采样点数：</li>
-</ol>
-<p><span class="math display">\[
-F(a_0,a_1,,a_m) = \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)]^2
-\]</span></p>
-<ol start="3" type="1">
-<li><p>最小二乘法的思想是求平方和函数<span class="math inline">\(F(a_0,a_1,,a_m)\)</span>的最小值，而对于二次方程求最小值的问题，常见的思路就是对方程求导，倒数为零的点，及为方程的极值点。</p></li>
-<li><p>下面对<span class="math inline">\(F(a_0,a_1,,a_m)\)</span>分别求<span class="math inline">\(a_i\)</span>偏导数，得：</p></li>
-</ol>
-<p><span class="math display">\[
--2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] = 0 \\
--2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] x_i= 0\\
--2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] x_i^2= 0\\
-\ldots\\
--2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] x_i^m= 0
-\]</span></p>
-<ol start="5" type="1">
-<li>整理得</li>
-</ol>
-<p><span class="math display">\[
-a_0\sum_{i=0}^{n}+a_1\sum_{i=0}^{n} x_i+ a_2\sum_{i=0}^{n} x_i^2+...+a_m\sum_{i=0}^{n}x_i^m = \sum_{i=0}^{n}y_i\\
-a_0\sum_{i=0}^{n} x_i+a_1\sum_{i=0}^{n} x_i^2+ a_2\sum_{i=0}^{n} x_i^3+...+a_m\sum_{i=0}^{n}x_i^{m+1}  = \sum_{i=0}^{n}y_ix_i\\
-\ldots\\
-a_0\sum_{i=0}^{n} x_i^m+a_1\sum_{i=0}^{n} x_i^{m+1}+ a_2\sum_{i=0}^{n} x_i^{m+2}+...+a_m\sum_{i=0}^{n}x_i^{2m}  = \sum_{i=0}^{n}y_ix_i^m
-\]</span></p>
-<ol start="6" type="1">
-<li>使用矩阵形式表示为：</li>
-</ol>
-<p><span class="math display">\[
-\left[
-\begin{matrix}
-\sum_{i=0}^{n} &amp; \sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}x_i^2&amp;\ldots&amp;\sum_{i=0}^{n}x_i^m\\
-\sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}x_i^2&amp;\sum_{i=0}^{n}x_i^3&amp;\ldots&amp;\sum_{i=0}^{n}x_i^{m+1}\\
-\sum_{i=0}^{n}x_i^2&amp;\sum_{i=0}^{n}x_i^3&amp;\sum_{i=0}^{n}x_i^4&amp;\ldots&amp;\sum_{i=0}^{n}x_i^{m+2}\\
-\ldots&amp;\ldots&amp;\ldots&amp;\ldots&amp;\ldots\\
-\sum_{i=0}^{n}x_i^{m}&amp;\sum_{i=0}^{n}x_i^{m+1}&amp;\sum_{i=0}^{n}x_i^{m+2}&amp;\ldots&amp;\sum_{i=0}^{n}x_i^{2m}
-\end{matrix}
-\right] 
-\left[
-\begin{matrix}
-a_0\\
-a_1\\
-a_2\\
-\ldots\\
-a_m
-\end{matrix}
-\right]=\\
-\left[
-\begin{matrix}
-\sum_{i=0}^{n}y_i\\
-\sum_{i=0}^{n}y_ix_i\\
-\sum_{i=0}^{n}y_ix_i^2\\
-\ldots\\
-\sum_{i=0}^{n}y_ix_i^m\\
-\end{matrix}
-\right]
-\]</span></p>
-<ol start="7" type="1">
-<li>下面就是求解一次线性方程，常用的方法是使用高斯消元法，也可以使用求矩阵的秩或者求解逆矩阵等方式求解。</li>
-</ol>
-<h2 id="高斯消元法求解线性方程">高斯消元法求解线性方程</h2>
-<h3 id="原则">原则</h3>
-<ul>
-<li>两个方程互换解不变</li>
-<li>一个方程乘以非零K,解不变</li>
-<li>一个方程乘以非零K,加上另一个方程解不变</li>
-</ul>
-<h3 id="一阶线性函数">一阶线性函数</h3>
-<p>假设多项式得阶数<strong>m</strong>为2，则上述矩阵方程为：</p>
-<p><span class="math display">\[
-\left[
-\begin{matrix}
-\sum_{i=0}^{n} &amp; \sum_{i=0}^{n}x_i\\
-\sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}x_i^2&amp;
-\end{matrix}
-\right] 
-\left[
-\begin{matrix}
-a_0\\
-a_1
-\end{matrix}
-\right]=\\
-\left[
-\begin{matrix}
-\sum_{i=0}^{n}y_i\\
-\sum_{i=0}^{n}y_ix_i
-\end{matrix}
-\right]
-\]</span></p>
-<p>写成行列式的形式为：</p>
-<p><span class="math display">\[
-\begin{vmatrix}
-\sum_{i=0}^{n} &amp; \sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}y_i\\
-\sum_{i=0}^{n}x_i &amp; \sum_{i=0}^{n}x_i^2&amp;\sum_{i=0}^{n}y_ix_i\\
-\end{vmatrix}
-\]</span></p>
-<p>第一行乘以系数<span class="math inline">\(\sum_{i=0}^{n}\)</span>，第二行乘以系数<span class="math inline">\(\sum_{i=0}^{n}x_i\)</span></p>
-<p><span class="math display">\[
-\begin{vmatrix}
-1 &amp; \frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}} &amp; \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}\\
-1 &amp; \frac{\sum_{i=0}^{n}x_i^2}{\sum_{i=0}^{n}x_i} &amp; \frac{\sum_{i=0}^{n}y_ix_i}{\sum_{i=0}^{n}x_i}
-\end{vmatrix}
-\]</span></p>
-<p>第二行减去第一行得</p>
-<p><span class="math display">\[
-\begin{vmatrix}
-1 &amp; \frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}} &amp; \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}\\
-0 &amp; \frac{\sum_{i=0}^{n}x_i^2}{\sum_{i=0}^{n}x_i} -\frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}} &amp; \frac{\sum_{i=0}^{n}y_ix_i}{\sum_{i=0}^{n}x_i} - \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}
-\end{vmatrix}
-\]</span></p>
-<p>通过上式可得<span class="math inline">\(a_1\)</span>为</p>
-<p><span class="math display">\[
-a_1 
-= \frac{\frac{\sum_{i=0}^{n}y_ix_i}{\sum_{i=0}^{n}x_i} - \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}}{\frac{\sum_{i=0}^{n}x_i^2}{\sum_{i=0}^{n}x_i} -\frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}}}
-=\frac{\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
-\]</span></p>
-<p>同理将<span class="math inline">\(a_1\)</span>回代入得：</p>
-<p><span class="math display">\[
-a_0 
-= \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}} - \frac{(\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}x_i}{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}}\\
-=\frac{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}y_i -(\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}x_i}{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}}\\
-=\frac{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n}\sum_{i=0}^{n}y_i -\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}\sum_{i=0}^{n}x_i}{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}}\\
-=\frac{\sum_{i=0}^{n}x_i^2\sum_{i=0}^{n}y_i -\sum_{i=0}^{n}y_ix_i\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
-\]</span></p>
-<p>故最终可得</p>
-<p><span class="math display">\[
-a_0
-=\frac{\sum_{i=0}^{n}x_i^2\sum_{i=0}^{n}y_i -\sum_{i=0}^{n}y_ix_i\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
-\]</span></p>
-<p><span class="math display">\[
-a_1 
-=\frac{\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
-\]</span></p>
-]]></content>
-      <categories>
-        <category>基础算法</category>
-        <category>最优算法</category>
-      </categories>
-      <tags>
-        <tag>最小二乘法</tag>
-        <tag>C++/C</tag>
       </tags>
   </entry>
   <entry>
