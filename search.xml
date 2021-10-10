@@ -41,8 +41,9 @@
 <p>如果用户指定了编译器，一般在部署到设备端时会指定交叉编译工具，则使用用户指定的编译器进行编译。编译输入参数包括编译生成的文件名，待编译的文件组和编译参数。</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">fcompile(file_name, files, **kwargs)</span><br></pre></td></tr></table></figure>
 <blockquote>
-<p>对于C 源码模块，将编译他们并一起与DSO模块进行链接。 ### 2.1.2. Module Serialization</p>
+<p>对于C 源码模块，将编译他们并一起与DSO模块进行链接。</p>
 </blockquote>
+<h3 id="module-serialization">2.1.2. Module Serialization</h3>
 <p>在文件<code>src/target/codegen.cc</code>中，注册了全局函数<code>runtime.ModulePackImportsToC</code>和<code>runtime.ModulePackImportsToLLVM</code>，用于将其暴露到<strong>python</strong>端调用。 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Export two auxiliary function to the runtime namespace.</span></span><br><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.ModulePackImportsToC&quot;</span>).<span class="built_in">set_body_typed</span>(PackImportsToC);</span><br><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.ModulePackImportsToLLVM&quot;</span>).<span class="built_in">set_body_typed</span>(PackImportsToLLVM);</span><br></pre></td></tr></table></figure></p>
 <h4 id="serializemodule">2.1.2.1 SerializeModule</h4>
 <p>其中，<code>PackImportsToC</code>和<code>PackImportsToLLVM</code>函数都调用<code>SerializeModule</code>函数序列化<code>runtime module</code>。</p>
