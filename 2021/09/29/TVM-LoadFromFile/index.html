@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="1. 概述 本文主要分析动态库(.so)文件的加载过程，其中包括模块的反序列化流程和GraphExecuter 的创建。  东台条子泥">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TVM_LoadFromFile分析">
+<meta property="og:url" content="https://zgh551.github.io/2021/09/29/TVM-LoadFromFile/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="1. 概述 本文主要分析动态库(.so)文件的加载过程，其中包括模块的反序列化流程和GraphExecuter 的创建。  东台条子泥">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/10/07/pxhqTXVPRGmSMv5.jpg">
+<meta property="article:published_time" content="2021-09-29T12:02:06.000Z">
+<meta property="article:modified_time" content="2021-10-12T12:23:21.075Z">
+<meta property="article:author" content="Henry">
+<meta property="article:tag" content="TVM">
+<meta property="article:tag" content="Runtime">
+<meta property="article:tag" content="LoadFromFile">
+<meta property="article:tag" content="源码分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/10/07/pxhqTXVPRGmSMv5.jpg">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2021/09/29/TVM-LoadFromFile/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2021/09/29/TVM-LoadFromFile/","path":"2021/09/29/TVM-LoadFromFile/","title":"TVM_LoadFromFile分析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>TVM_LoadFromFile分析 | Z</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Z</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-首页"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-关于"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-标签"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-分类"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-归档"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">1. 概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E5%BA%93%E5%8A%A0%E8%BD%BD"><span class="nav-number">2.</span> <span class="nav-text">2. 动态库加载</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E6%9E%84%E5%BB%BA"><span class="nav-number">2.1.</span> <span class="nav-text">2.1. 直接构建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%8A%A8%E6%80%81%E5%BA%93%E6%96%87%E4%BB%B6%E6%9E%84%E5%BB%BA"><span class="nav-number">2.2.</span> <span class="nav-text">2.2. 基于动态库文件构建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#load_module"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.2.1. load_module</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#loadfromfile"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2.2. LoadFromFile</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#runtime.module.loadfile_so"><span class="nav-number">2.2.2.1.</span> <span class="nav-text">2.2.2.1. runtime.module.loadfile_so</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#dsolibrary"><span class="nav-number">2.2.2.1.1.</span> <span class="nav-text">2.2.2.1.1. DSOLibrary</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#createmodulefromlibrary"><span class="nav-number">2.2.2.1.2.</span> <span class="nav-text">2.2.2.1.2. CreateModuleFromLibrary</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#initcontextfunctions"><span class="nav-number">2.2.2.1.2.1.</span> <span class="nav-text">2.2.2.1.2.1 InitContextFunctions</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#processmoduleblob"><span class="nav-number">2.2.2.1.2.2.</span> <span class="nav-text">2.2.2.1.2.2. ProcessModuleBlob</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Henry"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Henry</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">88</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zgh_email@163.com" title="E-Mail → mailto:zgh_email@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fab fa-google fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fa fa-linkedin-square fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/zgh551" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2021/09/29/TVM-LoadFromFile/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TVM_LoadFromFile分析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-09-29 20:02:06" itemprop="dateCreated datePublished" datetime="2021-09-29T20:02:06+08:00">2021-09-29</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-10-12 20:23:21" itemprop="dateModified" datetime="2021-10-12T20:23:21+08:00">2021-10-12</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/TVM/" itemprop="url" rel="index"><span itemprop="name">TVM</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="概述">1. 概述</h1>
+<p>本文主要分析动态库(.so)文件的加载过程，其中包括模块的反序列化流程和<strong>GraphExecuter</strong> 的创建。</p>
+<figure>
+<img src="https://i.loli.net/2021/10/07/pxhqTXVPRGmSMv5.jpg" alt="东台条子泥" /><figcaption aria-hidden="true">东台条子泥</figcaption>
+</figure>
+<span id="more"></span>
+<h1 id="动态库加载">2. 动态库加载</h1>
+<p>当使用函数<code>relay.build</code>将模型转换为<strong>GraphExecutorFactoryModule</strong>类型的<code>lib</code>对象后，就可以在<strong>python</strong>端和<strong>C++</strong>端调用库文件去执行模型推理。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lib = relay.build(model, target, params)</span><br></pre></td></tr></table></figure>
+<h2 id="直接构建">2.1. 直接构建</h2>
+<p>由于<code>lib</code>的类型为<strong>GraphExecutorFactory</strong>，且在编译阶段，如果用户不特别指定模型名，默认模型名为<strong>default</strong>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">build</span>(<span class="params">ir_mod, target=<span class="literal">None</span>, target_host=<span class="literal">None</span>, params=<span class="literal">None</span>, mod_name=<span class="string">&quot;default&quot;</span></span>):</span></span><br></pre></td></tr></table></figure>
+<p>可以基于<code>lib</code>对象直接构建运行模块，其中<code>lib["default"](dev)</code>操作相当于调用<strong>GetFunction</strong>函数传入参数<strong>dev</strong>并返回模块名为<strong>default</strong>的<strong>runtime Module</strong>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">PackedFunc <span class="title">GraphExecutorFactory::GetFunction</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    <span class="keyword">const</span> std::string&amp; name, <span class="keyword">const</span> tvm::runtime::ObjectPtr&lt;tvm::runtime::Object&gt;&amp; sptr_to_self)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (name == module_name_) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">PackedFunc</span>([sptr_to_self, <span class="keyword">this</span>](TVMArgs args, TVMRetValue* rv) &#123;</span><br><span class="line">            std::vector&lt;Device&gt; devices;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; args.num_args; ++i) &#123;</span><br><span class="line">                devices.<span class="built_in">emplace_back</span>(args[i].<span class="keyword">operator</span> <span class="built_in">Device</span>());</span><br><span class="line">            &#125;</span><br><span class="line">            *rv = <span class="keyword">this</span>-&gt;<span class="built_in">ExecutorCreate</span>(devices);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后使用<code>python/tvm/contrib/graph_executor.py</code>文件中的<strong>GraphModule</strong>类型对返回的<strong>runtime Module</strong>进行封装。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">graph_mod = tvm.contrib.GraphModule(lib[<span class="string">&quot;default&quot;</span>](dev))</span><br></pre></td></tr></table></figure>
+<p>上述封装方便使用统一接口进行模型输入设定、运行和获取输出结果等。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">graph_mod.set_input(&quot;x&quot;, data)</span><br><span class="line">graph_mod.run()</span><br><span class="line">graph_mod.get_output(0, out_data)</span><br></pre></td></tr></table></figure>
+<h2 id="基于动态库文件构建">2.2. 基于动态库文件构建</h2>
+<p>基于动态库文件的构建方式，首先需要调用<strong>GraphExecutorFactoryModule</strong>类中的<strong>export_library</strong>函数，将<code>lib</code>对象导出为<code>xxx.so</code>动态库的形式。然后在需要构建时调用<strong>load_module</strong>或<strong>LoadFromFile</strong>函数加载动态库并生成相应的<strong>runtime::Module</strong>对象。其中<strong>python</strong>端使用<code>tvm.runtime.load_module</code>函数加载动态库，该函数位于<code>python/tvm/runtime/module.py</code>文件中。<strong>C++</strong>端使用<code>tvm::runtime::Module::LoadFromFile</code>函数加载动态库，函数位于<code>src/runtime/module.cc</code>文件中。</p>
+<h3 id="load_module">2.2.1. load_module</h3>
+<p>首先判定待加载文件是否存在，然后根据文件后缀类型是否为<code>.o</code>或<code>.tar</code>，自动调用<strong>cc.create_shared</strong>编译器进行文件编译并生成<code>.so</code>库，追加到<strong>path</strong>中。支持该操作是为了与<strong>RPC</strong>加载保持一致。最后调用全局函数<strong>ModuleLoadFromFile</strong>，该函数位于<code>src/runtime/module.cc</code>文件中，通过<strong>TVM_REGISTER_GLOBAL</strong>宏将<code>Module::LoadFromFile</code>函数注册为全局函数<code>runtime.ModuleLoadFromFile</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_module</span>(<span class="params">path, fmt=<span class="string">&quot;&quot;</span></span>):</span></span><br><span class="line">    <span class="keyword">if</span> os.path.isfile(path):</span><br><span class="line">        path = os.path.realpath(path)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">&quot;cannot find file %s&quot;</span> % path)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># c++ compiler/linker</span></span><br><span class="line">    cc = os.environ.get(<span class="string">&quot;CXX&quot;</span>, <span class="string">&quot;g++&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># High level handling for .o and .tar file.</span></span><br><span class="line">    <span class="comment"># We support this to be consistent with RPC module load.</span></span><br><span class="line">    <span class="keyword">if</span> path.endswith(<span class="string">&quot;.o&quot;</span>):</span><br><span class="line">        <span class="comment"># Extra dependencies during runtime.</span></span><br><span class="line">        <span class="keyword">from</span> tvm.contrib <span class="keyword">import</span> cc <span class="keyword">as</span> _cc</span><br><span class="line"></span><br><span class="line">        _cc.create_shared(path + <span class="string">&quot;.so&quot;</span>, path, cc=cc)</span><br><span class="line">        path += <span class="string">&quot;.so&quot;</span></span><br><span class="line">    <span class="keyword">elif</span> path.endswith(<span class="string">&quot;.tar&quot;</span>):</span><br><span class="line">        <span class="comment"># Extra dependencies during runtime.</span></span><br><span class="line">        <span class="keyword">from</span> tvm.contrib <span class="keyword">import</span> cc <span class="keyword">as</span> _cc, utils <span class="keyword">as</span> _utils, tar <span class="keyword">as</span> _tar</span><br><span class="line"></span><br><span class="line">        tar_temp = _utils.tempdir(custom_path=path.replace(<span class="string">&quot;.tar&quot;</span>, <span class="string">&quot;&quot;</span>))</span><br><span class="line">        _tar.untar(path, tar_temp.temp_dir)</span><br><span class="line">        files = [tar_temp.relpath(x) <span class="keyword">for</span> x <span class="keyword">in</span> tar_temp.listdir()]</span><br><span class="line">        _cc.create_shared(path + <span class="string">&quot;.so&quot;</span>, files, cc=cc)</span><br><span class="line">        path += <span class="string">&quot;.so&quot;</span></span><br><span class="line">    <span class="comment"># Redirect to the load API</span></span><br><span class="line">    <span class="keyword">return</span> _ffi_api.ModuleLoadFromFile(path, fmt)</span><br></pre></td></tr></table></figure>
+<h3 id="loadfromfile">2.2.2. LoadFromFile</h3>
+<p>首先进行加载文件的类型判断，如果类型为<code>dll</code>、<code>dylib</code>或<code>dso</code>。统一调用<strong>runtime.module.loadfile_so</strong>函数进行文件处理。</p>
+<p>在<code>Module::LoadFromFile</code>文件中，根据文件后缀类型，调用不同的加载函数<code>std::string load_f_name = "runtime.module.loadfile_" + fmt</code>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Module <span class="title">Module::LoadFromFile</span><span class="params">(<span class="keyword">const</span> std::string&amp; file_name, <span class="keyword">const</span> std::string&amp; format)</span> </span>&#123;</span><br><span class="line">  std::string fmt = <span class="built_in">GetFileFormat</span>(file_name, format);</span><br><span class="line">  <span class="built_in">ICHECK</span>(fmt.<span class="built_in">length</span>() != <span class="number">0</span>) &lt;&lt; <span class="string">&quot;Cannot deduce format of file &quot;</span> &lt;&lt; file_name;</span><br><span class="line">  <span class="keyword">if</span> (fmt == <span class="string">&quot;dll&quot;</span> || fmt == <span class="string">&quot;dylib&quot;</span> || fmt == <span class="string">&quot;dso&quot;</span>) &#123;</span><br><span class="line">    fmt = <span class="string">&quot;so&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  std::string load_f_name = <span class="string">&quot;runtime.module.loadfile_&quot;</span> + fmt;</span><br><span class="line">  <span class="keyword">const</span> PackedFunc* f = Registry::<span class="built_in">Get</span>(load_f_name);</span><br><span class="line">  Module m = (*f)(file_name, format);</span><br><span class="line">  <span class="keyword">return</span> m;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="runtime.module.loadfile_so">2.2.2.1. runtime.module.loadfile_so</h4>
+<p>在<code>src/runtime/dso_library.cc</code>文件中注册了<strong>runtime.module.loadfile_so</strong>全局函数。首先创建<code>DSOLibrary</code>对象，并将待加载的文件名参数传入到<strong>init</strong>函数中，用于初始化<code>DSOLibrary</code>对象<code>n</code>。然后调用<strong>CreateModuleFromLibrary</strong>函数，将创建的<code>DSOLibrary</code>对象<code>n</code>传入该函数中，该函数位于文件<code>src/runtime/library_module.cc</code>中。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.module.loadfile_so&quot;</span>).<span class="built_in">set_body</span>([](TVMArgs args, TVMRetValue* rv) &#123;</span><br><span class="line">  <span class="keyword">auto</span> n = make_object&lt;DSOLibrary&gt;();</span><br><span class="line">  n-&gt;<span class="built_in">Init</span>(args[<span class="number">0</span>]);</span><br><span class="line">  *rv = <span class="built_in">CreateModuleFromLibrary</span>(n);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h5 id="dsolibrary">2.2.2.1.1. DSOLibrary</h5>
+<p>根据系统平台不同，<strong>DSOLibrary</strong>对象会调用不同的<strong>Load</strong>函数。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Init</span><span class="params">(<span class="keyword">const</span> std::string&amp; name)</span> </span>&#123; <span class="built_in">Load</span>(name); &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>Windows</strong></li>
+</ul>
+<p>使用<code>#include &lt;windows.h&gt;</code>函数库加载动态库。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Load the library</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Load</span><span class="params">(<span class="keyword">const</span> std::string&amp; name)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// use wstring version that is needed by LLVM.</span></span><br><span class="line">    <span class="function">std::wstring <span class="title">wname</span><span class="params">(name.begin(), name.end())</span></span>;</span><br><span class="line">    lib_handle_ = <span class="built_in">LoadLibraryW</span>(wname.<span class="built_in">c_str</span>());</span><br><span class="line">    <span class="built_in">ICHECK</span>(lib_handle_ != <span class="literal">nullptr</span>) &lt;&lt; <span class="string">&quot;Failed to load dynamic shared library &quot;</span> &lt;&lt; name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>Linux</strong></li>
+</ul>
+<p>使用<code>#include &lt;dlfcn.h&gt;</code>函数库来加载动态库。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Library handle</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span>* lib_handle_&#123;<span class="literal">nullptr</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// load the library</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Load</span><span class="params">(<span class="keyword">const</span> std::string&amp; name)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">lib_handle_ = <span class="built_in">dlopen</span>(name.<span class="built_in">c_str</span>(), RTLD_LAZY | RTLD_LOCAL);</span><br><span class="line"></span><br><span class="line"><span class="built_in">ICHECK</span>(lib_handle_ != <span class="literal">nullptr</span>) &lt;&lt; <span class="string">&quot;Failed to load dynamic shared library &quot;</span> &lt;&lt; name &lt;&lt; <span class="string">&quot; &quot;</span> &lt;&lt; <span class="built_in">dlerror</span>();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="createmodulefromlibrary">2.2.2.1.2. CreateModuleFromLibrary</h5>
+<p>该函数主要实现从动态库中恢复<code>runtime::Module</code>对象的过程，包括反序列化和重新构建模块间导入的关系。</p>
+<ol type="1">
+<li><strong>InitContextFunctions</strong></li>
+</ol>
+<p>调用<strong>InitContextFunctions</strong>函数从动态库中获取上下文相关函数的函数句柄。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">InitContextFunctions</span>([lib](<span class="keyword">const</span> <span class="keyword">char</span>* fname) &#123; <span class="keyword">return</span> lib-&gt;<span class="built_in">GetSymbol</span>(fname); &#125;);</span><br></pre></td></tr></table></figure>
+<ol start="2" type="1">
+<li><strong>Load the imported modules</strong></li>
+</ol>
+<p>从动态库中获取**__tvm_dev_mblob<strong>符号，将符号地址返回到</strong>dev_mblob**对象。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">char</span>* dev_mblob = <span class="keyword">reinterpret_cast</span>&lt;<span class="keyword">const</span> <span class="keyword">char</span>*&gt;(lib-&gt;<span class="built_in">GetSymbol</span>(runtime::symbol::tvm_dev_mblob));</span><br></pre></td></tr></table></figure>
+<p>如果<code>dev_mblob != nullptr</code>，即动态库中存在<code>__tvm_dev_mblob</code>符号，说明动态库中存在序列化的<code>imported modules</code>，则调用<strong>ProcessModuleBlob</strong>函数对其进行处理。否则表明动态库中只有一个简单的<strong>DSO Module</strong>，直接将动态库转为<strong>LibraryModuleNode</strong>对象<code>n</code>，并基于<code>n</code>构造<strong>runtime::Module</strong>对象<code>root_mod</code>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (dev_mblob != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">    <span class="built_in">ProcessModuleBlob</span>(dev_mblob, lib, &amp;root_mod, &amp;dso_ctx_addr);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// Only have one single DSO Module</span></span><br><span class="line">    root_mod = <span class="built_in">Module</span>(n);</span><br><span class="line">    dso_ctx_addr = root_mod.<span class="keyword">operator</span>-&gt;();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="initcontextfunctions">2.2.2.1.2.1 InitContextFunctions</h6>
+<p>函数<code>InitContextFunctions</code>用于初始化上下文函数，将动态库对应的函数的地址映射到相应函数名，即从动态库中获取相关功能函数的函数句柄。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Initialize the functions</span></span><br><span class="line"><span class="built_in">TVM_INIT_CONTEXT_FUNC</span>(TVMFuncCall);</span><br><span class="line"><span class="built_in">TVM_INIT_CONTEXT_FUNC</span>(TVMAPISetLastError);</span><br><span class="line"><span class="built_in">TVM_INIT_CONTEXT_FUNC</span>(TVMBackendGetFuncFromEnv);</span><br><span class="line"><span class="built_in">TVM_INIT_CONTEXT_FUNC</span>(TVMBackendAllocWorkspace);</span><br><span class="line"><span class="built_in">TVM_INIT_CONTEXT_FUNC</span>(TVMBackendFreeWorkspace);</span><br><span class="line"><span class="built_in">TVM_INIT_CONTEXT_FUNC</span>(TVMBackendParallelLaunch);</span><br><span class="line"><span class="built_in">TVM_INIT_CONTEXT_FUNC</span>(TVMBackendParallelBarrier);</span><br></pre></td></tr></table></figure>
+<h6 id="processmoduleblob">2.2.2.1.2.2. ProcessModuleBlob</h6>
+<p>该函数主要实现对序列化的module进行反序列化处理，恢复导入模块的关系。</p>
+<ol type="1">
+<li>获取字段大小</li>
+</ol>
+<p>首先根据<code>dev_mblob</code>字段的前8个字节，获取<strong>blob</strong>字段的大小。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint64_t</span> nbytes = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="number">0</span>; i &lt; <span class="built_in"><span class="keyword">sizeof</span></span>(nbytes); ++i) &#123;</span><br><span class="line">    <span class="keyword">uint64_t</span> c = mblob[i];</span><br><span class="line">    nbytes |= (c &amp; <span class="number">0xff</span>UL) &lt;&lt; (i * <span class="number">8</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2" type="1">
+<li>构建数据流</li>
+</ol>
+<p>根据<strong>blob</strong>字段的大小和地址，创建<code>dmlc::MemoryFixedSizeStream fs</code>对象，然后将<code>fs</code>对象转化为数据流。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">dmlc::MemoryFixedSizeStream <span class="title">fs</span><span class="params">(<span class="keyword">const_cast</span>&lt;<span class="keyword">char</span>*&gt;(mblob + <span class="keyword">sizeof</span>(nbytes)),</span></span></span><br><span class="line"><span class="params"><span class="function">								<span class="keyword">static_cast</span>&lt;<span class="keyword">size_t</span>&gt;(nbytes))</span></span>;</span><br><span class="line">dmlc::Stream* stream = &amp;fs;</span><br></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>读取blob数量</li>
+</ol>
+<p>首先读取<code>blob</code>数量，然后根据数量大小，循环处理每个<code>blob</code>的对象。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint64_t</span> size;</span><br><span class="line"><span class="built_in">ICHECK</span>(stream-&gt;<span class="built_in">Read</span>(&amp;size));</span><br></pre></td></tr></table></figure>
+<ol start="4" type="1">
+<li>处理<strong>blob</strong>对象</li>
+</ol>
+<p>在处理blob对象时，根据<code>type_key</code>类型不同，分别进行不同方式的处理。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">std::vector&lt;Module&gt; modules;</span><br><span class="line">std::vector&lt;<span class="keyword">uint64_t</span>&gt; import_tree_row_ptr;</span><br><span class="line">std::vector&lt;<span class="keyword">uint64_t</span>&gt; import_tree_child_indices;</span><br><span class="line"><span class="keyword">int</span> num_dso_module = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">uint64_t</span> i = <span class="number">0</span>; i &lt; size; ++i) &#123;</span><br><span class="line">	std::string tkey;</span><br><span class="line">	<span class="built_in">ICHECK</span>(stream-&gt;<span class="built_in">Read</span>(&amp;tkey));</span><br><span class="line">    <span class="keyword">if</span> (tkey == <span class="string">&quot;_lib&quot;</span>) &#123;</span><br><span class="line">        <span class="comment">// construct dso module using lib</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tkey == <span class="string">&quot;_import_tree&quot;</span>) &#123;</span><br><span class="line">        <span class="comment">// READ(_import_tree_row_ptr)</span></span><br><span class="line">        <span class="comment">// READ(_import_tree_child_indices)</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    	<span class="comment">// call module.loadbinary_blob_type_key, such as module.loadbinary_cuda to restore.</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>type_key == "_lib"</code></li>
+</ul>
+<p>如果类型键为**_lib<strong>，直接将动态库转化为<code>LibraryModuleNode</code>对象，然后调用<code>runtime::Module</code>构造函数，进一步转化为<code>dso_module</code>对象，并且</strong>DSO**的上下文地址也指向<code>dso_module</code>对象。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> dso_module = <span class="built_in">Module</span>(make_object&lt;LibraryModuleNode&gt;(lib));</span><br><span class="line">*dso_ctx_addr = dso_module.<span class="keyword">operator</span>-&gt;();</span><br><span class="line">++num_dso_module;</span><br><span class="line">modules.<span class="built_in">emplace_back</span>(dso_module);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>type_key == "_import_tree"</code></li>
+</ul>
+<p>如果类型键为**_import_tree<strong>，则依次读取</strong>import_tree_row_ptr<strong>和</strong>import_tree_child_indices**数组的内容，用于后续构建导入模块的关系。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ICHECK</span>(stream-&gt;<span class="built_in">Read</span>(&amp;import_tree_row_ptr));</span><br><span class="line"><span class="built_in">ICHECK</span>(stream-&gt;<span class="built_in">Read</span>(&amp;import_tree_child_indices));</span><br></pre></td></tr></table></figure>
+<ul>
+<li>其它</li>
+</ul>
+<p>目前<strong>TVM</strong>框架中已经实现的<code>runtime.module.loadbinary_</code>函数所对应的<code>type_key</code>包括：</p>
+<p><code>metadata</code>、<code>arm_compute_lib</code>、<code>bnns_json</code>、<code>coreml</code>、<code>dnnl_json</code>、<code>ethos-n</code>、<code>tensorrt</code>、<code>cuda</code>、<code>metal</code>、<code>opencl</code>、<code>hsaco</code>、<code>hip</code>、<code>vulkan</code></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> m = <span class="built_in">LoadModuleFromBinary</span>(tkey, stream);</span><br><span class="line">modules.<span class="built_in">emplace_back</span>(m);</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Henry 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Henry 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/TVM/" rel="tag"># TVM</a>
+              <a href="/tags/Runtime/" rel="tag"># Runtime</a>
+              <a href="/tags/LoadFromFile/" rel="tag"># LoadFromFile</a>
+              <a href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># 源码分析</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/03/17/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96_NEON%E5%90%8E%E5%A4%84%E7%90%86/" rel="prev" title="算法优化-1bit转8bit-NEON处理">
+                  <i class="fa fa-chevron-left"></i> 算法优化-1bit转8bit-NEON处理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/10/08/TVM-ExportLibrary/" rel="next" title="TVM_export_lib分析">
+                  TVM_export_lib分析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Henry</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.6/dist/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.13.2/dist/mermaid.min.js","integrity":"sha256-UIQPVkGifpwMvDH5yGgORJ9sSTDq38zz6BGU6dNaKhM="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.herokuapp.com/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"8e93f2bbf1a772ecfb145516a5a8214c"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
