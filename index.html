@@ -167,12 +167,12 @@
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-count">21</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">88</span>
+        <span class="site-state-item-count">89</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -258,7 +258,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-10-10 21:53:41" itemprop="dateModified" datetime="2021-10-10T21:53:41+08:00">2021-10-10</time>
+        <time title="修改时间：2021-10-15 21:22:10" itemprop="dateModified" datetime="2021-10-15T21:22:10+08:00">2021-10-15</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -267,6 +267,10 @@
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
           <a href="/categories/TVM/" itemprop="url" rel="index"><span itemprop="name">TVM</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/TVM/Runtime/" itemprop="url" rel="index"><span itemprop="name">Runtime</span></a>
         </span>
     </span>
 
@@ -281,7 +285,7 @@
     
     <div class="post-body" itemprop="articleBody">
           <h1 id="概述">1. 概述</h1>
-<p>本文分析<code>graph_executor_lib</code>的导出过程，包括模块的序列化。</p>
+<p>本文分析<strong>executor_lib</strong>函数的处理过程，其中包括<strong>DSO</strong>模块的编译和<strong>imported modules</strong>模块的序列化。</p>
 <p><img src="https://i.loli.net/2021/10/10/3h8wfXOej514JLH.jpg" /></p>
           <!--noindex-->
             <div class="post-button">
@@ -347,7 +351,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-10-12 20:23:21" itemprop="dateModified" datetime="2021-10-12T20:23:21+08:00">2021-10-12</time>
+        <time title="修改时间：2021-10-15 21:31:42" itemprop="dateModified" datetime="2021-10-15T21:31:42+08:00">2021-10-15</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -356,6 +360,10 @@
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
           <a href="/categories/TVM/" itemprop="url" rel="index"><span itemprop="name">TVM</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/TVM/Runtime/" itemprop="url" rel="index"><span itemprop="name">Runtime</span></a>
         </span>
     </span>
 
@@ -370,7 +378,7 @@
     
     <div class="post-body" itemprop="articleBody">
           <h1 id="概述">1. 概述</h1>
-<p>本文主要分析动态库(.so)文件的加载过程，其中包括模块的反序列化流程和<strong>GraphExecuter</strong> 的创建。</p>
+<p>本文主要分析动态库(.so)文件的加载过程，其中包括模块的<strong>反序列化</strong>和<strong>GraphExecuter</strong> 的创建流程。</p>
 <figure>
 <img src="https://i.loli.net/2021/10/07/pxhqTXVPRGmSMv5.jpg" alt="东台条子泥" /><figcaption aria-hidden="true">东台条子泥</figcaption>
 </figure>
