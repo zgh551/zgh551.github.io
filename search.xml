@@ -431,43 +431,6 @@
       </tags>
   </entry>
   <entry>
-    <title>crazyflie-目录分析</title>
-    <url>/2020/01/22/crazyflie-%E7%9B%AE%E5%BD%95%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>本文主要分析<strong>crazyflie</strong>项目的目录结构，并对主要目录作了简要说明。</p>
-<figure>
-<img src="https://i.loli.net/2021/08/30/5WUADE8QVGmFRcT.jpg" alt="重庆" /><figcaption aria-hidden="true">重庆</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="目录结构">目录结构</h2>
-<p>下图所示是飞控项目的目录结构，项目中的包含文档说明、代码测试、项目所需的开源项目、飞控源码、编译工具和输出文件等。</p>
-<p><img src="https://i.loli.net/2021/08/30/Ndk897wgDTzBcJR.png" /></p>
-<h3 id="doc">[doc]</h3>
-<p>该目录包含项目相关的说明文档，主要说明项目编译方式、CRTP包说明、扩展板开发说明等。</p>
-<h3 id="blobs">[blobs]</h3>
-<p>该目录包含灯塔固件。</p>
-<h3 id="generated-test">[generated-test]</h3>
-<p>该目录包含产生测试文件的脚本，但是从仓库拉取下来是空的。</p>
-<h3 id="test">[test]</h3>
-<p>该目录包含各个模块的测试用例文件。</p>
-<h3 id="vender">[vender]</h3>
-<p>该目录包含项目所依赖的其它项目文件，包括测试工具、实时操作系统和开源定位库等； - <strong>cmock</strong>：用于项目的mock测试； - <strong>unity</strong>：用于项目的单元测试； - <strong>CMSIS</strong>：用于实现Cortex-M 系列处理器与供应商无关的硬件抽象层； - <strong>FreeRTOS</strong>：用于实现系统的任务调度和消息管理； - <strong>libdw1000</strong>：用于驱动dw1000芯片，实现室内定位功能。</p>
-<h3 id="src">[src]</h3>
-<p>该目录包含飞控相关的源文件，具体说明如下： - <strong>drivers</strong>：目录包含实现硬件底层驱动的文件，实现主控芯片外设驱动和外部芯片驱动的开发； - <strong>hal</strong>：目录包含对硬件抽象的功能文件，将系统的某些硬件抽象成功能模块； - <strong>modules</strong>：目录包含所有的功能模块，包括CRTP通信模块、姿态估计模块、位置控制模块、姿态稳定控制模块和传感器融合模块等； - <strong>lib</strong>：目录包含供应商相关标准开发库、文件系统库等； - <strong>utils</strong>：目录包含可以公用的实用程序，如CRC校验、滤波等； - <strong>platform</strong>：目录包含平台配置的相关文件； - <strong>deck</strong>：目录包含扩展板接口文件； - <strong>config</strong>：目录包含系统配置相关文件； - <strong>init</strong>：目录包含主函数文件；</p>
-<h3 id="tool">[tool]</h3>
-<p>该目录包含编译源文件相关的脚本；</p>
-<h3 id="bin">[bin]</h3>
-<p>该目录包含编译生成的输出文件；</p>
-]]></content>
-      <categories>
-        <category>crazyflie</category>
-      </categories>
-      <tags>
-        <tag>crazyflie</tag>
-        <tag>目录分析</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>crazyflie-硬件分析</title>
     <url>/2020/02/29/crazyflie-%E7%A1%AC%E4%BB%B6%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -671,6 +634,43 @@
       </tags>
   </entry>
   <entry>
+    <title>crazyflie-目录分析</title>
+    <url>/2020/01/22/crazyflie-%E7%9B%AE%E5%BD%95%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>本文主要分析<strong>crazyflie</strong>项目的目录结构，并对主要目录作了简要说明。</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/5WUADE8QVGmFRcT.jpg" alt="重庆" /><figcaption aria-hidden="true">重庆</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="目录结构">目录结构</h2>
+<p>下图所示是飞控项目的目录结构，项目中的包含文档说明、代码测试、项目所需的开源项目、飞控源码、编译工具和输出文件等。</p>
+<p><img src="https://i.loli.net/2021/08/30/Ndk897wgDTzBcJR.png" /></p>
+<h3 id="doc">[doc]</h3>
+<p>该目录包含项目相关的说明文档，主要说明项目编译方式、CRTP包说明、扩展板开发说明等。</p>
+<h3 id="blobs">[blobs]</h3>
+<p>该目录包含灯塔固件。</p>
+<h3 id="generated-test">[generated-test]</h3>
+<p>该目录包含产生测试文件的脚本，但是从仓库拉取下来是空的。</p>
+<h3 id="test">[test]</h3>
+<p>该目录包含各个模块的测试用例文件。</p>
+<h3 id="vender">[vender]</h3>
+<p>该目录包含项目所依赖的其它项目文件，包括测试工具、实时操作系统和开源定位库等； - <strong>cmock</strong>：用于项目的mock测试； - <strong>unity</strong>：用于项目的单元测试； - <strong>CMSIS</strong>：用于实现Cortex-M 系列处理器与供应商无关的硬件抽象层； - <strong>FreeRTOS</strong>：用于实现系统的任务调度和消息管理； - <strong>libdw1000</strong>：用于驱动dw1000芯片，实现室内定位功能。</p>
+<h3 id="src">[src]</h3>
+<p>该目录包含飞控相关的源文件，具体说明如下： - <strong>drivers</strong>：目录包含实现硬件底层驱动的文件，实现主控芯片外设驱动和外部芯片驱动的开发； - <strong>hal</strong>：目录包含对硬件抽象的功能文件，将系统的某些硬件抽象成功能模块； - <strong>modules</strong>：目录包含所有的功能模块，包括CRTP通信模块、姿态估计模块、位置控制模块、姿态稳定控制模块和传感器融合模块等； - <strong>lib</strong>：目录包含供应商相关标准开发库、文件系统库等； - <strong>utils</strong>：目录包含可以公用的实用程序，如CRC校验、滤波等； - <strong>platform</strong>：目录包含平台配置的相关文件； - <strong>deck</strong>：目录包含扩展板接口文件； - <strong>config</strong>：目录包含系统配置相关文件； - <strong>init</strong>：目录包含主函数文件；</p>
+<h3 id="tool">[tool]</h3>
+<p>该目录包含编译源文件相关的脚本；</p>
+<h3 id="bin">[bin]</h3>
+<p>该目录包含编译生成的输出文件；</p>
+]]></content>
+      <categories>
+        <category>crazyflie</category>
+      </categories>
+      <tags>
+        <tag>crazyflie</tag>
+        <tag>目录分析</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>传感器融合-路面坡度计算</title>
     <url>/2020/09/17/%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88-%E8%B7%AF%E9%9D%A2%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -864,6 +864,55 @@ D = \frac{\hat{b}}{mg} \tag{17}
         <tag>路径规划</tag>
         <tag>A Star</tag>
         <tag>A*</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>双线性插值</title>
+    <url>/2019/10/19/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>线性差值在实际应用非常广泛，比如航空航天行业中广泛用到气动数据的插值，经常会用到三线性到四线性的插值，在汽车行业很多标定数据而需要使用双线性插值，本篇文章主要讲述双线性插值的实现方式。</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/yLw1Imexs68bTHc.jpg" alt="重庆博物馆" /><figcaption aria-hidden="true">重庆博物馆</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="应用场景">应用场景</h2>
+<p>本文基于车辆扭矩标定的应用场景来说明2维线性插值的具体应用，根据车辆的控制原理可知，车辆的目标加速度与当前车速和发动机输出扭矩有关，因此对车辆扭矩进行标定后，我们就可以得到一个根据当前目标加速度和车速，获得车辆输出扭矩的关系表。 如下表所示，只选取了目标加速度为正的部分标定数据，其中横向表示速度(m/s)，纵向表示加速度(m/s2)，表中的数据代表汽车扭矩输出(Nm)。由于速度只采样了[0.1,0.2,0.3,0.4,0.5,0.6,0.7]这几个数值点的数据，加速度也只采样了[0.06,0.09,0.1,0.12,0.13,0.15,0.2,0.21,0.24,0.26]这几组数据点的数据，如果想得到中间任意数值的数值，就需要使用双线性插值算法来获得。</p>
+<figure>
+<img src="https://img-blog.csdnimg.cn/20190727155601290.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
+</figure>
+<p>如下表所示，如果当前需求的目标加速度为0.094m/s2，当前车速为0.36m/s，想得到当前输出扭矩值，按照表格所圈出的扭矩值，进行多次线性插值，求得理想的输出扭矩。</p>
+<figure>
+<img src="https://img-blog.csdnimg.cn/20190727155822629.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
+</figure>
+<h3 id="双线性插值原理">双线性插值原理</h3>
+<p>双线性插值算法，是在线性插值的基础上进行多次插值的结果。 如下图所示，假设插值点<span class="math inline">\({(x_i,y_i)}\)</span>的坐标点<span class="math inline">\(x_i\)</span>和<span class="math inline">\(y_i\)</span>范围满足，<span class="math inline">\(x_1\le x_i \le x_2\)</span>，<span class="math inline">\(y_1\le y_i \le y_2\)</span>，其中<span class="math inline">\((x_1,y_1)\)</span>对应数值为<span class="math inline">\(z_1\)</span>，<span class="math inline">\((x_2,y_1)\)</span>对应数值为<span class="math inline">\(z_2\)</span>，<span class="math inline">\((x_2,y_2)\)</span>对应数值为<span class="math inline">\(z_3\)</span>，<span class="math inline">\((x_1,y_2)\)</span>对应数值为<span class="math inline">\(z_4\)</span>。</p>
+<p><img src="https://img-blog.csdnimg.cn/20190729105119489.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
+<p>第一步，进行x轴方向的线性插值。当y取值<span class="math inline">\(y_1\)</span>时，进行点<span class="math inline">\((x_1,z_1)\)</span>和点<span class="math inline">\((x_2,z_2)\)</span>之间的插值，得到插值点<span class="math inline">\((x_i,z5)\)</span>；同理y取值<span class="math inline">\(y_2\)</span>时，进行点<span class="math inline">\((x_1,z_4)\)</span>和点<span class="math inline">\((x_2,z_3)\)</span>之间的插值，可得第二个插值点<span class="math inline">\((x_i,z_6)\)</span>。</p>
+<p><img src="https://img-blog.csdnimg.cn/20190727171729916.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
+<p>第二步，进行y轴方向的插值。依据新的插值点<span class="math inline">\((y_1,z5)\)</span>和<span class="math inline">\((y_2,z_6)\)</span>，进行线性插值，得到插值点<span class="math inline">\((x_i,y_i,z_7)\)</span>。此时的点<span class="math inline">\((x_i,y_i,z_7)\)</span>就是双线性插值的最终结果。</p>
+<p><img src="https://img-blog.csdnimg.cn/20190727171818236.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
+<h2 id="软件实现">软件实现</h2>
+<h3 id="概述-1">概述</h3>
+<p>本文基于c语言去实现插值算法，数据结构采用简单的数组结构，不使用C++的关联容器属性去实现数据表的存储。</p>
+<h3 id="数据表的存储结构">数据表的存储结构</h3>
+<p>数据结构使用三个数组进行数组的存储，其中两个数组分别存储横向的速度值和纵向的加速度值，另一个数组存储对应的扭矩值。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ACC_ARRAY_NUM  		( 10 )</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> VELOCITY_ARRAY_NUM  (  7 )</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">float</span> acc_table[ACC_ARRAY_NUM]           = &#123;<span class="number">0.06f</span>,<span class="number">0.09f</span>,<span class="number">0.1f</span>,<span class="number">0.12f</span>,<span class="number">0.13f</span>,<span class="number">0.15f</span>,<span class="number">0.2f</span>,<span class="number">0.21f</span>,<span class="number">0.24f</span>,<span class="number">0.26f</span>&#125;;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">float</span> velocity_table[VELOCITY_ARRAY_NUM] = &#123;<span class="number">0.1f</span>,<span class="number">0.2f</span>,<span class="number">0.3f</span>,<span class="number">0.4f</span>,<span class="number">0.5f</span>,<span class="number">0.6f</span>,<span class="number">0.7f</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">float</span> torque_table[ACC_ARRAY_NUM][VELOCITY_ARRAY_NUM]=</span><br><span class="line">&#123;</span><br><span class="line">		&#123;<span class="number">60</span>,<span class="number">60</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">80</span>,<span class="number">60</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">80</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">100</span>,<span class="number">80</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">100</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="索引id查找函数">索引ID查找函数</h3>
+<p>输入参数 <strong><em>array</em></strong> ：需进行数值匹配查找的数组 输入参数 <strong><em>num</em></strong> ：数组的长度 输入参数 <strong><em>input</em></strong> ：需要匹配的值 输出参数 <strong><em>before</em></strong> ：匹配值的前数组边界ID 输出参数 <strong><em>before</em></strong> ：匹配值的后数组边界ID</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ArrayIndexFind</span><span class="params">(<span class="keyword">float</span> *<span class="built_in">array</span>,<span class="keyword">uint16_t</span> num,<span class="keyword">float</span> input,<span class="keyword">uint16_t</span> *before,<span class="keyword">uint16_t</span> *after)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">uint16_t</span> min_index,max_index;</span><br><span class="line">	<span class="keyword">uint16_t</span> middle_index;</span><br><span class="line">	min_index = <span class="number">0</span>;</span><br><span class="line">	max_index = num - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span>( (max_index - min_index) &gt; <span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		middle_index = (min_index + max_index) / <span class="number">2</span> ;</span><br><span class="line">		<span class="keyword">if</span>(input &lt; <span class="built_in">array</span>[middle_index])</span><br><span class="line">		&#123;</span><br><span class="line">			max_index = middle_index;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			min_index = middle_index;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	*before = min_index;</span><br><span class="line">	*after  = max_index;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="数据插值函数">数据插值函数</h3>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">InterpolateValue</span><span class="params">(<span class="keyword">float</span> x,<span class="keyword">float</span> x0,<span class="keyword">float</span> y0,<span class="keyword">float</span> x1,<span class="keyword">float</span> y1)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="built_in">fabs</span>(x - x0) &lt; kDoubleEpsilon)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> y0;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(<span class="built_in">fabs</span>(x - x1) &lt; kDoubleEpsilon)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> y1;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> y0 + (y1 - y0)*(x - x0)/ (x1 - x0);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="线性差值函数">线性差值函数</h3>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">Interpolation::InterpolationYZ</span><span class="params">(<span class="keyword">float</span> y,<span class="keyword">float</span> *y_tb,<span class="keyword">uint16_t</span> y_num,<span class="keyword">float</span> *z_tb)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">float</span> max_y = y_tb[y_num - <span class="number">1</span>];</span><br><span class="line">	<span class="keyword">float</span> min_y = y_tb[<span class="number">0</span>];</span><br><span class="line">	<span class="keyword">uint16_t</span> y_before,y_after;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span>(y &gt;= (max_y - kDoubleEpsilon))</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> z_tb[y_num - <span class="number">1</span>];</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(y &lt;= (min_y + kDoubleEpsilon))</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> z_tb[<span class="number">0</span>];</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ArrayIndexFind(y_tb,y_num,y,&amp;y_before,&amp;y_after);</span><br><span class="line">	<span class="keyword">return</span> InterpolateValue(y,y_tb[y_before],z_tb[y_before],y_tb[y_after],z_tb[y_after]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="双线性插值函数">双线性插值函数</h3>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">Interpolation2D</span><span class="params">(<span class="keyword">float</span> x,<span class="keyword">float</span> y,<span class="keyword">float</span> *x_tb,<span class="keyword">uint16_t</span> x_num,<span class="keyword">float</span> *y_tb,<span class="keyword">uint16_t</span> y_num,<span class="keyword">float</span> *z_tb)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">float</span> max_x = x_tb[x_num - <span class="number">1</span>];</span><br><span class="line">	<span class="keyword">float</span> min_x = x_tb[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">uint16_t</span> x_before,x_after;</span><br><span class="line">	<span class="keyword">uint16_t</span> z_before_value,z_after_value;</span><br><span class="line">	<span class="keyword">if</span>(x &gt; (max_x - kDoubleEpsilon))</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> InterpolationYZ(y,y_tb,y_num, (z_tb + (x_num - <span class="number">1</span>)*y_num));</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(x &lt; (min_x + kDoubleEpsilon))</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> InterpolationYZ(y,y_tb,y_num, z_tb);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ArrayIndexFind(x_tb,x_num,x,&amp;x_before,&amp;x_after);</span><br><span class="line"></span><br><span class="line">	z_before_value = InterpolationYZ(y,y_tb,y_num, (z_tb + x_before * y_num));</span><br><span class="line">	z_after_value  = InterpolationYZ(y,y_tb,y_num, (z_tb + x_after  * y_num));</span><br><span class="line">	<span class="keyword">return</span> InterpolateValue(x,x_tb[x_before],z_before_value,x_tb[x_after],z_after_value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>基础算法</category>
+      </categories>
+      <tags>
+        <tag>线性插值</tag>
+        <tag>算法</tag>
       </tags>
   </entry>
   <entry>
@@ -1104,55 +1153,6 @@ P_{t-1} = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A
         <tag>LQR</tag>
         <tag>Linear quadratic regulator</tag>
         <tag>最优</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>双线性插值</title>
-    <url>/2019/10/19/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>线性差值在实际应用非常广泛，比如航空航天行业中广泛用到气动数据的插值，经常会用到三线性到四线性的插值，在汽车行业很多标定数据而需要使用双线性插值，本篇文章主要讲述双线性插值的实现方式。</p>
-<figure>
-<img src="https://i.loli.net/2021/08/30/yLw1Imexs68bTHc.jpg" alt="重庆博物馆" /><figcaption aria-hidden="true">重庆博物馆</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="应用场景">应用场景</h2>
-<p>本文基于车辆扭矩标定的应用场景来说明2维线性插值的具体应用，根据车辆的控制原理可知，车辆的目标加速度与当前车速和发动机输出扭矩有关，因此对车辆扭矩进行标定后，我们就可以得到一个根据当前目标加速度和车速，获得车辆输出扭矩的关系表。 如下表所示，只选取了目标加速度为正的部分标定数据，其中横向表示速度(m/s)，纵向表示加速度(m/s2)，表中的数据代表汽车扭矩输出(Nm)。由于速度只采样了[0.1,0.2,0.3,0.4,0.5,0.6,0.7]这几个数值点的数据，加速度也只采样了[0.06,0.09,0.1,0.12,0.13,0.15,0.2,0.21,0.24,0.26]这几组数据点的数据，如果想得到中间任意数值的数值，就需要使用双线性插值算法来获得。</p>
-<figure>
-<img src="https://img-blog.csdnimg.cn/20190727155601290.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
-</figure>
-<p>如下表所示，如果当前需求的目标加速度为0.094m/s2，当前车速为0.36m/s，想得到当前输出扭矩值，按照表格所圈出的扭矩值，进行多次线性插值，求得理想的输出扭矩。</p>
-<figure>
-<img src="https://img-blog.csdnimg.cn/20190727155822629.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
-</figure>
-<h3 id="双线性插值原理">双线性插值原理</h3>
-<p>双线性插值算法，是在线性插值的基础上进行多次插值的结果。 如下图所示，假设插值点<span class="math inline">\({(x_i,y_i)}\)</span>的坐标点<span class="math inline">\(x_i\)</span>和<span class="math inline">\(y_i\)</span>范围满足，<span class="math inline">\(x_1\le x_i \le x_2\)</span>，<span class="math inline">\(y_1\le y_i \le y_2\)</span>，其中<span class="math inline">\((x_1,y_1)\)</span>对应数值为<span class="math inline">\(z_1\)</span>，<span class="math inline">\((x_2,y_1)\)</span>对应数值为<span class="math inline">\(z_2\)</span>，<span class="math inline">\((x_2,y_2)\)</span>对应数值为<span class="math inline">\(z_3\)</span>，<span class="math inline">\((x_1,y_2)\)</span>对应数值为<span class="math inline">\(z_4\)</span>。</p>
-<p><img src="https://img-blog.csdnimg.cn/20190729105119489.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
-<p>第一步，进行x轴方向的线性插值。当y取值<span class="math inline">\(y_1\)</span>时，进行点<span class="math inline">\((x_1,z_1)\)</span>和点<span class="math inline">\((x_2,z_2)\)</span>之间的插值，得到插值点<span class="math inline">\((x_i,z5)\)</span>；同理y取值<span class="math inline">\(y_2\)</span>时，进行点<span class="math inline">\((x_1,z_4)\)</span>和点<span class="math inline">\((x_2,z_3)\)</span>之间的插值，可得第二个插值点<span class="math inline">\((x_i,z_6)\)</span>。</p>
-<p><img src="https://img-blog.csdnimg.cn/20190727171729916.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
-<p>第二步，进行y轴方向的插值。依据新的插值点<span class="math inline">\((y_1,z5)\)</span>和<span class="math inline">\((y_2,z_6)\)</span>，进行线性插值，得到插值点<span class="math inline">\((x_i,y_i,z_7)\)</span>。此时的点<span class="math inline">\((x_i,y_i,z_7)\)</span>就是双线性插值的最终结果。</p>
-<p><img src="https://img-blog.csdnimg.cn/20190727171818236.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
-<h2 id="软件实现">软件实现</h2>
-<h3 id="概述-1">概述</h3>
-<p>本文基于c语言去实现插值算法，数据结构采用简单的数组结构，不使用C++的关联容器属性去实现数据表的存储。</p>
-<h3 id="数据表的存储结构">数据表的存储结构</h3>
-<p>数据结构使用三个数组进行数组的存储，其中两个数组分别存储横向的速度值和纵向的加速度值，另一个数组存储对应的扭矩值。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ACC_ARRAY_NUM  		( 10 )</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> VELOCITY_ARRAY_NUM  (  7 )</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">float</span> acc_table[ACC_ARRAY_NUM]           = &#123;<span class="number">0.06f</span>,<span class="number">0.09f</span>,<span class="number">0.1f</span>,<span class="number">0.12f</span>,<span class="number">0.13f</span>,<span class="number">0.15f</span>,<span class="number">0.2f</span>,<span class="number">0.21f</span>,<span class="number">0.24f</span>,<span class="number">0.26f</span>&#125;;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">float</span> velocity_table[VELOCITY_ARRAY_NUM] = &#123;<span class="number">0.1f</span>,<span class="number">0.2f</span>,<span class="number">0.3f</span>,<span class="number">0.4f</span>,<span class="number">0.5f</span>,<span class="number">0.6f</span>,<span class="number">0.7f</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">float</span> torque_table[ACC_ARRAY_NUM][VELOCITY_ARRAY_NUM]=</span><br><span class="line">&#123;</span><br><span class="line">		&#123;<span class="number">60</span>,<span class="number">60</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">80</span>,<span class="number">60</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">80</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">100</span>,<span class="number">80</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">100</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>&#125;,</span><br><span class="line">		&#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h3 id="索引id查找函数">索引ID查找函数</h3>
-<p>输入参数 <strong><em>array</em></strong> ：需进行数值匹配查找的数组 输入参数 <strong><em>num</em></strong> ：数组的长度 输入参数 <strong><em>input</em></strong> ：需要匹配的值 输出参数 <strong><em>before</em></strong> ：匹配值的前数组边界ID 输出参数 <strong><em>before</em></strong> ：匹配值的后数组边界ID</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ArrayIndexFind</span><span class="params">(<span class="keyword">float</span> *<span class="built_in">array</span>,<span class="keyword">uint16_t</span> num,<span class="keyword">float</span> input,<span class="keyword">uint16_t</span> *before,<span class="keyword">uint16_t</span> *after)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">uint16_t</span> min_index,max_index;</span><br><span class="line">	<span class="keyword">uint16_t</span> middle_index;</span><br><span class="line">	min_index = <span class="number">0</span>;</span><br><span class="line">	max_index = num - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">while</span>( (max_index - min_index) &gt; <span class="number">1</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		middle_index = (min_index + max_index) / <span class="number">2</span> ;</span><br><span class="line">		<span class="keyword">if</span>(input &lt; <span class="built_in">array</span>[middle_index])</span><br><span class="line">		&#123;</span><br><span class="line">			max_index = middle_index;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">		&#123;</span><br><span class="line">			min_index = middle_index;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	*before = min_index;</span><br><span class="line">	*after  = max_index;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="数据插值函数">数据插值函数</h3>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">InterpolateValue</span><span class="params">(<span class="keyword">float</span> x,<span class="keyword">float</span> x0,<span class="keyword">float</span> y0,<span class="keyword">float</span> x1,<span class="keyword">float</span> y1)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="built_in">fabs</span>(x - x0) &lt; kDoubleEpsilon)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> y0;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span> <span class="keyword">if</span>(<span class="built_in">fabs</span>(x - x1) &lt; kDoubleEpsilon)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> y1;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> y0 + (y1 - y0)*(x - x0)/ (x1 - x0);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="线性差值函数">线性差值函数</h3>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">Interpolation::InterpolationYZ</span><span class="params">(<span class="keyword">float</span> y,<span class="keyword">float</span> *y_tb,<span class="keyword">uint16_t</span> y_num,<span class="keyword">float</span> *z_tb)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">float</span> max_y = y_tb[y_num - <span class="number">1</span>];</span><br><span class="line">	<span class="keyword">float</span> min_y = y_tb[<span class="number">0</span>];</span><br><span class="line">	<span class="keyword">uint16_t</span> y_before,y_after;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span>(y &gt;= (max_y - kDoubleEpsilon))</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> z_tb[y_num - <span class="number">1</span>];</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(y &lt;= (min_y + kDoubleEpsilon))</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> z_tb[<span class="number">0</span>];</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ArrayIndexFind(y_tb,y_num,y,&amp;y_before,&amp;y_after);</span><br><span class="line">	<span class="keyword">return</span> InterpolateValue(y,y_tb[y_before],z_tb[y_before],y_tb[y_after],z_tb[y_after]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="双线性插值函数">双线性插值函数</h3>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">Interpolation2D</span><span class="params">(<span class="keyword">float</span> x,<span class="keyword">float</span> y,<span class="keyword">float</span> *x_tb,<span class="keyword">uint16_t</span> x_num,<span class="keyword">float</span> *y_tb,<span class="keyword">uint16_t</span> y_num,<span class="keyword">float</span> *z_tb)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">float</span> max_x = x_tb[x_num - <span class="number">1</span>];</span><br><span class="line">	<span class="keyword">float</span> min_x = x_tb[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">	<span class="keyword">uint16_t</span> x_before,x_after;</span><br><span class="line">	<span class="keyword">uint16_t</span> z_before_value,z_after_value;</span><br><span class="line">	<span class="keyword">if</span>(x &gt; (max_x - kDoubleEpsilon))</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> InterpolationYZ(y,y_tb,y_num, (z_tb + (x_num - <span class="number">1</span>)*y_num));</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(x &lt; (min_x + kDoubleEpsilon))</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="keyword">return</span> InterpolationYZ(y,y_tb,y_num, z_tb);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ArrayIndexFind(x_tb,x_num,x,&amp;x_before,&amp;x_after);</span><br><span class="line"></span><br><span class="line">	z_before_value = InterpolationYZ(y,y_tb,y_num, (z_tb + x_before * y_num));</span><br><span class="line">	z_after_value  = InterpolationYZ(y,y_tb,y_num, (z_tb + x_after  * y_num));</span><br><span class="line">	<span class="keyword">return</span> InterpolateValue(x,x_tb[x_before],z_before_value,x_tb[x_after],z_after_value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>基础算法</category>
-      </categories>
-      <tags>
-        <tag>线性插值</tag>
-        <tag>算法</tag>
       </tags>
   </entry>
   <entry>
@@ -2018,6 +2018,200 @@ k_2 v_r \dfrac{\sin(\psi_e)}{\psi_e}e + \dot{\psi} - \dfrac{v_{r}\cdot\cos(\psi_
       </tags>
   </entry>
   <entry>
+    <title>控制算法-滑模控制介绍</title>
+    <url>/2019/12/21/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E4%BB%8B%E7%BB%8D/</url>
+    <content><![CDATA[<h2 id="一维运动模型">一维运动模型</h2>
+<p>考虑简单的单位质量块的一维运动模型，使用位移和速度状态变量进行描述。</p>
+<p><img src="https://i.loli.net/2021/08/30/5gi8qy1jdHrvePa.png" /></p>
+<p>定义位移变量<span class="math inline">\(x_1 = x\)</span>和速度变量<span class="math inline">\(x_2 = \dot{x_1} = v\)</span>，运动模型的微分形式使用<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>表示如下：</p>
+<p><span class="math display">\[
+\left\{
+\begin{array}{rl}
+&amp;\dot{x_1} = x_2&amp; x_1(0)=x_{10}\\
+&amp;\dot{x_2} = u + f(x_1,x_2,t) &amp;x_2(0)=x_{20}
+\end{array} \right.\tag{1}
+\]</span></p>
+<span id="more"></span>
+<p>其中,<span class="math inline">\(u\)</span>代表控制力，干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>包括干粘摩檫力的影响和一些未知的阻力，并假定有界。</p>
+<p><span class="math display">\[
+\rvert f(x_1,x_2,t)\rvert \leqslant L \gt 0 \tag{2}
+\]</span></p>
+<p>问题关键在于设计一个反馈控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>，驱动质量块渐进到达原点。换句话说，控制变量<span class="math inline">\(u=f(x_1,x_2)\)</span>应该驱使状态变量趋近于0：<span class="math inline">\(\lim_{t \to \infty}{x_1,x_2} = 0\)</span>。</p>
+<p>这个问题看似简单，但对于存在未知的边界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，使系统渐进收敛仍然存在着挑战。</p>
+<h3 id="状态反馈控制">状态反馈控制</h3>
+<p>例如，通过一个线性状态反馈控制率</p>
+<p><span class="math display">\[
+\begin{matrix}
+u = -k_1x_1 - k_2x_2, &amp;\text{其中}(k_1&gt;0,&amp;k_2&gt;0)
+\end{matrix}\tag{3}
+\]</span></p>
+<p>在外界干扰项<span class="math inline">\(f(x_1,x_2,t)\equiv 0\)</span>，即不存在外界干扰时，系统可以实现渐进收敛。</p>
+<h3 id="仿真结果">仿真结果</h3>
+<ul>
+<li>初始条件<span class="math inline">\(x_{10}=1\)</span>、<span class="math inline">\(x_{20} = -2\)</span>、控制率参数<span class="math inline">\(k_1=3\)</span>、<span class="math inline">\(k_2=4\)</span>。</li>
+</ul>
+<p>如下图所示，是无外界干扰项时的渐近收敛效果图，图中蓝色线代表距离<span class="math inline">\(x\)</span>，橘黄色线代表速度<span class="math inline">\(v\)</span>，可以看出在反馈控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>的作用下，距离和速度值都趋近于0。</p>
+<p><img src="https://i.loli.net/2021/08/30/ezqd9oHvbYJwhCB.png" /></p>
+<p>加入外部干扰<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>，响应波形如下：</p>
+<p><img src="https://i.loli.net/2021/08/30/heN7REVItMlwbqf.png" /></p>
+<p>对于干扰项<span class="math inline">\(\rvert f(x_1,x_2,t)\rvert \leq L &gt; 0\)</span>,产生的状态边界范围为<span class="math inline">\(\Omega=(k_1,k_2,L)\)</span> 。</p>
+<p>现在问题在于，仅使用未知扰动范围的知识是否可以解决规定的控制问题。</p>
+<h2 id="滑模控制的主要特性">滑模控制的主要特性</h2>
+<p>介绍对于等式(1)系统，所需的补偿动力。一个较好的替代这些动力学特性的是齐次线性时不变微分方程：</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\dot{x}_1 + c \cdot x_1 = 0 ,&amp; c &gt; 0 \tag{4}
+\end{array}
+\]</span></p>
+<p>因为 <span class="math inline">\(x_2(t) = \dot{x}_1(t)\)</span>,等式(4)的通用解和它的微分形式如下：</p>
+<p><span class="math display">\[
+\begin{array}{}
+&amp;x_1(t) = x_1(0)\exp(-ct)\\
+&amp;x_2(t) = \dot{x_1}(t)=-c \cdot x_1(0)\exp(-ct)
+\end{array}\tag{5}
+\]</span></p>
+<p>从等式(5)可以看出，<span class="math inline">\(x_1(t)\)</span>和<span class="math inline">\(x_2(t)\)</span>都是逐渐趋近于0。注意，无干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的状态补偿动力学是很明显的。如何获得这些补偿动力。</p>
+<h3 id="滑模变量">滑模变量</h3>
+<p>首先介绍一个等式(1)系统的状态空间的新变量(<strong><em>滑模变量</em></strong>)：</p>
+<p><span class="math display">\[
+\sigma = \sigma(x_1,x_2) = x_2 + c \cdot x_1 \tag{6}
+\]</span></p>
+<p>在给定等式(5)收敛率且存在有界干扰<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，为了使状态变量<span class="math inline">\(x_1\)</span>，<span class="math inline">\(x_2\)</span>逐渐收敛于0，即<span class="math inline">\(\lim_{t \to \infty} x_1,x_2 = 0\)</span>，不得不通过控制率<span class="math inline">\(u\)</span>使得等式(6)的变量<span class="math inline">\(\sigma\)</span>在有限的时间内趋于0。</p>
+<p>为了完成这个任务利用李亚普洛夫函数技术，结合等式(1)和(6)推动出关于滑模变量<span class="math inline">\(\sigma\)</span>的动力学方程如下：</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\dot{\sigma} = c \cdot x_2 + f(x_1,x_2,t) + u ,&amp;\sigma(0) = \sigma_0
+\end{array} \tag{7}
+\]</span></p>
+<h3 id="稳定判据">稳定判据</h3>
+<p>李亚普洛夫函数(Lyapunov)形式如下：</p>
+<p><span class="math display">\[
+V = \frac{1}{2}\sigma^2 \tag{8}
+\]</span></p>
+<p>为了使等式(6)在平衡点<span class="math inline">\(\sigma = 0\)</span>处渐进稳定，根据李亚普洛夫稳定判据，必须满足下面两个条件：</p>
+<ol type="1">
+<li><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(\sigma \neq 0)\end{array}\)</span></li>
+<li><span class="math inline">\(\lim_{\rvert \sigma \rvert \to \infty}V = \infty\)</span></li>
+</ol>
+<p>由等式(8)知，条件2明显满足。为了满足有限时间内渐进稳定，条件(1)可以修改为：</p>
+<p><span class="math display">\[
+\dot{V} \leq -\alpha {V}^{\frac{1}{2}} ,\qquad \alpha &gt; 0 \tag{9}
+\]</span></p>
+<p>在时间间隔<span class="math inline">\(0 \leq \tau \leq t\)</span>内，对等式(9)所示的微分方程进行变量分离求积分得</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\int_{0}^{t} V(\tau)^{-\frac{1}{2}}dV(\tau) &amp;\leq -\alpha*\int_{0}^{t}1 d\tau\\
+2*V(\tau)^{\frac{1}{2}}|_0^t &amp;\leq -\alpha*\tau|_0^t\\
+2*[V(t)^{\frac{1}{2}} - V(0)^{\frac{1}{2}}] &amp;\leq -\alpha*t\\
+V(t)^{\frac{1}{2}} &amp;\leq -\dfrac{1}{2}\alpha*t + V(0)^{\frac{1}{2}}
+\end{array}\tag{10}
+\]</span></p>
+<p>故<span class="math inline">\(V(t)\)</span>在有限时间<span class="math inline">\(t_r\)</span>达到0时的边界，根据等式(26)得</p>
+<p><span class="math display">\[
+t_r \leq \frac{2V(0)^{\frac{1}{2}}}{\alpha} \tag{11}
+\]</span></p>
+<p>因此，设计一个控制器<span class="math inline">\(u\)</span>满足等式(9)，使得变量<span class="math inline">\(s\)</span>在有限的时间内趋近于0并在之后一直保持。</p>
+<p><span class="math inline">\(V\)</span>的微分计算如下：</p>
+<p><span class="math display">\[
+\dot{V} = \sigma\dot{\sigma}=\sigma(c \cdot x_2 + f(x_1,x_2,t) + u) \tag{12}
+\]</span> 假设 <span class="math inline">\(u = -c \cdot x_2 + v\)</span>，并将其带入等式(12)得 <span class="math display">\[
+\dot{V} 
+= \sigma\bigl( f(x_1,x_2,t) + v \bigr) 
+= \sigma \cdot f(x_1,x_2,t) + \sigma v
+\leq   \rvert \sigma \rvert L + \sigma v \tag{13}
+\]</span></p>
+<p>此处选择<span class="math inline">\(v = -\rho sign(\sigma)\)</span>，该函数表示为</p>
+<p><span class="math display">\[
+sign(x) = 
+\left \{
+\begin{array}{rl}
+&amp; 1 &amp; x &gt; 0\\
+&amp; &amp; &amp;\\
+&amp;-1 &amp; x &lt; 0
+\end{array}
+\right. \tag{14}
+\]</span> 并且</p>
+<p><span class="math display">\[
+sign(0) \in [-1,1] \tag{15}
+\]</span></p>
+<p>由于<span class="math inline">\(\rho &gt; 0\)</span>，将其带入等式(13)得</p>
+<p><span class="math display">\[
+\dot{V} \leq \rvert \sigma  \rvert L - \rvert \sigma \rvert \rho 
+= \rvert \sigma \rvert(L - \rho) \tag{16}
+\]</span></p>
+<p>考虑到等式(8)的形式，等式(9)可以表示为</p>
+<p><span class="math display">\[
+\dot{V} \leq -\alpha {V}^{\frac{1}{2}} = -\frac{\alpha}{\sqrt{2}}\rvert \sigma \rvert,\qquad \alpha &gt; 0 \tag{17}
+\]</span></p>
+<p>结合等式(16)和等式(17)得</p>
+<p><span class="math display">\[
+\dot{V} \leq \rvert \sigma \rvert(L - \rho)
+=-\frac{\alpha}{\sqrt{2}}\rvert \sigma \rvert \tag{18}
+\]</span></p>
+<p>最终控制增益可以表示为</p>
+<p><span class="math display">\[
+\rho = L + \frac{\alpha}{\sqrt{2}} \tag{19}
+\]</span></p>
+<p>所以最终使滑模变量<span class="math inline">\(\sigma\)</span>在有限时间内趋近于0的控制率<span class="math inline">\(u\)</span>为</p>
+<p><span class="math display">\[
+u = -c \cdot x_2 - \rho \cdot sign(\sigma) \tag{20}
+\]</span></p>
+<blockquote>
+<ol type="1">
+<li>显然，为了成功地设计出等式(20)中的控制器，<span class="math inline">\(\dot{\sigma}\)</span>必须是控制率<span class="math inline">\(u\)</span>的函数。当设计像等式(6)中的滑模变量时，这个特性必须考虑其中。</li>
+<li>等式(19)中控制增益<span class="math inline">\(\rho\)</span>的第一项被设计用来补偿有界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>，同时第二项<span class="math inline">\(\frac{\alpha}{\sqrt{2}}\)</span>负责确定滑模面的到达时间。<span class="math inline">\(\alpha\)</span>的数值越大，到达时间就越短。</li>
+</ol>
+</blockquote>
+<h3 id="基本定义">基本定义</h3>
+<ul>
+<li><strong>滑模变量</strong></li>
+</ul>
+<p>等式(6)中定义的变量<span class="math inline">\(\sigma\)</span>叫做 <strong>滑模变量</strong>(<code>sliding variable</code>)</p>
+<ul>
+<li><strong>滑模面</strong></li>
+</ul>
+<p>结合等式(4)和(5)，可以重新写成如下形式： <span class="math display">\[
+\sigma = x_2 + c \cdot x_1 = 0, c &gt; 0 \tag{21}
+\]</span> 相当于在系统(1)状态空间内的一条直线，这条直线被称为 <strong>滑模面</strong>(<code>sliding surface</code>)。</p>
+<p>考虑到等式(9)可以等效于</p>
+<p><span class="math display">\[
+\sigma\dot{\sigma} \leq - \frac{\sigma}{\sqrt{2}} \rvert \sigma\rvert \tag{22}
+\]</span></p>
+<p>等式(22)经常被称为 <strong>到达条件</strong>(<code>reachability condition</code>)。满足<strong>到达条件</strong>意味着等式(1)系统的轨迹趋向于<strong>滑模面</strong>，并在此后一直保持。</p>
+<ul>
+<li><strong>滑模控制</strong></li>
+</ul>
+<p>等式(20)所对应的控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>驱使状态变量<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>在有限时间<span class="math inline">\(t_r\)</span>内趋近于<strong>滑模面</strong>，并在存在有界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下保持在该平面上，这个控制率<span class="math inline">\(u\)</span>就叫做 <strong>滑模控制</strong>。并且对于所有的<span class="math inline">\(t &gt; t_r\)</span>，系统都将产生一个<strong>理想滑动模态</strong>。</p>
+<h3 id="仿真结果-1">仿真结果</h3>
+<p>初始条件为<span class="math inline">\(x_1(0) = 1，x_2(0) = -2\)</span>，控制增益为<span class="math inline">\(\sigma = 2\)</span>，滑模参数为<span class="math inline">\(c = 1.5\)</span>同时干扰项为<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>。 使用等式(20)的滑模控制率的仿真结果如下：</p>
+<p>下图表明，在有限的时间内，滑模变量趋近于0。</p>
+<p><img src="https://i.loli.net/2021/08/30/LCQw2J7rU9axcKq.png" /></p>
+<p>在干扰项作用的情况下，状态变量<span class="math inline">\(x\)</span>和<span class="math inline">\(v\)</span>逐渐收敛到0。</p>
+<p><img src="https://i.loli.net/2021/08/30/jk5MfqmpabEFnAO.png" /></p>
+<p>相图如下，展示了到达相位和滑移相位。</p>
+<p><img src="https://i.loli.net/2021/08/30/k3HSfaLoPvgQ9C4.png" /></p>
+<p>对上面的相图进行局部放大发现，在滑模状态下，状态变量存在小幅度且高频率的蜿蜒运动。</p>
+<p><img src="https://i.loli.net/2021/08/30/7jGmgk14ruHwSOM.png" /></p>
+<p>理想的滑模切换频率应该接近于无限并且蜿蜒运动的振幅接近于0。从下图可知，符号函数<span class="math inline">\(sign\)</span>不完美表现为在滑动模态中产生了有限幅度和频率的之字形运动，原因在于计算机仿真的离散特性，这样的影响叫做 <strong>抖振</strong>(<em>chattering</em>)。</p>
+<p><img src="https://i.loli.net/2021/08/30/xme942slagIdZNK.png" /></p>
+<p><img src="https://i.loli.net/2021/08/30/qvr8kst615cLNM4.png" /></p>
+]]></content>
+      <categories>
+        <category>控制算法</category>
+        <category>滑模控制</category>
+      </categories>
+      <tags>
+        <tag>滑模控制</tag>
+        <tag>滑模面</tag>
+        <tag>滑模变量</tag>
+        <tag>抖振</tag>
+        <tag>sliding mode controller</tag>
+        <tag>sliding mode variable</tag>
+        <tag>sliding mode surface</tag>
+        <tag>chattering</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>控制算法-基于运动模型的LQR优化</title>
     <url>/2020/02/18/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%9F%BA%E4%BA%8E%E8%BF%90%E5%8A%A8%E6%A8%A1%E5%9E%8B%E7%9A%84LQR%E4%BC%98%E5%8C%96/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -2285,200 +2479,6 @@ P_{t-1} = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A
         <tag>控制算法</tag>
         <tag>Path Tracking</tag>
         <tag>运动模型</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>控制算法-滑模控制介绍</title>
-    <url>/2019/12/21/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E4%BB%8B%E7%BB%8D/</url>
-    <content><![CDATA[<h2 id="一维运动模型">一维运动模型</h2>
-<p>考虑简单的单位质量块的一维运动模型，使用位移和速度状态变量进行描述。</p>
-<p><img src="https://i.loli.net/2021/08/30/5gi8qy1jdHrvePa.png" /></p>
-<p>定义位移变量<span class="math inline">\(x_1 = x\)</span>和速度变量<span class="math inline">\(x_2 = \dot{x_1} = v\)</span>，运动模型的微分形式使用<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>表示如下：</p>
-<p><span class="math display">\[
-\left\{
-\begin{array}{rl}
-&amp;\dot{x_1} = x_2&amp; x_1(0)=x_{10}\\
-&amp;\dot{x_2} = u + f(x_1,x_2,t) &amp;x_2(0)=x_{20}
-\end{array} \right.\tag{1}
-\]</span></p>
-<span id="more"></span>
-<p>其中,<span class="math inline">\(u\)</span>代表控制力，干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>包括干粘摩檫力的影响和一些未知的阻力，并假定有界。</p>
-<p><span class="math display">\[
-\rvert f(x_1,x_2,t)\rvert \leqslant L \gt 0 \tag{2}
-\]</span></p>
-<p>问题关键在于设计一个反馈控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>，驱动质量块渐进到达原点。换句话说，控制变量<span class="math inline">\(u=f(x_1,x_2)\)</span>应该驱使状态变量趋近于0：<span class="math inline">\(\lim_{t \to \infty}{x_1,x_2} = 0\)</span>。</p>
-<p>这个问题看似简单，但对于存在未知的边界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，使系统渐进收敛仍然存在着挑战。</p>
-<h3 id="状态反馈控制">状态反馈控制</h3>
-<p>例如，通过一个线性状态反馈控制率</p>
-<p><span class="math display">\[
-\begin{matrix}
-u = -k_1x_1 - k_2x_2, &amp;\text{其中}(k_1&gt;0,&amp;k_2&gt;0)
-\end{matrix}\tag{3}
-\]</span></p>
-<p>在外界干扰项<span class="math inline">\(f(x_1,x_2,t)\equiv 0\)</span>，即不存在外界干扰时，系统可以实现渐进收敛。</p>
-<h3 id="仿真结果">仿真结果</h3>
-<ul>
-<li>初始条件<span class="math inline">\(x_{10}=1\)</span>、<span class="math inline">\(x_{20} = -2\)</span>、控制率参数<span class="math inline">\(k_1=3\)</span>、<span class="math inline">\(k_2=4\)</span>。</li>
-</ul>
-<p>如下图所示，是无外界干扰项时的渐近收敛效果图，图中蓝色线代表距离<span class="math inline">\(x\)</span>，橘黄色线代表速度<span class="math inline">\(v\)</span>，可以看出在反馈控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>的作用下，距离和速度值都趋近于0。</p>
-<p><img src="https://i.loli.net/2021/08/30/ezqd9oHvbYJwhCB.png" /></p>
-<p>加入外部干扰<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>，响应波形如下：</p>
-<p><img src="https://i.loli.net/2021/08/30/heN7REVItMlwbqf.png" /></p>
-<p>对于干扰项<span class="math inline">\(\rvert f(x_1,x_2,t)\rvert \leq L &gt; 0\)</span>,产生的状态边界范围为<span class="math inline">\(\Omega=(k_1,k_2,L)\)</span> 。</p>
-<p>现在问题在于，仅使用未知扰动范围的知识是否可以解决规定的控制问题。</p>
-<h2 id="滑模控制的主要特性">滑模控制的主要特性</h2>
-<p>介绍对于等式(1)系统，所需的补偿动力。一个较好的替代这些动力学特性的是齐次线性时不变微分方程：</p>
-<p><span class="math display">\[
-\begin{array}{rl}
-\dot{x}_1 + c \cdot x_1 = 0 ,&amp; c &gt; 0 \tag{4}
-\end{array}
-\]</span></p>
-<p>因为 <span class="math inline">\(x_2(t) = \dot{x}_1(t)\)</span>,等式(4)的通用解和它的微分形式如下：</p>
-<p><span class="math display">\[
-\begin{array}{}
-&amp;x_1(t) = x_1(0)\exp(-ct)\\
-&amp;x_2(t) = \dot{x_1}(t)=-c \cdot x_1(0)\exp(-ct)
-\end{array}\tag{5}
-\]</span></p>
-<p>从等式(5)可以看出，<span class="math inline">\(x_1(t)\)</span>和<span class="math inline">\(x_2(t)\)</span>都是逐渐趋近于0。注意，无干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的状态补偿动力学是很明显的。如何获得这些补偿动力。</p>
-<h3 id="滑模变量">滑模变量</h3>
-<p>首先介绍一个等式(1)系统的状态空间的新变量(<strong><em>滑模变量</em></strong>)：</p>
-<p><span class="math display">\[
-\sigma = \sigma(x_1,x_2) = x_2 + c \cdot x_1 \tag{6}
-\]</span></p>
-<p>在给定等式(5)收敛率且存在有界干扰<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，为了使状态变量<span class="math inline">\(x_1\)</span>，<span class="math inline">\(x_2\)</span>逐渐收敛于0，即<span class="math inline">\(\lim_{t \to \infty} x_1,x_2 = 0\)</span>，不得不通过控制率<span class="math inline">\(u\)</span>使得等式(6)的变量<span class="math inline">\(\sigma\)</span>在有限的时间内趋于0。</p>
-<p>为了完成这个任务利用李亚普洛夫函数技术，结合等式(1)和(6)推动出关于滑模变量<span class="math inline">\(\sigma\)</span>的动力学方程如下：</p>
-<p><span class="math display">\[
-\begin{array}{rl}
-\dot{\sigma} = c \cdot x_2 + f(x_1,x_2,t) + u ,&amp;\sigma(0) = \sigma_0
-\end{array} \tag{7}
-\]</span></p>
-<h3 id="稳定判据">稳定判据</h3>
-<p>李亚普洛夫函数(Lyapunov)形式如下：</p>
-<p><span class="math display">\[
-V = \frac{1}{2}\sigma^2 \tag{8}
-\]</span></p>
-<p>为了使等式(6)在平衡点<span class="math inline">\(\sigma = 0\)</span>处渐进稳定，根据李亚普洛夫稳定判据，必须满足下面两个条件：</p>
-<ol type="1">
-<li><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(\sigma \neq 0)\end{array}\)</span></li>
-<li><span class="math inline">\(\lim_{\rvert \sigma \rvert \to \infty}V = \infty\)</span></li>
-</ol>
-<p>由等式(8)知，条件2明显满足。为了满足有限时间内渐进稳定，条件(1)可以修改为：</p>
-<p><span class="math display">\[
-\dot{V} \leq -\alpha {V}^{\frac{1}{2}} ,\qquad \alpha &gt; 0 \tag{9}
-\]</span></p>
-<p>在时间间隔<span class="math inline">\(0 \leq \tau \leq t\)</span>内，对等式(9)所示的微分方程进行变量分离求积分得</p>
-<p><span class="math display">\[
-\begin{array}{rl}
-\int_{0}^{t} V(\tau)^{-\frac{1}{2}}dV(\tau) &amp;\leq -\alpha*\int_{0}^{t}1 d\tau\\
-2*V(\tau)^{\frac{1}{2}}|_0^t &amp;\leq -\alpha*\tau|_0^t\\
-2*[V(t)^{\frac{1}{2}} - V(0)^{\frac{1}{2}}] &amp;\leq -\alpha*t\\
-V(t)^{\frac{1}{2}} &amp;\leq -\dfrac{1}{2}\alpha*t + V(0)^{\frac{1}{2}}
-\end{array}\tag{10}
-\]</span></p>
-<p>故<span class="math inline">\(V(t)\)</span>在有限时间<span class="math inline">\(t_r\)</span>达到0时的边界，根据等式(26)得</p>
-<p><span class="math display">\[
-t_r \leq \frac{2V(0)^{\frac{1}{2}}}{\alpha} \tag{11}
-\]</span></p>
-<p>因此，设计一个控制器<span class="math inline">\(u\)</span>满足等式(9)，使得变量<span class="math inline">\(s\)</span>在有限的时间内趋近于0并在之后一直保持。</p>
-<p><span class="math inline">\(V\)</span>的微分计算如下：</p>
-<p><span class="math display">\[
-\dot{V} = \sigma\dot{\sigma}=\sigma(c \cdot x_2 + f(x_1,x_2,t) + u) \tag{12}
-\]</span> 假设 <span class="math inline">\(u = -c \cdot x_2 + v\)</span>，并将其带入等式(12)得 <span class="math display">\[
-\dot{V} 
-= \sigma\bigl( f(x_1,x_2,t) + v \bigr) 
-= \sigma \cdot f(x_1,x_2,t) + \sigma v
-\leq   \rvert \sigma \rvert L + \sigma v \tag{13}
-\]</span></p>
-<p>此处选择<span class="math inline">\(v = -\rho sign(\sigma)\)</span>，该函数表示为</p>
-<p><span class="math display">\[
-sign(x) = 
-\left \{
-\begin{array}{rl}
-&amp; 1 &amp; x &gt; 0\\
-&amp; &amp; &amp;\\
-&amp;-1 &amp; x &lt; 0
-\end{array}
-\right. \tag{14}
-\]</span> 并且</p>
-<p><span class="math display">\[
-sign(0) \in [-1,1] \tag{15}
-\]</span></p>
-<p>由于<span class="math inline">\(\rho &gt; 0\)</span>，将其带入等式(13)得</p>
-<p><span class="math display">\[
-\dot{V} \leq \rvert \sigma  \rvert L - \rvert \sigma \rvert \rho 
-= \rvert \sigma \rvert(L - \rho) \tag{16}
-\]</span></p>
-<p>考虑到等式(8)的形式，等式(9)可以表示为</p>
-<p><span class="math display">\[
-\dot{V} \leq -\alpha {V}^{\frac{1}{2}} = -\frac{\alpha}{\sqrt{2}}\rvert \sigma \rvert,\qquad \alpha &gt; 0 \tag{17}
-\]</span></p>
-<p>结合等式(16)和等式(17)得</p>
-<p><span class="math display">\[
-\dot{V} \leq \rvert \sigma \rvert(L - \rho)
-=-\frac{\alpha}{\sqrt{2}}\rvert \sigma \rvert \tag{18}
-\]</span></p>
-<p>最终控制增益可以表示为</p>
-<p><span class="math display">\[
-\rho = L + \frac{\alpha}{\sqrt{2}} \tag{19}
-\]</span></p>
-<p>所以最终使滑模变量<span class="math inline">\(\sigma\)</span>在有限时间内趋近于0的控制率<span class="math inline">\(u\)</span>为</p>
-<p><span class="math display">\[
-u = -c \cdot x_2 - \rho \cdot sign(\sigma) \tag{20}
-\]</span></p>
-<blockquote>
-<ol type="1">
-<li>显然，为了成功地设计出等式(20)中的控制器，<span class="math inline">\(\dot{\sigma}\)</span>必须是控制率<span class="math inline">\(u\)</span>的函数。当设计像等式(6)中的滑模变量时，这个特性必须考虑其中。</li>
-<li>等式(19)中控制增益<span class="math inline">\(\rho\)</span>的第一项被设计用来补偿有界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>，同时第二项<span class="math inline">\(\frac{\alpha}{\sqrt{2}}\)</span>负责确定滑模面的到达时间。<span class="math inline">\(\alpha\)</span>的数值越大，到达时间就越短。</li>
-</ol>
-</blockquote>
-<h3 id="基本定义">基本定义</h3>
-<ul>
-<li><strong>滑模变量</strong></li>
-</ul>
-<p>等式(6)中定义的变量<span class="math inline">\(\sigma\)</span>叫做 <strong>滑模变量</strong>(<code>sliding variable</code>)</p>
-<ul>
-<li><strong>滑模面</strong></li>
-</ul>
-<p>结合等式(4)和(5)，可以重新写成如下形式： <span class="math display">\[
-\sigma = x_2 + c \cdot x_1 = 0, c &gt; 0 \tag{21}
-\]</span> 相当于在系统(1)状态空间内的一条直线，这条直线被称为 <strong>滑模面</strong>(<code>sliding surface</code>)。</p>
-<p>考虑到等式(9)可以等效于</p>
-<p><span class="math display">\[
-\sigma\dot{\sigma} \leq - \frac{\sigma}{\sqrt{2}} \rvert \sigma\rvert \tag{22}
-\]</span></p>
-<p>等式(22)经常被称为 <strong>到达条件</strong>(<code>reachability condition</code>)。满足<strong>到达条件</strong>意味着等式(1)系统的轨迹趋向于<strong>滑模面</strong>，并在此后一直保持。</p>
-<ul>
-<li><strong>滑模控制</strong></li>
-</ul>
-<p>等式(20)所对应的控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>驱使状态变量<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>在有限时间<span class="math inline">\(t_r\)</span>内趋近于<strong>滑模面</strong>，并在存在有界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下保持在该平面上，这个控制率<span class="math inline">\(u\)</span>就叫做 <strong>滑模控制</strong>。并且对于所有的<span class="math inline">\(t &gt; t_r\)</span>，系统都将产生一个<strong>理想滑动模态</strong>。</p>
-<h3 id="仿真结果-1">仿真结果</h3>
-<p>初始条件为<span class="math inline">\(x_1(0) = 1，x_2(0) = -2\)</span>，控制增益为<span class="math inline">\(\sigma = 2\)</span>，滑模参数为<span class="math inline">\(c = 1.5\)</span>同时干扰项为<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>。 使用等式(20)的滑模控制率的仿真结果如下：</p>
-<p>下图表明，在有限的时间内，滑模变量趋近于0。</p>
-<p><img src="https://i.loli.net/2021/08/30/LCQw2J7rU9axcKq.png" /></p>
-<p>在干扰项作用的情况下，状态变量<span class="math inline">\(x\)</span>和<span class="math inline">\(v\)</span>逐渐收敛到0。</p>
-<p><img src="https://i.loli.net/2021/08/30/jk5MfqmpabEFnAO.png" /></p>
-<p>相图如下，展示了到达相位和滑移相位。</p>
-<p><img src="https://i.loli.net/2021/08/30/k3HSfaLoPvgQ9C4.png" /></p>
-<p>对上面的相图进行局部放大发现，在滑模状态下，状态变量存在小幅度且高频率的蜿蜒运动。</p>
-<p><img src="https://i.loli.net/2021/08/30/7jGmgk14ruHwSOM.png" /></p>
-<p>理想的滑模切换频率应该接近于无限并且蜿蜒运动的振幅接近于0。从下图可知，符号函数<span class="math inline">\(sign\)</span>不完美表现为在滑动模态中产生了有限幅度和频率的之字形运动，原因在于计算机仿真的离散特性，这样的影响叫做 <strong>抖振</strong>(<em>chattering</em>)。</p>
-<p><img src="https://i.loli.net/2021/08/30/xme942slagIdZNK.png" /></p>
-<p><img src="https://i.loli.net/2021/08/30/qvr8kst615cLNM4.png" /></p>
-]]></content>
-      <categories>
-        <category>控制算法</category>
-        <category>滑模控制</category>
-      </categories>
-      <tags>
-        <tag>滑模控制</tag>
-        <tag>滑模面</tag>
-        <tag>滑模变量</tag>
-        <tag>抖振</tag>
-        <tag>sliding mode controller</tag>
-        <tag>sliding mode variable</tag>
-        <tag>sliding mode surface</tag>
-        <tag>chattering</tag>
       </tags>
   </entry>
   <entry>
@@ -2926,57 +2926,6 @@ e_{\psi}\\
       </tags>
   </entry>
   <entry>
-    <title>车辆停车优化</title>
-    <url>/2019/11/11/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BD%A6%E8%BE%86%E5%81%9C%E8%BD%A6%E4%BC%98%E5%8C%96/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>车辆控制中，如何舒适平衡的停车也是一个比较讲究的事。日常生活中，对于一个刚接触车的新手，控车时可能会猛踩刹车，给人一种很冲的感觉。但是对于老司机，每次踩刹车都是先轻踩，然后逐渐增大踩刹车的力度，这样对于乘客来说就会感觉很舒适。</p>
-<figure>
-<img src="https://i.loli.net/2021/08/30/T3i8DBrFA7zSRPv.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="模型">模型</h2>
-<p>为了模拟出舒适的停车体验，使用变减速度的速度模型进行车辆停车控制。假设<strong>加速度的变化率</strong>为<span class="math inline">\(\dot{a}\)</span>，则<strong>加速度</strong>与<strong>加速度变化率</strong>的关系为</p>
-<p><span class="math display">\[
-\dot{a} * t = a \tag{1}
-\]</span></p>
-<p>对应的减速度曲线如下图所示：</p>
-<figure>
-<img src="https://i.loli.net/2021/08/30/exlCYdmJbpOk1IA.png" alt="减速度曲线" /><figcaption aria-hidden="true">减速度曲线</figcaption>
-</figure>
-<p>对等式(1)求导得<strong>速度</strong>与<strong>加速度的变化率</strong>的关系为 <span class="math display">\[
-v_0 - \int_0^{t}a*dt = v \Longrightarrow v_0 - \frac{1}{2}\dot{a}*t^2 = v \tag{2}
-\]</span></p>
-<p>由于减速度一直变化，对应的速度曲线如下图所示：</p>
-<figure>
-<img src="https://i.loli.net/2021/08/30/peAHWyGjz6cCm8L.png" alt="速度曲线" /><figcaption aria-hidden="true">速度曲线</figcaption>
-</figure>
-<p>图中速度曲线下方的面积<span class="math inline">\(S\)</span>为行驶的位移，根据上述速度曲线，车辆运动模型如下：</p>
-<p><span class="math display">\[
-\int_0^{t}vdt = S \Longrightarrow v_0*t - \frac{1}{6}\dot{a}t^3 = S
-\]</span></p>
-<p>当速度从<span class="math inline">\(v_0\)</span>下降到0的过程中，时间<span class="math inline">\(t_0\)</span>为：</p>
-<p><span class="math display">\[
-v_0 - \frac{1}{2}\dot{a}*t^2 = 0 \Longrightarrow t_0 = {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}
-\]</span></p>
-<p>将时间<span class="math inline">\(t_0\)</span>代入得：</p>
-<p><span class="math display">\[
-t_0*(v_0 - \frac{1}{6}\dot{a}{t_0}^2) = S \Longrightarrow {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}} * (v_0 - \frac{1}{6}\dot{a}\frac{2*v_0}{\dot{a}}) = S\\
-{(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}*\frac{2*v_0}{3} = S
-\]</span></p>
-<p>计算<span class="math inline">\(\dot{a}\)</span>得：</p>
-<p><span class="math display">\[
-\dot{a} = \frac{8 {v_0}^3}{9S^2}
-\]</span></p>
-<p>所以当控制车辆减速时，根据当前车辆速度<span class="math inline">\(v_0\)</span>和距离停车点的位移<span class="math inline">\(S\)</span>，计算出减速度的增量<span class="math inline">\(\dot{a}\)</span>，控制输出的减速度<span class="math inline">\(a = a - \dot{a}*dt\)</span>。</p>
-]]></content>
-      <categories>
-        <category>控制算法</category>
-      </categories>
-      <tags>
-        <tag>速度曲线</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>控制算法-运动学模型</title>
     <url>/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%A8%A1%E5%9E%8B/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -3151,6 +3100,57 @@ a = \frac{mV^2}{R} \tag{26}
         <tag>单车模型</tag>
         <tag>Kinematic Model</tag>
         <tag>bycycle model</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>车辆停车优化</title>
+    <url>/2019/11/11/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BD%A6%E8%BE%86%E5%81%9C%E8%BD%A6%E4%BC%98%E5%8C%96/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>车辆控制中，如何舒适平衡的停车也是一个比较讲究的事。日常生活中，对于一个刚接触车的新手，控车时可能会猛踩刹车，给人一种很冲的感觉。但是对于老司机，每次踩刹车都是先轻踩，然后逐渐增大踩刹车的力度，这样对于乘客来说就会感觉很舒适。</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/T3i8DBrFA7zSRPv.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="模型">模型</h2>
+<p>为了模拟出舒适的停车体验，使用变减速度的速度模型进行车辆停车控制。假设<strong>加速度的变化率</strong>为<span class="math inline">\(\dot{a}\)</span>，则<strong>加速度</strong>与<strong>加速度变化率</strong>的关系为</p>
+<p><span class="math display">\[
+\dot{a} * t = a \tag{1}
+\]</span></p>
+<p>对应的减速度曲线如下图所示：</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/exlCYdmJbpOk1IA.png" alt="减速度曲线" /><figcaption aria-hidden="true">减速度曲线</figcaption>
+</figure>
+<p>对等式(1)求导得<strong>速度</strong>与<strong>加速度的变化率</strong>的关系为 <span class="math display">\[
+v_0 - \int_0^{t}a*dt = v \Longrightarrow v_0 - \frac{1}{2}\dot{a}*t^2 = v \tag{2}
+\]</span></p>
+<p>由于减速度一直变化，对应的速度曲线如下图所示：</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/peAHWyGjz6cCm8L.png" alt="速度曲线" /><figcaption aria-hidden="true">速度曲线</figcaption>
+</figure>
+<p>图中速度曲线下方的面积<span class="math inline">\(S\)</span>为行驶的位移，根据上述速度曲线，车辆运动模型如下：</p>
+<p><span class="math display">\[
+\int_0^{t}vdt = S \Longrightarrow v_0*t - \frac{1}{6}\dot{a}t^3 = S
+\]</span></p>
+<p>当速度从<span class="math inline">\(v_0\)</span>下降到0的过程中，时间<span class="math inline">\(t_0\)</span>为：</p>
+<p><span class="math display">\[
+v_0 - \frac{1}{2}\dot{a}*t^2 = 0 \Longrightarrow t_0 = {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}
+\]</span></p>
+<p>将时间<span class="math inline">\(t_0\)</span>代入得：</p>
+<p><span class="math display">\[
+t_0*(v_0 - \frac{1}{6}\dot{a}{t_0}^2) = S \Longrightarrow {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}} * (v_0 - \frac{1}{6}\dot{a}\frac{2*v_0}{\dot{a}}) = S\\
+{(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}*\frac{2*v_0}{3} = S
+\]</span></p>
+<p>计算<span class="math inline">\(\dot{a}\)</span>得：</p>
+<p><span class="math display">\[
+\dot{a} = \frac{8 {v_0}^3}{9S^2}
+\]</span></p>
+<p>所以当控制车辆减速时，根据当前车辆速度<span class="math inline">\(v_0\)</span>和距离停车点的位移<span class="math inline">\(S\)</span>，计算出减速度的增量<span class="math inline">\(\dot{a}\)</span>，控制输出的减速度<span class="math inline">\(a = a - \dot{a}*dt\)</span>。</p>
+]]></content>
+      <categories>
+        <category>控制算法</category>
+      </categories>
+      <tags>
+        <tag>速度曲线</tag>
       </tags>
   </entry>
   <entry>
@@ -3619,156 +3619,6 @@ g_x=\begin{cases}
       </tags>
   </entry>
   <entry>
-    <title>算法优化-1bit转8bit-NEON处理</title>
-    <url>/2021/03/17/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96_NEON%E5%90%8E%E5%A4%84%E7%90%86/</url>
-    <content><![CDATA[<h2 id="概述">1. 概述</h2>
-<p>使用IVE可以加速sobel滤波器和canny滤波器，但是IVE生成的滤波器结果格式不满足实际需求。为此，需要通过软件方式将IVE的输出结果转化成需要的形式，可以使用c语言、NEON Intrinscis和NEON汇编等方式去实现。</p>
-<figure>
-<img src="https://i.loli.net/2021/08/30/luRx6nbg58KvOp2.jpg" alt="大连" /><figcaption aria-hidden="true">大连</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="sobel滤波">2. Sobel滤波</h2>
-<p>Sobel滤波器的结果形式如下，使用16比特存储<code>x</code>和<code>y</code>方向的梯度值，其中低8位表示<code>x</code>轴方向梯度，高8位表示<code>y</code>轴方向梯度。</p>
-<figure>
-<img src="https://i.loli.net/2021/03/22/aREjy9znB63wgOH.png" alt="IVE-sobel_result_form" /><figcaption aria-hidden="true">IVE-sobel_result_form</figcaption>
-</figure>
-<p>实际需求要将<code>x</code>和<code>y</code>方向的梯度拆分为两个字节，具体形式如下：</p>
-<p><img src="https://i.loli.net/2021/03/22/bvPYqLWknwjQdu9.png" alt="sobel_result_form_xy" style="zoom:150%;" /></p>
-<h3 id="nfsu16tou8withtwo函数实现">2.1. NfsU16ToU8WithTwo函数实现</h3>
-<p>该函数实现将<code>16bit</code>的高低位拆分为两个独立的字节，并将拆分后的字节单独输出。</p>
-<h4 id="c语言代码">2.1.1 C语言代码</h4>
-<p>使用C语言编写代码如下 ： <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int32_t</span> i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">	sobel_x[i] =  data_sobel[i]       &amp; <span class="number">0xff</span>;</span><br><span class="line">	sobel_y[i] = (data_sobel[i] &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xff</span>;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p><strong>Running Time</strong> : 14.3ms</p>
-</blockquote>
-<h3 id="nfsu16tou8square-函数实现">2.2. NfsU16ToU8Square 函数实现</h3>
-<p>该函数实现将<code>16bit</code>的高低位拆分为两个独立的字节(x,y)，并计算<span class="math inline">\(x^2 + y^2\)</span>，将<code>x</code>和<code>y</code>轴的梯度求平方和后按照<code>16bit</code>输出结果。</p>
-<h4 id="c语言代码-1">2.2.1. C语言代码</h4>
-<p>使用C语言编写代码如下：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">uint8_t</span> temp_x, temp_y; </span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int32_t</span> i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">     temp_x =  data_sobel[i]       &amp; <span class="number">0xff</span>;</span><br><span class="line">     temp_y = (data_sobel[i] &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xff</span>;</span><br><span class="line">     output_sobel[i] = temp_x * temp_x + temp_y * temp_y;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
-<blockquote>
-<p><strong>Running Time</strong> : 18.2ms</p>
-</blockquote>
-<h4 id="intrinsics优化">2.2.2. Intrinsics优化</h4>
-<p>首先想到的优化方式是采用<strong>NEON Intrinsics</strong>方式对上述<strong>C</strong>语言代码进行重构，该方式相比于编写汇编代码更加简单，且便于移植。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int32_t</span> i = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">uint16x8_t</span> v_in;</span><br><span class="line"><span class="keyword">uint8x8_t</span> x, y;</span><br><span class="line"><span class="keyword">uint16x8_t</span> x2;</span><br><span class="line"><span class="keyword">uint16x8_t</span> xy_square;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i + <span class="number">7</span> &lt; size; i += <span class="number">8</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// load the input data</span></span><br><span class="line">    v_in = vld1q_u8(input + i);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// seprate the u16 to two u8</span></span><br><span class="line">    x = vmovn_u16(v_in); <span class="comment">// mov low 8bit to the x </span></span><br><span class="line">    y = vshrn_n_u16(v_in, <span class="number">8</span>); <span class="comment">// the element right shift 8bit </span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// calculate the x^2 + y^2</span></span><br><span class="line">    x2 = vmull_u8(x, x);</span><br><span class="line">    xy_square = vmlal_u8(x2, y, y);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// store the result</span></span><br><span class="line">    vst1q_u16(output + i, xy_square);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p><strong>Running Time</strong> : 3.42ms</p>
-</blockquote>
-<h4 id="数据加载优化">2.2.3. 数据加载优化</h4>
-<p>随着对NEON指令集理解的深入，可以直接使用<code>VLD2</code>指令直接在加载数据时就实现<code>x</code>和<code>y</code>通道的拆分，从而进一步提升了处理的速度。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int32_t</span> i = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">uint8x8x2_t</span> v_in;</span><br><span class="line"><span class="keyword">uint16x8_t</span> x2;</span><br><span class="line"><span class="keyword">uint16x8_t</span> xy_square;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i + <span class="number">7</span> &lt; size; i += <span class="number">8</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// load the input data</span></span><br><span class="line">    v_in = vld2_u8((<span class="keyword">uint8_t</span>*)input + i);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// calculate the x^2 + y^2</span></span><br><span class="line">    x2 = vmull_u8(v_in.val[<span class="number">0</span>], v_in.val[<span class="number">0</span>]);</span><br><span class="line">    xy_square = vmlal_u8(x2, v_in.val[<span class="number">1</span>], v_in.val[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// store the result</span></span><br><span class="line">    vst1q_u16(output + i, xy_square);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>通过该方式，处理器时可以减少一次<code>mov</code>操作和一次<code>shift</code>操作。如下图所示，<code>VLD2.8</code>直接加载<code>sobel_x</code>进<code>D8</code>，同时加载<code>sobel_y</code>进<code>D9</code>。</p>
-<p><img src="https://i.loli.net/2021/03/22/CSVYXb1ADeKv3M2.png" alt="IVE-u16totwobyte_load2" style="zoom: 50%;" /></p>
-<blockquote>
-<p><strong>Running Time</strong>: 2.64ms</p>
-</blockquote>
-<h4 id="使能向量优化">2.2.4. 使能向量优化</h4>
-<p>在使用<code>NEON Intinsics</code>时，编译选项中需要使能向量化，具体编译参数如下：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gcc -mcpu=cortex-a9 -mfloat-abi=hard -ftree-vectorize -O2 </span><br></pre></td></tr></table></figure>
-<h2 id="canny滤波">3. Canny滤波</h2>
-<p>Canny滤波器的结果使用一个字节表示8个像素信息，具体形式如下：</p>
-<figure>
-<img src="https://i.loli.net/2021/03/22/jchBaQpVIzUw6FE.png" alt="IVE-one_bit_to_byte" /><figcaption aria-hidden="true">IVE-one_bit_to_byte</figcaption>
-</figure>
-<p>因此，需要通过软件的方式将字节中的每一个bit像素拆分为一个字节表示，将上图中的两个字节数据进行转换，结果如下图所示：</p>
-<figure>
-<img src="https://i.loli.net/2021/03/22/NwAekVfE3v18PF7.png" alt="one_bit_to_byte_split" /><figcaption aria-hidden="true">one_bit_to_byte_split</figcaption>
-</figure>
-<h3 id="nfsonebittou8函数实现">3.1.NfsOneBitToU8函数实现</h3>
-<h4 id="c语言代码-2">3.1.1. C语言代码</h4>
-<p>使用C语言编写代码如下：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">	data_canny_8bit[i]  = ((data_canny[i/<span class="number">8</span>] &gt;&gt; (i % <span class="number">8</span>)) &amp; <span class="number">0x01</span>) &lt;&lt; <span class="number">7</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="汇编语言代码">3.1.2. 汇编语言代码</h4>
-<h5 id="算法思路">3.1.2.1 算法思路</h5>
-<p>上述功能可以使用NEON汇编进行加速，具体思路如下：</p>
-<ol type="1">
-<li><strong>加载</strong>操作 使用<code>VLD1</code>指令从内存空间加载图像数据到<code>Q6</code>寄存器，该指令可以一次加载16个字节数据，对应图像的128个像素值；</li>
-</ol>
-<figure>
-<img src="https://i.loli.net/2021/03/22/AcrYxXTozQDMNq4.png" alt="one_bit_to_byte_neon1" /><figcaption aria-hidden="true">one_bit_to_byte_neon1</figcaption>
-</figure>
-<ol start="2" type="1">
-<li><strong>位与</strong>操作 使用<code>VAND</code>指令，对<code>Q6</code>与<code>Q4</code>寄存器的元素进行<code>位与</code>操作，并将结果存入<code>Q7</code>寄存器，其中<code>Q4</code>寄存器可使用<code>DUP</code>指令全部置为<code>0x01</code>；此步骤将每个元素的低位像素值取出放入<code>Q7</code>寄存器中；</li>
-</ol>
-<figure>
-<img src="https://i.loli.net/2021/03/22/auqrLtTUV3CO1WP.png" alt="one_bit_to_byte_neon2" /><figcaption aria-hidden="true">one_bit_to_byte_neon2</figcaption>
-</figure>
-<ol start="3" type="1">
-<li><strong>比较</strong>操作 使用<code>VCGT</code>指令对<code>Q7</code>和<code>Q5</code>寄存器的元素逐个进行比较，判断<code>Q7</code>寄存器的元素是否大于对应<code>Q5</code>中的元素，其计算结果保存在<code>Q8</code>寄存器中。如果<code>Q7</code>的元素大于<code>Q5</code>的元素，则对应<code>Q8</code>元素设置为<strong>255</strong>,否则设置为<strong>0</strong>。</li>
-</ol>
-<figure>
-<img src="https://i.loli.net/2021/03/22/fvabiuxP3wOpdZk.png" alt="one_bit_to_byte_neon3" /><figcaption aria-hidden="true">one_bit_to_byte_neon3</figcaption>
-</figure>
-<ol start="4" type="1">
-<li><strong>移位</strong>操作 使用<code>VSHR</code>指令，将<code>Q6</code>中的元素整体向右移动1比特位，即将下一组像素移到元素最低位，方便循环取出图像像素值。</li>
-</ol>
-<figure>
-<img src="https://i.loli.net/2021/03/22/A9rf8uEphmtJ1nR.png" alt="one_bit_to_byte_neon4" /><figcaption aria-hidden="true">one_bit_to_byte_neon4</figcaption>
-</figure>
-<ol start="5" type="1">
-<li><strong>循环</strong>操作 循环上述2、3、4步骤，将<code>Q6</code>寄存器中的像素值分别取出，放入<code>Q8~Q15</code>寄存器中。</li>
-</ol>
-<figure>
-<img src="https://i.loli.net/2021/03/22/y4FhAPkxJOp3b5B.png" alt="one_bit_to_byte_neon5" /><figcaption aria-hidden="true">one_bit_to_byte_neon5</figcaption>
-</figure>
-<ol start="6" type="1">
-<li><strong>打包</strong>操作 使用<code>VZIP</code>指令每隔4个<code>Q</code>寄存器进行一次打包操作，如下图所示，使像素索引号间隔4排列。该步骤的目的是未了方便下一步的存储操作。</li>
-</ol>
-<figure>
-<img src="https://i.loli.net/2021/03/22/i4ovKyuaHsO5T1P.png" alt="one_bit_to_byte_neon6" /><figcaption aria-hidden="true">one_bit_to_byte_neon6</figcaption>
-</figure>
-<ol start="7" type="1">
-<li><strong>存储</strong>操作 使用<code>VST4</code>指令将上述打包好的数据，按照像素循序存储相应的内存地址。</li>
-</ol>
-<p><img src="https://i.loli.net/2021/03/22/gtaHZXzmK685opf.png" alt="one_bit_to_byte_neon7" style="zoom:80%;" /></p>
-<h5 id="汇编代码">3.1.2.2 汇编代码</h5>
-<p>使用<strong>NEON Assembly</strong>编写上述功能代码如下：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">NfsOneBitToU8Asm</span><span class="params">(<span class="keyword">uint8_t</span>* <span class="keyword">restrict</span> input, <span class="keyword">uint8_t</span>* <span class="keyword">restrict</span> output, <span class="keyword">uint32_t</span> size)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">uint8_t</span>* input_temp = input;</span><br><span class="line">  <span class="keyword">uint8_t</span>* output_temp = output;</span><br><span class="line">  <span class="keyword">uint32_t</span> size_tmp = size;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">asm</span> <span class="title">volatile</span><span class="params">(<span class="string">&quot;vmov.i8      q4, #0x01         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vmov.i8      q5, #0x00         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;100:                           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vld1.8      &#123;q6&#125;, [%0]!        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;pld         [%0, #128]         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q9, q6, #1         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q10, q6, #2        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q11, q6, #3        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q12, q6, #4        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q13, q6, #5        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q14, q6, #6        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q15, q6, #7        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q8, q6, q4         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q9, q9, q4         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q10, q10, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q11, q11, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q12, q12, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q13, q13, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q14, q14, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q15, q15, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q8, q8, q5         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q9, q9, q5         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q10, q10, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q11, q11, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q12, q12, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q13, q13, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q14, q14, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q15, q15, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q8, q12            \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q9, q13            \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q10, q14           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q11, q15           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d16, d18, d20, d22&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d17, d19, d21, d23&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d24, d26, d28, d30&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d25, d27, d29, d31&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;subs        %2, #16             \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;bgt         100b                \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;=r&quot;</span>(input_temp), <span class="string">&quot;=r&quot;</span>(output_temp), <span class="string">&quot;=r&quot;</span>(size_tmp)</span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;0&quot;</span>(input_temp), <span class="string">&quot;1&quot;</span>(output_temp), <span class="string">&quot;2&quot;</span>(size_tmp)</span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;memory&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;cc&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q4&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q5&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q6&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q7&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q8&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q9&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q10&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q11&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q12&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q13&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q14&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q15&quot;</span>)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="性能对比">4. 性能对比</h2>
-<p>如下表所示，上述代码在联咏<strong>NT96565A</strong>平台运行时间如下：</p>
-<table>
-<thead>
-<tr class="header">
-<th>Function</th>
-<th>C language</th>
-<th>Intrinsics</th>
-<th>Assembly</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>NfsU16ToU8WithTwo</strong></td>
-<td>14.3</td>
-<td><strong>3.2</strong></td>
-<td>3.56</td>
-</tr>
-<tr class="even">
-<td><strong>NfsU16ToU8Square</strong></td>
-<td>18.6</td>
-<td><strong>2.64</strong></td>
-<td>2.82</td>
-</tr>
-<tr class="odd">
-<td><strong>NfsOneBitToU8</strong></td>
-<td>10.2</td>
-<td>2.13</td>
-<td><strong>1.78</strong></td>
-</tr>
-</tbody>
-</table>
-]]></content>
-      <categories>
-        <category>算法优化</category>
-        <category>NEON</category>
-      </categories>
-      <tags>
-        <tag>图像算法加速</tag>
-        <tag>NEON</tag>
-        <tag>联咏</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>车辆术语缩写</title>
     <url>/2020/01/07/%E8%BD%A6%E8%BE%86%E6%9C%AF%E8%AF%AD%E7%BC%A9%E5%86%99/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -4033,6 +3883,156 @@ g_x=\begin{cases}
       <tags>
         <tag>车辆术语</tag>
         <tag>名称缩写</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>算法优化-1bit转8bit-NEON处理</title>
+    <url>/2021/03/17/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96_NEON%E5%90%8E%E5%A4%84%E7%90%86/</url>
+    <content><![CDATA[<h2 id="概述">1. 概述</h2>
+<p>使用IVE可以加速sobel滤波器和canny滤波器，但是IVE生成的滤波器结果格式不满足实际需求。为此，需要通过软件方式将IVE的输出结果转化成需要的形式，可以使用c语言、NEON Intrinscis和NEON汇编等方式去实现。</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/luRx6nbg58KvOp2.jpg" alt="大连" /><figcaption aria-hidden="true">大连</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="sobel滤波">2. Sobel滤波</h2>
+<p>Sobel滤波器的结果形式如下，使用16比特存储<code>x</code>和<code>y</code>方向的梯度值，其中低8位表示<code>x</code>轴方向梯度，高8位表示<code>y</code>轴方向梯度。</p>
+<figure>
+<img src="https://i.loli.net/2021/03/22/aREjy9znB63wgOH.png" alt="IVE-sobel_result_form" /><figcaption aria-hidden="true">IVE-sobel_result_form</figcaption>
+</figure>
+<p>实际需求要将<code>x</code>和<code>y</code>方向的梯度拆分为两个字节，具体形式如下：</p>
+<p><img src="https://i.loli.net/2021/03/22/bvPYqLWknwjQdu9.png" alt="sobel_result_form_xy" style="zoom:150%;" /></p>
+<h3 id="nfsu16tou8withtwo函数实现">2.1. NfsU16ToU8WithTwo函数实现</h3>
+<p>该函数实现将<code>16bit</code>的高低位拆分为两个独立的字节，并将拆分后的字节单独输出。</p>
+<h4 id="c语言代码">2.1.1 C语言代码</h4>
+<p>使用C语言编写代码如下 ： <figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int32_t</span> i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">	sobel_x[i] =  data_sobel[i]       &amp; <span class="number">0xff</span>;</span><br><span class="line">	sobel_y[i] = (data_sobel[i] &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xff</span>;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p><strong>Running Time</strong> : 14.3ms</p>
+</blockquote>
+<h3 id="nfsu16tou8square-函数实现">2.2. NfsU16ToU8Square 函数实现</h3>
+<p>该函数实现将<code>16bit</code>的高低位拆分为两个独立的字节(x,y)，并计算<span class="math inline">\(x^2 + y^2\)</span>，将<code>x</code>和<code>y</code>轴的梯度求平方和后按照<code>16bit</code>输出结果。</p>
+<h4 id="c语言代码-1">2.2.1. C语言代码</h4>
+<p>使用C语言编写代码如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">uint8_t</span> temp_x, temp_y; </span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int32_t</span> i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">     temp_x =  data_sobel[i]       &amp; <span class="number">0xff</span>;</span><br><span class="line">     temp_y = (data_sobel[i] &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xff</span>;</span><br><span class="line">     output_sobel[i] = temp_x * temp_x + temp_y * temp_y;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>Running Time</strong> : 18.2ms</p>
+</blockquote>
+<h4 id="intrinsics优化">2.2.2. Intrinsics优化</h4>
+<p>首先想到的优化方式是采用<strong>NEON Intrinsics</strong>方式对上述<strong>C</strong>语言代码进行重构，该方式相比于编写汇编代码更加简单，且便于移植。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int32_t</span> i = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">uint16x8_t</span> v_in;</span><br><span class="line"><span class="keyword">uint8x8_t</span> x, y;</span><br><span class="line"><span class="keyword">uint16x8_t</span> x2;</span><br><span class="line"><span class="keyword">uint16x8_t</span> xy_square;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i + <span class="number">7</span> &lt; size; i += <span class="number">8</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// load the input data</span></span><br><span class="line">    v_in = vld1q_u8(input + i);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// seprate the u16 to two u8</span></span><br><span class="line">    x = vmovn_u16(v_in); <span class="comment">// mov low 8bit to the x </span></span><br><span class="line">    y = vshrn_n_u16(v_in, <span class="number">8</span>); <span class="comment">// the element right shift 8bit </span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// calculate the x^2 + y^2</span></span><br><span class="line">    x2 = vmull_u8(x, x);</span><br><span class="line">    xy_square = vmlal_u8(x2, y, y);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// store the result</span></span><br><span class="line">    vst1q_u16(output + i, xy_square);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>Running Time</strong> : 3.42ms</p>
+</blockquote>
+<h4 id="数据加载优化">2.2.3. 数据加载优化</h4>
+<p>随着对NEON指令集理解的深入，可以直接使用<code>VLD2</code>指令直接在加载数据时就实现<code>x</code>和<code>y</code>通道的拆分，从而进一步提升了处理的速度。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int32_t</span> i = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">uint8x8x2_t</span> v_in;</span><br><span class="line"><span class="keyword">uint16x8_t</span> x2;</span><br><span class="line"><span class="keyword">uint16x8_t</span> xy_square;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i + <span class="number">7</span> &lt; size; i += <span class="number">8</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// load the input data</span></span><br><span class="line">    v_in = vld2_u8((<span class="keyword">uint8_t</span>*)input + i);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// calculate the x^2 + y^2</span></span><br><span class="line">    x2 = vmull_u8(v_in.val[<span class="number">0</span>], v_in.val[<span class="number">0</span>]);</span><br><span class="line">    xy_square = vmlal_u8(x2, v_in.val[<span class="number">1</span>], v_in.val[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// store the result</span></span><br><span class="line">    vst1q_u16(output + i, xy_square);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过该方式，处理器时可以减少一次<code>mov</code>操作和一次<code>shift</code>操作。如下图所示，<code>VLD2.8</code>直接加载<code>sobel_x</code>进<code>D8</code>，同时加载<code>sobel_y</code>进<code>D9</code>。</p>
+<p><img src="https://i.loli.net/2021/03/22/CSVYXb1ADeKv3M2.png" alt="IVE-u16totwobyte_load2" style="zoom: 50%;" /></p>
+<blockquote>
+<p><strong>Running Time</strong>: 2.64ms</p>
+</blockquote>
+<h4 id="使能向量优化">2.2.4. 使能向量优化</h4>
+<p>在使用<code>NEON Intinsics</code>时，编译选项中需要使能向量化，具体编译参数如下：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gcc -mcpu=cortex-a9 -mfloat-abi=hard -ftree-vectorize -O2 </span><br></pre></td></tr></table></figure>
+<h2 id="canny滤波">3. Canny滤波</h2>
+<p>Canny滤波器的结果使用一个字节表示8个像素信息，具体形式如下：</p>
+<figure>
+<img src="https://i.loli.net/2021/03/22/jchBaQpVIzUw6FE.png" alt="IVE-one_bit_to_byte" /><figcaption aria-hidden="true">IVE-one_bit_to_byte</figcaption>
+</figure>
+<p>因此，需要通过软件的方式将字节中的每一个bit像素拆分为一个字节表示，将上图中的两个字节数据进行转换，结果如下图所示：</p>
+<figure>
+<img src="https://i.loli.net/2021/03/22/NwAekVfE3v18PF7.png" alt="one_bit_to_byte_split" /><figcaption aria-hidden="true">one_bit_to_byte_split</figcaption>
+</figure>
+<h3 id="nfsonebittou8函数实现">3.1.NfsOneBitToU8函数实现</h3>
+<h4 id="c语言代码-2">3.1.1. C语言代码</h4>
+<p>使用C语言编写代码如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; IMG_BUF_SIZE; i++)</span><br><span class="line">&#123;</span><br><span class="line">	data_canny_8bit[i]  = ((data_canny[i/<span class="number">8</span>] &gt;&gt; (i % <span class="number">8</span>)) &amp; <span class="number">0x01</span>) &lt;&lt; <span class="number">7</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="汇编语言代码">3.1.2. 汇编语言代码</h4>
+<h5 id="算法思路">3.1.2.1 算法思路</h5>
+<p>上述功能可以使用NEON汇编进行加速，具体思路如下：</p>
+<ol type="1">
+<li><strong>加载</strong>操作 使用<code>VLD1</code>指令从内存空间加载图像数据到<code>Q6</code>寄存器，该指令可以一次加载16个字节数据，对应图像的128个像素值；</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2021/03/22/AcrYxXTozQDMNq4.png" alt="one_bit_to_byte_neon1" /><figcaption aria-hidden="true">one_bit_to_byte_neon1</figcaption>
+</figure>
+<ol start="2" type="1">
+<li><strong>位与</strong>操作 使用<code>VAND</code>指令，对<code>Q6</code>与<code>Q4</code>寄存器的元素进行<code>位与</code>操作，并将结果存入<code>Q7</code>寄存器，其中<code>Q4</code>寄存器可使用<code>DUP</code>指令全部置为<code>0x01</code>；此步骤将每个元素的低位像素值取出放入<code>Q7</code>寄存器中；</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2021/03/22/auqrLtTUV3CO1WP.png" alt="one_bit_to_byte_neon2" /><figcaption aria-hidden="true">one_bit_to_byte_neon2</figcaption>
+</figure>
+<ol start="3" type="1">
+<li><strong>比较</strong>操作 使用<code>VCGT</code>指令对<code>Q7</code>和<code>Q5</code>寄存器的元素逐个进行比较，判断<code>Q7</code>寄存器的元素是否大于对应<code>Q5</code>中的元素，其计算结果保存在<code>Q8</code>寄存器中。如果<code>Q7</code>的元素大于<code>Q5</code>的元素，则对应<code>Q8</code>元素设置为<strong>255</strong>,否则设置为<strong>0</strong>。</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2021/03/22/fvabiuxP3wOpdZk.png" alt="one_bit_to_byte_neon3" /><figcaption aria-hidden="true">one_bit_to_byte_neon3</figcaption>
+</figure>
+<ol start="4" type="1">
+<li><strong>移位</strong>操作 使用<code>VSHR</code>指令，将<code>Q6</code>中的元素整体向右移动1比特位，即将下一组像素移到元素最低位，方便循环取出图像像素值。</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2021/03/22/A9rf8uEphmtJ1nR.png" alt="one_bit_to_byte_neon4" /><figcaption aria-hidden="true">one_bit_to_byte_neon4</figcaption>
+</figure>
+<ol start="5" type="1">
+<li><strong>循环</strong>操作 循环上述2、3、4步骤，将<code>Q6</code>寄存器中的像素值分别取出，放入<code>Q8~Q15</code>寄存器中。</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2021/03/22/y4FhAPkxJOp3b5B.png" alt="one_bit_to_byte_neon5" /><figcaption aria-hidden="true">one_bit_to_byte_neon5</figcaption>
+</figure>
+<ol start="6" type="1">
+<li><strong>打包</strong>操作 使用<code>VZIP</code>指令每隔4个<code>Q</code>寄存器进行一次打包操作，如下图所示，使像素索引号间隔4排列。该步骤的目的是未了方便下一步的存储操作。</li>
+</ol>
+<figure>
+<img src="https://i.loli.net/2021/03/22/i4ovKyuaHsO5T1P.png" alt="one_bit_to_byte_neon6" /><figcaption aria-hidden="true">one_bit_to_byte_neon6</figcaption>
+</figure>
+<ol start="7" type="1">
+<li><strong>存储</strong>操作 使用<code>VST4</code>指令将上述打包好的数据，按照像素循序存储相应的内存地址。</li>
+</ol>
+<p><img src="https://i.loli.net/2021/03/22/gtaHZXzmK685opf.png" alt="one_bit_to_byte_neon7" style="zoom:80%;" /></p>
+<h5 id="汇编代码">3.1.2.2 汇编代码</h5>
+<p>使用<strong>NEON Assembly</strong>编写上述功能代码如下：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">NfsOneBitToU8Asm</span><span class="params">(<span class="keyword">uint8_t</span>* <span class="keyword">restrict</span> input, <span class="keyword">uint8_t</span>* <span class="keyword">restrict</span> output, <span class="keyword">uint32_t</span> size)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">uint8_t</span>* input_temp = input;</span><br><span class="line">  <span class="keyword">uint8_t</span>* output_temp = output;</span><br><span class="line">  <span class="keyword">uint32_t</span> size_tmp = size;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">asm</span> <span class="title">volatile</span><span class="params">(<span class="string">&quot;vmov.i8      q4, #0x01         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vmov.i8      q5, #0x00         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;100:                           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vld1.8      &#123;q6&#125;, [%0]!        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;pld         [%0, #128]         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q9, q6, #1         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q10, q6, #2        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q11, q6, #3        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q12, q6, #4        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q13, q6, #5        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q14, q6, #6        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vshr.u8     q15, q6, #7        \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q8, q6, q4         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q9, q9, q4         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q10, q10, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q11, q11, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q12, q12, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q13, q13, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q14, q14, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vand.i8     q15, q15, q4       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q8, q8, q5         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q9, q9, q5         \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q10, q10, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q11, q11, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q12, q12, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q13, q13, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q14, q14, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vcgt.s8     q15, q15, q5       \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q8, q12            \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q9, q13            \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q10, q14           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vzip.8      q11, q15           \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d16, d18, d20, d22&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d17, d19, d21, d23&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d24, d26, d28, d30&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;vst4.8      &#123;d25, d27, d29, d31&#125;, [%1]! \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;subs        %2, #16             \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="string">&quot;bgt         100b                \n&quot;</span></span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;=r&quot;</span>(input_temp), <span class="string">&quot;=r&quot;</span>(output_temp), <span class="string">&quot;=r&quot;</span>(size_tmp)</span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;0&quot;</span>(input_temp), <span class="string">&quot;1&quot;</span>(output_temp), <span class="string">&quot;2&quot;</span>(size_tmp)</span></span></span><br><span class="line"><span class="params"><span class="function">               : <span class="string">&quot;memory&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;cc&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q4&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q5&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q6&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q7&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q8&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q9&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q10&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q11&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q12&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q13&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q14&quot;</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="string">&quot;q15&quot;</span>)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="性能对比">4. 性能对比</h2>
+<p>如下表所示，上述代码在联咏<strong>NT96565A</strong>平台运行时间如下：</p>
+<table>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>C language</th>
+<th>Intrinsics</th>
+<th>Assembly</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>NfsU16ToU8WithTwo</strong></td>
+<td>14.3</td>
+<td><strong>3.2</strong></td>
+<td>3.56</td>
+</tr>
+<tr class="even">
+<td><strong>NfsU16ToU8Square</strong></td>
+<td>18.6</td>
+<td><strong>2.64</strong></td>
+<td>2.82</td>
+</tr>
+<tr class="odd">
+<td><strong>NfsOneBitToU8</strong></td>
+<td>10.2</td>
+<td>2.13</td>
+<td><strong>1.78</strong></td>
+</tr>
+</tbody>
+</table>
+]]></content>
+      <categories>
+        <category>算法优化</category>
+        <category>NEON</category>
+      </categories>
+      <tags>
+        <tag>图像算法加速</tag>
+        <tag>NEON</tag>
+        <tag>联咏</tag>
       </tags>
   </entry>
   <entry>
