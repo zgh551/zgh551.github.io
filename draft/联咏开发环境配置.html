@@ -253,7 +253,7 @@
 <p>首先从Docker仓库拉取联咏的编译容器。 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker pull 192.168.104.3:32768/nt96565a:firmware_4.0</span><br></pre></td></tr></table></figure></p>
 <p>建议拉取最新的<code>4.0</code>镜像。</p>
 <h3 id="运行镜像">2.2. 运行镜像</h3>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run --rm --cpus=4 -it -v <span class="variable">$&#123;PWD&#125;</span>:/home/deptrum 192.168.104.3:32768/nt96565a:firmware_4.0 bash</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker run --<span class="built_in">rm</span> --cpus=4 -it -v <span class="variable">$&#123;PWD&#125;</span>:/home/deptrum 192.168.104.3:32768/nt96565a:firmware_4.0 bash</span><br></pre></td></tr></table></figure>
 <h2 id="交叉编译">3. 交叉编译</h2>
 <h3 id="更新环境变量">3.1. 更新环境变量</h3>
 <ol type="1">
@@ -302,7 +302,7 @@
 <h3 id="文件系统权限">5.2. 文件系统权限</h3>
 <p>当需要将动态库放入<code>/lib</code>目录时，需要重新挂载文件系统权限。 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mount -o remount rw /</span><br></pre></td></tr></table></figure></p>
 <h3 id="查看存储器容量">5.3. 查看存储器容量</h3>
-<p>由于联咏平台存储空间较小，有时传输文件时空间不够，这时就需要用如此命令查看空间占用情况，将无用的大型文件删除。尤其当芯片运行奔溃后，会在<code>/var/log/</code>目录下存储异常的<code>log</code>文件，需要不定时的将这些文件删除。 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ df -h</span><br></pre></td></tr></table></figure></p>
+<p>由于联咏平台存储空间较小，有时传输文件时空间不够，这时就需要用如此命令查看空间占用情况，将无用的大型文件删除。尤其当芯片运行奔溃后，会在<code>/var/log/</code>目录下存储异常的<code>log</code>文件，需要不定时的将这些文件删除。 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">df</span> -h</span><br></pre></td></tr></table></figure></p>
 
       </div>
       

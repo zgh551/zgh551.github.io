@@ -252,7 +252,7 @@
 <h4 id="网络导入">网络导入</h4>
 <p>该过程通过一系列前端适配器，将不同的前端框架转换成统一的<code>imgir</code>形式，方便后续的通用处理。目前支持的模型有<code>TF</code>、<code>TFLite</code>、<code>Caffe</code>、<code>ONNX</code>、<code>Darknet</code>和<code>Paddle</code>。</p>
 <h5 id="tf">TF</h5>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tf_imgnnvm.py -i xxx.pb</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">tf_imgnnvm.py -i xxx.pb</span></span><br></pre></td></tr></table></figure>
 <h6 id="可选参数">可选参数</h6>
 <ul>
 <li>--output_imgnnvm (-o)</li>
@@ -262,7 +262,7 @@
 <p>当网络转换成<code>IMG NNVM IR</code>形式后，可以进一步对网络进行分割和修改。网络分割工具主要从先前<code>IR</code>源格式的网络中提取子网络，并进一步修改。或者为了部署于<code>IMGDNN</code>设备而被剖析。网络转换工具用于遍历和编辑<code>IR</code>形式的网络。转换工具遍历整个图并返回算子信息和覆盖其属性，编辑网络连接方式或完全移除他们。这些工具也方便使用更有效的用户自定的图去替换子图。</p>
 <h5 id="图分割">图分割</h5>
 <p>该脚本通过指定输入和输出结点分割<code>IMG NNVM</code>网络。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> graph_partition_imgnnvm.py -i xx.imgir -sp <span class="string">&quot;[start_node1:end_node1],[start_node2:end_node2]&quot;</span> -o xxx_split_net0.imgir,xxx_split_net1.imgir</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">graph_partition_imgnnvm.py -i xx.imgir -sp <span class="string">&quot;[start_node1:end_node1],[start_node2:end_node2]&quot;</span> -o xxx_split_net0.imgir,xxx_split_net1.imgir</span></span><br></pre></td></tr></table></figure>
 <ul>
 <li>分割点形式</li>
 </ul>
@@ -277,7 +277,7 @@
 </blockquote>
 <h5 id="图转换">图转换</h5>
 <p>该脚本在<code>IMG NNVM</code>网络上执行来自一个预定义转换集合的图转换。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> graph_transform_imgnnvm.py -i xxx.imgir -o xxx_transformed.imgir -t TRAVERSE_GRAPH,NHWC_TO_NCHW,TRAVERSE_GRAPH</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">graph_transform_imgnnvm.py -i xxx.imgir -o xxx_transformed.imgir -t TRAVERSE_GRAPH,NHWC_TO_NCHW,TRAVERSE_GRAPH</span></span><br></pre></td></tr></table></figure>
 <ul>
 <li>INPUT_TO_NCHW: 将输入通道转换成<code>NCHW</code>形式；</li>
 <li>TRAVERSE_GRAPH: 遍历图；</li>
@@ -287,7 +287,7 @@
 <p><code>imgnnvm_embed_preprocessing.py</code></p>
 </blockquote>
 <p>该脚本在<code>IMG NNVM</code>网络中嵌入预处理层，使用<code>IMG NNVM</code>源文件和一系列输入数据去生成该预处理层。这样就可以使用硬件对其进行加速。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> imgnnvm_embed_preprocessing.py -i xxx.imgir -o xxx_prep.imgir -nf nework_inputs.json -tf test.json</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">imgnnvm_embed_preprocessing.py -i xxx.imgir -o xxx_prep.imgir -nf nework_inputs.json -tf test.json</span></span><br></pre></td></tr></table></figure>
 <h6 id="规格">规格</h6>
 <p>预处理是将某一输入转换成指定网络需要形式的过程，嵌入预处理应用标准化和平均减法到网络的输入。</p>
 <p>三个操作被应用，根据如下形式：</p>
