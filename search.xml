@@ -1,6 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>TVM export_lib函数分析</title>
+    <url>/2021/10/08/TVM-ExportLibrary/</url>
+    <content><![CDATA[<h1 id="概述">1. 概述</h1>
+<p>本文分析<strong>executor_lib</strong>函数的处理过程，其中包括<strong>DSO</strong>模块的编译和<strong>imported modules</strong>模块的序列化。</p>
+<p><img src="https://i.loli.net/2021/10/10/3h8wfXOej514JLH.jpg" /></p>
+<span id="more"></span>
+<h1 id="分析">2. 分析</h1>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">export_library</span>(<span class="params">self, file_name, fcompile=<span class="literal">None</span>, addons=<span class="literal">None</span>, **kwargs</span>):</span><br><span class="line">    <span class="keyword">return</span> self.module.export_library(file_name, fcompile, addons, **kwargs)</span><br></pre></td></tr></table></figure>
+<p>首先调用<strong>relay.build</strong>最终生成<strong>GraphExecutorFactoryModule</strong>对象，位于<code>python/tvm/relay/backend/executor_factory.py</code>文件中。使用<strong>export_library</strong>导出动态库时，实际上调用的是<strong>GraphExecutorFactoryModule</strong>类本身的<strong>module</strong>中的<strong>export_library</strong>函数。该对象指向<strong>tvm.graph_executor_factory.create</strong>函数，是在<strong>C++</strong>端实现的函数。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">fcreate = get_global_func(<span class="string">&quot;tvm.graph_executor_factory.create&quot;</span>)</span><br><span class="line">args = []</span><br><span class="line"><span class="keyword">for</span> k, v <span class="keyword">in</span> params.items():</span><br><span class="line">    args.append(k)</span><br><span class="line">    args.append(ndarray.array(v))</span><br><span class="line">self.module = fcreate(graph_json_str, libmod, libmod_name, *args)</span><br></pre></td></tr></table></figure>
+<p>接下来进入<code>src/runtime/graph_executor/graph_executor_factory.cc</code>文件，使用<strong>TVM_REGISTER_GLOBAL</strong>宏定义将函数暴露到python端，函数体是lamda表达式。首先进行参数数量检查，然后进行参数重组，将参数按照命名存储进<strong>params</strong>对象中，然后创建<strong>GraphExecutorFactory</strong>对象。其中<strong>module_name</strong>默认值为<strong>default</strong>。然后导入所有<strong>runtime_module</strong>，最后将<strong>GraphExecutorFactory</strong>对象传入<strong>Module</strong>模块并返回。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;tvm.graph_executor_factory.create&quot;</span>)</span><br><span class="line">    .<span class="built_in">set_body</span>([](TVMArgs args, TVMRetValue* rv) &#123;</span><br><span class="line">        <span class="built_in">ICHECK_GE</span>(args.num_args, <span class="number">3</span>) &lt;&lt; <span class="string">&quot;The expected number of arguments for &quot;</span></span><br><span class="line">            <span class="string">&quot;graph_executor_factory.create needs at least 3, &quot;</span></span><br><span class="line">            <span class="string">&quot;but it has &quot;</span></span><br><span class="line">            &lt;&lt; args.num_args;</span><br><span class="line">        <span class="comment">// The argument order is graph_json, module, module_name, param0_name, param0_tensor,</span></span><br><span class="line">        <span class="comment">// [param1_name, param1_tensor], ...</span></span><br><span class="line">        <span class="built_in">ICHECK_EQ</span>((args.<span class="built_in">size</span>() - <span class="number">3</span>) % <span class="number">2</span>, <span class="number">0</span>);</span><br><span class="line">        std::unordered_map&lt;std::string, tvm::runtime::NDArray&gt; params;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">3</span>; i &lt; <span class="built_in">static_cast</span>&lt;<span class="type">size_t</span>&gt;(args.<span class="built_in">size</span>()); i += <span class="number">2</span>) &#123;</span><br><span class="line">            std::string name = args[i].<span class="keyword">operator</span> <span class="built_in">String</span>();</span><br><span class="line">            params[name] = args[i + <span class="number">1</span>].<span class="keyword">operator</span> tvm::runtime::<span class="built_in">NDArray</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// graph_json, params, module_name</span></span><br><span class="line">        <span class="keyword">auto</span> exec = <span class="built_in">make_object</span>&lt;GraphExecutorFactory&gt;(args[<span class="number">0</span>], params, args[<span class="number">2</span>]);</span><br><span class="line">        <span class="comment">// module</span></span><br><span class="line">        exec-&gt;<span class="built_in">Import</span>(args[<span class="number">1</span>]);</span><br><span class="line">        *rv = <span class="built_in">Module</span>(exec);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="module">2.1. Module</h2>
+<h3 id="export_library">2.1.1. export_library</h3>
+<p>关于<strong>Module</strong>类位于<code>python/tvm/runtime/module.py</code>文件中，该类中包含<strong>export_library</strong>函数。该函数的主要作用是将模块和所有被导入模块导出为一个简单的动态库。</p>
+<h4 id="collect-dso-module">2.1.1.1. Collect DSO Module</h4>
+<p>首先收集所有<strong>DSO</strong>模块(LLVM Module 和 C Module)</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">modules = self._collect_dso_modules()</span><br></pre></td></tr></table></figure>
+<h4 id="save-file">2.1.1.2. Save File</h4>
+<p>一旦收集到所有的<strong>DSO</strong>模块，就可以调用<strong>runtime</strong>模块的<strong>save</strong>函数将其保存为文件格式。通过遍历所有<strong>DSO</strong>模块，根据其类型键设置相应的文件后缀，并通过<strong>save</strong>函数将模块保存为相应的文件类型，并将该文件添加到<strong>files</strong>数组序列中。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> index, module <span class="keyword">in</span> <span class="built_in">enumerate</span>(modules):</span><br><span class="line">    <span class="keyword">if</span> fcompile <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> <span class="built_in">hasattr</span>(fcompile, <span class="string">&quot;object_format&quot;</span>):</span><br><span class="line">        <span class="keyword">if</span> module.type_key == <span class="string">&quot;c&quot;</span>:</span><br><span class="line">            object_format = <span class="string">&quot;c&quot;</span></span><br><span class="line">            has_c_module = <span class="literal">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">        	object_format = fcompile.object_format</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">if</span> module.type_key == <span class="string">&quot;llvm&quot;</span>:</span><br><span class="line">        	object_format = <span class="string">&quot;o&quot;</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">assert</span> module.type_key == <span class="string">&quot;c&quot;</span></span><br><span class="line">            object_format = <span class="string">&quot;c&quot;</span></span><br><span class="line">            <span class="keyword">if</span> <span class="string">&quot;cc&quot;</span> <span class="keyword">in</span> kwargs:</span><br><span class="line">                <span class="keyword">if</span> kwargs[<span class="string">&quot;cc&quot;</span>] == <span class="string">&quot;nvcc&quot;</span>:</span><br><span class="line">                	object_format = <span class="string">&quot;cu&quot;</span></span><br><span class="line">        	has_c_module = <span class="literal">True</span></span><br><span class="line">    path_obj = os.path.join(workspace_dir, <span class="string">f&quot;lib<span class="subst">&#123;index&#125;</span>.<span class="subst">&#123;object_format&#125;</span>&quot;</span>)</span><br><span class="line">    module.save(path_obj)</span><br><span class="line">    files.append(path_obj)</span><br><span class="line">    is_system_lib = (</span><br><span class="line">    	module.type_key == <span class="string">&quot;llvm&quot;</span> <span class="keyword">and</span> module.get_function(<span class="string">&quot;__tvm_is_system_module&quot;</span>)()</span><br><span class="line">    )</span><br><span class="line">    llvm_target_triple = (</span><br><span class="line">    	module.type_key == <span class="string">&quot;llvm&quot;</span> <span class="keyword">and</span> module.get_function(<span class="string">&quot;_get_target_triple&quot;</span>)()</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<h5 id="save函数">2.1.1.2.1 save函数</h5>
+<p>关于<strong>save</strong>函数，其调用C++端的函数<strong>ModuleSaveToFile</strong>。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">save</span>(<span class="params">self, file_name, fmt=<span class="string">&quot;&quot;</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Save the module to file.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    This do not save the dependent device modules.</span></span><br><span class="line"><span class="string">    See also export_shared</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Parameters</span></span><br><span class="line"><span class="string">    ----------</span></span><br><span class="line"><span class="string">    file_name : str</span></span><br><span class="line"><span class="string">    The name of the file.</span></span><br><span class="line"><span class="string">    fmt : str</span></span><br><span class="line"><span class="string">    The format of the file.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    See Also</span></span><br><span class="line"><span class="string">    --------</span></span><br><span class="line"><span class="string">    runtime.Module.export_library : export the module to shared library.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    _ffi_api.ModuleSaveToFile(self, file_name, fmt)</span><br></pre></td></tr></table></figure>
+<p>该函数使用各个模块的<strong>SaveToFile</strong>函数将模块保存为文件形式。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.ModuleSaveToFile&quot;</span>)</span><br><span class="line">    .<span class="built_in">set_body_typed</span>([](Module mod, tvm::String name, tvm::String fmt) &#123;</span><br><span class="line">        mod-&gt;<span class="built_in">SaveToFile</span>(name, fmt);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="impoerted-modules">2.1.1.3. Impoerted Modules</h4>
+<p>检查是否存在<strong>imported modules</strong>(像<strong>CUDA</strong>、<strong>OpenCL</strong>等)。这里不限制模块类型，一旦存在<strong>imports modules</strong>，将创建命名为<code>devc.o</code>或<code>devc.c</code>的文件。这就可以将<strong>imports modules</strong>的二进制<strong>blob</strong>数据嵌入进动态库中。然后调用<strong>ModulePackImportsToLLVM</strong>或<strong>ModulePackImportsToC</strong>进行模块序列化(<strong>module serialization</strong>)。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> self.imported_modules:</span><br><span class="line">    <span class="keyword">if</span> enabled(<span class="string">&quot;llvm&quot;</span>) <span class="keyword">and</span> llvm_target_triple:</span><br><span class="line">        path_obj = os.path.join(workspace_dir, <span class="string">f&quot;devc.<span class="subst">&#123;object_format&#125;</span>&quot;</span>)</span><br><span class="line">        m = _ffi_api.ModulePackImportsToLLVM(self, is_system_lib, llvm_target_triple)</span><br><span class="line">        m.save(path_obj)</span><br><span class="line">        files.append(path_obj)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        path_cc = os.path.join(workspace_dir, <span class="string">&quot;devc.c&quot;</span>)</span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(path_cc, <span class="string">&quot;w&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">            f.write(_ffi_api.ModulePackImportsToC(self, is_system_lib))</span><br><span class="line">        files.append(path_cc)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注：使用<strong>PackImportsToLLVM</strong>或<strong>PackImportsToC</strong>取决于是否在TVM中使能LLVM，事实上它们的目标相同。</p>
+</blockquote>
+<h4 id="function-compile">2.1.1.4. Function Compile</h4>
+<p>最后调用<strong>fcompile</strong>去编译生成动态共享库(so)。如果用户没有指定编译器类型，默认采用<strong>cc</strong>编译器，如果文件是<strong>tar</strong>压缩文件，则进行文件解压。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> fcompile:</span><br><span class="line">	<span class="keyword">if</span> file_name.endswith(<span class="string">&quot;.tar&quot;</span>):</span><br><span class="line">		fcompile = _tar.tar</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		fcompile = _cc.create_shared</span><br></pre></td></tr></table></figure>
+<p>如果用户指定了编译器，一般在部署到设备端时会指定交叉编译工具，则使用用户指定的编译器进行编译。编译输入参数包括编译生成的文件名，待编译的文件组和编译参数。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">fcompile(file_name, files, **kwargs)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>对于C 源码模块，将编译他们并一起与DSO模块进行链接。</p>
+</blockquote>
+<h3 id="module-serialization">2.1.2. Module Serialization</h3>
+<p>在文件<code>src/target/codegen.cc</code>中，注册了全局函数<strong>runtime.ModulePackImportsToC</strong>和<strong>runtime.ModulePackImportsToLLVM</strong>，用于将其暴露到<strong>python</strong>端调用。 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Export two auxiliary function to the runtime namespace.</span></span><br><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.ModulePackImportsToC&quot;</span>).<span class="built_in">set_body_typed</span>(PackImportsToC);</span><br><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.ModulePackImportsToLLVM&quot;</span>).<span class="built_in">set_body_typed</span>(PackImportsToLLVM);</span><br></pre></td></tr></table></figure></p>
+<h4 id="serializemodule">2.1.2.1 SerializeModule</h4>
+<p>其中，<strong>PackImportsToC</strong>和<strong>PackImportsToLLVM</strong>函数都调用<strong>SerializeModule</strong>函数序列化<strong>runtime module</strong>。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">std::string <span class="title">PackImportsToC</span><span class="params">(<span class="type">const</span> runtime::Module&amp; mod, <span class="type">bool</span> system_lib)</span> </span>&#123;</span><br><span class="line">	std::string bin = <span class="built_in">SerializeModule</span>(mod);</span><br><span class="line">  	...</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">runtime::Module <span class="title">PackImportsToLLVM</span><span class="params">(<span class="type">const</span> runtime::Module&amp; mod, <span class="type">bool</span> system_lib,</span></span></span><br><span class="line"><span class="params"><span class="function">                                  <span class="type">const</span> std::string&amp; target_triple)</span> </span>&#123;</span><br><span class="line">	std::string bin = <span class="built_in">SerializeModule</span>(mod);</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="moduleserializer">2.1.2.2. ModuleSerializer</h4>
+<p>首先在<strong>SerializeModule</strong>函数中创建一个帮手类<strong>ModuleSerializer</strong>，其传入<strong>module</strong>做一些初始化工作，像标注模块的索引号等，然后调用该类的<strong>SerializeModule</strong>函数序列化模块。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">std::string <span class="title">SerializeModule</span><span class="params">(<span class="type">const</span> runtime::Module&amp; mod)</span> </span>&#123;</span><br><span class="line">    std::string bin;</span><br><span class="line">    <span class="function">dmlc::MemoryStringStream <span class="title">ms</span><span class="params">(&amp;bin)</span></span>;</span><br><span class="line">    dmlc::Stream* stream = &amp;ms;</span><br><span class="line"></span><br><span class="line">    <span class="function">ModuleSerializer <span class="title">module_serializer</span><span class="params">(mod)</span></span>;</span><br><span class="line">    module_serializer.<span class="built_in">SerializeModule</span>(stream);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> bin;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在创建<strong>module_serializer</strong>对象时，其构造函数调用<strong>Init</strong>函数进行初始化操作。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">explicit</span> <span class="title">ModuleSerializer</span><span class="params">(runtime::Module mod)</span> : mod_(mod) &#123;</span> <span class="built_in">Init</span>(); &#125;</span><br></pre></td></tr></table></figure>
+<h5 id="init">2.1.2.2.1. Init</h5>
+<p>而在<code>Init</code>函数中，分别调用<strong>CreateModuleIndex</strong>和<strong>CreateImportTree</strong>函数，用于创建<strong>模块索引号</strong>和<strong>导入树</strong>。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">Init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">CreateModuleIndex</span>();</span><br><span class="line">    <span class="built_in">CreateImportTree</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="createmoduleindex">2.1.2.2.1.1. CreateModuleIndex</h6>
+<p>在函数<strong>CreateModuleIndex</strong>中将使用<strong>DFS</strong>(深度优先)算法检查模块导入关系并为其创建索引，注意根模块固定为位置0。</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">llvm_mod<span class="punctuation">:</span>imported_modules</span><br><span class="line">  - cuda_mod</span><br><span class="line">  - opencl_mod</span><br></pre></td></tr></table></figure>
+<p>因此，<strong>LLVM</strong>模块将会拥有索引值0，<strong>CUDA</strong>模块将拥有索引值1，<strong>OpenCL</strong>模块将拥有索引值为2。</p>
+<h6 id="createimporttree">2.1.2.2.1.2. CreateImportTree</h6>
+<p>在构建模块索引号后，<strong>CreateImportTree</strong>函数将尝试构建导入树，用于将导出的库加载回来时，恢复模块的导入关系。使用<strong>CSR</strong>(Compressed Sparse Row)格式存储导入树。每一行都是父索引，子索引对应其子索引。</p>
+<p>使用<code>import_tree_row_ptr_</code>表示行偏移，即某一行的第一个元素在values里面的起始偏移位置。<code>import_tree_child_indices_</code>表示子索引值。</p>
+<h5 id="serializemodule-1">2.1.2.2.2. SerializeModule</h5>
+<p>通过上述两个函数初始化后，可以使用<strong>SerializeModule</strong>函数序列化模块。在其功能逻辑中，假定序列化格式如下：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">binary_blob_size</span><br><span class="line">binary_blob_type_key</span><br><span class="line">binary_blob_logic</span><br><span class="line">binary_blob_type_key</span><br><span class="line">binary_blob_logic</span><br><span class="line">...</span><br><span class="line">_import_tree</span><br><span class="line">_import_tree_logic</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>binary_blob_size</strong></li>
+</ul>
+<p>表示序列化步骤中将拥有的<strong>blob</strong>数量。如果只有一个<strong>DSO</strong>模块并且是根模块，将不产生<code>import_tree_</code>。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Only have one DSO module and it is in the root, then</span></span><br><span class="line"><span class="comment">// we will not produce import_tree_.</span></span><br><span class="line"><span class="type">bool</span> has_import_tree = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">DSOExportable</span>(mod_.<span class="keyword">operator</span>-&gt;()) &amp;&amp; mod_-&gt;<span class="built_in">imports</span>().<span class="built_in">empty</span>()) &#123;</span><br><span class="line">	has_import_tree = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据是否存在<code>import_tree_</code>，如果不存在，<strong>binary_blob_size</strong>字段直接写入模块数量，否则写入所有模块数量并追加1。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">uint64_t</span> sz = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">if</span> (has_import_tree) &#123;</span><br><span class="line">    <span class="comment">// we will append one key for _import_tree</span></span><br><span class="line">    <span class="comment">// The layout is the same as before: binary_size, key, logic, key, logic...</span></span><br><span class="line">    sz = mod_group_vec_.<span class="built_in">size</span>() + <span class="number">1</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// Keep the old behaviour</span></span><br><span class="line">    sz = mod_-&gt;<span class="built_in">imports</span>().<span class="built_in">size</span>();</span><br><span class="line">&#125;</span><br><span class="line">stream-&gt;<span class="built_in">Write</span>(sz);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>binary_blob_type_key</strong></li>
+</ul>
+<p>表示模块的<strong>blob</strong>类型键，对于LLVM或C模块，其<strong>blob</strong>类型键是<code>_lib</code>。而其它模块，像<strong>CUDA</strong>模块，其类型键为<strong>cuda</strong>；<strong>OpenCL</strong>模块，其类型键为<strong>opencl</strong>等。关于类型键的可以通过<strong>module-&gt;type_key()</strong>获取。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">const</span> <span class="keyword">auto</span>&amp; group : mod_group_vec_) &#123;</span><br><span class="line">    <span class="built_in">ICHECK_NE</span>(group.<span class="built_in">size</span>(), <span class="number">0</span>) &lt;&lt; <span class="string">&quot;Every allocated group must have at least one module&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">DSOExportable</span>(group[<span class="number">0</span>])) &#123;</span><br><span class="line">        <span class="built_in">ICHECK_EQ</span>(group.<span class="built_in">size</span>(), <span class="number">1U</span>) &lt;&lt; <span class="string">&quot;Non DSO module is never merged&quot;</span>;</span><br><span class="line">        std::string mod_type_key = group[<span class="number">0</span>]-&gt;<span class="built_in">type_key</span>();</span><br><span class="line">        stream-&gt;<span class="built_in">Write</span>(mod_type_key);</span><br><span class="line">        group[<span class="number">0</span>]-&gt;<span class="built_in">SaveToBinary</span>(stream);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// DSOExportable: do not need binary</span></span><br><span class="line">        <span class="keyword">if</span> (has_import_tree) &#123;</span><br><span class="line">            std::string mod_type_key = <span class="string">&quot;_lib&quot;</span>;</span><br><span class="line">            stream-&gt;<span class="built_in">Write</span>(mod_type_key);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>binary_blob_logic</strong></li>
+</ul>
+<p>表示<strong>blob</strong>的逻辑处理，对于大多数的<strong>blob</strong>(像<strong>CUDA</strong>、<strong>OpenCL</strong>)，将会调用其模块的<strong>SaveToBinary</strong>函数序列化为二进制形式。但是像<strong>LLVM</strong>或<strong>C</strong>模块，只要写入<code>_lib</code>字符，表明该模块是<code>DSO</code>模块。</p>
+<ul>
+<li><strong>import_tree</strong></li>
+</ul>
+<p>除非模块只有一个<strong>DSO</strong>模块且为根模块，不需要写入<code>_import_tree</code>字段，其它情况都需要写入。当将导出的库需要加载回来时，可以用其重构模块的导入关系。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Write _import_tree key if we have</span></span><br><span class="line"><span class="keyword">if</span> (has_import_tree) &#123;</span><br><span class="line">    std::string import_key = <span class="string">&quot;_import_tree&quot;</span>;</span><br><span class="line">    stream-&gt;<span class="built_in">Write</span>(import_key);</span><br><span class="line">    stream-&gt;<span class="built_in">Write</span>(import_tree_row_ptr_);</span><br><span class="line">    stream-&gt;<span class="built_in">Write</span>(import_tree_child_indices_);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>import_tree_logic</strong></li>
+</ul>
+<p>将<code>import_tree_row_ptr_</code>和<code>import_tree_child_indices_</code>数组内容写入数据流。</p>
+<h4 id="pack">2.1.2.3. Pack</h4>
+<p>经过上述序列化步骤后，将数据流打包成一个符号(<strong>runtime::symbol::tvm_dev_mblob</strong>)，这样就可以在需要时从动态库中恢复模块内容。写入动态库中的符号为<code>__tvm_dev_mblob</code>，根据序列化后的数据流大小创建以<code>__tvm_dev_mblob</code>为符号的数组<code>const unsigned char __tvm_dev_mblob[bin.length() + sizeof(nbytes)]&#123;&#125;</code>。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">uint64_t</span> nbytes = bin.<span class="built_in">length</span>();</span><br><span class="line">os &lt;&lt; <span class="string">&quot;const unsigned char &quot;</span> &lt;&lt; runtime::symbol::tvm_dev_mblob &lt;&lt; <span class="string">&quot;[&quot;</span></span><br><span class="line">	&lt;&lt; bin.<span class="built_in">length</span>() + <span class="built_in">sizeof</span>(nbytes) &lt;&lt; <span class="string">&quot;] = &#123;\n  &quot;</span>;</span><br></pre></td></tr></table></figure>
+<p>前八个字节存储序列化数据流的字节数大小，按照16进制形式保存。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; <span class="built_in">sizeof</span>(nbytes); ++i) &#123;</span><br><span class="line">    <span class="comment">// sperators</span></span><br><span class="line">    <span class="keyword">if</span> (i != <span class="number">0</span>) &#123;</span><br><span class="line">    	os &lt;&lt; <span class="string">&quot;,&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    os &lt;&lt; <span class="string">&quot;0x&quot;</span> &lt;&lt; ((nbytes &gt;&gt; (i * <span class="number">8</span>)) &amp; <span class="number">0xff</span>UL);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>20个字节为一行，保存序列化数据。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; bin.<span class="built_in">length</span>(); ++i) &#123;</span><br><span class="line">    <span class="comment">// sperators</span></span><br><span class="line">    <span class="keyword">if</span> ((i + <span class="built_in">sizeof</span>(nbytes)) % nunit == <span class="number">0</span>) &#123;</span><br><span class="line">    	os &lt;&lt; <span class="string">&quot;,\n  &quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    	os &lt;&lt; <span class="string">&quot;,&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> c = bin[i];</span><br><span class="line">    os &lt;&lt; <span class="string">&quot;0x&quot;</span> &lt;&lt; (c &amp; <span class="number">0xff</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="参考">3. 参考</h1>
+<ol type="1">
+<li><p><a href="https://www.cnblogs.com/xbinworld/p/4273506.html">稀疏矩阵存储格式总结+存储效率对比:COO,CSR,DIA,ELL,HYB</a></p></li>
+<li><p><a href="https://blog.csdn.net/alai04/article/details/733230">用STL实现DFS/BFS算法——检查重复状态</a></p></li>
+</ol>
+]]></content>
+      <categories>
+        <category>TVM</category>
+        <category>Runtime</category>
+      </categories>
+      <tags>
+        <tag>TVM</tag>
+        <tag>runtime</tag>
+        <tag>Module</tag>
+        <tag>export_library</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>TVM LoadFromFile函数分析</title>
     <url>/2021/09/29/TVM-LoadFromFile/</url>
     <content><![CDATA[<h1 id="概述">1. 概述</h1>
@@ -146,119 +259,6 @@
         <tag>Runtime</tag>
         <tag>LoadFromFile</tag>
         <tag>源码分析</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>TVM export_lib函数分析</title>
-    <url>/2021/10/08/TVM-ExportLibrary/</url>
-    <content><![CDATA[<h1 id="概述">1. 概述</h1>
-<p>本文分析<strong>executor_lib</strong>函数的处理过程，其中包括<strong>DSO</strong>模块的编译和<strong>imported modules</strong>模块的序列化。</p>
-<p><img src="https://i.loli.net/2021/10/10/3h8wfXOej514JLH.jpg" /></p>
-<span id="more"></span>
-<h1 id="分析">2. 分析</h1>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">export_library</span>(<span class="params">self, file_name, fcompile=<span class="literal">None</span>, addons=<span class="literal">None</span>, **kwargs</span>):</span><br><span class="line">    <span class="keyword">return</span> self.module.export_library(file_name, fcompile, addons, **kwargs)</span><br></pre></td></tr></table></figure>
-<p>首先调用<strong>relay.build</strong>最终生成<strong>GraphExecutorFactoryModule</strong>对象，位于<code>python/tvm/relay/backend/executor_factory.py</code>文件中。使用<strong>export_library</strong>导出动态库时，实际上调用的是<strong>GraphExecutorFactoryModule</strong>类本身的<strong>module</strong>中的<strong>export_library</strong>函数。该对象指向<strong>tvm.graph_executor_factory.create</strong>函数，是在<strong>C++</strong>端实现的函数。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">fcreate = get_global_func(<span class="string">&quot;tvm.graph_executor_factory.create&quot;</span>)</span><br><span class="line">args = []</span><br><span class="line"><span class="keyword">for</span> k, v <span class="keyword">in</span> params.items():</span><br><span class="line">    args.append(k)</span><br><span class="line">    args.append(ndarray.array(v))</span><br><span class="line">self.module = fcreate(graph_json_str, libmod, libmod_name, *args)</span><br></pre></td></tr></table></figure>
-<p>接下来进入<code>src/runtime/graph_executor/graph_executor_factory.cc</code>文件，使用<strong>TVM_REGISTER_GLOBAL</strong>宏定义将函数暴露到python端，函数体是lamda表达式。首先进行参数数量检查，然后进行参数重组，将参数按照命名存储进<strong>params</strong>对象中，然后创建<strong>GraphExecutorFactory</strong>对象。其中<strong>module_name</strong>默认值为<strong>default</strong>。然后导入所有<strong>runtime_module</strong>，最后将<strong>GraphExecutorFactory</strong>对象传入<strong>Module</strong>模块并返回。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;tvm.graph_executor_factory.create&quot;</span>)</span><br><span class="line">    .<span class="built_in">set_body</span>([](TVMArgs args, TVMRetValue* rv) &#123;</span><br><span class="line">        <span class="built_in">ICHECK_GE</span>(args.num_args, <span class="number">3</span>) &lt;&lt; <span class="string">&quot;The expected number of arguments for &quot;</span></span><br><span class="line">            <span class="string">&quot;graph_executor_factory.create needs at least 3, &quot;</span></span><br><span class="line">            <span class="string">&quot;but it has &quot;</span></span><br><span class="line">            &lt;&lt; args.num_args;</span><br><span class="line">        <span class="comment">// The argument order is graph_json, module, module_name, param0_name, param0_tensor,</span></span><br><span class="line">        <span class="comment">// [param1_name, param1_tensor], ...</span></span><br><span class="line">        <span class="built_in">ICHECK_EQ</span>((args.<span class="built_in">size</span>() - <span class="number">3</span>) % <span class="number">2</span>, <span class="number">0</span>);</span><br><span class="line">        std::unordered_map&lt;std::string, tvm::runtime::NDArray&gt; params;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">3</span>; i &lt; <span class="built_in">static_cast</span>&lt;<span class="type">size_t</span>&gt;(args.<span class="built_in">size</span>()); i += <span class="number">2</span>) &#123;</span><br><span class="line">            std::string name = args[i].<span class="keyword">operator</span> <span class="built_in">String</span>();</span><br><span class="line">            params[name] = args[i + <span class="number">1</span>].<span class="keyword">operator</span> tvm::runtime::<span class="built_in">NDArray</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// graph_json, params, module_name</span></span><br><span class="line">        <span class="keyword">auto</span> exec = <span class="built_in">make_object</span>&lt;GraphExecutorFactory&gt;(args[<span class="number">0</span>], params, args[<span class="number">2</span>]);</span><br><span class="line">        <span class="comment">// module</span></span><br><span class="line">        exec-&gt;<span class="built_in">Import</span>(args[<span class="number">1</span>]);</span><br><span class="line">        *rv = <span class="built_in">Module</span>(exec);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="module">2.1. Module</h2>
-<h3 id="export_library">2.1.1. export_library</h3>
-<p>关于<strong>Module</strong>类位于<code>python/tvm/runtime/module.py</code>文件中，该类中包含<strong>export_library</strong>函数。该函数的主要作用是将模块和所有被导入模块导出为一个简单的动态库。</p>
-<h4 id="collect-dso-module">2.1.1.1. Collect DSO Module</h4>
-<p>首先收集所有<strong>DSO</strong>模块(LLVM Module 和 C Module)</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">modules = self._collect_dso_modules()</span><br></pre></td></tr></table></figure>
-<h4 id="save-file">2.1.1.2. Save File</h4>
-<p>一旦收集到所有的<strong>DSO</strong>模块，就可以调用<strong>runtime</strong>模块的<strong>save</strong>函数将其保存为文件格式。通过遍历所有<strong>DSO</strong>模块，根据其类型键设置相应的文件后缀，并通过<strong>save</strong>函数将模块保存为相应的文件类型，并将该文件添加到<strong>files</strong>数组序列中。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> index, module <span class="keyword">in</span> <span class="built_in">enumerate</span>(modules):</span><br><span class="line">    <span class="keyword">if</span> fcompile <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> <span class="built_in">hasattr</span>(fcompile, <span class="string">&quot;object_format&quot;</span>):</span><br><span class="line">        <span class="keyword">if</span> module.type_key == <span class="string">&quot;c&quot;</span>:</span><br><span class="line">            object_format = <span class="string">&quot;c&quot;</span></span><br><span class="line">            has_c_module = <span class="literal">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">        	object_format = fcompile.object_format</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">if</span> module.type_key == <span class="string">&quot;llvm&quot;</span>:</span><br><span class="line">        	object_format = <span class="string">&quot;o&quot;</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">assert</span> module.type_key == <span class="string">&quot;c&quot;</span></span><br><span class="line">            object_format = <span class="string">&quot;c&quot;</span></span><br><span class="line">            <span class="keyword">if</span> <span class="string">&quot;cc&quot;</span> <span class="keyword">in</span> kwargs:</span><br><span class="line">                <span class="keyword">if</span> kwargs[<span class="string">&quot;cc&quot;</span>] == <span class="string">&quot;nvcc&quot;</span>:</span><br><span class="line">                	object_format = <span class="string">&quot;cu&quot;</span></span><br><span class="line">        	has_c_module = <span class="literal">True</span></span><br><span class="line">    path_obj = os.path.join(workspace_dir, <span class="string">f&quot;lib<span class="subst">&#123;index&#125;</span>.<span class="subst">&#123;object_format&#125;</span>&quot;</span>)</span><br><span class="line">    module.save(path_obj)</span><br><span class="line">    files.append(path_obj)</span><br><span class="line">    is_system_lib = (</span><br><span class="line">    	module.type_key == <span class="string">&quot;llvm&quot;</span> <span class="keyword">and</span> module.get_function(<span class="string">&quot;__tvm_is_system_module&quot;</span>)()</span><br><span class="line">    )</span><br><span class="line">    llvm_target_triple = (</span><br><span class="line">    	module.type_key == <span class="string">&quot;llvm&quot;</span> <span class="keyword">and</span> module.get_function(<span class="string">&quot;_get_target_triple&quot;</span>)()</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
-<h5 id="save函数">2.1.1.2.1 save函数</h5>
-<p>关于<strong>save</strong>函数，其调用C++端的函数<strong>ModuleSaveToFile</strong>。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">save</span>(<span class="params">self, file_name, fmt=<span class="string">&quot;&quot;</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Save the module to file.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    This do not save the dependent device modules.</span></span><br><span class="line"><span class="string">    See also export_shared</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Parameters</span></span><br><span class="line"><span class="string">    ----------</span></span><br><span class="line"><span class="string">    file_name : str</span></span><br><span class="line"><span class="string">    The name of the file.</span></span><br><span class="line"><span class="string">    fmt : str</span></span><br><span class="line"><span class="string">    The format of the file.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    See Also</span></span><br><span class="line"><span class="string">    --------</span></span><br><span class="line"><span class="string">    runtime.Module.export_library : export the module to shared library.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    _ffi_api.ModuleSaveToFile(self, file_name, fmt)</span><br></pre></td></tr></table></figure>
-<p>该函数使用各个模块的<strong>SaveToFile</strong>函数将模块保存为文件形式。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.ModuleSaveToFile&quot;</span>)</span><br><span class="line">    .<span class="built_in">set_body_typed</span>([](Module mod, tvm::String name, tvm::String fmt) &#123;</span><br><span class="line">        mod-&gt;<span class="built_in">SaveToFile</span>(name, fmt);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
-<h4 id="impoerted-modules">2.1.1.3. Impoerted Modules</h4>
-<p>检查是否存在<strong>imported modules</strong>(像<strong>CUDA</strong>、<strong>OpenCL</strong>等)。这里不限制模块类型，一旦存在<strong>imports modules</strong>，将创建命名为<code>devc.o</code>或<code>devc.c</code>的文件。这就可以将<strong>imports modules</strong>的二进制<strong>blob</strong>数据嵌入进动态库中。然后调用<strong>ModulePackImportsToLLVM</strong>或<strong>ModulePackImportsToC</strong>进行模块序列化(<strong>module serialization</strong>)。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> self.imported_modules:</span><br><span class="line">    <span class="keyword">if</span> enabled(<span class="string">&quot;llvm&quot;</span>) <span class="keyword">and</span> llvm_target_triple:</span><br><span class="line">        path_obj = os.path.join(workspace_dir, <span class="string">f&quot;devc.<span class="subst">&#123;object_format&#125;</span>&quot;</span>)</span><br><span class="line">        m = _ffi_api.ModulePackImportsToLLVM(self, is_system_lib, llvm_target_triple)</span><br><span class="line">        m.save(path_obj)</span><br><span class="line">        files.append(path_obj)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        path_cc = os.path.join(workspace_dir, <span class="string">&quot;devc.c&quot;</span>)</span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(path_cc, <span class="string">&quot;w&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">            f.write(_ffi_api.ModulePackImportsToC(self, is_system_lib))</span><br><span class="line">        files.append(path_cc)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>注：使用<strong>PackImportsToLLVM</strong>或<strong>PackImportsToC</strong>取决于是否在TVM中使能LLVM，事实上它们的目标相同。</p>
-</blockquote>
-<h4 id="function-compile">2.1.1.4. Function Compile</h4>
-<p>最后调用<strong>fcompile</strong>去编译生成动态共享库(so)。如果用户没有指定编译器类型，默认采用<strong>cc</strong>编译器，如果文件是<strong>tar</strong>压缩文件，则进行文件解压。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> fcompile:</span><br><span class="line">	<span class="keyword">if</span> file_name.endswith(<span class="string">&quot;.tar&quot;</span>):</span><br><span class="line">		fcompile = _tar.tar</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		fcompile = _cc.create_shared</span><br></pre></td></tr></table></figure>
-<p>如果用户指定了编译器，一般在部署到设备端时会指定交叉编译工具，则使用用户指定的编译器进行编译。编译输入参数包括编译生成的文件名，待编译的文件组和编译参数。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">fcompile(file_name, files, **kwargs)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>对于C 源码模块，将编译他们并一起与DSO模块进行链接。</p>
-</blockquote>
-<h3 id="module-serialization">2.1.2. Module Serialization</h3>
-<p>在文件<code>src/target/codegen.cc</code>中，注册了全局函数<strong>runtime.ModulePackImportsToC</strong>和<strong>runtime.ModulePackImportsToLLVM</strong>，用于将其暴露到<strong>python</strong>端调用。 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Export two auxiliary function to the runtime namespace.</span></span><br><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.ModulePackImportsToC&quot;</span>).<span class="built_in">set_body_typed</span>(PackImportsToC);</span><br><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.ModulePackImportsToLLVM&quot;</span>).<span class="built_in">set_body_typed</span>(PackImportsToLLVM);</span><br></pre></td></tr></table></figure></p>
-<h4 id="serializemodule">2.1.2.1 SerializeModule</h4>
-<p>其中，<strong>PackImportsToC</strong>和<strong>PackImportsToLLVM</strong>函数都调用<strong>SerializeModule</strong>函数序列化<strong>runtime module</strong>。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">std::string <span class="title">PackImportsToC</span><span class="params">(<span class="type">const</span> runtime::Module&amp; mod, <span class="type">bool</span> system_lib)</span> </span>&#123;</span><br><span class="line">	std::string bin = <span class="built_in">SerializeModule</span>(mod);</span><br><span class="line">  	...</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">runtime::Module <span class="title">PackImportsToLLVM</span><span class="params">(<span class="type">const</span> runtime::Module&amp; mod, <span class="type">bool</span> system_lib,</span></span></span><br><span class="line"><span class="params"><span class="function">                                  <span class="type">const</span> std::string&amp; target_triple)</span> </span>&#123;</span><br><span class="line">	std::string bin = <span class="built_in">SerializeModule</span>(mod);</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="moduleserializer">2.1.2.2. ModuleSerializer</h4>
-<p>首先在<strong>SerializeModule</strong>函数中创建一个帮手类<strong>ModuleSerializer</strong>，其传入<strong>module</strong>做一些初始化工作，像标注模块的索引号等，然后调用该类的<strong>SerializeModule</strong>函数序列化模块。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">std::string <span class="title">SerializeModule</span><span class="params">(<span class="type">const</span> runtime::Module&amp; mod)</span> </span>&#123;</span><br><span class="line">    std::string bin;</span><br><span class="line">    <span class="function">dmlc::MemoryStringStream <span class="title">ms</span><span class="params">(&amp;bin)</span></span>;</span><br><span class="line">    dmlc::Stream* stream = &amp;ms;</span><br><span class="line"></span><br><span class="line">    <span class="function">ModuleSerializer <span class="title">module_serializer</span><span class="params">(mod)</span></span>;</span><br><span class="line">    module_serializer.<span class="built_in">SerializeModule</span>(stream);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> bin;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在创建<strong>module_serializer</strong>对象时，其构造函数调用<strong>Init</strong>函数进行初始化操作。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">explicit</span> <span class="title">ModuleSerializer</span><span class="params">(runtime::Module mod)</span> : mod_(mod) &#123;</span> <span class="built_in">Init</span>(); &#125;</span><br></pre></td></tr></table></figure>
-<h5 id="init">2.1.2.2.1. Init</h5>
-<p>而在<code>Init</code>函数中，分别调用<strong>CreateModuleIndex</strong>和<strong>CreateImportTree</strong>函数，用于创建<strong>模块索引号</strong>和<strong>导入树</strong>。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">Init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">CreateModuleIndex</span>();</span><br><span class="line">    <span class="built_in">CreateImportTree</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h6 id="createmoduleindex">2.1.2.2.1.1. CreateModuleIndex</h6>
-<p>在函数<strong>CreateModuleIndex</strong>中将使用<strong>DFS</strong>(深度优先)算法检查模块导入关系并为其创建索引，注意根模块固定为位置0。</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">llvm_mod<span class="punctuation">:</span>imported_modules</span><br><span class="line">  - cuda_mod</span><br><span class="line">  - opencl_mod</span><br></pre></td></tr></table></figure>
-<p>因此，<strong>LLVM</strong>模块将会拥有索引值0，<strong>CUDA</strong>模块将拥有索引值1，<strong>OpenCL</strong>模块将拥有索引值为2。</p>
-<h6 id="createimporttree">2.1.2.2.1.2. CreateImportTree</h6>
-<p>在构建模块索引号后，<strong>CreateImportTree</strong>函数将尝试构建导入树，用于将导出的库加载回来时，恢复模块的导入关系。使用<strong>CSR</strong>(Compressed Sparse Row)格式存储导入树。每一行都是父索引，子索引对应其子索引。</p>
-<p>使用<code>import_tree_row_ptr_</code>表示行偏移，即某一行的第一个元素在values里面的起始偏移位置。<code>import_tree_child_indices_</code>表示子索引值。</p>
-<h5 id="serializemodule-1">2.1.2.2.2. SerializeModule</h5>
-<p>通过上述两个函数初始化后，可以使用<strong>SerializeModule</strong>函数序列化模块。在其功能逻辑中，假定序列化格式如下：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">binary_blob_size</span><br><span class="line">binary_blob_type_key</span><br><span class="line">binary_blob_logic</span><br><span class="line">binary_blob_type_key</span><br><span class="line">binary_blob_logic</span><br><span class="line">...</span><br><span class="line">_import_tree</span><br><span class="line">_import_tree_logic</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>binary_blob_size</strong></li>
-</ul>
-<p>表示序列化步骤中将拥有的<strong>blob</strong>数量。如果只有一个<strong>DSO</strong>模块并且是根模块，将不产生<code>import_tree_</code>。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Only have one DSO module and it is in the root, then</span></span><br><span class="line"><span class="comment">// we will not produce import_tree_.</span></span><br><span class="line"><span class="type">bool</span> has_import_tree = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">DSOExportable</span>(mod_.<span class="keyword">operator</span>-&gt;()) &amp;&amp; mod_-&gt;<span class="built_in">imports</span>().<span class="built_in">empty</span>()) &#123;</span><br><span class="line">	has_import_tree = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>根据是否存在<code>import_tree_</code>，如果不存在，<strong>binary_blob_size</strong>字段直接写入模块数量，否则写入所有模块数量并追加1。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">uint64_t</span> sz = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">if</span> (has_import_tree) &#123;</span><br><span class="line">    <span class="comment">// we will append one key for _import_tree</span></span><br><span class="line">    <span class="comment">// The layout is the same as before: binary_size, key, logic, key, logic...</span></span><br><span class="line">    sz = mod_group_vec_.<span class="built_in">size</span>() + <span class="number">1</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// Keep the old behaviour</span></span><br><span class="line">    sz = mod_-&gt;<span class="built_in">imports</span>().<span class="built_in">size</span>();</span><br><span class="line">&#125;</span><br><span class="line">stream-&gt;<span class="built_in">Write</span>(sz);</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>binary_blob_type_key</strong></li>
-</ul>
-<p>表示模块的<strong>blob</strong>类型键，对于LLVM或C模块，其<strong>blob</strong>类型键是<code>_lib</code>。而其它模块，像<strong>CUDA</strong>模块，其类型键为<strong>cuda</strong>；<strong>OpenCL</strong>模块，其类型键为<strong>opencl</strong>等。关于类型键的可以通过<strong>module-&gt;type_key()</strong>获取。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">const</span> <span class="keyword">auto</span>&amp; group : mod_group_vec_) &#123;</span><br><span class="line">    <span class="built_in">ICHECK_NE</span>(group.<span class="built_in">size</span>(), <span class="number">0</span>) &lt;&lt; <span class="string">&quot;Every allocated group must have at least one module&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">DSOExportable</span>(group[<span class="number">0</span>])) &#123;</span><br><span class="line">        <span class="built_in">ICHECK_EQ</span>(group.<span class="built_in">size</span>(), <span class="number">1U</span>) &lt;&lt; <span class="string">&quot;Non DSO module is never merged&quot;</span>;</span><br><span class="line">        std::string mod_type_key = group[<span class="number">0</span>]-&gt;<span class="built_in">type_key</span>();</span><br><span class="line">        stream-&gt;<span class="built_in">Write</span>(mod_type_key);</span><br><span class="line">        group[<span class="number">0</span>]-&gt;<span class="built_in">SaveToBinary</span>(stream);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// DSOExportable: do not need binary</span></span><br><span class="line">        <span class="keyword">if</span> (has_import_tree) &#123;</span><br><span class="line">            std::string mod_type_key = <span class="string">&quot;_lib&quot;</span>;</span><br><span class="line">            stream-&gt;<span class="built_in">Write</span>(mod_type_key);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>binary_blob_logic</strong></li>
-</ul>
-<p>表示<strong>blob</strong>的逻辑处理，对于大多数的<strong>blob</strong>(像<strong>CUDA</strong>、<strong>OpenCL</strong>)，将会调用其模块的<strong>SaveToBinary</strong>函数序列化为二进制形式。但是像<strong>LLVM</strong>或<strong>C</strong>模块，只要写入<code>_lib</code>字符，表明该模块是<code>DSO</code>模块。</p>
-<ul>
-<li><strong>import_tree</strong></li>
-</ul>
-<p>除非模块只有一个<strong>DSO</strong>模块且为根模块，不需要写入<code>_import_tree</code>字段，其它情况都需要写入。当将导出的库需要加载回来时，可以用其重构模块的导入关系。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Write _import_tree key if we have</span></span><br><span class="line"><span class="keyword">if</span> (has_import_tree) &#123;</span><br><span class="line">    std::string import_key = <span class="string">&quot;_import_tree&quot;</span>;</span><br><span class="line">    stream-&gt;<span class="built_in">Write</span>(import_key);</span><br><span class="line">    stream-&gt;<span class="built_in">Write</span>(import_tree_row_ptr_);</span><br><span class="line">    stream-&gt;<span class="built_in">Write</span>(import_tree_child_indices_);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>import_tree_logic</strong></li>
-</ul>
-<p>将<code>import_tree_row_ptr_</code>和<code>import_tree_child_indices_</code>数组内容写入数据流。</p>
-<h4 id="pack">2.1.2.3. Pack</h4>
-<p>经过上述序列化步骤后，将数据流打包成一个符号(<strong>runtime::symbol::tvm_dev_mblob</strong>)，这样就可以在需要时从动态库中恢复模块内容。写入动态库中的符号为<code>__tvm_dev_mblob</code>，根据序列化后的数据流大小创建以<code>__tvm_dev_mblob</code>为符号的数组<code>const unsigned char __tvm_dev_mblob[bin.length() + sizeof(nbytes)]&#123;&#125;</code>。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">uint64_t</span> nbytes = bin.<span class="built_in">length</span>();</span><br><span class="line">os &lt;&lt; <span class="string">&quot;const unsigned char &quot;</span> &lt;&lt; runtime::symbol::tvm_dev_mblob &lt;&lt; <span class="string">&quot;[&quot;</span></span><br><span class="line">	&lt;&lt; bin.<span class="built_in">length</span>() + <span class="built_in">sizeof</span>(nbytes) &lt;&lt; <span class="string">&quot;] = &#123;\n  &quot;</span>;</span><br></pre></td></tr></table></figure>
-<p>前八个字节存储序列化数据流的字节数大小，按照16进制形式保存。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; <span class="built_in">sizeof</span>(nbytes); ++i) &#123;</span><br><span class="line">    <span class="comment">// sperators</span></span><br><span class="line">    <span class="keyword">if</span> (i != <span class="number">0</span>) &#123;</span><br><span class="line">    	os &lt;&lt; <span class="string">&quot;,&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    os &lt;&lt; <span class="string">&quot;0x&quot;</span> &lt;&lt; ((nbytes &gt;&gt; (i * <span class="number">8</span>)) &amp; <span class="number">0xff</span>UL);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>20个字节为一行，保存序列化数据。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; bin.<span class="built_in">length</span>(); ++i) &#123;</span><br><span class="line">    <span class="comment">// sperators</span></span><br><span class="line">    <span class="keyword">if</span> ((i + <span class="built_in">sizeof</span>(nbytes)) % nunit == <span class="number">0</span>) &#123;</span><br><span class="line">    	os &lt;&lt; <span class="string">&quot;,\n  &quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    	os &lt;&lt; <span class="string">&quot;,&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> c = bin[i];</span><br><span class="line">    os &lt;&lt; <span class="string">&quot;0x&quot;</span> &lt;&lt; (c &amp; <span class="number">0xff</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="参考">3. 参考</h1>
-<ol type="1">
-<li><p><a href="https://www.cnblogs.com/xbinworld/p/4273506.html">稀疏矩阵存储格式总结+存储效率对比:COO,CSR,DIA,ELL,HYB</a></p></li>
-<li><p><a href="https://blog.csdn.net/alai04/article/details/733230">用STL实现DFS/BFS算法——检查重复状态</a></p></li>
-</ol>
-]]></content>
-      <categories>
-        <category>TVM</category>
-        <category>Runtime</category>
-      </categories>
-      <tags>
-        <tag>TVM</tag>
-        <tag>runtime</tag>
-        <tag>Module</tag>
-        <tag>export_library</tag>
       </tags>
   </entry>
   <entry>
@@ -2838,6 +2838,57 @@ e_{\psi}\\
       </tags>
   </entry>
   <entry>
+    <title>车辆停车优化</title>
+    <url>/2019/11/11/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BD%A6%E8%BE%86%E5%81%9C%E8%BD%A6%E4%BC%98%E5%8C%96/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>车辆控制中，如何舒适平衡的停车也是一个比较讲究的事。日常生活中，对于一个刚接触车的新手，控车时可能会猛踩刹车，给人一种很冲的感觉。但是对于老司机，每次踩刹车都是先轻踩，然后逐渐增大踩刹车的力度，这样对于乘客来说就会感觉很舒适。</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/T3i8DBrFA7zSRPv.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="模型">模型</h2>
+<p>为了模拟出舒适的停车体验，使用变减速度的速度模型进行车辆停车控制。假设<strong>加速度的变化率</strong>为<span class="math inline">\(\dot{a}\)</span>，则<strong>加速度</strong>与<strong>加速度变化率</strong>的关系为</p>
+<p><span class="math display">\[
+\dot{a} * t = a \tag{1}
+\]</span></p>
+<p>对应的减速度曲线如下图所示：</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/exlCYdmJbpOk1IA.png" alt="减速度曲线" /><figcaption aria-hidden="true">减速度曲线</figcaption>
+</figure>
+<p>对等式(1)求导得<strong>速度</strong>与<strong>加速度的变化率</strong>的关系为 <span class="math display">\[
+v_0 - \int_0^{t}a*dt = v \Longrightarrow v_0 - \frac{1}{2}\dot{a}*t^2 = v \tag{2}
+\]</span></p>
+<p>由于减速度一直变化，对应的速度曲线如下图所示：</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/peAHWyGjz6cCm8L.png" alt="速度曲线" /><figcaption aria-hidden="true">速度曲线</figcaption>
+</figure>
+<p>图中速度曲线下方的面积<span class="math inline">\(S\)</span>为行驶的位移，根据上述速度曲线，车辆运动模型如下：</p>
+<p><span class="math display">\[
+\int_0^{t}vdt = S \Longrightarrow v_0*t - \frac{1}{6}\dot{a}t^3 = S
+\]</span></p>
+<p>当速度从<span class="math inline">\(v_0\)</span>下降到0的过程中，时间<span class="math inline">\(t_0\)</span>为：</p>
+<p><span class="math display">\[
+v_0 - \frac{1}{2}\dot{a}*t^2 = 0 \Longrightarrow t_0 = {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}
+\]</span></p>
+<p>将时间<span class="math inline">\(t_0\)</span>代入得：</p>
+<p><span class="math display">\[
+t_0*(v_0 - \frac{1}{6}\dot{a}{t_0}^2) = S \Longrightarrow {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}} * (v_0 - \frac{1}{6}\dot{a}\frac{2*v_0}{\dot{a}}) = S\\
+{(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}*\frac{2*v_0}{3} = S
+\]</span></p>
+<p>计算<span class="math inline">\(\dot{a}\)</span>得：</p>
+<p><span class="math display">\[
+\dot{a} = \frac{8 {v_0}^3}{9S^2}
+\]</span></p>
+<p>所以当控制车辆减速时，根据当前车辆速度<span class="math inline">\(v_0\)</span>和距离停车点的位移<span class="math inline">\(S\)</span>，计算出减速度的增量<span class="math inline">\(\dot{a}\)</span>，控制输出的减速度<span class="math inline">\(a = a - \dot{a}*dt\)</span>。</p>
+]]></content>
+      <categories>
+        <category>控制算法</category>
+      </categories>
+      <tags>
+        <tag>速度曲线</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>控制算法-路径跟踪</title>
     <url>/2020/02/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -2923,57 +2974,6 @@ e_{\psi}\\
         <tag>Stanley法</tag>
         <tag>运动学模型</tag>
         <tag>转向控制</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>车辆停车优化</title>
-    <url>/2019/11/11/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BD%A6%E8%BE%86%E5%81%9C%E8%BD%A6%E4%BC%98%E5%8C%96/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>车辆控制中，如何舒适平衡的停车也是一个比较讲究的事。日常生活中，对于一个刚接触车的新手，控车时可能会猛踩刹车，给人一种很冲的感觉。但是对于老司机，每次踩刹车都是先轻踩，然后逐渐增大踩刹车的力度，这样对于乘客来说就会感觉很舒适。</p>
-<figure>
-<img src="https://i.loli.net/2021/08/30/T3i8DBrFA7zSRPv.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="模型">模型</h2>
-<p>为了模拟出舒适的停车体验，使用变减速度的速度模型进行车辆停车控制。假设<strong>加速度的变化率</strong>为<span class="math inline">\(\dot{a}\)</span>，则<strong>加速度</strong>与<strong>加速度变化率</strong>的关系为</p>
-<p><span class="math display">\[
-\dot{a} * t = a \tag{1}
-\]</span></p>
-<p>对应的减速度曲线如下图所示：</p>
-<figure>
-<img src="https://i.loli.net/2021/08/30/exlCYdmJbpOk1IA.png" alt="减速度曲线" /><figcaption aria-hidden="true">减速度曲线</figcaption>
-</figure>
-<p>对等式(1)求导得<strong>速度</strong>与<strong>加速度的变化率</strong>的关系为 <span class="math display">\[
-v_0 - \int_0^{t}a*dt = v \Longrightarrow v_0 - \frac{1}{2}\dot{a}*t^2 = v \tag{2}
-\]</span></p>
-<p>由于减速度一直变化，对应的速度曲线如下图所示：</p>
-<figure>
-<img src="https://i.loli.net/2021/08/30/peAHWyGjz6cCm8L.png" alt="速度曲线" /><figcaption aria-hidden="true">速度曲线</figcaption>
-</figure>
-<p>图中速度曲线下方的面积<span class="math inline">\(S\)</span>为行驶的位移，根据上述速度曲线，车辆运动模型如下：</p>
-<p><span class="math display">\[
-\int_0^{t}vdt = S \Longrightarrow v_0*t - \frac{1}{6}\dot{a}t^3 = S
-\]</span></p>
-<p>当速度从<span class="math inline">\(v_0\)</span>下降到0的过程中，时间<span class="math inline">\(t_0\)</span>为：</p>
-<p><span class="math display">\[
-v_0 - \frac{1}{2}\dot{a}*t^2 = 0 \Longrightarrow t_0 = {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}
-\]</span></p>
-<p>将时间<span class="math inline">\(t_0\)</span>代入得：</p>
-<p><span class="math display">\[
-t_0*(v_0 - \frac{1}{6}\dot{a}{t_0}^2) = S \Longrightarrow {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}} * (v_0 - \frac{1}{6}\dot{a}\frac{2*v_0}{\dot{a}}) = S\\
-{(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}*\frac{2*v_0}{3} = S
-\]</span></p>
-<p>计算<span class="math inline">\(\dot{a}\)</span>得：</p>
-<p><span class="math display">\[
-\dot{a} = \frac{8 {v_0}^3}{9S^2}
-\]</span></p>
-<p>所以当控制车辆减速时，根据当前车辆速度<span class="math inline">\(v_0\)</span>和距离停车点的位移<span class="math inline">\(S\)</span>，计算出减速度的增量<span class="math inline">\(\dot{a}\)</span>，控制输出的减速度<span class="math inline">\(a = a - \dot{a}*dt\)</span>。</p>
-]]></content>
-      <categories>
-        <category>控制算法</category>
-      </categories>
-      <tags>
-        <tag>速度曲线</tag>
       </tags>
   </entry>
   <entry>
