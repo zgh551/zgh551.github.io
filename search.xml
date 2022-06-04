@@ -1,6 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>TVM export_lib函数分析</title>
+    <url>/2021/10/08/TVM-ExportLibrary/</url>
+    <content><![CDATA[<h1 id="概述">1. 概述</h1>
+<p>本文分析<strong>executor_lib</strong>函数的处理过程，其中包括<strong>DSO</strong>模块的编译和<strong>imported modules</strong>模块的序列化。</p>
+<p><img data-src="https://i.loli.net/2021/10/10/3h8wfXOej514JLH.jpg" /></p>
+<span id="more"></span>
+<h1 id="分析">2. 分析</h1>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">export_library</span>(<span class="params">self, file_name, fcompile=<span class="literal">None</span>, addons=<span class="literal">None</span>, **kwargs</span>):</span><br><span class="line">    <span class="keyword">return</span> self.module.export_library(file_name, fcompile, addons, **kwargs)</span><br></pre></td></tr></table></figure>
+<p>首先调用<strong>relay.build</strong>最终生成<strong>GraphExecutorFactoryModule</strong>对象，位于<code>python/tvm/relay/backend/executor_factory.py</code>文件中。使用<strong>export_library</strong>导出动态库时，实际上调用的是<strong>GraphExecutorFactoryModule</strong>类本身的<strong>module</strong>中的<strong>export_library</strong>函数。该对象指向<strong>tvm.graph_executor_factory.create</strong>函数，是在<strong>C++</strong>端实现的函数。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">fcreate = get_global_func(<span class="string">&quot;tvm.graph_executor_factory.create&quot;</span>)</span><br><span class="line">args = []</span><br><span class="line"><span class="keyword">for</span> k, v <span class="keyword">in</span> params.items():</span><br><span class="line">    args.append(k)</span><br><span class="line">    args.append(ndarray.array(v))</span><br><span class="line">self.module = fcreate(graph_json_str, libmod, libmod_name, *args)</span><br></pre></td></tr></table></figure>
+<p>接下来进入<code>src/runtime/graph_executor/graph_executor_factory.cc</code>文件，使用<strong>TVM_REGISTER_GLOBAL</strong>宏定义将函数暴露到python端，函数体是lamda表达式。首先进行参数数量检查，然后进行参数重组，将参数按照命名存储进<strong>params</strong>对象中，然后创建<strong>GraphExecutorFactory</strong>对象。其中<strong>module_name</strong>默认值为<strong>default</strong>。然后导入所有<strong>runtime_module</strong>，最后将<strong>GraphExecutorFactory</strong>对象传入<strong>Module</strong>模块并返回。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;tvm.graph_executor_factory.create&quot;</span>)</span><br><span class="line">    .<span class="built_in">set_body</span>([](TVMArgs args, TVMRetValue* rv) &#123;</span><br><span class="line">        <span class="built_in">ICHECK_GE</span>(args.num_args, <span class="number">3</span>) &lt;&lt; <span class="string">&quot;The expected number of arguments for &quot;</span></span><br><span class="line">            <span class="string">&quot;graph_executor_factory.create needs at least 3, &quot;</span></span><br><span class="line">            <span class="string">&quot;but it has &quot;</span></span><br><span class="line">            &lt;&lt; args.num_args;</span><br><span class="line">        <span class="comment">// The argument order is graph_json, module, module_name, param0_name, param0_tensor,</span></span><br><span class="line">        <span class="comment">// [param1_name, param1_tensor], ...</span></span><br><span class="line">        <span class="built_in">ICHECK_EQ</span>((args.<span class="built_in">size</span>() - <span class="number">3</span>) % <span class="number">2</span>, <span class="number">0</span>);</span><br><span class="line">        std::unordered_map&lt;std::string, tvm::runtime::NDArray&gt; params;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">3</span>; i &lt; <span class="built_in">static_cast</span>&lt;<span class="type">size_t</span>&gt;(args.<span class="built_in">size</span>()); i += <span class="number">2</span>) &#123;</span><br><span class="line">            std::string name = args[i].<span class="keyword">operator</span> <span class="built_in">String</span>();</span><br><span class="line">            params[name] = args[i + <span class="number">1</span>].<span class="keyword">operator</span> tvm::runtime::<span class="built_in">NDArray</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// graph_json, params, module_name</span></span><br><span class="line">        <span class="keyword">auto</span> exec = <span class="built_in">make_object</span>&lt;GraphExecutorFactory&gt;(args[<span class="number">0</span>], params, args[<span class="number">2</span>]);</span><br><span class="line">        <span class="comment">// module</span></span><br><span class="line">        exec-&gt;<span class="built_in">Import</span>(args[<span class="number">1</span>]);</span><br><span class="line">        *rv = <span class="built_in">Module</span>(exec);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="module">2.1. Module</h2>
+<h3 id="export_library">2.1.1. export_library</h3>
+<p>关于<strong>Module</strong>类位于<code>python/tvm/runtime/module.py</code>文件中，该类中包含<strong>export_library</strong>函数。该函数的主要作用是将模块和所有被导入模块导出为一个简单的动态库。</p>
+<h4 id="collect-dso-module">2.1.1.1. Collect DSO Module</h4>
+<p>首先收集所有<strong>DSO</strong>模块(LLVM Module 和 C Module)</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">modules = self._collect_dso_modules()</span><br></pre></td></tr></table></figure>
+<h4 id="save-file">2.1.1.2. Save File</h4>
+<p>一旦收集到所有的<strong>DSO</strong>模块，就可以调用<strong>runtime</strong>模块的<strong>save</strong>函数将其保存为文件格式。通过遍历所有<strong>DSO</strong>模块，根据其类型键设置相应的文件后缀，并通过<strong>save</strong>函数将模块保存为相应的文件类型，并将该文件添加到<strong>files</strong>数组序列中。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> index, module <span class="keyword">in</span> <span class="built_in">enumerate</span>(modules):</span><br><span class="line">    <span class="keyword">if</span> fcompile <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> <span class="built_in">hasattr</span>(fcompile, <span class="string">&quot;object_format&quot;</span>):</span><br><span class="line">        <span class="keyword">if</span> module.type_key == <span class="string">&quot;c&quot;</span>:</span><br><span class="line">            object_format = <span class="string">&quot;c&quot;</span></span><br><span class="line">            has_c_module = <span class="literal">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">        	object_format = fcompile.object_format</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">if</span> module.type_key == <span class="string">&quot;llvm&quot;</span>:</span><br><span class="line">        	object_format = <span class="string">&quot;o&quot;</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">assert</span> module.type_key == <span class="string">&quot;c&quot;</span></span><br><span class="line">            object_format = <span class="string">&quot;c&quot;</span></span><br><span class="line">            <span class="keyword">if</span> <span class="string">&quot;cc&quot;</span> <span class="keyword">in</span> kwargs:</span><br><span class="line">                <span class="keyword">if</span> kwargs[<span class="string">&quot;cc&quot;</span>] == <span class="string">&quot;nvcc&quot;</span>:</span><br><span class="line">                	object_format = <span class="string">&quot;cu&quot;</span></span><br><span class="line">        	has_c_module = <span class="literal">True</span></span><br><span class="line">    path_obj = os.path.join(workspace_dir, <span class="string">f&quot;lib<span class="subst">&#123;index&#125;</span>.<span class="subst">&#123;object_format&#125;</span>&quot;</span>)</span><br><span class="line">    module.save(path_obj)</span><br><span class="line">    files.append(path_obj)</span><br><span class="line">    is_system_lib = (</span><br><span class="line">    	module.type_key == <span class="string">&quot;llvm&quot;</span> <span class="keyword">and</span> module.get_function(<span class="string">&quot;__tvm_is_system_module&quot;</span>)()</span><br><span class="line">    )</span><br><span class="line">    llvm_target_triple = (</span><br><span class="line">    	module.type_key == <span class="string">&quot;llvm&quot;</span> <span class="keyword">and</span> module.get_function(<span class="string">&quot;_get_target_triple&quot;</span>)()</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<h5 id="save函数">2.1.1.2.1 save函数</h5>
+<p>关于<strong>save</strong>函数，其调用C++端的函数<strong>ModuleSaveToFile</strong>。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">save</span>(<span class="params">self, file_name, fmt=<span class="string">&quot;&quot;</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Save the module to file.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    This do not save the dependent device modules.</span></span><br><span class="line"><span class="string">    See also export_shared</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Parameters</span></span><br><span class="line"><span class="string">    ----------</span></span><br><span class="line"><span class="string">    file_name : str</span></span><br><span class="line"><span class="string">    The name of the file.</span></span><br><span class="line"><span class="string">    fmt : str</span></span><br><span class="line"><span class="string">    The format of the file.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    See Also</span></span><br><span class="line"><span class="string">    --------</span></span><br><span class="line"><span class="string">    runtime.Module.export_library : export the module to shared library.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    _ffi_api.ModuleSaveToFile(self, file_name, fmt)</span><br></pre></td></tr></table></figure>
+<p>该函数使用各个模块的<strong>SaveToFile</strong>函数将模块保存为文件形式。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.ModuleSaveToFile&quot;</span>)</span><br><span class="line">    .<span class="built_in">set_body_typed</span>([](Module mod, tvm::String name, tvm::String fmt) &#123;</span><br><span class="line">        mod-&gt;<span class="built_in">SaveToFile</span>(name, fmt);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+<h4 id="impoerted-modules">2.1.1.3. Impoerted Modules</h4>
+<p>检查是否存在<strong>imported modules</strong>(像<strong>CUDA</strong>、<strong>OpenCL</strong>等)。这里不限制模块类型，一旦存在<strong>imports modules</strong>，将创建命名为<code>devc.o</code>或<code>devc.c</code>的文件。这就可以将<strong>imports modules</strong>的二进制<strong>blob</strong>数据嵌入进动态库中。然后调用<strong>ModulePackImportsToLLVM</strong>或<strong>ModulePackImportsToC</strong>进行模块序列化(<strong>module serialization</strong>)。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> self.imported_modules:</span><br><span class="line">    <span class="keyword">if</span> enabled(<span class="string">&quot;llvm&quot;</span>) <span class="keyword">and</span> llvm_target_triple:</span><br><span class="line">        path_obj = os.path.join(workspace_dir, <span class="string">f&quot;devc.<span class="subst">&#123;object_format&#125;</span>&quot;</span>)</span><br><span class="line">        m = _ffi_api.ModulePackImportsToLLVM(self, is_system_lib, llvm_target_triple)</span><br><span class="line">        m.save(path_obj)</span><br><span class="line">        files.append(path_obj)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        path_cc = os.path.join(workspace_dir, <span class="string">&quot;devc.c&quot;</span>)</span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(path_cc, <span class="string">&quot;w&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">            f.write(_ffi_api.ModulePackImportsToC(self, is_system_lib))</span><br><span class="line">        files.append(path_cc)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注：使用<strong>PackImportsToLLVM</strong>或<strong>PackImportsToC</strong>取决于是否在TVM中使能LLVM，事实上它们的目标相同。</p>
+</blockquote>
+<h4 id="function-compile">2.1.1.4. Function Compile</h4>
+<p>最后调用<strong>fcompile</strong>去编译生成动态共享库(so)。如果用户没有指定编译器类型，默认采用<strong>cc</strong>编译器，如果文件是<strong>tar</strong>压缩文件，则进行文件解压。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> fcompile:</span><br><span class="line">	<span class="keyword">if</span> file_name.endswith(<span class="string">&quot;.tar&quot;</span>):</span><br><span class="line">		fcompile = _tar.tar</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		fcompile = _cc.create_shared</span><br></pre></td></tr></table></figure>
+<p>如果用户指定了编译器，一般在部署到设备端时会指定交叉编译工具，则使用用户指定的编译器进行编译。编译输入参数包括编译生成的文件名，待编译的文件组和编译参数。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">fcompile(file_name, files, **kwargs)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>对于C 源码模块，将编译他们并一起与DSO模块进行链接。</p>
+</blockquote>
+<h3 id="module-serialization">2.1.2. Module Serialization</h3>
+<p>在文件<code>src/target/codegen.cc</code>中，注册了全局函数<strong>runtime.ModulePackImportsToC</strong>和<strong>runtime.ModulePackImportsToLLVM</strong>，用于将其暴露到<strong>python</strong>端调用。 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Export two auxiliary function to the runtime namespace.</span></span><br><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.ModulePackImportsToC&quot;</span>).<span class="built_in">set_body_typed</span>(PackImportsToC);</span><br><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.ModulePackImportsToLLVM&quot;</span>).<span class="built_in">set_body_typed</span>(PackImportsToLLVM);</span><br></pre></td></tr></table></figure></p>
+<h4 id="serializemodule">2.1.2.1 SerializeModule</h4>
+<p>其中，<strong>PackImportsToC</strong>和<strong>PackImportsToLLVM</strong>函数都调用<strong>SerializeModule</strong>函数序列化<strong>runtime module</strong>。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">std::string <span class="title">PackImportsToC</span><span class="params">(<span class="type">const</span> runtime::Module&amp; mod, <span class="type">bool</span> system_lib)</span> </span>&#123;</span><br><span class="line">	std::string bin = <span class="built_in">SerializeModule</span>(mod);</span><br><span class="line">  	...</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">runtime::Module <span class="title">PackImportsToLLVM</span><span class="params">(<span class="type">const</span> runtime::Module&amp; mod, <span class="type">bool</span> system_lib,</span></span></span><br><span class="line"><span class="params"><span class="function">                                  <span class="type">const</span> std::string&amp; target_triple)</span> </span>&#123;</span><br><span class="line">	std::string bin = <span class="built_in">SerializeModule</span>(mod);</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="moduleserializer">2.1.2.2. ModuleSerializer</h4>
+<p>首先在<strong>SerializeModule</strong>函数中创建一个帮手类<strong>ModuleSerializer</strong>，其传入<strong>module</strong>做一些初始化工作，像标注模块的索引号等，然后调用该类的<strong>SerializeModule</strong>函数序列化模块。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">std::string <span class="title">SerializeModule</span><span class="params">(<span class="type">const</span> runtime::Module&amp; mod)</span> </span>&#123;</span><br><span class="line">    std::string bin;</span><br><span class="line">    <span class="function">dmlc::MemoryStringStream <span class="title">ms</span><span class="params">(&amp;bin)</span></span>;</span><br><span class="line">    dmlc::Stream* stream = &amp;ms;</span><br><span class="line"></span><br><span class="line">    <span class="function">ModuleSerializer <span class="title">module_serializer</span><span class="params">(mod)</span></span>;</span><br><span class="line">    module_serializer.<span class="built_in">SerializeModule</span>(stream);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> bin;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在创建<strong>module_serializer</strong>对象时，其构造函数调用<strong>Init</strong>函数进行初始化操作。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">explicit</span> <span class="title">ModuleSerializer</span><span class="params">(runtime::Module mod)</span> : mod_(mod) &#123;</span> <span class="built_in">Init</span>(); &#125;</span><br></pre></td></tr></table></figure>
+<h5 id="init">2.1.2.2.1. Init</h5>
+<p>而在<code>Init</code>函数中，分别调用<strong>CreateModuleIndex</strong>和<strong>CreateImportTree</strong>函数，用于创建<strong>模块索引号</strong>和<strong>导入树</strong>。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">Init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">CreateModuleIndex</span>();</span><br><span class="line">    <span class="built_in">CreateImportTree</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="createmoduleindex">2.1.2.2.1.1. CreateModuleIndex</h6>
+<p>在函数<strong>CreateModuleIndex</strong>中将使用<strong>DFS</strong>(深度优先)算法检查模块导入关系并为其创建索引，注意根模块固定为位置0。</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">llvm_mod<span class="punctuation">:</span>imported_modules</span><br><span class="line">  - cuda_mod</span><br><span class="line">  - opencl_mod</span><br></pre></td></tr></table></figure>
+<p>因此，<strong>LLVM</strong>模块将会拥有索引值0，<strong>CUDA</strong>模块将拥有索引值1，<strong>OpenCL</strong>模块将拥有索引值为2。</p>
+<h6 id="createimporttree">2.1.2.2.1.2. CreateImportTree</h6>
+<p>在构建模块索引号后，<strong>CreateImportTree</strong>函数将尝试构建导入树，用于将导出的库加载回来时，恢复模块的导入关系。使用<strong>CSR</strong>(Compressed Sparse Row)格式存储导入树。每一行都是父索引，子索引对应其子索引。</p>
+<p>使用<code>import_tree_row_ptr_</code>表示行偏移，即某一行的第一个元素在values里面的起始偏移位置。<code>import_tree_child_indices_</code>表示子索引值。</p>
+<h5 id="serializemodule-1">2.1.2.2.2. SerializeModule</h5>
+<p>通过上述两个函数初始化后，可以使用<strong>SerializeModule</strong>函数序列化模块。在其功能逻辑中，假定序列化格式如下：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">binary_blob_size</span><br><span class="line">binary_blob_type_key</span><br><span class="line">binary_blob_logic</span><br><span class="line">binary_blob_type_key</span><br><span class="line">binary_blob_logic</span><br><span class="line">...</span><br><span class="line">_import_tree</span><br><span class="line">_import_tree_logic</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>binary_blob_size</strong></li>
+</ul>
+<p>表示序列化步骤中将拥有的<strong>blob</strong>数量。如果只有一个<strong>DSO</strong>模块并且是根模块，将不产生<code>import_tree_</code>。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Only have one DSO module and it is in the root, then</span></span><br><span class="line"><span class="comment">// we will not produce import_tree_.</span></span><br><span class="line"><span class="type">bool</span> has_import_tree = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">DSOExportable</span>(mod_.<span class="keyword">operator</span>-&gt;()) &amp;&amp; mod_-&gt;<span class="built_in">imports</span>().<span class="built_in">empty</span>()) &#123;</span><br><span class="line">	has_import_tree = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据是否存在<code>import_tree_</code>，如果不存在，<strong>binary_blob_size</strong>字段直接写入模块数量，否则写入所有模块数量并追加1。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">uint64_t</span> sz = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">if</span> (has_import_tree) &#123;</span><br><span class="line">    <span class="comment">// we will append one key for _import_tree</span></span><br><span class="line">    <span class="comment">// The layout is the same as before: binary_size, key, logic, key, logic...</span></span><br><span class="line">    sz = mod_group_vec_.<span class="built_in">size</span>() + <span class="number">1</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// Keep the old behaviour</span></span><br><span class="line">    sz = mod_-&gt;<span class="built_in">imports</span>().<span class="built_in">size</span>();</span><br><span class="line">&#125;</span><br><span class="line">stream-&gt;<span class="built_in">Write</span>(sz);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>binary_blob_type_key</strong></li>
+</ul>
+<p>表示模块的<strong>blob</strong>类型键，对于LLVM或C模块，其<strong>blob</strong>类型键是<code>_lib</code>。而其它模块，像<strong>CUDA</strong>模块，其类型键为<strong>cuda</strong>；<strong>OpenCL</strong>模块，其类型键为<strong>opencl</strong>等。关于类型键的可以通过<strong>module-&gt;type_key()</strong>获取。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">const</span> <span class="keyword">auto</span>&amp; group : mod_group_vec_) &#123;</span><br><span class="line">    <span class="built_in">ICHECK_NE</span>(group.<span class="built_in">size</span>(), <span class="number">0</span>) &lt;&lt; <span class="string">&quot;Every allocated group must have at least one module&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">DSOExportable</span>(group[<span class="number">0</span>])) &#123;</span><br><span class="line">        <span class="built_in">ICHECK_EQ</span>(group.<span class="built_in">size</span>(), <span class="number">1U</span>) &lt;&lt; <span class="string">&quot;Non DSO module is never merged&quot;</span>;</span><br><span class="line">        std::string mod_type_key = group[<span class="number">0</span>]-&gt;<span class="built_in">type_key</span>();</span><br><span class="line">        stream-&gt;<span class="built_in">Write</span>(mod_type_key);</span><br><span class="line">        group[<span class="number">0</span>]-&gt;<span class="built_in">SaveToBinary</span>(stream);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// DSOExportable: do not need binary</span></span><br><span class="line">        <span class="keyword">if</span> (has_import_tree) &#123;</span><br><span class="line">            std::string mod_type_key = <span class="string">&quot;_lib&quot;</span>;</span><br><span class="line">            stream-&gt;<span class="built_in">Write</span>(mod_type_key);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>binary_blob_logic</strong></li>
+</ul>
+<p>表示<strong>blob</strong>的逻辑处理，对于大多数的<strong>blob</strong>(像<strong>CUDA</strong>、<strong>OpenCL</strong>)，将会调用其模块的<strong>SaveToBinary</strong>函数序列化为二进制形式。但是像<strong>LLVM</strong>或<strong>C</strong>模块，只要写入<code>_lib</code>字符，表明该模块是<code>DSO</code>模块。</p>
+<ul>
+<li><strong>import_tree</strong></li>
+</ul>
+<p>除非模块只有一个<strong>DSO</strong>模块且为根模块，不需要写入<code>_import_tree</code>字段，其它情况都需要写入。当将导出的库需要加载回来时，可以用其重构模块的导入关系。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Write _import_tree key if we have</span></span><br><span class="line"><span class="keyword">if</span> (has_import_tree) &#123;</span><br><span class="line">    std::string import_key = <span class="string">&quot;_import_tree&quot;</span>;</span><br><span class="line">    stream-&gt;<span class="built_in">Write</span>(import_key);</span><br><span class="line">    stream-&gt;<span class="built_in">Write</span>(import_tree_row_ptr_);</span><br><span class="line">    stream-&gt;<span class="built_in">Write</span>(import_tree_child_indices_);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>import_tree_logic</strong></li>
+</ul>
+<p>将<code>import_tree_row_ptr_</code>和<code>import_tree_child_indices_</code>数组内容写入数据流。</p>
+<h4 id="pack">2.1.2.3. Pack</h4>
+<p>经过上述序列化步骤后，将数据流打包成一个符号(<strong>runtime::symbol::tvm_dev_mblob</strong>)，这样就可以在需要时从动态库中恢复模块内容。写入动态库中的符号为<code>__tvm_dev_mblob</code>，根据序列化后的数据流大小创建以<code>__tvm_dev_mblob</code>为符号的数组<code>const unsigned char __tvm_dev_mblob[bin.length() + sizeof(nbytes)]&#123;&#125;</code>。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">uint64_t</span> nbytes = bin.<span class="built_in">length</span>();</span><br><span class="line">os &lt;&lt; <span class="string">&quot;const unsigned char &quot;</span> &lt;&lt; runtime::symbol::tvm_dev_mblob &lt;&lt; <span class="string">&quot;[&quot;</span></span><br><span class="line">	&lt;&lt; bin.<span class="built_in">length</span>() + <span class="built_in">sizeof</span>(nbytes) &lt;&lt; <span class="string">&quot;] = &#123;\n  &quot;</span>;</span><br></pre></td></tr></table></figure>
+<p>前八个字节存储序列化数据流的字节数大小，按照16进制形式保存。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; <span class="built_in">sizeof</span>(nbytes); ++i) &#123;</span><br><span class="line">    <span class="comment">// sperators</span></span><br><span class="line">    <span class="keyword">if</span> (i != <span class="number">0</span>) &#123;</span><br><span class="line">    	os &lt;&lt; <span class="string">&quot;,&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    os &lt;&lt; <span class="string">&quot;0x&quot;</span> &lt;&lt; ((nbytes &gt;&gt; (i * <span class="number">8</span>)) &amp; <span class="number">0xff</span>UL);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>20个字节为一行，保存序列化数据。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; bin.<span class="built_in">length</span>(); ++i) &#123;</span><br><span class="line">    <span class="comment">// sperators</span></span><br><span class="line">    <span class="keyword">if</span> ((i + <span class="built_in">sizeof</span>(nbytes)) % nunit == <span class="number">0</span>) &#123;</span><br><span class="line">    	os &lt;&lt; <span class="string">&quot;,\n  &quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    	os &lt;&lt; <span class="string">&quot;,&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> c = bin[i];</span><br><span class="line">    os &lt;&lt; <span class="string">&quot;0x&quot;</span> &lt;&lt; (c &amp; <span class="number">0xff</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="参考">3. 参考</h1>
+<ol type="1">
+<li><p><a href="https://www.cnblogs.com/xbinworld/p/4273506.html">稀疏矩阵存储格式总结+存储效率对比:COO,CSR,DIA,ELL,HYB</a></p></li>
+<li><p><a href="https://blog.csdn.net/alai04/article/details/733230">用STL实现DFS/BFS算法——检查重复状态</a></p></li>
+</ol>
+]]></content>
+      <categories>
+        <category>TVM</category>
+        <category>Runtime</category>
+      </categories>
+      <tags>
+        <tag>TVM</tag>
+        <tag>runtime</tag>
+        <tag>Module</tag>
+        <tag>export_library</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>TVM LoadFromFile函数分析</title>
     <url>/2021/09/29/TVM-LoadFromFile/</url>
     <content><![CDATA[<h1 id="概述">1. 概述</h1>
@@ -146,175 +259,6 @@
         <tag>Runtime</tag>
         <tag>LoadFromFile</tag>
         <tag>源码分析</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>crazyflie-开发说明</title>
-    <url>/2020/01/22/crazyflie-%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>嵌入式软件开发主要包括编译(build)、调试(debug)和烧录(flash)三个步骤。本文结合crazefie项目，说明开发流程。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/hpJQSXx9corO15W.jpg" alt="上海科技馆-静物" /><figcaption aria-hidden="true">上海科技馆-静物</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="准备源码">准备源码</h2>
-<p>由于官方仓库中使用了<code>git submodule</code>，所以在克隆源码时需使用<code>--recursive</code>标志</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --recursive https://github.com/bitcraze/crazyflie-firmware.git</span><br></pre></td></tr></table></figure>
-<p>如果已经克隆了仓库，但是没有添加<code>--recursive</code>选项，需要手动添加子模块</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> crazyflie-firmware</span><br><span class="line">git submodule init</span><br><span class="line">git submodule update</span><br></pre></td></tr></table></figure>
-<p>具体更新哪些子项目模块可以查看<code>.gitmodules</code>文件。 &gt; 注意： &gt; - 问题：如果编译时出现如下错误：<code>make[1]: *** No rule to make target 'libdw1000.o', needed by 'cf2.elf'.  Stop. &gt; Makefile:350: recipe for target 'build' failed</code> &gt; - 解决办法：上述错误原因是因为缺少<code>libdw1000</code>文件，输入<code>git submodule deinit</code>，并删除<code>libdw1000</code>目录里面的<code>.git</code>文件，重新拉取该项目源码。</p>
-<h2 id="环境搭建">环境搭建</h2>
-<p>官方提供三种环境搭建方式，分别使用虚拟机镜像<a href="https://github.com/bitcraze/bitcraze-vm">Crazyflie VM</a>、Docker镜像<a href="https://github.com/bitcraze/toolbelt">toolbelt</a>和本机安装相应的ARM工具链来搭建开发环境。</p>
-<h3 id="虚拟机镜像">虚拟机镜像</h3>
-<h4 id="概述-1">概述</h4>
-<p>本文采用 VirtualBox 虚拟机软件，该软件属于自由软件，方便安装。</p>
-<h4 id="virtualbox">VirtualBox</h4>
-<ul>
-<li>下载<a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a></li>
-<li>安装软件</li>
-</ul>
-<h4 id="下载bitcraze镜像">下载bitcraze镜像</h4>
-<ul>
-<li><a href="https://wiki.bitcraze.io/projects:virtualmachine:index">Bitcraze Virtual Machine Image</a></li>
-</ul>
-<h4 id="导入镜像">导入镜像</h4>
-<figure>
-<img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE1NTQyNC5wbmc?x-oss-process=image/format,png" alt="镜像导入过程" /><figcaption aria-hidden="true">镜像导入过程</figcaption>
-</figure>
-<h4 id="启动镜像">启动镜像</h4>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/BxSWetJvMy7R1uG.png" alt="启动镜像" /><figcaption aria-hidden="true">启动镜像</figcaption>
-</figure>
-<blockquote>
-<p>注意：运行镜像时可能会出现如下问题 错误1：<code>Implementation of the USB 2.0 controller not found!</code> 安装<a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox Extension Pack</a>即可解决 错误2：<code>VT-x is not available</code> 对于Win10电脑如果已经开启了Hyper-V，需将其服务关闭； 1、控制面板 --&gt; 程序和功能 --&gt; 启用或关闭windows功能 2、失效 <strong>H-yper-v</strong>、<strong>Windows 沙盒(Sandbox)</strong> 选项，使能 <strong>虚拟机平台</strong>、<strong>Windows虚拟机监控程序平台</strong>选项。 3、管理员打开 PowerShell客户端 4、输入<code>bcdedit /set hypervisorlaunchtype off</code> 5、重启电脑</p>
-</blockquote>
-<h3 id="docker镜像方式">Docker镜像方式</h3>
-<h4 id="安装docker">安装Docker</h4>
-<ol type="1">
-<li><a href="https://docs.docker.com/docker-for-windows/install/">Docker Hub下载</a></li>
-<li>双击安装文件，一直Next。</li>
-<li>注册Docker账号</li>
-</ol>
-<h4 id="下载docker镜像">下载Docker镜像</h4>
-<ul>
-<li>关于<a href="https://hub.docker.com/r/bitcraze/builder">bitcraze/builder镜像</a></li>
-<li>打开PowerShell客户端</li>
-<li>拉取远程镜像</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker pull bitcraze/builder</span><br></pre></td></tr></table></figure>
-<p>下载过程如下所示，由于文件较大可能需要一段时间。</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE2NTYzMC5naWY" /></p>
-<h4 id="进入交互模式">进入交互模式</h4>
-<ul>
-<li>查看镜像是否下载成功</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure>
-<ul>
-<li>进入项目目录</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ./crazyflie-firmware</span><br></pre></td></tr></table></figure>
-<ul>
-<li>进入交互式环境</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --<span class="built_in">rm</span> -it -v <span class="variable">$&#123;PWD&#125;</span>:/module bitcraze/builder bash</span><br></pre></td></tr></table></figure>
-<p>该命令用法参考<a href="https://blog.csdn.net/zghforever/article/details/100087437">Docker 常用命令</a></p>
-<h3 id="本地工具链配置">本地工具链配置</h3>
-<p>待补充</p>
-<h2 id="编译">编译</h2>
-<table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: center;">命令</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;"><strong>all</strong></td>
-<td>快捷编译方式，所有文件都编译</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>compile</strong></td>
-<td>编译生成 cflie.hex文件，但不更新version.c文件</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>build</strong></td>
-<td>更新 version.c 文件并编译生成 cflie.elf/hex文件</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>clean_o</strong></td>
-<td>只清除目标文件，保留执行文件(.elf,.hex)</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>clean</strong></td>
-<td>清除所有的编译文件</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>mrproper</strong></td>
-<td>清除每一个编译文件和典型的编辑器备份文件</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>cload</strong></td>
-<td>如果crazyflie-clients-python与项目文件在同级目录并且Crazyradio/Crazyradio PA被插入电脑，该命令将会尝试通过无线bootloader烧写固件</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>flash</strong></td>
-<td>使用 OpenOCD烧录.elf 文件</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>halt</strong></td>
-<td>使用 OpenOCD 暂停目标芯片</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>reset</strong></td>
-<td>使用 OpenOCD 复位目标芯片</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>openocd</strong></td>
-<td>启动 OpenOCD</td>
-</tr>
-</tbody>
-</table>
-<h2 id="调试">调试</h2>
-<p>关于芯片功能的调试，使用开源工具OpenOCD。</p>
-<h3 id="ubuntu">Ubuntu</h3>
-<blockquote>
-<p><strong><em>Versions:</em></strong></p>
-<ul>
-<li>Ubuntu 18.04.2 LTS (64 bit)</li>
-<li>Eclipse 2019-03 (Eclipse IDE for C/C++ Developers)</li>
-</ul>
-</blockquote>
-<h4 id="安装依赖">安装依赖</h4>
-<ul>
-<li>安装<strong>GDB</strong>和<strong>openocd</strong></li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install gdb</span><br><span class="line">sudo apt-get install openocd</span><br></pre></td></tr></table></figure>
-<ul>
-<li>安装java运行环境</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt install default-jre</span><br></pre></td></tr></table></figure>
-<ul>
-<li>安装eclipse</li>
-</ul>
-<p>进入<a href="https://www.eclipse.org/downloads/download.php?file=/oomph/epp/2019-12/R/eclipse-inst-win64.exe">eclipse 下载页</a>下载文件目录，并解压文件</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tar -zxvf <span class="string">&quot;your-downloaded-file&quot;</span>.tar.gz</span><br></pre></td></tr></table></figure>
-<ul>
-<li>开始eclipse安装</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="string">&quot;your-unzip-folder&quot;</span>/.eclipse_inst</span><br></pre></td></tr></table></figure>
-<h2 id="下载">下载</h2>
-]]></content>
-      <categories>
-        <category>crazyflie</category>
-      </categories>
-      <tags>
-        <tag>crazyflie</tag>
-        <tag>开发说明</tag>
       </tags>
   </entry>
   <entry>
@@ -2092,6 +2036,175 @@
       </tags>
   </entry>
   <entry>
+    <title>crazyflie-开发说明</title>
+    <url>/2020/01/22/crazyflie-%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>嵌入式软件开发主要包括编译(build)、调试(debug)和烧录(flash)三个步骤。本文结合crazefie项目，说明开发流程。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/hpJQSXx9corO15W.jpg" alt="上海科技馆-静物" /><figcaption aria-hidden="true">上海科技馆-静物</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="准备源码">准备源码</h2>
+<p>由于官方仓库中使用了<code>git submodule</code>，所以在克隆源码时需使用<code>--recursive</code>标志</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --recursive https://github.com/bitcraze/crazyflie-firmware.git</span><br></pre></td></tr></table></figure>
+<p>如果已经克隆了仓库，但是没有添加<code>--recursive</code>选项，需要手动添加子模块</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> crazyflie-firmware</span><br><span class="line">git submodule init</span><br><span class="line">git submodule update</span><br></pre></td></tr></table></figure>
+<p>具体更新哪些子项目模块可以查看<code>.gitmodules</code>文件。 &gt; 注意： &gt; - 问题：如果编译时出现如下错误：<code>make[1]: *** No rule to make target 'libdw1000.o', needed by 'cf2.elf'.  Stop. &gt; Makefile:350: recipe for target 'build' failed</code> &gt; - 解决办法：上述错误原因是因为缺少<code>libdw1000</code>文件，输入<code>git submodule deinit</code>，并删除<code>libdw1000</code>目录里面的<code>.git</code>文件，重新拉取该项目源码。</p>
+<h2 id="环境搭建">环境搭建</h2>
+<p>官方提供三种环境搭建方式，分别使用虚拟机镜像<a href="https://github.com/bitcraze/bitcraze-vm">Crazyflie VM</a>、Docker镜像<a href="https://github.com/bitcraze/toolbelt">toolbelt</a>和本机安装相应的ARM工具链来搭建开发环境。</p>
+<h3 id="虚拟机镜像">虚拟机镜像</h3>
+<h4 id="概述-1">概述</h4>
+<p>本文采用 VirtualBox 虚拟机软件，该软件属于自由软件，方便安装。</p>
+<h4 id="virtualbox">VirtualBox</h4>
+<ul>
+<li>下载<a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox</a></li>
+<li>安装软件</li>
+</ul>
+<h4 id="下载bitcraze镜像">下载bitcraze镜像</h4>
+<ul>
+<li><a href="https://wiki.bitcraze.io/projects:virtualmachine:index">Bitcraze Virtual Machine Image</a></li>
+</ul>
+<h4 id="导入镜像">导入镜像</h4>
+<figure>
+<img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE1NTQyNC5wbmc?x-oss-process=image/format,png" alt="镜像导入过程" /><figcaption aria-hidden="true">镜像导入过程</figcaption>
+</figure>
+<h4 id="启动镜像">启动镜像</h4>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/BxSWetJvMy7R1uG.png" alt="启动镜像" /><figcaption aria-hidden="true">启动镜像</figcaption>
+</figure>
+<blockquote>
+<p>注意：运行镜像时可能会出现如下问题 错误1：<code>Implementation of the USB 2.0 controller not found!</code> 安装<a href="https://www.virtualbox.org/wiki/Downloads">VirtualBox Extension Pack</a>即可解决 错误2：<code>VT-x is not available</code> 对于Win10电脑如果已经开启了Hyper-V，需将其服务关闭； 1、控制面板 --&gt; 程序和功能 --&gt; 启用或关闭windows功能 2、失效 <strong>H-yper-v</strong>、<strong>Windows 沙盒(Sandbox)</strong> 选项，使能 <strong>虚拟机平台</strong>、<strong>Windows虚拟机监控程序平台</strong>选项。 3、管理员打开 PowerShell客户端 4、输入<code>bcdedit /set hypervisorlaunchtype off</code> 5、重启电脑</p>
+</blockquote>
+<h3 id="docker镜像方式">Docker镜像方式</h3>
+<h4 id="安装docker">安装Docker</h4>
+<ol type="1">
+<li><a href="https://docs.docker.com/docker-for-windows/install/">Docker Hub下载</a></li>
+<li>双击安装文件，一直Next。</li>
+<li>注册Docker账号</li>
+</ol>
+<h4 id="下载docker镜像">下载Docker镜像</h4>
+<ul>
+<li>关于<a href="https://hub.docker.com/r/bitcraze/builder">bitcraze/builder镜像</a></li>
+<li>打开PowerShell客户端</li>
+<li>拉取远程镜像</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker pull bitcraze/builder</span><br></pre></td></tr></table></figure>
+<p>下载过程如下所示，由于文件较大可能需要一段时间。</p>
+<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE2NTYzMC5naWY" /></p>
+<h4 id="进入交互模式">进入交互模式</h4>
+<ul>
+<li>查看镜像是否下载成功</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure>
+<ul>
+<li>进入项目目录</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ./crazyflie-firmware</span><br></pre></td></tr></table></figure>
+<ul>
+<li>进入交互式环境</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker run --<span class="built_in">rm</span> -it -v <span class="variable">$&#123;PWD&#125;</span>:/module bitcraze/builder bash</span><br></pre></td></tr></table></figure>
+<p>该命令用法参考<a href="https://blog.csdn.net/zghforever/article/details/100087437">Docker 常用命令</a></p>
+<h3 id="本地工具链配置">本地工具链配置</h3>
+<p>待补充</p>
+<h2 id="编译">编译</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">命令</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>all</strong></td>
+<td>快捷编译方式，所有文件都编译</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>compile</strong></td>
+<td>编译生成 cflie.hex文件，但不更新version.c文件</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>build</strong></td>
+<td>更新 version.c 文件并编译生成 cflie.elf/hex文件</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>clean_o</strong></td>
+<td>只清除目标文件，保留执行文件(.elf,.hex)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>clean</strong></td>
+<td>清除所有的编译文件</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>mrproper</strong></td>
+<td>清除每一个编译文件和典型的编辑器备份文件</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>cload</strong></td>
+<td>如果crazyflie-clients-python与项目文件在同级目录并且Crazyradio/Crazyradio PA被插入电脑，该命令将会尝试通过无线bootloader烧写固件</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>flash</strong></td>
+<td>使用 OpenOCD烧录.elf 文件</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>halt</strong></td>
+<td>使用 OpenOCD 暂停目标芯片</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>reset</strong></td>
+<td>使用 OpenOCD 复位目标芯片</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>openocd</strong></td>
+<td>启动 OpenOCD</td>
+</tr>
+</tbody>
+</table>
+<h2 id="调试">调试</h2>
+<p>关于芯片功能的调试，使用开源工具OpenOCD。</p>
+<h3 id="ubuntu">Ubuntu</h3>
+<blockquote>
+<p><strong><em>Versions:</em></strong></p>
+<ul>
+<li>Ubuntu 18.04.2 LTS (64 bit)</li>
+<li>Eclipse 2019-03 (Eclipse IDE for C/C++ Developers)</li>
+</ul>
+</blockquote>
+<h4 id="安装依赖">安装依赖</h4>
+<ul>
+<li>安装<strong>GDB</strong>和<strong>openocd</strong></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install gdb</span><br><span class="line">sudo apt-get install openocd</span><br></pre></td></tr></table></figure>
+<ul>
+<li>安装java运行环境</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt install default-jre</span><br></pre></td></tr></table></figure>
+<ul>
+<li>安装eclipse</li>
+</ul>
+<p>进入<a href="https://www.eclipse.org/downloads/download.php?file=/oomph/epp/2019-12/R/eclipse-inst-win64.exe">eclipse 下载页</a>下载文件目录，并解压文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tar -zxvf <span class="string">&quot;your-downloaded-file&quot;</span>.tar.gz</span><br></pre></td></tr></table></figure>
+<ul>
+<li>开始eclipse安装</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="string">&quot;your-unzip-folder&quot;</span>/.eclipse_inst</span><br></pre></td></tr></table></figure>
+<h2 id="下载">下载</h2>
+]]></content>
+      <categories>
+        <category>crazyflie</category>
+      </categories>
+      <tags>
+        <tag>crazyflie</tag>
+        <tag>开发说明</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>crazyflie-目录分析</title>
     <url>/2020/01/22/crazyflie-%E7%9B%AE%E5%BD%95%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -2817,119 +2930,6 @@ P_{t-1} = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A
       </tags>
   </entry>
   <entry>
-    <title>TVM export_lib函数分析</title>
-    <url>/2021/10/08/TVM-ExportLibrary/</url>
-    <content><![CDATA[<h1 id="概述">1. 概述</h1>
-<p>本文分析<strong>executor_lib</strong>函数的处理过程，其中包括<strong>DSO</strong>模块的编译和<strong>imported modules</strong>模块的序列化。</p>
-<p><img data-src="https://i.loli.net/2021/10/10/3h8wfXOej514JLH.jpg" /></p>
-<span id="more"></span>
-<h1 id="分析">2. 分析</h1>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">export_library</span>(<span class="params">self, file_name, fcompile=<span class="literal">None</span>, addons=<span class="literal">None</span>, **kwargs</span>):</span><br><span class="line">    <span class="keyword">return</span> self.module.export_library(file_name, fcompile, addons, **kwargs)</span><br></pre></td></tr></table></figure>
-<p>首先调用<strong>relay.build</strong>最终生成<strong>GraphExecutorFactoryModule</strong>对象，位于<code>python/tvm/relay/backend/executor_factory.py</code>文件中。使用<strong>export_library</strong>导出动态库时，实际上调用的是<strong>GraphExecutorFactoryModule</strong>类本身的<strong>module</strong>中的<strong>export_library</strong>函数。该对象指向<strong>tvm.graph_executor_factory.create</strong>函数，是在<strong>C++</strong>端实现的函数。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">fcreate = get_global_func(<span class="string">&quot;tvm.graph_executor_factory.create&quot;</span>)</span><br><span class="line">args = []</span><br><span class="line"><span class="keyword">for</span> k, v <span class="keyword">in</span> params.items():</span><br><span class="line">    args.append(k)</span><br><span class="line">    args.append(ndarray.array(v))</span><br><span class="line">self.module = fcreate(graph_json_str, libmod, libmod_name, *args)</span><br></pre></td></tr></table></figure>
-<p>接下来进入<code>src/runtime/graph_executor/graph_executor_factory.cc</code>文件，使用<strong>TVM_REGISTER_GLOBAL</strong>宏定义将函数暴露到python端，函数体是lamda表达式。首先进行参数数量检查，然后进行参数重组，将参数按照命名存储进<strong>params</strong>对象中，然后创建<strong>GraphExecutorFactory</strong>对象。其中<strong>module_name</strong>默认值为<strong>default</strong>。然后导入所有<strong>runtime_module</strong>，最后将<strong>GraphExecutorFactory</strong>对象传入<strong>Module</strong>模块并返回。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;tvm.graph_executor_factory.create&quot;</span>)</span><br><span class="line">    .<span class="built_in">set_body</span>([](TVMArgs args, TVMRetValue* rv) &#123;</span><br><span class="line">        <span class="built_in">ICHECK_GE</span>(args.num_args, <span class="number">3</span>) &lt;&lt; <span class="string">&quot;The expected number of arguments for &quot;</span></span><br><span class="line">            <span class="string">&quot;graph_executor_factory.create needs at least 3, &quot;</span></span><br><span class="line">            <span class="string">&quot;but it has &quot;</span></span><br><span class="line">            &lt;&lt; args.num_args;</span><br><span class="line">        <span class="comment">// The argument order is graph_json, module, module_name, param0_name, param0_tensor,</span></span><br><span class="line">        <span class="comment">// [param1_name, param1_tensor], ...</span></span><br><span class="line">        <span class="built_in">ICHECK_EQ</span>((args.<span class="built_in">size</span>() - <span class="number">3</span>) % <span class="number">2</span>, <span class="number">0</span>);</span><br><span class="line">        std::unordered_map&lt;std::string, tvm::runtime::NDArray&gt; params;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">3</span>; i &lt; <span class="built_in">static_cast</span>&lt;<span class="type">size_t</span>&gt;(args.<span class="built_in">size</span>()); i += <span class="number">2</span>) &#123;</span><br><span class="line">            std::string name = args[i].<span class="keyword">operator</span> <span class="built_in">String</span>();</span><br><span class="line">            params[name] = args[i + <span class="number">1</span>].<span class="keyword">operator</span> tvm::runtime::<span class="built_in">NDArray</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// graph_json, params, module_name</span></span><br><span class="line">        <span class="keyword">auto</span> exec = <span class="built_in">make_object</span>&lt;GraphExecutorFactory&gt;(args[<span class="number">0</span>], params, args[<span class="number">2</span>]);</span><br><span class="line">        <span class="comment">// module</span></span><br><span class="line">        exec-&gt;<span class="built_in">Import</span>(args[<span class="number">1</span>]);</span><br><span class="line">        *rv = <span class="built_in">Module</span>(exec);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
-<h2 id="module">2.1. Module</h2>
-<h3 id="export_library">2.1.1. export_library</h3>
-<p>关于<strong>Module</strong>类位于<code>python/tvm/runtime/module.py</code>文件中，该类中包含<strong>export_library</strong>函数。该函数的主要作用是将模块和所有被导入模块导出为一个简单的动态库。</p>
-<h4 id="collect-dso-module">2.1.1.1. Collect DSO Module</h4>
-<p>首先收集所有<strong>DSO</strong>模块(LLVM Module 和 C Module)</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">modules = self._collect_dso_modules()</span><br></pre></td></tr></table></figure>
-<h4 id="save-file">2.1.1.2. Save File</h4>
-<p>一旦收集到所有的<strong>DSO</strong>模块，就可以调用<strong>runtime</strong>模块的<strong>save</strong>函数将其保存为文件格式。通过遍历所有<strong>DSO</strong>模块，根据其类型键设置相应的文件后缀，并通过<strong>save</strong>函数将模块保存为相应的文件类型，并将该文件添加到<strong>files</strong>数组序列中。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> index, module <span class="keyword">in</span> <span class="built_in">enumerate</span>(modules):</span><br><span class="line">    <span class="keyword">if</span> fcompile <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> <span class="built_in">hasattr</span>(fcompile, <span class="string">&quot;object_format&quot;</span>):</span><br><span class="line">        <span class="keyword">if</span> module.type_key == <span class="string">&quot;c&quot;</span>:</span><br><span class="line">            object_format = <span class="string">&quot;c&quot;</span></span><br><span class="line">            has_c_module = <span class="literal">True</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">        	object_format = fcompile.object_format</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">if</span> module.type_key == <span class="string">&quot;llvm&quot;</span>:</span><br><span class="line">        	object_format = <span class="string">&quot;o&quot;</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">assert</span> module.type_key == <span class="string">&quot;c&quot;</span></span><br><span class="line">            object_format = <span class="string">&quot;c&quot;</span></span><br><span class="line">            <span class="keyword">if</span> <span class="string">&quot;cc&quot;</span> <span class="keyword">in</span> kwargs:</span><br><span class="line">                <span class="keyword">if</span> kwargs[<span class="string">&quot;cc&quot;</span>] == <span class="string">&quot;nvcc&quot;</span>:</span><br><span class="line">                	object_format = <span class="string">&quot;cu&quot;</span></span><br><span class="line">        	has_c_module = <span class="literal">True</span></span><br><span class="line">    path_obj = os.path.join(workspace_dir, <span class="string">f&quot;lib<span class="subst">&#123;index&#125;</span>.<span class="subst">&#123;object_format&#125;</span>&quot;</span>)</span><br><span class="line">    module.save(path_obj)</span><br><span class="line">    files.append(path_obj)</span><br><span class="line">    is_system_lib = (</span><br><span class="line">    	module.type_key == <span class="string">&quot;llvm&quot;</span> <span class="keyword">and</span> module.get_function(<span class="string">&quot;__tvm_is_system_module&quot;</span>)()</span><br><span class="line">    )</span><br><span class="line">    llvm_target_triple = (</span><br><span class="line">    	module.type_key == <span class="string">&quot;llvm&quot;</span> <span class="keyword">and</span> module.get_function(<span class="string">&quot;_get_target_triple&quot;</span>)()</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
-<h5 id="save函数">2.1.1.2.1 save函数</h5>
-<p>关于<strong>save</strong>函数，其调用C++端的函数<strong>ModuleSaveToFile</strong>。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">save</span>(<span class="params">self, file_name, fmt=<span class="string">&quot;&quot;</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Save the module to file.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    This do not save the dependent device modules.</span></span><br><span class="line"><span class="string">    See also export_shared</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Parameters</span></span><br><span class="line"><span class="string">    ----------</span></span><br><span class="line"><span class="string">    file_name : str</span></span><br><span class="line"><span class="string">    The name of the file.</span></span><br><span class="line"><span class="string">    fmt : str</span></span><br><span class="line"><span class="string">    The format of the file.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    See Also</span></span><br><span class="line"><span class="string">    --------</span></span><br><span class="line"><span class="string">    runtime.Module.export_library : export the module to shared library.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    _ffi_api.ModuleSaveToFile(self, file_name, fmt)</span><br></pre></td></tr></table></figure>
-<p>该函数使用各个模块的<strong>SaveToFile</strong>函数将模块保存为文件形式。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.ModuleSaveToFile&quot;</span>)</span><br><span class="line">    .<span class="built_in">set_body_typed</span>([](Module mod, tvm::String name, tvm::String fmt) &#123;</span><br><span class="line">        mod-&gt;<span class="built_in">SaveToFile</span>(name, fmt);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
-<h4 id="impoerted-modules">2.1.1.3. Impoerted Modules</h4>
-<p>检查是否存在<strong>imported modules</strong>(像<strong>CUDA</strong>、<strong>OpenCL</strong>等)。这里不限制模块类型，一旦存在<strong>imports modules</strong>，将创建命名为<code>devc.o</code>或<code>devc.c</code>的文件。这就可以将<strong>imports modules</strong>的二进制<strong>blob</strong>数据嵌入进动态库中。然后调用<strong>ModulePackImportsToLLVM</strong>或<strong>ModulePackImportsToC</strong>进行模块序列化(<strong>module serialization</strong>)。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> self.imported_modules:</span><br><span class="line">    <span class="keyword">if</span> enabled(<span class="string">&quot;llvm&quot;</span>) <span class="keyword">and</span> llvm_target_triple:</span><br><span class="line">        path_obj = os.path.join(workspace_dir, <span class="string">f&quot;devc.<span class="subst">&#123;object_format&#125;</span>&quot;</span>)</span><br><span class="line">        m = _ffi_api.ModulePackImportsToLLVM(self, is_system_lib, llvm_target_triple)</span><br><span class="line">        m.save(path_obj)</span><br><span class="line">        files.append(path_obj)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        path_cc = os.path.join(workspace_dir, <span class="string">&quot;devc.c&quot;</span>)</span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(path_cc, <span class="string">&quot;w&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">            f.write(_ffi_api.ModulePackImportsToC(self, is_system_lib))</span><br><span class="line">        files.append(path_cc)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>注：使用<strong>PackImportsToLLVM</strong>或<strong>PackImportsToC</strong>取决于是否在TVM中使能LLVM，事实上它们的目标相同。</p>
-</blockquote>
-<h4 id="function-compile">2.1.1.4. Function Compile</h4>
-<p>最后调用<strong>fcompile</strong>去编译生成动态共享库(so)。如果用户没有指定编译器类型，默认采用<strong>cc</strong>编译器，如果文件是<strong>tar</strong>压缩文件，则进行文件解压。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> fcompile:</span><br><span class="line">	<span class="keyword">if</span> file_name.endswith(<span class="string">&quot;.tar&quot;</span>):</span><br><span class="line">		fcompile = _tar.tar</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		fcompile = _cc.create_shared</span><br></pre></td></tr></table></figure>
-<p>如果用户指定了编译器，一般在部署到设备端时会指定交叉编译工具，则使用用户指定的编译器进行编译。编译输入参数包括编译生成的文件名，待编译的文件组和编译参数。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">fcompile(file_name, files, **kwargs)</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>对于C 源码模块，将编译他们并一起与DSO模块进行链接。</p>
-</blockquote>
-<h3 id="module-serialization">2.1.2. Module Serialization</h3>
-<p>在文件<code>src/target/codegen.cc</code>中，注册了全局函数<strong>runtime.ModulePackImportsToC</strong>和<strong>runtime.ModulePackImportsToLLVM</strong>，用于将其暴露到<strong>python</strong>端调用。 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Export two auxiliary function to the runtime namespace.</span></span><br><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.ModulePackImportsToC&quot;</span>).<span class="built_in">set_body_typed</span>(PackImportsToC);</span><br><span class="line"><span class="built_in">TVM_REGISTER_GLOBAL</span>(<span class="string">&quot;runtime.ModulePackImportsToLLVM&quot;</span>).<span class="built_in">set_body_typed</span>(PackImportsToLLVM);</span><br></pre></td></tr></table></figure></p>
-<h4 id="serializemodule">2.1.2.1 SerializeModule</h4>
-<p>其中，<strong>PackImportsToC</strong>和<strong>PackImportsToLLVM</strong>函数都调用<strong>SerializeModule</strong>函数序列化<strong>runtime module</strong>。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">std::string <span class="title">PackImportsToC</span><span class="params">(<span class="type">const</span> runtime::Module&amp; mod, <span class="type">bool</span> system_lib)</span> </span>&#123;</span><br><span class="line">	std::string bin = <span class="built_in">SerializeModule</span>(mod);</span><br><span class="line">  	...</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">runtime::Module <span class="title">PackImportsToLLVM</span><span class="params">(<span class="type">const</span> runtime::Module&amp; mod, <span class="type">bool</span> system_lib,</span></span></span><br><span class="line"><span class="params"><span class="function">                                  <span class="type">const</span> std::string&amp; target_triple)</span> </span>&#123;</span><br><span class="line">	std::string bin = <span class="built_in">SerializeModule</span>(mod);</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="moduleserializer">2.1.2.2. ModuleSerializer</h4>
-<p>首先在<strong>SerializeModule</strong>函数中创建一个帮手类<strong>ModuleSerializer</strong>，其传入<strong>module</strong>做一些初始化工作，像标注模块的索引号等，然后调用该类的<strong>SerializeModule</strong>函数序列化模块。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function">std::string <span class="title">SerializeModule</span><span class="params">(<span class="type">const</span> runtime::Module&amp; mod)</span> </span>&#123;</span><br><span class="line">    std::string bin;</span><br><span class="line">    <span class="function">dmlc::MemoryStringStream <span class="title">ms</span><span class="params">(&amp;bin)</span></span>;</span><br><span class="line">    dmlc::Stream* stream = &amp;ms;</span><br><span class="line"></span><br><span class="line">    <span class="function">ModuleSerializer <span class="title">module_serializer</span><span class="params">(mod)</span></span>;</span><br><span class="line">    module_serializer.<span class="built_in">SerializeModule</span>(stream);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> bin;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在创建<strong>module_serializer</strong>对象时，其构造函数调用<strong>Init</strong>函数进行初始化操作。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">explicit</span> <span class="title">ModuleSerializer</span><span class="params">(runtime::Module mod)</span> : mod_(mod) &#123;</span> <span class="built_in">Init</span>(); &#125;</span><br></pre></td></tr></table></figure>
-<h5 id="init">2.1.2.2.1. Init</h5>
-<p>而在<code>Init</code>函数中，分别调用<strong>CreateModuleIndex</strong>和<strong>CreateImportTree</strong>函数，用于创建<strong>模块索引号</strong>和<strong>导入树</strong>。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">Init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="built_in">CreateModuleIndex</span>();</span><br><span class="line">    <span class="built_in">CreateImportTree</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h6 id="createmoduleindex">2.1.2.2.1.1. CreateModuleIndex</h6>
-<p>在函数<strong>CreateModuleIndex</strong>中将使用<strong>DFS</strong>(深度优先)算法检查模块导入关系并为其创建索引，注意根模块固定为位置0。</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">llvm_mod<span class="punctuation">:</span>imported_modules</span><br><span class="line">  - cuda_mod</span><br><span class="line">  - opencl_mod</span><br></pre></td></tr></table></figure>
-<p>因此，<strong>LLVM</strong>模块将会拥有索引值0，<strong>CUDA</strong>模块将拥有索引值1，<strong>OpenCL</strong>模块将拥有索引值为2。</p>
-<h6 id="createimporttree">2.1.2.2.1.2. CreateImportTree</h6>
-<p>在构建模块索引号后，<strong>CreateImportTree</strong>函数将尝试构建导入树，用于将导出的库加载回来时，恢复模块的导入关系。使用<strong>CSR</strong>(Compressed Sparse Row)格式存储导入树。每一行都是父索引，子索引对应其子索引。</p>
-<p>使用<code>import_tree_row_ptr_</code>表示行偏移，即某一行的第一个元素在values里面的起始偏移位置。<code>import_tree_child_indices_</code>表示子索引值。</p>
-<h5 id="serializemodule-1">2.1.2.2.2. SerializeModule</h5>
-<p>通过上述两个函数初始化后，可以使用<strong>SerializeModule</strong>函数序列化模块。在其功能逻辑中，假定序列化格式如下：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">binary_blob_size</span><br><span class="line">binary_blob_type_key</span><br><span class="line">binary_blob_logic</span><br><span class="line">binary_blob_type_key</span><br><span class="line">binary_blob_logic</span><br><span class="line">...</span><br><span class="line">_import_tree</span><br><span class="line">_import_tree_logic</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>binary_blob_size</strong></li>
-</ul>
-<p>表示序列化步骤中将拥有的<strong>blob</strong>数量。如果只有一个<strong>DSO</strong>模块并且是根模块，将不产生<code>import_tree_</code>。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Only have one DSO module and it is in the root, then</span></span><br><span class="line"><span class="comment">// we will not produce import_tree_.</span></span><br><span class="line"><span class="type">bool</span> has_import_tree = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">DSOExportable</span>(mod_.<span class="keyword">operator</span>-&gt;()) &amp;&amp; mod_-&gt;<span class="built_in">imports</span>().<span class="built_in">empty</span>()) &#123;</span><br><span class="line">	has_import_tree = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>根据是否存在<code>import_tree_</code>，如果不存在，<strong>binary_blob_size</strong>字段直接写入模块数量，否则写入所有模块数量并追加1。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">uint64_t</span> sz = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">if</span> (has_import_tree) &#123;</span><br><span class="line">    <span class="comment">// we will append one key for _import_tree</span></span><br><span class="line">    <span class="comment">// The layout is the same as before: binary_size, key, logic, key, logic...</span></span><br><span class="line">    sz = mod_group_vec_.<span class="built_in">size</span>() + <span class="number">1</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// Keep the old behaviour</span></span><br><span class="line">    sz = mod_-&gt;<span class="built_in">imports</span>().<span class="built_in">size</span>();</span><br><span class="line">&#125;</span><br><span class="line">stream-&gt;<span class="built_in">Write</span>(sz);</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>binary_blob_type_key</strong></li>
-</ul>
-<p>表示模块的<strong>blob</strong>类型键，对于LLVM或C模块，其<strong>blob</strong>类型键是<code>_lib</code>。而其它模块，像<strong>CUDA</strong>模块，其类型键为<strong>cuda</strong>；<strong>OpenCL</strong>模块，其类型键为<strong>opencl</strong>等。关于类型键的可以通过<strong>module-&gt;type_key()</strong>获取。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">const</span> <span class="keyword">auto</span>&amp; group : mod_group_vec_) &#123;</span><br><span class="line">    <span class="built_in">ICHECK_NE</span>(group.<span class="built_in">size</span>(), <span class="number">0</span>) &lt;&lt; <span class="string">&quot;Every allocated group must have at least one module&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">DSOExportable</span>(group[<span class="number">0</span>])) &#123;</span><br><span class="line">        <span class="built_in">ICHECK_EQ</span>(group.<span class="built_in">size</span>(), <span class="number">1U</span>) &lt;&lt; <span class="string">&quot;Non DSO module is never merged&quot;</span>;</span><br><span class="line">        std::string mod_type_key = group[<span class="number">0</span>]-&gt;<span class="built_in">type_key</span>();</span><br><span class="line">        stream-&gt;<span class="built_in">Write</span>(mod_type_key);</span><br><span class="line">        group[<span class="number">0</span>]-&gt;<span class="built_in">SaveToBinary</span>(stream);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// DSOExportable: do not need binary</span></span><br><span class="line">        <span class="keyword">if</span> (has_import_tree) &#123;</span><br><span class="line">            std::string mod_type_key = <span class="string">&quot;_lib&quot;</span>;</span><br><span class="line">            stream-&gt;<span class="built_in">Write</span>(mod_type_key);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>binary_blob_logic</strong></li>
-</ul>
-<p>表示<strong>blob</strong>的逻辑处理，对于大多数的<strong>blob</strong>(像<strong>CUDA</strong>、<strong>OpenCL</strong>)，将会调用其模块的<strong>SaveToBinary</strong>函数序列化为二进制形式。但是像<strong>LLVM</strong>或<strong>C</strong>模块，只要写入<code>_lib</code>字符，表明该模块是<code>DSO</code>模块。</p>
-<ul>
-<li><strong>import_tree</strong></li>
-</ul>
-<p>除非模块只有一个<strong>DSO</strong>模块且为根模块，不需要写入<code>_import_tree</code>字段，其它情况都需要写入。当将导出的库需要加载回来时，可以用其重构模块的导入关系。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Write _import_tree key if we have</span></span><br><span class="line"><span class="keyword">if</span> (has_import_tree) &#123;</span><br><span class="line">    std::string import_key = <span class="string">&quot;_import_tree&quot;</span>;</span><br><span class="line">    stream-&gt;<span class="built_in">Write</span>(import_key);</span><br><span class="line">    stream-&gt;<span class="built_in">Write</span>(import_tree_row_ptr_);</span><br><span class="line">    stream-&gt;<span class="built_in">Write</span>(import_tree_child_indices_);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>import_tree_logic</strong></li>
-</ul>
-<p>将<code>import_tree_row_ptr_</code>和<code>import_tree_child_indices_</code>数组内容写入数据流。</p>
-<h4 id="pack">2.1.2.3. Pack</h4>
-<p>经过上述序列化步骤后，将数据流打包成一个符号(<strong>runtime::symbol::tvm_dev_mblob</strong>)，这样就可以在需要时从动态库中恢复模块内容。写入动态库中的符号为<code>__tvm_dev_mblob</code>，根据序列化后的数据流大小创建以<code>__tvm_dev_mblob</code>为符号的数组<code>const unsigned char __tvm_dev_mblob[bin.length() + sizeof(nbytes)]&#123;&#125;</code>。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="type">uint64_t</span> nbytes = bin.<span class="built_in">length</span>();</span><br><span class="line">os &lt;&lt; <span class="string">&quot;const unsigned char &quot;</span> &lt;&lt; runtime::symbol::tvm_dev_mblob &lt;&lt; <span class="string">&quot;[&quot;</span></span><br><span class="line">	&lt;&lt; bin.<span class="built_in">length</span>() + <span class="built_in">sizeof</span>(nbytes) &lt;&lt; <span class="string">&quot;] = &#123;\n  &quot;</span>;</span><br></pre></td></tr></table></figure>
-<p>前八个字节存储序列化数据流的字节数大小，按照16进制形式保存。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; <span class="built_in">sizeof</span>(nbytes); ++i) &#123;</span><br><span class="line">    <span class="comment">// sperators</span></span><br><span class="line">    <span class="keyword">if</span> (i != <span class="number">0</span>) &#123;</span><br><span class="line">    	os &lt;&lt; <span class="string">&quot;,&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    os &lt;&lt; <span class="string">&quot;0x&quot;</span> &lt;&lt; ((nbytes &gt;&gt; (i * <span class="number">8</span>)) &amp; <span class="number">0xff</span>UL);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>20个字节为一行，保存序列化数据。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; bin.<span class="built_in">length</span>(); ++i) &#123;</span><br><span class="line">    <span class="comment">// sperators</span></span><br><span class="line">    <span class="keyword">if</span> ((i + <span class="built_in">sizeof</span>(nbytes)) % nunit == <span class="number">0</span>) &#123;</span><br><span class="line">    	os &lt;&lt; <span class="string">&quot;,\n  &quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    	os &lt;&lt; <span class="string">&quot;,&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> c = bin[i];</span><br><span class="line">    os &lt;&lt; <span class="string">&quot;0x&quot;</span> &lt;&lt; (c &amp; <span class="number">0xff</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="参考">3. 参考</h1>
-<ol type="1">
-<li><p><a href="https://www.cnblogs.com/xbinworld/p/4273506.html">稀疏矩阵存储格式总结+存储效率对比:COO,CSR,DIA,ELL,HYB</a></p></li>
-<li><p><a href="https://blog.csdn.net/alai04/article/details/733230">用STL实现DFS/BFS算法——检查重复状态</a></p></li>
-</ol>
-]]></content>
-      <categories>
-        <category>TVM</category>
-        <category>Runtime</category>
-      </categories>
-      <tags>
-        <tag>TVM</tag>
-        <tag>runtime</tag>
-        <tag>Module</tag>
-        <tag>export_library</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>最小二乘法线性拟合</title>
     <url>/2019/10/17/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95%E7%9A%84%E7%BA%BF%E6%80%A7%E6%8B%9F%E5%90%88/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -3276,87 +3276,6 @@ V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \tag{25}
       </tags>
   </entry>
   <entry>
-    <title>超声波障碍物定位-库位角点</title>
-    <url>/2019/11/11/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E8%A7%92%E7%82%B9/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>基于纯超声的垂直车位检测存在一些技术瓶颈，比如超声波的更新频率较低、探测开角较大等，都是影响检测精度的关键因素。另外对于垂直车位，车辆头部情况复杂、存在各种结构的进气栅格、引擎盖的高度不一等，增大了超声检测的难度。基于上述传感器本身性能限制和探测环境的复杂性，一次性精确检测很难实现，目前常规算法检测精度大概在30cm左右。为了进一步提升超声波检测的精度，利用车辆泊车过程中的检测的超声数据，重新进行库位的定位。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/eSXfcn2BYoTNR4K.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="超声重定位">超声重定位</h2>
-<h3 id="概述-1">概述</h3>
-<p>首先车辆先通过超声波传感器确定车位的大概位置，然后规划车辆进行倒车入库，在入库的过程中，进行前车车头边沿的重新检测，并通过尾部超声波进行后车的检测，当车辆离后车距离达到30~40cm时，车辆停止。通过后置的短距超声波，使用三角定位算法实现，进行后车边沿数据的采集。等待数据量足够时，一般可以设定50个数据点左右。停止超声数据的推送，开始进行边沿算法的计算，从而实现垂直车位的二次定位。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/mC9TIKJhZdqGfMB.png" /></p>
-<h3 id="数据滤波">数据滤波</h3>
-<h4 id="状态滤波">状态滤波</h4>
-<p>传感器本身会输出一些状态信号，如噪声干扰、硬件故障、盲区、振玲故障、通信故障和正常等状态。可以通过传感器输出的这些状态信号进行数据的一级滤波，只保留状态输出为正常的信号。</p>
-<h4 id="幅值滤波">幅值滤波</h4>
-<p>超声波的<strong>Level</strong>值反应了声波的回波强度，因此可以使用回波强度的大小，去滤除一部分无效信号，比如回波为0值数据。这些数据反应了未探测到障碍物，或者是障碍物的特殊结构反射了声波，特殊的材料吸收了声波。 比如某些车型的车头设计有很大的进气栅格，这种结构就会减少反射声波的强度，从而导致强度降低。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/OVlckaCFD34UqPY.png" alt="幅值滤波" style="zoom: 80%;" /></p>
-<p>当超声波探测到车辆边沿时，此时由于很多回波反射方向变化，所以传感器接收到的强度变低。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/M9wzFi37mrlEYku.png" style="zoom:80%;" /></p>
-<p>通过一系列的滤波操作，可以得出以下图形。其中蓝色是滤波前的原始数据，黄色是滤波后的数据。可以从下图看出，通过滤波操作可以滤除一些无效信号点。 <img data-src="https://img-blog.csdnimg.cn/20190513171545723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt=""  /></p>
-<hr />
-<h3 id="边沿检测">边沿检测</h3>
-<h4 id="概述-2">概述</h4>
-<p>对原始数据进行处理后，可以得到一组有效的超声信号，基于这组数据，可以进行车辆边沿的检测。</p>
-<h4 id="距离疏密程度">距离疏密程度</h4>
-<p>由于所有的坐标点都已经转化到了地面坐标系下，所以只需要进行x方向的疏密度分析。从下图可知，在车辆边沿处，点比较稀疏，有的地方存在很长一段距离无数据点。这种情况一般是车头处存在镂空的结构，或者声波发生了散射，导致声波强度减小。所以在确定车辆边沿点时，需设置一个疏密距离阀值，当距离值大于阀值时，才认为该点是边界的跳变点。 <img data-src="https://img-blog.csdnimg.cn/20190513192450664.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
-<h3 id="数据分布">数据分布</h3>
-<p>对于后车的边沿定位，使用的是车辆后方的短距传感器，该传感器使用三角定位原理，确定后车边沿的坐标值。可以从图中看出，图片左侧数据点描绘的是后车的边沿，可以通过数据的分布情况，及集中程度，确定最有可能车辆边沿的值。 <img data-src="https://img-blog.csdnimg.cn/20190513194816201.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /> 如下图所示，是对上图x轴做了数值分布分析，可以看出，大部分点的x轴坐标都分布于区域5中，所以最后取区域5中的点作为可信的坐标点。 <img data-src="https://img-blog.csdnimg.cn/20190513201643149.PNG#pic_center" /></p>
-<h2 id="结论">结论</h2>
-]]></content>
-      <categories>
-        <category>感知算法</category>
-        <category>超声波</category>
-      </categories>
-      <tags>
-        <tag>超声波</tag>
-        <tag>障碍物定位</tag>
-        <tag>感知算法</tag>
-        <tag>库位角点</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>霍夫变换-OpenCV源码分析</title>
-    <url>/2019/10/20/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E9%9C%8D%E5%A4%AB%E5%8F%98%E6%8D%A2(Hough)-OpenCV%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>霍夫变换算法主要用于图像中的特征匹配，常见的应用场景是进行图像中的直线或者圆形的识别。该算法的原理就是实现笛卡尔空间到霍夫空间的转换，将在笛卡尔空间下难以判定的特性，转到霍夫空间，从而将问题简化。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/hyaDQrwBu37YFfJ.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="分析">分析</h2>
-<h3 id="建立三角函数查找表">建立三角函数查找表</h3>
-<p>为了避免三角函数的反复计算，根据离散后的角度信息，提前计算出所需的三角函数值。 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span></span></span><br><span class="line"><span class="function"><span class="title">createTrigTable</span><span class="params">( <span class="type">int</span> numangle, <span class="type">double</span> min_theta, <span class="type">double</span> theta_step,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="type">float</span> irho, <span class="type">float</span> *tabSin, <span class="type">float</span> *tabCos )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">float</span> ang = <span class="built_in">static_cast</span>&lt;<span class="type">float</span>&gt;(min_theta);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> n = <span class="number">0</span>; n &lt; numangle; ang += (<span class="type">float</span>)theta_step, n++ )</span><br><span class="line">    &#123;</span><br><span class="line">        tabSin[n] = (<span class="type">float</span>)(<span class="built_in">sin</span>((<span class="type">double</span>)ang) * irho);</span><br><span class="line">        tabCos[n] = (<span class="type">float</span>)(<span class="built_in">cos</span>((<span class="type">double</span>)ang) * irho);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="计算离散点数">计算离散点数</h3>
-<p>根据极经和极角的步长，极经和极角的范围，计算离散点数。 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> numangle = <span class="built_in">cvRound</span>((max_theta - min_theta) / theta);</span><br><span class="line"><span class="type">int</span> numrho = <span class="built_in">cvRound</span>(((max_rho - min_rho) + <span class="number">1</span>) / rho);</span><br></pre></td></tr></table></figure></p>
-<h3 id="填充累加器">填充累加器</h3>
-<p>计算图像中每个像素点的霍夫变换，其中极角<span class="math inline">\(\theta\)</span>按照离散化的点采样，计算极经值<code>rho</code>，并更新对应的累加器<code>accum</code>的值。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// stage 1. fill accumulator</span></span><br><span class="line"><span class="keyword">for</span>( i = <span class="number">0</span>; i &lt; height; i++ )</span><br><span class="line">    <span class="keyword">for</span>( j = <span class="number">0</span>; j &lt; width; j++ )</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>( image[i * step + j] != <span class="number">0</span> )</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> n = <span class="number">0</span>; n &lt; numangle; n++ )</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="type">int</span> r = <span class="built_in">cvRound</span>( j * tabCos[n] + i * tabSin[n] );</span><br><span class="line">                r += (numrho - <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">                accum[(n+<span class="number">1</span>) * (numrho+<span class="number">2</span>) + r+<span class="number">1</span>]++;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h3 id="查找局部极大值">查找局部极大值</h3>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span></span></span><br><span class="line"><span class="function"><span class="title">findLocalMaximums</span><span class="params">( <span class="type">int</span> numrho, <span class="type">int</span> numangle, <span class="type">int</span> threshold,</span></span></span><br><span class="line"><span class="params"><span class="function">                   <span class="type">const</span> <span class="type">int</span> *accum, std::vector&lt;<span class="type">int</span>&gt;&amp; sort_buf )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> r = <span class="number">0</span>; r &lt; numrho; r++ )</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> n = <span class="number">0</span>; n &lt; numangle; n++ )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> base = (n+<span class="number">1</span>) * (numrho+<span class="number">2</span>) + r+<span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span>( accum[base] &gt; threshold &amp;&amp;</span><br><span class="line">                accum[base] &gt; accum[base - <span class="number">1</span>] &amp;&amp; accum[base] &gt;= accum[base + <span class="number">1</span>] &amp;&amp;</span><br><span class="line">                accum[base] &gt; accum[base - numrho - <span class="number">2</span>] &amp;&amp; accum[base] &gt;= accum[base + numrho + <span class="number">2</span>] )</span><br><span class="line">                sort_buf.<span class="built_in">push_back</span>(base);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="排序">排序</h3>
-<p>对累加器内部的数据进行排序，由大到小进行排序。 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// stage 3. sort the detected lines by accumulator value</span></span><br><span class="line">std::<span class="built_in">sort</span>(_sort_buf.<span class="built_in">begin</span>(), _sort_buf.<span class="built_in">end</span>(), <span class="built_in">hough_cmp_gt</span>(accum));</span><br></pre></td></tr></table></figure></p>
-<h3 id="输出直线">输出直线</h3>
-<p>根据设定的最小直线数量和实际缓存的直线数量，求取最小的直线数。根据直线数从排过序的缓存中取最大的几组数据，并将这些数据转换成直线参数存储。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// stage 4. store the first min(total,linesMax) lines to the output buffer</span></span><br><span class="line">   linesMax = std::<span class="built_in">min</span>(linesMax, (<span class="type">int</span>)_sort_buf.<span class="built_in">size</span>());</span><br><span class="line">   <span class="type">double</span> scale = <span class="number">1.</span>/(numrho+<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">   lines.<span class="built_in">create</span>(linesMax, <span class="number">1</span>, type);</span><br><span class="line">   Mat _lines = lines.<span class="built_in">getMat</span>();</span><br><span class="line">   <span class="keyword">for</span>( i = <span class="number">0</span>; i &lt; linesMax; i++ )</span><br><span class="line">   &#123;</span><br><span class="line">       LinePolar line;</span><br><span class="line">       <span class="type">int</span> idx = _sort_buf[i];</span><br><span class="line">       <span class="type">int</span> n = <span class="built_in">cvFloor</span>(idx*scale) - <span class="number">1</span>;</span><br><span class="line">       <span class="type">int</span> r = idx - (n+<span class="number">1</span>)*(numrho+<span class="number">2</span>) - <span class="number">1</span>;</span><br><span class="line">       line.rho = (r - (numrho - <span class="number">1</span>)*<span class="number">0.5f</span>) * rho;</span><br><span class="line">       line.angle = <span class="built_in">static_cast</span>&lt;<span class="type">float</span>&gt;(min_theta) + n * theta;</span><br><span class="line">       <span class="keyword">if</span> (type == CV_32FC2)</span><br><span class="line">       &#123;</span><br><span class="line">           _lines.<span class="built_in">at</span>&lt;Vec2f&gt;(i) = <span class="built_in">Vec2f</span>(line.rho, line.angle);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">else</span></span><br><span class="line">       &#123;</span><br><span class="line">           <span class="built_in">CV_DbgAssert</span>(type == CV_32FC3);</span><br><span class="line">           _lines.<span class="built_in">at</span>&lt;Vec3f&gt;(i) = <span class="built_in">Vec3f</span>(line.rho, line.angle, (<span class="type">float</span>)accum[idx]);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="参考">参考</h2>
-<ol type="1">
-<li><a href="https://github.com/opencv/opencv/blob/4.1.1/modules/imgproc/src/hough.cpp">GitHub源码</a></li>
-<li><a href="https://docs.opencv.org/4.1.1/dd/d1a/group__imgproc__feature.html#ga46b4e588934f6c8dfd509cc6e0e4545a">文档说明</a></li>
-</ol>
-]]></content>
-      <categories>
-        <category>感知算法</category>
-      </categories>
-      <tags>
-        <tag>OpenCV</tag>
-        <tag>霍夫变换</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>超声波障碍物定位_库位中心</title>
     <url>/2019/11/12/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E4%B8%AD%E5%BF%83/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -3414,9 +3333,90 @@ V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \tag{25}
 ]]></content>
       <tags>
         <tag>超声波</tag>
-        <tag>障碍物定位</tag>
         <tag>感知算法</tag>
+        <tag>障碍物定位</tag>
         <tag>库位中心</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>超声波障碍物定位-库位角点</title>
+    <url>/2019/11/11/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E8%A7%92%E7%82%B9/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>基于纯超声的垂直车位检测存在一些技术瓶颈，比如超声波的更新频率较低、探测开角较大等，都是影响检测精度的关键因素。另外对于垂直车位，车辆头部情况复杂、存在各种结构的进气栅格、引擎盖的高度不一等，增大了超声检测的难度。基于上述传感器本身性能限制和探测环境的复杂性，一次性精确检测很难实现，目前常规算法检测精度大概在30cm左右。为了进一步提升超声波检测的精度，利用车辆泊车过程中的检测的超声数据，重新进行库位的定位。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/eSXfcn2BYoTNR4K.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="超声重定位">超声重定位</h2>
+<h3 id="概述-1">概述</h3>
+<p>首先车辆先通过超声波传感器确定车位的大概位置，然后规划车辆进行倒车入库，在入库的过程中，进行前车车头边沿的重新检测，并通过尾部超声波进行后车的检测，当车辆离后车距离达到30~40cm时，车辆停止。通过后置的短距超声波，使用三角定位算法实现，进行后车边沿数据的采集。等待数据量足够时，一般可以设定50个数据点左右。停止超声数据的推送，开始进行边沿算法的计算，从而实现垂直车位的二次定位。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/mC9TIKJhZdqGfMB.png" /></p>
+<h3 id="数据滤波">数据滤波</h3>
+<h4 id="状态滤波">状态滤波</h4>
+<p>传感器本身会输出一些状态信号，如噪声干扰、硬件故障、盲区、振玲故障、通信故障和正常等状态。可以通过传感器输出的这些状态信号进行数据的一级滤波，只保留状态输出为正常的信号。</p>
+<h4 id="幅值滤波">幅值滤波</h4>
+<p>超声波的<strong>Level</strong>值反应了声波的回波强度，因此可以使用回波强度的大小，去滤除一部分无效信号，比如回波为0值数据。这些数据反应了未探测到障碍物，或者是障碍物的特殊结构反射了声波，特殊的材料吸收了声波。 比如某些车型的车头设计有很大的进气栅格，这种结构就会减少反射声波的强度，从而导致强度降低。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/OVlckaCFD34UqPY.png" alt="幅值滤波" style="zoom: 80%;" /></p>
+<p>当超声波探测到车辆边沿时，此时由于很多回波反射方向变化，所以传感器接收到的强度变低。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/M9wzFi37mrlEYku.png" style="zoom:80%;" /></p>
+<p>通过一系列的滤波操作，可以得出以下图形。其中蓝色是滤波前的原始数据，黄色是滤波后的数据。可以从下图看出，通过滤波操作可以滤除一些无效信号点。 <img data-src="https://img-blog.csdnimg.cn/20190513171545723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt=""  /></p>
+<hr />
+<h3 id="边沿检测">边沿检测</h3>
+<h4 id="概述-2">概述</h4>
+<p>对原始数据进行处理后，可以得到一组有效的超声信号，基于这组数据，可以进行车辆边沿的检测。</p>
+<h4 id="距离疏密程度">距离疏密程度</h4>
+<p>由于所有的坐标点都已经转化到了地面坐标系下，所以只需要进行x方向的疏密度分析。从下图可知，在车辆边沿处，点比较稀疏，有的地方存在很长一段距离无数据点。这种情况一般是车头处存在镂空的结构，或者声波发生了散射，导致声波强度减小。所以在确定车辆边沿点时，需设置一个疏密距离阀值，当距离值大于阀值时，才认为该点是边界的跳变点。 <img data-src="https://img-blog.csdnimg.cn/20190513192450664.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
+<h3 id="数据分布">数据分布</h3>
+<p>对于后车的边沿定位，使用的是车辆后方的短距传感器，该传感器使用三角定位原理，确定后车边沿的坐标值。可以从图中看出，图片左侧数据点描绘的是后车的边沿，可以通过数据的分布情况，及集中程度，确定最有可能车辆边沿的值。 <img data-src="https://img-blog.csdnimg.cn/20190513194816201.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /> 如下图所示，是对上图x轴做了数值分布分析，可以看出，大部分点的x轴坐标都分布于区域5中，所以最后取区域5中的点作为可信的坐标点。 <img data-src="https://img-blog.csdnimg.cn/20190513201643149.PNG#pic_center" /></p>
+<h2 id="结论">结论</h2>
+]]></content>
+      <categories>
+        <category>感知算法</category>
+        <category>超声波</category>
+      </categories>
+      <tags>
+        <tag>超声波</tag>
+        <tag>感知算法</tag>
+        <tag>障碍物定位</tag>
+        <tag>库位角点</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>霍夫变换-OpenCV源码分析</title>
+    <url>/2019/10/20/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E9%9C%8D%E5%A4%AB%E5%8F%98%E6%8D%A2(Hough)-OpenCV%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>霍夫变换算法主要用于图像中的特征匹配，常见的应用场景是进行图像中的直线或者圆形的识别。该算法的原理就是实现笛卡尔空间到霍夫空间的转换，将在笛卡尔空间下难以判定的特性，转到霍夫空间，从而将问题简化。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/hyaDQrwBu37YFfJ.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="分析">分析</h2>
+<h3 id="建立三角函数查找表">建立三角函数查找表</h3>
+<p>为了避免三角函数的反复计算，根据离散后的角度信息，提前计算出所需的三角函数值。 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span></span></span><br><span class="line"><span class="function"><span class="title">createTrigTable</span><span class="params">( <span class="type">int</span> numangle, <span class="type">double</span> min_theta, <span class="type">double</span> theta_step,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="type">float</span> irho, <span class="type">float</span> *tabSin, <span class="type">float</span> *tabCos )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">float</span> ang = <span class="built_in">static_cast</span>&lt;<span class="type">float</span>&gt;(min_theta);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> n = <span class="number">0</span>; n &lt; numangle; ang += (<span class="type">float</span>)theta_step, n++ )</span><br><span class="line">    &#123;</span><br><span class="line">        tabSin[n] = (<span class="type">float</span>)(<span class="built_in">sin</span>((<span class="type">double</span>)ang) * irho);</span><br><span class="line">        tabCos[n] = (<span class="type">float</span>)(<span class="built_in">cos</span>((<span class="type">double</span>)ang) * irho);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="计算离散点数">计算离散点数</h3>
+<p>根据极经和极角的步长，极经和极角的范围，计算离散点数。 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> numangle = <span class="built_in">cvRound</span>((max_theta - min_theta) / theta);</span><br><span class="line"><span class="type">int</span> numrho = <span class="built_in">cvRound</span>(((max_rho - min_rho) + <span class="number">1</span>) / rho);</span><br></pre></td></tr></table></figure></p>
+<h3 id="填充累加器">填充累加器</h3>
+<p>计算图像中每个像素点的霍夫变换，其中极角<span class="math inline">\(\theta\)</span>按照离散化的点采样，计算极经值<code>rho</code>，并更新对应的累加器<code>accum</code>的值。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// stage 1. fill accumulator</span></span><br><span class="line"><span class="keyword">for</span>( i = <span class="number">0</span>; i &lt; height; i++ )</span><br><span class="line">    <span class="keyword">for</span>( j = <span class="number">0</span>; j &lt; width; j++ )</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>( image[i * step + j] != <span class="number">0</span> )</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> n = <span class="number">0</span>; n &lt; numangle; n++ )</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="type">int</span> r = <span class="built_in">cvRound</span>( j * tabCos[n] + i * tabSin[n] );</span><br><span class="line">                r += (numrho - <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">                accum[(n+<span class="number">1</span>) * (numrho+<span class="number">2</span>) + r+<span class="number">1</span>]++;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="查找局部极大值">查找局部极大值</h3>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span></span></span><br><span class="line"><span class="function"><span class="title">findLocalMaximums</span><span class="params">( <span class="type">int</span> numrho, <span class="type">int</span> numangle, <span class="type">int</span> threshold,</span></span></span><br><span class="line"><span class="params"><span class="function">                   <span class="type">const</span> <span class="type">int</span> *accum, std::vector&lt;<span class="type">int</span>&gt;&amp; sort_buf )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> r = <span class="number">0</span>; r &lt; numrho; r++ )</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> n = <span class="number">0</span>; n &lt; numangle; n++ )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> base = (n+<span class="number">1</span>) * (numrho+<span class="number">2</span>) + r+<span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span>( accum[base] &gt; threshold &amp;&amp;</span><br><span class="line">                accum[base] &gt; accum[base - <span class="number">1</span>] &amp;&amp; accum[base] &gt;= accum[base + <span class="number">1</span>] &amp;&amp;</span><br><span class="line">                accum[base] &gt; accum[base - numrho - <span class="number">2</span>] &amp;&amp; accum[base] &gt;= accum[base + numrho + <span class="number">2</span>] )</span><br><span class="line">                sort_buf.<span class="built_in">push_back</span>(base);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="排序">排序</h3>
+<p>对累加器内部的数据进行排序，由大到小进行排序。 <figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// stage 3. sort the detected lines by accumulator value</span></span><br><span class="line">std::<span class="built_in">sort</span>(_sort_buf.<span class="built_in">begin</span>(), _sort_buf.<span class="built_in">end</span>(), <span class="built_in">hough_cmp_gt</span>(accum));</span><br></pre></td></tr></table></figure></p>
+<h3 id="输出直线">输出直线</h3>
+<p>根据设定的最小直线数量和实际缓存的直线数量，求取最小的直线数。根据直线数从排过序的缓存中取最大的几组数据，并将这些数据转换成直线参数存储。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// stage 4. store the first min(total,linesMax) lines to the output buffer</span></span><br><span class="line">   linesMax = std::<span class="built_in">min</span>(linesMax, (<span class="type">int</span>)_sort_buf.<span class="built_in">size</span>());</span><br><span class="line">   <span class="type">double</span> scale = <span class="number">1.</span>/(numrho+<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">   lines.<span class="built_in">create</span>(linesMax, <span class="number">1</span>, type);</span><br><span class="line">   Mat _lines = lines.<span class="built_in">getMat</span>();</span><br><span class="line">   <span class="keyword">for</span>( i = <span class="number">0</span>; i &lt; linesMax; i++ )</span><br><span class="line">   &#123;</span><br><span class="line">       LinePolar line;</span><br><span class="line">       <span class="type">int</span> idx = _sort_buf[i];</span><br><span class="line">       <span class="type">int</span> n = <span class="built_in">cvFloor</span>(idx*scale) - <span class="number">1</span>;</span><br><span class="line">       <span class="type">int</span> r = idx - (n+<span class="number">1</span>)*(numrho+<span class="number">2</span>) - <span class="number">1</span>;</span><br><span class="line">       line.rho = (r - (numrho - <span class="number">1</span>)*<span class="number">0.5f</span>) * rho;</span><br><span class="line">       line.angle = <span class="built_in">static_cast</span>&lt;<span class="type">float</span>&gt;(min_theta) + n * theta;</span><br><span class="line">       <span class="keyword">if</span> (type == CV_32FC2)</span><br><span class="line">       &#123;</span><br><span class="line">           _lines.<span class="built_in">at</span>&lt;Vec2f&gt;(i) = <span class="built_in">Vec2f</span>(line.rho, line.angle);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">else</span></span><br><span class="line">       &#123;</span><br><span class="line">           <span class="built_in">CV_DbgAssert</span>(type == CV_32FC3);</span><br><span class="line">           _lines.<span class="built_in">at</span>&lt;Vec3f&gt;(i) = <span class="built_in">Vec3f</span>(line.rho, line.angle, (<span class="type">float</span>)accum[idx]);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考">参考</h2>
+<ol type="1">
+<li><a href="https://github.com/opencv/opencv/blob/4.1.1/modules/imgproc/src/hough.cpp">GitHub源码</a></li>
+<li><a href="https://docs.opencv.org/4.1.1/dd/d1a/group__imgproc__feature.html#ga46b4e588934f6c8dfd509cc6e0e4545a">文档说明</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>感知算法</category>
+      </categories>
+      <tags>
+        <tag>OpenCV</tag>
+        <tag>霍夫变换</tag>
       </tags>
   </entry>
   <entry>
@@ -4751,6 +4751,183 @@ t_0*(v_0 - \frac{1}{6}\dot{a}{t_0}^2) = S \Longrightarrow {(\frac{2*v_0}{\dot{a}
       </tags>
   </entry>
   <entry>
+    <title>控制算法-运动学模型</title>
+    <url>/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%A8%A1%E5%9E%8B/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>车辆横向运动学模型描述了车辆横向运动的数学模型，该模型不考虑车辆的受力情况。一般考虑运动学模型时，将车辆模型简化成单车模型(bicycle model)。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/ot5fGZUwzhgNx94.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="单车模型">单车模型</h2>
+<p><img data-src="https://i.loli.net/2021/08/30/vNEmAlxMSaX9cWu.png" style="zoom: 80%;" /></p>
+<p>单车模型中：</p>
+<ul>
+<li><p><strong>左右轮等效为单个轮子</strong> 左右前轮合并为单个轮子，其中心点为<span class="math inline">\(A\)</span>点，同样后轮等效后的中心点为<span class="math inline">\(B\)</span>点。</p></li>
+<li><p><strong>转向角</strong> 前后轮的转向角用<span class="math inline">\(\delta_f\)</span>和<span class="math inline">\(\delta_r\)</span>表示，模型中前后轮都可以转向，对于只有前轮转向的系统，后轮转向角<span class="math inline">\(\delta_r\)</span>可以设置为0.</p></li>
+<li><p><strong>重心</strong> 点<span class="math inline">\(C\)</span>代表车辆的重心，<span class="math inline">\(A\)</span>点和<span class="math inline">\(B\)</span>点到重心的距离分别用<span class="math inline">\(l_f\)</span>和<span class="math inline">\(l_r\)</span>表示，轴距表示为<span class="math inline">\(L = l_f + l_r\)</span>。</p></li>
+<li><p><strong>速度</strong> 车辆重心的速度用<span class="math inline">\(V\)</span>表示，与车辆纵向轴的夹角为<span class="math inline">\(\beta\)</span>，该角度叫做车辆的滑移角。</p></li>
+<li><p><strong>运动描述</strong> 假设车辆平动，车辆运动状态可以用三个坐标量描述：<span class="math inline">\(X\)</span> 、 <span class="math inline">\(Y\)</span> 和 <span class="math inline">\(\psi\)</span>。其中<span class="math inline">\((X,Y)\)</span>代表车辆重心的位置，<span class="math inline">\(\Psi\)</span>描述了车辆的方向。</p></li>
+<li><p><strong>条件假设</strong> 假设速度矢量<span class="math inline">\(V\)</span>的方向在点<span class="math inline">\(A\)</span>点和<span class="math inline">\(B\)</span>点的方向与转向角的方向相同，换句话说，在A点的速度矢量与车辆纵轴的夹角为<span class="math inline">\(\delta_f\)</span>，同样<span class="math inline">\(B\)</span>点的速度矢量与车辆纵轴的夹角为<span class="math inline">\(\delta_r\)</span>。也就是说前后轮的滑移角都为0。该条件假设成立前提的是车辆速度很低(&lt;5m/s)，此时轮胎产生的横向力很小，可以忽略。</p></li>
+<li><p><strong>轨迹半径</strong> 点<span class="math inline">\(O\)</span>代表车辆的瞬时旋转中心，线段<span class="math inline">\(AO\)</span>与<span class="math inline">\(BO\)</span>与前后两个转轮方向垂直，他们的交点即为<span class="math inline">\(O\)</span>点，线段<span class="math inline">\(OC\)</span>的长度代表车辆的轨迹半径<span class="math inline">\(R\)</span>。</p></li>
+<li><p><strong>航迹角</strong> 车辆重心处的速度垂直于<span class="math inline">\(OC\)</span>,车辆速度矢量与车辆纵轴的夹角为<span class="math inline">\(\beta\)</span>，车辆的航向角为<span class="math inline">\(\psi\)</span>，则航迹角为<span class="math inline">\(\gamma = \psi + \beta\)</span>。</p></li>
+</ul>
+<h2 id="运动方程">运动方程</h2>
+<h3 id="概述-1">概述</h3>
+<p>运动方程可以根据单车模型几何关系推导出，下面根据单车模型的几何关系，推导出车辆运动的微分方程。</p>
+<h3 id="姿态信息偏航角">姿态信息(偏航角)</h3>
+<p>三角形<span class="math inline">\(OCA\)</span>根据正弦定理得</p>
+<p><span class="math display">\[
+\frac{\sin(\delta_f - \beta)}{l_f} = \frac{\sin(\frac{\pi}{2} - \delta_f)}{R} \tag{1}
+\]</span></p>
+<p>同理，三角形<span class="math inline">\(OCB\)</span>根据正弦定理可得</p>
+<p><span class="math display">\[
+\frac{\sin(\beta - \delta_r)}{l_r} = \frac{\sin(\frac{\pi}{2} + \delta_r)}{R} \tag{2}
+\]</span></p>
+<p>根据<strong>和差定理</strong>，等式(1)得</p>
+<p><span class="math display">\[
+\frac{\sin(\delta_f)\cos(\beta) - \cos(\delta_f)\sin(\beta)}{l_f} = \frac{\cos(\delta_f)}{R} \tag{3}
+\]</span></p>
+<p>同理，根据等式(2)得</p>
+<p><span class="math display">\[
+\frac{\cos(\delta_r)\sin(\beta) - \cos(\beta)\sin(\delta_r)}{l_r} = \frac{\cos(\delta_f)}{R} \tag{4}
+\]</span></p>
+<p>等式(3)两边同时乘<span class="math inline">\(\frac{l_f}{\cos(\delta_f)}\)</span>得</p>
+<p><span class="math display">\[
+\tan(\delta_f)\cos(\beta) - sin(\beta) = \frac{l_f}{R} \tag{5}
+\]</span></p>
+<p>同理，等式(4)两边同时乘<span class="math inline">\(\frac{l_r}{\cos(\delta_r)}\)</span>得</p>
+<p><span class="math display">\[
+sin(\beta) - \tan(\delta_r)\cos(\beta) = \frac{l_r}{R} \tag{6}
+\]</span></p>
+<p>等式(5)和(6)相加得</p>
+<p><span class="math display">\[
+\{\tan(\delta_f) - \tan(\delta_r)\}\cos(\beta) = \frac{l_f + l_r}{R} \tag{7}
+\]</span></p>
+<p>根据条件假设，车辆速度很低，车辆的轨迹半径变化就很慢。车辆偏航角的变化率(<span class="math inline">\(\dot{\psi}\)</span>)可以近似等于车辆的角速度(<span class="math inline">\(\omega\)</span>)。根据车辆角速度<span class="math inline">\(\omega = \frac{V}{R}\)</span>得</p>
+<p><span class="math display">\[
+\dot{\psi} = \frac{V}{R} \tag{8}
+\]</span></p>
+<p>将等式(8)带入等式(7)中，消除<span class="math inline">\(R\)</span>项得</p>
+<p><span class="math display">\[
+\dot{\psi} = \frac{V\cos(\beta)}{l_f + l_r}\{\tan(\delta_f) - \tan(\delta_r)\} \tag{9}
+\]</span></p>
+<p>上述等式一共三个输入变量：<span class="math inline">\(\delta_f\)</span> 、<span class="math inline">\(\delta_r\)</span>和<span class="math inline">\(V\)</span>。其中<span class="math inline">\(\delta_f\)</span>和<span class="math inline">\(\delta_r\)</span>是车辆的转向角，可以通过车身传感器获得。<span class="math inline">\(V\)</span>是一个外部变量，可以假设其为时变函数，可以从纵向控制中获得。</p>
+<h4 id="滑移角beta的计算">滑移角<span class="math inline">\(\beta\)</span>的计算</h4>
+<p>等式(5)乘以<span class="math inline">\(l_r\)</span>，</p>
+<p><span class="math display">\[
+\tan(\delta_f)\cos(\beta)l_r - sin(\beta)l_r = \frac{l_f*l_r}{R} \tag{10}
+\]</span></p>
+<p>等式(6)乘以<span class="math inline">\(l_f\)</span>得</p>
+<p><span class="math display">\[
+sin(\beta)l_f - \tan(\delta_r)\cos(\beta)l_f = \frac{l_f*l_r}{R} \tag{11}
+\]</span></p>
+<p>等式(10)和(11)相减得</p>
+<p><span class="math display">\[
+\cos(\beta)(l_f\tan(\delta_r) + l_r\tan(\delta_f)) = \sin(\beta)(l_f + l_r) \tag{12}
+\]</span></p>
+<p>等式(12)两端同时乘以<span class="math inline">\(\frac{1}{\cos(\beta)}\)</span>得</p>
+<p><span class="math display">\[
+\tan(\beta) = \frac{l_f\tan(\delta_r) + l_r\tan(\delta_f)}{l_f + l_r} \tag{13}
+\]</span></p>
+<p>故取反三角函数得</p>
+<p><span class="math display">\[
+\beta = \arctan(\frac{l_f\tan(\delta_r) + l_r\tan(\delta_f)}{l_f + l_r} \tag{13})
+\]</span></p>
+<h3 id="位置信息">位置信息</h3>
+<p>根据单车模型得</p>
+<p><span class="math display">\[
+\dot{X} = V\cos(\beta + \psi) \tag{14}
+\]</span> <span class="math display">\[
+\dot{Y} = V\sin(\beta + \psi) \tag{15}
+\]</span></p>
+<h2 id="补充">补充</h2>
+<p><img data-src="https://i.loli.net/2021/08/30/CZdbvJf1uQzR47S.png" style="zoom: 80%;" /></p>
+<p>由上图可知，<span class="math inline">\(l_w\)</span>为车轴宽度，为了避免与上述单车模型的转向角定义重复，使用<span class="math inline">\(\delta_o\)</span>表示外部转向角，<span class="math inline">\(\delta_i\)</span>表示内部转向角。由于轴距<span class="math inline">\(L = l_f + l_r\)</span>远远小于轨迹半径<span class="math inline">\(R\)</span>，滑移角<span class="math inline">\(\beta\)</span>接近于0。一般车辆模型后轴为固定轴，故<span class="math inline">\(\delta_r\)</span>为0，所以等式(9)可以近似为</p>
+<p><span class="math display">\[
+\dot{\psi} = \frac{V}{L}\tan(\delta_f) \tag{16}
+\]</span></p>
+<p>由于<span class="math inline">\(\delta_f\)</span>很小</p>
+<p><span class="math display">\[
+\tan(\delta_f) \approx \delta_f \tag{17}
+\]</span></p>
+<p>根据等式(8)和等式(16)得</p>
+<p><span class="math display">\[
+\frac{\dot{\psi}}{V} \approx \frac{\delta_f}{L} = \frac{1}{R} \tag{18}
+\]</span></p>
+<p>故不区分前后轴，等效转向角为</p>
+<p><span class="math display">\[
+\delta = \frac{L}{R} \tag{19}
+\]</span></p>
+<p>由于内外轮的转弯半径不同，根据等式(19),外轮转角为</p>
+<p><span class="math display">\[
+\delta_o = \frac{L}{R + \frac{l_w}{2}} \tag{20}
+\]</span></p>
+<p>内轮转角为</p>
+<p><span class="math display">\[
+\delta_i = \frac{L}{R - \frac{l_w}{2}} \tag{21}
+\]</span></p>
+<p>故前轮平均转向角为</p>
+<p><span class="math display">\[
+\delta = \frac{\delta_o + \delta_i}{2} = \frac{L}{R - \frac{l_w^2}{4R}} \tag{22}
+\]</span></p>
+<p>由于<span class="math inline">\(\frac{l_w^2}{4R}\)</span>项中，<span class="math inline">\(l_w\)</span>远远小于<span class="math inline">\(R\)</span>,且<span class="math inline">\(l_w\)</span>的二次项更小，故</p>
+<p><span class="math display">\[
+\frac{l_w^2}{4R} \cong 0 \tag{23}
+\]</span></p>
+<p>所以等式(22)可以近似为</p>
+<p><span class="math display">\[
+\delta = \frac{L}{R} \tag{24}
+\]</span></p>
+<p>比较等式(20)和(21)知，<span class="math inline">\(\delta_i\)</span>始终大于<span class="math inline">\(\delta_o\)</span>，故</p>
+<p><span class="math display">\[
+\delta_i - \delta_o = \frac{L}{R - \frac{l_w}{2}} - \frac{L}{R + \frac{l_w}{2}} \quad\\
+=\frac{Ll_w}{R^2 - \frac{l_w^2}{4}} \qquad\\
+\cong \frac{L}{R^2}l_w = \delta^2\frac{l_w}{L} \tag{25}
+\]</span></p>
+<p>根据等式(25)可知，前轮内外转向角的差值接近于平均转向角的二次方，所以当前轮转向角较大时，内外轮的转向角误差就越大。</p>
+<h2 id="结论">结论</h2>
+<p>车辆运动模型基于单车模型推导，推导过程不考虑车辆受到的横向力，故该模型只适用于车辆速度很低的情形。</p>
+<p><span class="math display">\[
+a = \frac{mV^2}{R} \tag{26}
+\]</span></p>
+<p>根据等式(26)知，速度很小时，车辆受到的向心力可以忽略不记，所以才有公式(8)的成立。所以当车辆的运动场景速度较低时，可以使用该模型描述车辆的运动。</p>
+<h3 id="微分方程形式">微分方程形式</h3>
+<p>根据等式(9)、(14)和(15)，对于前轮转向系统，<span class="math inline">\(\delta_r = 0\)</span>，可得</p>
+<p><span class="math display">\[
+\dot{X} = V\cos(\beta + \psi) \qquad\\
+\dot{Y} = V\sin(\beta + \psi) \qquad\\
+\dot{\psi} = \frac{V\cos(\beta)\tan(\delta_f)}{L}
+\]</span></p>
+<p>其中</p>
+<p><span class="math display">\[
+\beta = \arctan(\frac{l_r\tan(\delta_f)}{l_f + l_r})
+\]</span></p>
+<p>假设车辆重心点在后轴中心点，则<span class="math inline">\(beta \cong 0\)</span>，由上述微分方程得</p>
+<p><span class="math display">\[
+\dot{X} = V\cos(\psi) \quad\\
+\dot{Y} = V\sin(\psi) \quad\\
+\dot{\psi} = \frac{V\tan(\delta_f)}{L}
+\]</span></p>
+<h2 id="参考">参考</h2>
+<ol type="1">
+<li>" vehicle dynamics and control "</li>
+</ol>
+]]></content>
+      <categories>
+        <category>控制算法</category>
+        <category>车辆模型</category>
+      </categories>
+      <tags>
+        <tag>车辆模型</tag>
+        <tag>车辆控制</tag>
+        <tag>运动模型</tag>
+        <tag>单车模型</tag>
+        <tag>Kinematic Model</tag>
+        <tag>bycycle model</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>控制算法-非时间参考的车辆路径跟踪</title>
     <url>/2019/12/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E9%9D%9E%E6%97%B6%E9%97%B4%E5%8F%82%E8%80%83%E7%9A%84%E8%BD%A6%E8%BE%86%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -6029,183 +6206,6 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
         <tag>ReedsSheep</tag>
         <tag>RS曲线</tag>
         <tag>Dubins曲线</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>控制算法-运动学模型</title>
-    <url>/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%A8%A1%E5%9E%8B/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>车辆横向运动学模型描述了车辆横向运动的数学模型，该模型不考虑车辆的受力情况。一般考虑运动学模型时，将车辆模型简化成单车模型(bicycle model)。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/ot5fGZUwzhgNx94.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="单车模型">单车模型</h2>
-<p><img data-src="https://i.loli.net/2021/08/30/vNEmAlxMSaX9cWu.png" style="zoom: 80%;" /></p>
-<p>单车模型中：</p>
-<ul>
-<li><p><strong>左右轮等效为单个轮子</strong> 左右前轮合并为单个轮子，其中心点为<span class="math inline">\(A\)</span>点，同样后轮等效后的中心点为<span class="math inline">\(B\)</span>点。</p></li>
-<li><p><strong>转向角</strong> 前后轮的转向角用<span class="math inline">\(\delta_f\)</span>和<span class="math inline">\(\delta_r\)</span>表示，模型中前后轮都可以转向，对于只有前轮转向的系统，后轮转向角<span class="math inline">\(\delta_r\)</span>可以设置为0.</p></li>
-<li><p><strong>重心</strong> 点<span class="math inline">\(C\)</span>代表车辆的重心，<span class="math inline">\(A\)</span>点和<span class="math inline">\(B\)</span>点到重心的距离分别用<span class="math inline">\(l_f\)</span>和<span class="math inline">\(l_r\)</span>表示，轴距表示为<span class="math inline">\(L = l_f + l_r\)</span>。</p></li>
-<li><p><strong>速度</strong> 车辆重心的速度用<span class="math inline">\(V\)</span>表示，与车辆纵向轴的夹角为<span class="math inline">\(\beta\)</span>，该角度叫做车辆的滑移角。</p></li>
-<li><p><strong>运动描述</strong> 假设车辆平动，车辆运动状态可以用三个坐标量描述：<span class="math inline">\(X\)</span> 、 <span class="math inline">\(Y\)</span> 和 <span class="math inline">\(\psi\)</span>。其中<span class="math inline">\((X,Y)\)</span>代表车辆重心的位置，<span class="math inline">\(\Psi\)</span>描述了车辆的方向。</p></li>
-<li><p><strong>条件假设</strong> 假设速度矢量<span class="math inline">\(V\)</span>的方向在点<span class="math inline">\(A\)</span>点和<span class="math inline">\(B\)</span>点的方向与转向角的方向相同，换句话说，在A点的速度矢量与车辆纵轴的夹角为<span class="math inline">\(\delta_f\)</span>，同样<span class="math inline">\(B\)</span>点的速度矢量与车辆纵轴的夹角为<span class="math inline">\(\delta_r\)</span>。也就是说前后轮的滑移角都为0。该条件假设成立前提的是车辆速度很低(&lt;5m/s)，此时轮胎产生的横向力很小，可以忽略。</p></li>
-<li><p><strong>轨迹半径</strong> 点<span class="math inline">\(O\)</span>代表车辆的瞬时旋转中心，线段<span class="math inline">\(AO\)</span>与<span class="math inline">\(BO\)</span>与前后两个转轮方向垂直，他们的交点即为<span class="math inline">\(O\)</span>点，线段<span class="math inline">\(OC\)</span>的长度代表车辆的轨迹半径<span class="math inline">\(R\)</span>。</p></li>
-<li><p><strong>航迹角</strong> 车辆重心处的速度垂直于<span class="math inline">\(OC\)</span>,车辆速度矢量与车辆纵轴的夹角为<span class="math inline">\(\beta\)</span>，车辆的航向角为<span class="math inline">\(\psi\)</span>，则航迹角为<span class="math inline">\(\gamma = \psi + \beta\)</span>。</p></li>
-</ul>
-<h2 id="运动方程">运动方程</h2>
-<h3 id="概述-1">概述</h3>
-<p>运动方程可以根据单车模型几何关系推导出，下面根据单车模型的几何关系，推导出车辆运动的微分方程。</p>
-<h3 id="姿态信息偏航角">姿态信息(偏航角)</h3>
-<p>三角形<span class="math inline">\(OCA\)</span>根据正弦定理得</p>
-<p><span class="math display">\[
-\frac{\sin(\delta_f - \beta)}{l_f} = \frac{\sin(\frac{\pi}{2} - \delta_f)}{R} \tag{1}
-\]</span></p>
-<p>同理，三角形<span class="math inline">\(OCB\)</span>根据正弦定理可得</p>
-<p><span class="math display">\[
-\frac{\sin(\beta - \delta_r)}{l_r} = \frac{\sin(\frac{\pi}{2} + \delta_r)}{R} \tag{2}
-\]</span></p>
-<p>根据<strong>和差定理</strong>，等式(1)得</p>
-<p><span class="math display">\[
-\frac{\sin(\delta_f)\cos(\beta) - \cos(\delta_f)\sin(\beta)}{l_f} = \frac{\cos(\delta_f)}{R} \tag{3}
-\]</span></p>
-<p>同理，根据等式(2)得</p>
-<p><span class="math display">\[
-\frac{\cos(\delta_r)\sin(\beta) - \cos(\beta)\sin(\delta_r)}{l_r} = \frac{\cos(\delta_f)}{R} \tag{4}
-\]</span></p>
-<p>等式(3)两边同时乘<span class="math inline">\(\frac{l_f}{\cos(\delta_f)}\)</span>得</p>
-<p><span class="math display">\[
-\tan(\delta_f)\cos(\beta) - sin(\beta) = \frac{l_f}{R} \tag{5}
-\]</span></p>
-<p>同理，等式(4)两边同时乘<span class="math inline">\(\frac{l_r}{\cos(\delta_r)}\)</span>得</p>
-<p><span class="math display">\[
-sin(\beta) - \tan(\delta_r)\cos(\beta) = \frac{l_r}{R} \tag{6}
-\]</span></p>
-<p>等式(5)和(6)相加得</p>
-<p><span class="math display">\[
-\{\tan(\delta_f) - \tan(\delta_r)\}\cos(\beta) = \frac{l_f + l_r}{R} \tag{7}
-\]</span></p>
-<p>根据条件假设，车辆速度很低，车辆的轨迹半径变化就很慢。车辆偏航角的变化率(<span class="math inline">\(\dot{\psi}\)</span>)可以近似等于车辆的角速度(<span class="math inline">\(\omega\)</span>)。根据车辆角速度<span class="math inline">\(\omega = \frac{V}{R}\)</span>得</p>
-<p><span class="math display">\[
-\dot{\psi} = \frac{V}{R} \tag{8}
-\]</span></p>
-<p>将等式(8)带入等式(7)中，消除<span class="math inline">\(R\)</span>项得</p>
-<p><span class="math display">\[
-\dot{\psi} = \frac{V\cos(\beta)}{l_f + l_r}\{\tan(\delta_f) - \tan(\delta_r)\} \tag{9}
-\]</span></p>
-<p>上述等式一共三个输入变量：<span class="math inline">\(\delta_f\)</span> 、<span class="math inline">\(\delta_r\)</span>和<span class="math inline">\(V\)</span>。其中<span class="math inline">\(\delta_f\)</span>和<span class="math inline">\(\delta_r\)</span>是车辆的转向角，可以通过车身传感器获得。<span class="math inline">\(V\)</span>是一个外部变量，可以假设其为时变函数，可以从纵向控制中获得。</p>
-<h4 id="滑移角beta的计算">滑移角<span class="math inline">\(\beta\)</span>的计算</h4>
-<p>等式(5)乘以<span class="math inline">\(l_r\)</span>，</p>
-<p><span class="math display">\[
-\tan(\delta_f)\cos(\beta)l_r - sin(\beta)l_r = \frac{l_f*l_r}{R} \tag{10}
-\]</span></p>
-<p>等式(6)乘以<span class="math inline">\(l_f\)</span>得</p>
-<p><span class="math display">\[
-sin(\beta)l_f - \tan(\delta_r)\cos(\beta)l_f = \frac{l_f*l_r}{R} \tag{11}
-\]</span></p>
-<p>等式(10)和(11)相减得</p>
-<p><span class="math display">\[
-\cos(\beta)(l_f\tan(\delta_r) + l_r\tan(\delta_f)) = \sin(\beta)(l_f + l_r) \tag{12}
-\]</span></p>
-<p>等式(12)两端同时乘以<span class="math inline">\(\frac{1}{\cos(\beta)}\)</span>得</p>
-<p><span class="math display">\[
-\tan(\beta) = \frac{l_f\tan(\delta_r) + l_r\tan(\delta_f)}{l_f + l_r} \tag{13}
-\]</span></p>
-<p>故取反三角函数得</p>
-<p><span class="math display">\[
-\beta = \arctan(\frac{l_f\tan(\delta_r) + l_r\tan(\delta_f)}{l_f + l_r} \tag{13})
-\]</span></p>
-<h3 id="位置信息">位置信息</h3>
-<p>根据单车模型得</p>
-<p><span class="math display">\[
-\dot{X} = V\cos(\beta + \psi) \tag{14}
-\]</span> <span class="math display">\[
-\dot{Y} = V\sin(\beta + \psi) \tag{15}
-\]</span></p>
-<h2 id="补充">补充</h2>
-<p><img data-src="https://i.loli.net/2021/08/30/CZdbvJf1uQzR47S.png" style="zoom: 80%;" /></p>
-<p>由上图可知，<span class="math inline">\(l_w\)</span>为车轴宽度，为了避免与上述单车模型的转向角定义重复，使用<span class="math inline">\(\delta_o\)</span>表示外部转向角，<span class="math inline">\(\delta_i\)</span>表示内部转向角。由于轴距<span class="math inline">\(L = l_f + l_r\)</span>远远小于轨迹半径<span class="math inline">\(R\)</span>，滑移角<span class="math inline">\(\beta\)</span>接近于0。一般车辆模型后轴为固定轴，故<span class="math inline">\(\delta_r\)</span>为0，所以等式(9)可以近似为</p>
-<p><span class="math display">\[
-\dot{\psi} = \frac{V}{L}\tan(\delta_f) \tag{16}
-\]</span></p>
-<p>由于<span class="math inline">\(\delta_f\)</span>很小</p>
-<p><span class="math display">\[
-\tan(\delta_f) \approx \delta_f \tag{17}
-\]</span></p>
-<p>根据等式(8)和等式(16)得</p>
-<p><span class="math display">\[
-\frac{\dot{\psi}}{V} \approx \frac{\delta_f}{L} = \frac{1}{R} \tag{18}
-\]</span></p>
-<p>故不区分前后轴，等效转向角为</p>
-<p><span class="math display">\[
-\delta = \frac{L}{R} \tag{19}
-\]</span></p>
-<p>由于内外轮的转弯半径不同，根据等式(19),外轮转角为</p>
-<p><span class="math display">\[
-\delta_o = \frac{L}{R + \frac{l_w}{2}} \tag{20}
-\]</span></p>
-<p>内轮转角为</p>
-<p><span class="math display">\[
-\delta_i = \frac{L}{R - \frac{l_w}{2}} \tag{21}
-\]</span></p>
-<p>故前轮平均转向角为</p>
-<p><span class="math display">\[
-\delta = \frac{\delta_o + \delta_i}{2} = \frac{L}{R - \frac{l_w^2}{4R}} \tag{22}
-\]</span></p>
-<p>由于<span class="math inline">\(\frac{l_w^2}{4R}\)</span>项中，<span class="math inline">\(l_w\)</span>远远小于<span class="math inline">\(R\)</span>,且<span class="math inline">\(l_w\)</span>的二次项更小，故</p>
-<p><span class="math display">\[
-\frac{l_w^2}{4R} \cong 0 \tag{23}
-\]</span></p>
-<p>所以等式(22)可以近似为</p>
-<p><span class="math display">\[
-\delta = \frac{L}{R} \tag{24}
-\]</span></p>
-<p>比较等式(20)和(21)知，<span class="math inline">\(\delta_i\)</span>始终大于<span class="math inline">\(\delta_o\)</span>，故</p>
-<p><span class="math display">\[
-\delta_i - \delta_o = \frac{L}{R - \frac{l_w}{2}} - \frac{L}{R + \frac{l_w}{2}} \quad\\
-=\frac{Ll_w}{R^2 - \frac{l_w^2}{4}} \qquad\\
-\cong \frac{L}{R^2}l_w = \delta^2\frac{l_w}{L} \tag{25}
-\]</span></p>
-<p>根据等式(25)可知，前轮内外转向角的差值接近于平均转向角的二次方，所以当前轮转向角较大时，内外轮的转向角误差就越大。</p>
-<h2 id="结论">结论</h2>
-<p>车辆运动模型基于单车模型推导，推导过程不考虑车辆受到的横向力，故该模型只适用于车辆速度很低的情形。</p>
-<p><span class="math display">\[
-a = \frac{mV^2}{R} \tag{26}
-\]</span></p>
-<p>根据等式(26)知，速度很小时，车辆受到的向心力可以忽略不记，所以才有公式(8)的成立。所以当车辆的运动场景速度较低时，可以使用该模型描述车辆的运动。</p>
-<h3 id="微分方程形式">微分方程形式</h3>
-<p>根据等式(9)、(14)和(15)，对于前轮转向系统，<span class="math inline">\(\delta_r = 0\)</span>，可得</p>
-<p><span class="math display">\[
-\dot{X} = V\cos(\beta + \psi) \qquad\\
-\dot{Y} = V\sin(\beta + \psi) \qquad\\
-\dot{\psi} = \frac{V\cos(\beta)\tan(\delta_f)}{L}
-\]</span></p>
-<p>其中</p>
-<p><span class="math display">\[
-\beta = \arctan(\frac{l_r\tan(\delta_f)}{l_f + l_r})
-\]</span></p>
-<p>假设车辆重心点在后轴中心点，则<span class="math inline">\(beta \cong 0\)</span>，由上述微分方程得</p>
-<p><span class="math display">\[
-\dot{X} = V\cos(\psi) \quad\\
-\dot{Y} = V\sin(\psi) \quad\\
-\dot{\psi} = \frac{V\tan(\delta_f)}{L}
-\]</span></p>
-<h2 id="参考">参考</h2>
-<ol type="1">
-<li>" vehicle dynamics and control "</li>
-</ol>
-]]></content>
-      <categories>
-        <category>控制算法</category>
-        <category>车辆模型</category>
-      </categories>
-      <tags>
-        <tag>车辆模型</tag>
-        <tag>车辆控制</tag>
-        <tag>运动模型</tag>
-        <tag>单车模型</tag>
-        <tag>Kinematic Model</tag>
-        <tag>bycycle model</tag>
       </tags>
   </entry>
   <entry>
