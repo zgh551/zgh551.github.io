@@ -2445,6 +2445,84 @@
       </tags>
   </entry>
   <entry>
+    <title>路径规划-AStar</title>
+    <url>/2020/04/15/%E5%9F%BA%E4%BA%8E%E5%9B%BE%E6%90%9C%E7%B4%A2-AStar/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>A*算法是一种基于图搜索的路径搜索算法,通过结合移动代价和启发代价,优化路径的搜索性能. <img data-src="https://i.loli.net/2021/08/30/kMIZKgcV7PnNQEC.jpg" alt="青岛" /> <span id="more"></span></p>
+<h2 id="算法描述">算法描述</h2>
+<h3 id="确定规划的起点和终点">确定规划的起点和终点</h3>
+<p>下图所示,红色方块代表规划<strong>起始点</strong>,绿色方块代表<strong>终点</strong>,深灰色方块代表<strong>障碍物</strong>区域,其余白色方块代表可行驶区域(free space).首先将起始点节点推送到open集合中.</p>
+<p><img data-src="https://i.loli.net/2021/08/30/3agpvPEB89XTLK4.png" alt="原始地图给定起始点和终点" style="zoom:50%;" /></p>
+<h3 id="产生临近节点">产生临近节点</h3>
+<p>每次从open集合中取出<strong>总代价值</strong>最小的节点,由于当前open集合中只有起始节点,所以此时从open集合中取出的就是起始节点,并将该节点推入close集合.</p>
+<p>如下图所示,基于起始节点生成相邻节点,并计算每个节点的代价值.其中<strong>A</strong>*节点的代价值由<strong>移动代价</strong>和<strong>启发代价</strong>组成,即<span class="math inline">\(F = G + H\)</span>.</p>
+<p>本例中,采用如下距离计算代价值:</p>
+<ul>
+<li><strong>移动代价</strong> 采用欧拉距离计算移动代价值</li>
+<li><strong>启动代价</strong> 采用曼哈顿距离计算启发代价值</li>
+</ul>
+<p><img data-src="https://i.loli.net/2021/08/30/6sE9MRizIfejx4H.png" alt="临近节点产生" style="zoom:50%;" /></p>
+<h4 id="图例说明">图例说明</h4>
+<p>下图是对上图中每个节点中小方格的说明:</p>
+<ul>
+<li><strong>左下角</strong>的方格代表移动代价</li>
+<li><strong>右下角</strong>的方格代表启发代价</li>
+<li><strong>最上方</strong>的矩形方格代表总的代价值</li>
+<li><strong>中间</strong>的紫色方格代表父节点的方向</li>
+</ul>
+<p><img data-src="https://i.loli.net/2021/08/30/dk7cMlj1O5ACWNZ.png" style="zoom: 80%;" /></p>
+<h3 id="节点选择">节点选择</h3>
+<p>A*算法下一节点的选择,是从open集合中选取总代价值最小的节点.如下图所示,位于起始点右侧的节点代价值最小,图中使用浅绿色蒙板覆盖该节点表示选中.</p>
+<p><img data-src="https://i.loli.net/2021/08/30/yaH7igL1RWFxMEI.png" alt="选择价值最低节点" style="zoom:80%;" /></p>
+<h3 id="节点扩展">节点扩展</h3>
+<p>基于选中的节点,根据扩展规则,生成新的临近节点,计算临近节点时只需要计算<strong>移动代价</strong>.</p>
+<p>如下图中的右侧所示,对于新生成的8个节点需要做如下条件判断:</p>
+<ul>
+<li><p>是否在<strong>close</strong>集合中:</p>
+<p>如果该节点在close集合中,直接跳过该节点,进行下一节点的判断</p></li>
+<li><p>是否<strong>碰撞</strong>:</p>
+<p>若该节点与障碍物存在碰撞可能,则跳过该节点,进行下一节点的判断;</p></li>
+<li><p>是否在<strong>open</strong>集合中:</p>
+<ol type="1">
+<li><p>如果该节点==在==open集合中,需要判断该节点的移动代价是否小于原先位置节点的移动代价:</p>
+<p>如果小于,则替换原先节点,并将节点的父节点方向指向当前节点,否则跳过该节点,进行下一节点的判断.</p></li>
+<li><p>如果该节点==不在==open集合,则直接将其加入open集合.</p></li>
+</ol></li>
+</ul>
+<p>如下图所示,当前节点的左侧的节点已经在close集合中,直接跳过该节点;当前节点左上角,左下角,上方和下方的节点已经在open集合中,所以需要比较新节点与open集合中节点的移动代价.通过比较,这四个新节点的移动代价大于相应open集合中节点的移动代价,所以跳过这些节点;当前节点右侧三个新节点都不在open集合中,所以直接将它们推入open集合.</p>
+<p><img data-src="https://i.loli.net/2021/08/30/zdJIXQBpYuF7OAZ.png" style="zoom: 67%;" /></p>
+<p>基于扩展规则,不断推出总代价值最小的节点,并扩展这些节点.下图中,当前节点右侧三个新节点与障碍存在碰撞,所以直接跳过.</p>
+<p><img data-src="https://i.loli.net/2021/08/30/pqgZ2vl5XixR4mU.png" style="zoom: 67%;" /></p>
+<p>如下图所示,如果存在总代价相等的情况,则先推出最新推入的节点.下图中,假设右下方总代价值为64的节点是新推进open集合的节点.</p>
+<p><img data-src="https://i.loli.net/2021/08/30/JENcBzb1UmMZYLX.png" style="zoom:67%;" /></p>
+<p>如下图所示,继续推出新的节点,并迭代更新.</p>
+<p><img data-src="https://i.loli.net/2021/08/30/v4cL526HZYWtbXh.png" style="zoom:67%;" /></p>
+<p>如下图所示,新的节点有的与障碍物存在碰撞,有的已经在close集合中,有的移动代价大于原先的节点;但当前节点下方的节点,其移动代价小于open集中对应节点的代价,所以需替换open集合中该节点的移动代价,并将其父节点指向当前节点.</p>
+<p><img data-src="https://i.loli.net/2021/08/30/pBPmRbjvfouhLzq.png" style="zoom:67%;" /></p>
+<h3 id="迭代">迭代</h3>
+<p>如下图所示,直到从open集合中推出的节点是终点,表明搜索结束.浅绿色蒙板包含的区域属于close集合,其它搜索过的节点属于open集合.如果遍历所有open集合的节点都无法到达终点,则搜索失败.</p>
+<p><img data-src="https://i.loli.net/2020/10/31/w3grmTFfHltY24U.png" alt="搜索完成" style="zoom: 67%;" /></p>
+<h3 id="获取路径">获取路径</h3>
+<p>如下图所示,搜索结束后,以终点为起始节点,根据节点所指向的父节点,反向更新搜索路径,直到节点的父节点指向为空,即到达起始点.</p>
+<p><img data-src="https://i.loli.net/2020/10/31/Eqa4sbG6jgUnXVI.png" alt="搜索结果" style="zoom: 67%;" /></p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://www.redblobgames.com/pathfinding/a-star/introduction.html">Introduction to the A* Algorithm</a></li>
+<li><a href="https://www.redblobgames.com/pathfinding/a-star/implementation.html#algorithm">Implementation of A*</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/161660932">路径规划中的Hybrid A*算法</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>规划算法</category>
+        <category>图搜索算法</category>
+      </categories>
+      <tags>
+        <tag>路径规划</tag>
+        <tag>A Star</tag>
+        <tag>A*</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>传感器融合-路面坡度计算</title>
     <url>/2020/09/17/%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88-%E8%B7%AF%E9%9D%A2%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -2560,84 +2638,6 @@ D = \frac{\hat{b}}{mg} \tag{17}
         <tag>传感器融合</tag>
         <tag>车辆坡度计算</tag>
         <tag>加速度计</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>路径规划-AStar</title>
-    <url>/2020/04/15/%E5%9F%BA%E4%BA%8E%E5%9B%BE%E6%90%9C%E7%B4%A2-AStar/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>A*算法是一种基于图搜索的路径搜索算法,通过结合移动代价和启发代价,优化路径的搜索性能. <img data-src="https://i.loli.net/2021/08/30/kMIZKgcV7PnNQEC.jpg" alt="青岛" /> <span id="more"></span></p>
-<h2 id="算法描述">算法描述</h2>
-<h3 id="确定规划的起点和终点">确定规划的起点和终点</h3>
-<p>下图所示,红色方块代表规划<strong>起始点</strong>,绿色方块代表<strong>终点</strong>,深灰色方块代表<strong>障碍物</strong>区域,其余白色方块代表可行驶区域(free space).首先将起始点节点推送到open集合中.</p>
-<p><img data-src="https://i.loli.net/2021/08/30/3agpvPEB89XTLK4.png" alt="原始地图给定起始点和终点" style="zoom:50%;" /></p>
-<h3 id="产生临近节点">产生临近节点</h3>
-<p>每次从open集合中取出<strong>总代价值</strong>最小的节点,由于当前open集合中只有起始节点,所以此时从open集合中取出的就是起始节点,并将该节点推入close集合.</p>
-<p>如下图所示,基于起始节点生成相邻节点,并计算每个节点的代价值.其中<strong>A</strong>*节点的代价值由<strong>移动代价</strong>和<strong>启发代价</strong>组成,即<span class="math inline">\(F = G + H\)</span>.</p>
-<p>本例中,采用如下距离计算代价值:</p>
-<ul>
-<li><strong>移动代价</strong> 采用欧拉距离计算移动代价值</li>
-<li><strong>启动代价</strong> 采用曼哈顿距离计算启发代价值</li>
-</ul>
-<p><img data-src="https://i.loli.net/2021/08/30/6sE9MRizIfejx4H.png" alt="临近节点产生" style="zoom:50%;" /></p>
-<h4 id="图例说明">图例说明</h4>
-<p>下图是对上图中每个节点中小方格的说明:</p>
-<ul>
-<li><strong>左下角</strong>的方格代表移动代价</li>
-<li><strong>右下角</strong>的方格代表启发代价</li>
-<li><strong>最上方</strong>的矩形方格代表总的代价值</li>
-<li><strong>中间</strong>的紫色方格代表父节点的方向</li>
-</ul>
-<p><img data-src="https://i.loli.net/2021/08/30/dk7cMlj1O5ACWNZ.png" style="zoom: 80%;" /></p>
-<h3 id="节点选择">节点选择</h3>
-<p>A*算法下一节点的选择,是从open集合中选取总代价值最小的节点.如下图所示,位于起始点右侧的节点代价值最小,图中使用浅绿色蒙板覆盖该节点表示选中.</p>
-<p><img data-src="https://i.loli.net/2021/08/30/yaH7igL1RWFxMEI.png" alt="选择价值最低节点" style="zoom:80%;" /></p>
-<h3 id="节点扩展">节点扩展</h3>
-<p>基于选中的节点,根据扩展规则,生成新的临近节点,计算临近节点时只需要计算<strong>移动代价</strong>.</p>
-<p>如下图中的右侧所示,对于新生成的8个节点需要做如下条件判断:</p>
-<ul>
-<li><p>是否在<strong>close</strong>集合中:</p>
-<p>如果该节点在close集合中,直接跳过该节点,进行下一节点的判断</p></li>
-<li><p>是否<strong>碰撞</strong>:</p>
-<p>若该节点与障碍物存在碰撞可能,则跳过该节点,进行下一节点的判断;</p></li>
-<li><p>是否在<strong>open</strong>集合中:</p>
-<ol type="1">
-<li><p>如果该节点==在==open集合中,需要判断该节点的移动代价是否小于原先位置节点的移动代价:</p>
-<p>如果小于,则替换原先节点,并将节点的父节点方向指向当前节点,否则跳过该节点,进行下一节点的判断.</p></li>
-<li><p>如果该节点==不在==open集合,则直接将其加入open集合.</p></li>
-</ol></li>
-</ul>
-<p>如下图所示,当前节点的左侧的节点已经在close集合中,直接跳过该节点;当前节点左上角,左下角,上方和下方的节点已经在open集合中,所以需要比较新节点与open集合中节点的移动代价.通过比较,这四个新节点的移动代价大于相应open集合中节点的移动代价,所以跳过这些节点;当前节点右侧三个新节点都不在open集合中,所以直接将它们推入open集合.</p>
-<p><img data-src="https://i.loli.net/2021/08/30/zdJIXQBpYuF7OAZ.png" style="zoom: 67%;" /></p>
-<p>基于扩展规则,不断推出总代价值最小的节点,并扩展这些节点.下图中,当前节点右侧三个新节点与障碍存在碰撞,所以直接跳过.</p>
-<p><img data-src="https://i.loli.net/2021/08/30/pqgZ2vl5XixR4mU.png" style="zoom: 67%;" /></p>
-<p>如下图所示,如果存在总代价相等的情况,则先推出最新推入的节点.下图中,假设右下方总代价值为64的节点是新推进open集合的节点.</p>
-<p><img data-src="https://i.loli.net/2021/08/30/JENcBzb1UmMZYLX.png" style="zoom:67%;" /></p>
-<p>如下图所示,继续推出新的节点,并迭代更新.</p>
-<p><img data-src="https://i.loli.net/2021/08/30/v4cL526HZYWtbXh.png" style="zoom:67%;" /></p>
-<p>如下图所示,新的节点有的与障碍物存在碰撞,有的已经在close集合中,有的移动代价大于原先的节点;但当前节点下方的节点,其移动代价小于open集中对应节点的代价,所以需替换open集合中该节点的移动代价,并将其父节点指向当前节点.</p>
-<p><img data-src="https://i.loli.net/2021/08/30/pBPmRbjvfouhLzq.png" style="zoom:67%;" /></p>
-<h3 id="迭代">迭代</h3>
-<p>如下图所示,直到从open集合中推出的节点是终点,表明搜索结束.浅绿色蒙板包含的区域属于close集合,其它搜索过的节点属于open集合.如果遍历所有open集合的节点都无法到达终点,则搜索失败.</p>
-<p><img data-src="https://i.loli.net/2020/10/31/w3grmTFfHltY24U.png" alt="搜索完成" style="zoom: 67%;" /></p>
-<h3 id="获取路径">获取路径</h3>
-<p>如下图所示,搜索结束后,以终点为起始节点,根据节点所指向的父节点,反向更新搜索路径,直到节点的父节点指向为空,即到达起始点.</p>
-<p><img data-src="https://i.loli.net/2020/10/31/Eqa4sbG6jgUnXVI.png" alt="搜索结果" style="zoom: 67%;" /></p>
-<h2 id="参考">参考</h2>
-<ul>
-<li><a href="https://www.redblobgames.com/pathfinding/a-star/introduction.html">Introduction to the A* Algorithm</a></li>
-<li><a href="https://www.redblobgames.com/pathfinding/a-star/implementation.html#algorithm">Implementation of A*</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/161660932">路径规划中的Hybrid A*算法</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>规划算法</category>
-        <category>图搜索算法</category>
-      </categories>
-      <tags>
-        <tag>路径规划</tag>
-        <tag>A Star</tag>
-        <tag>A*</tag>
       </tags>
   </entry>
   <entry>
@@ -4062,6 +4062,140 @@ P_{t-1} = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A
       </tags>
   </entry>
   <entry>
+    <title>控制算法-滑模控制抖振消除</title>
+    <url>/2019/12/27/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E6%8A%96%E6%8C%AF%E6%B6%88%E9%99%A4/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>在实际控制系统中，包括直流电机和飞机控制，通过连续或者平滑控制信号来避免控制抖振都是非常重要的方式。进一步说，飞机的气动表面不能高频来回运动，但同时对于边界模型不确定且存在外部干扰的控制系统，渴望保持其鲁棒性或不敏感度。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/e6fD51xMwEGqdnO.jpg" alt="重庆美术学院" /><figcaption aria-hidden="true">重庆美术学院</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="消抖方法">消抖方法</h2>
+<h3 id="抖振消除">抖振消除</h3>
+<p>一个显而易见使控制函数连续且平滑的解决方案就是通过一些连续或平滑函数代替非连续函数<span class="math inline">\(v(\sigma) = -\rho sign(\sigma)\)</span>。进一步说，它可以被"sigmoid function"替代。</p>
+<p><span class="math display">\[
+sign(\sigma) \approx \frac{\sigma}{\rvert \sigma \rvert + \varepsilon} \tag{1}
+\]</span></p>
+<p>其中，<span class="math inline">\(\varepsilon\)</span>是一个很小的正标量。可以看出，对于所有<span class="math inline">\(\sigma \neq 0\)</span>，下述等式成立：</p>
+<p><span class="math display">\[
+\lim_{\varepsilon \to 0}\frac{\sigma}{\rvert \sigma \rvert + \varepsilon} = sign(\sigma) \tag{2}
+\]</span></p>
+<p>对于<span class="math inline">\(\varepsilon\)</span>的选择需要权衡既要保持系统的性能理想又要确保控制的平滑。</p>
+<p>关于 Sigmoid Function 的图形如下：</p>
+<p><img data-src="https://i.loli.net/2021/08/30/NoXcDfzSPqBFMQJ.png" /></p>
+<p>使用伪滑动模态控制率如下：</p>
+<p><span class="math display">\[
+u = -c \cdot x_2 - \rho\frac{\sigma}{\rvert \sigma \rvert + \varepsilon} \tag{3}
+\]</span></p>
+<h4 id="仿真结果">仿真结果</h4>
+<p><img data-src="https://i.loli.net/2021/08/30/gsIFvU3k7RONlBe.png" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/FyCmKcoS1YnELZ6.png" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/xA2XwCuNatFjLpk.png" /></p>
+<p>由上图可知，平滑控制函数不能够在存在外部干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>时，使得滑模变量在有限时间内收敛于0。并且滑模变量和状态变量都不能收敛于0，但由于干扰项<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>影响，使其收敛到原点附近的范围。实现平滑控制函数的代价是鲁棒性的损失和准确性降低。因为滑模变量在有限的时间内没有趋向于0，所以等式(3)所设计的平滑控制从技术上讲不是滑模控制，在系统中也不是理想的滑动模态。但是在等式(3)中平滑控制率下的系统性能接近于离散滑模控制下的系统性能。这就为我们将等式(3)对应的平滑控制率称为<strong>准滑模控制</strong>(<em>quasi-sliding mode control</em>)提供了依据，而当滑模面收敛于原点时，就叫做 <strong>准滑动模态</strong>(<em>quasi-sliding mode</em>)</p>
+<h3 id="抖振衰减">抖振衰减</h3>
+<p>考虑设计另一种对边界干扰具有鲁棒性的连续控制器，设计思想就是根据控制函数的微分形式设计滑模控制器。在这种情况下，高频切换函数的积分作为实际控制是连续的。这种方法叫做 <strong>抖振衰减</strong>(<em>chattering attenuation</em>)，这是因为在高频切换函数积分后仍然能在滑模控制中观察到一些周期性残差。</p>
+<h4 id="微分方程">微分方程</h4>
+<p>系统微分方程如下：</p>
+<p><span class="math display">\[
+\left \{
+\begin{array}{rl}
+&amp;\dot{x}_1 = x_2 &amp;x_1(0) &amp;= x_{10}\\
+&amp;\dot{x}_2 = u + f(x_1,x_2,t) &amp;x_2(0) &amp;= x_{20}\\
+&amp;\dot{u} = v &amp;u(0) &amp;= 0
+\end{array}
+\right. \tag{4}
+\]</span></p>
+<p>如果滑模变量 <span class="math inline">\(\sigma = x_2 + c \cdot x_1\)</span>被限制在有限时间<span class="math inline">\(t = t_r\)</span>内收敛于0，同样对于所有<span class="math inline">\(t \geq t_r\)</span>,状态变量渐进收敛于0。这里假设<span class="math inline">\(\rvert f(x_1,x_2,t) \leq L\)</span>，此外其有界导数<span class="math inline">\(\rvert \dot{f}(x_1,x_2,t) \rvert \leq \bar{L}\)</span>是平滑的。</p>
+<h4 id="辅助滑动变量">辅助滑动变量</h4>
+<p>为了达到抖振衰减，定义如下辅助滑动变量</p>
+<p><span class="math display">\[
+s = \dot{\sigma} + \bar{c}\sigma \tag{5}
+\]</span></p>
+<p>如果设计一个控制率<span class="math inline">\(v\)</span>使得在有限时间内收敛<span class="math inline">\(s \to 0\)</span>，那么理想的滑动模态发生在如下滑模面上：</p>
+<p><span class="math display">\[
+s = \dot{\sigma} + \bar{c}\sigma = 0 \tag{6}
+\]</span></p>
+<p>随着时间的递增，即使存在有界的干扰<span class="math inline">\(f(x_1,x_2,t)\)</span>，只要<span class="math inline">\(\sigma,\dot{\sigma} \to 0\)</span>,与此同时<span class="math inline">\(x_1,x_2 \to 0\)</span>。但是因为原始滑模变量<span class="math inline">\(\sigma\)</span>只是渐进收敛于0，所以对于系统(4)而言，这不是理想的滑动模态，而是 <strong>渐进滑动模态</strong>(<em>asymptotic sliding mode</em>)，这就是衰减抖振所付出的代价。</p>
+<p>根据等式(4)对辅组滑动变量<span class="math inline">\(s\)</span>拆解得</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+s &amp;= \dot{\sigma} + \bar{c}\sigma\\
+&amp;= \dot{x}_2 + c\dot{x}_1 + \bar{c}(x_2 + cx_1)\\
+&amp;= u + f(x_1,x_2,t) + cx_2 + \bar{c}x_2 + c\bar{c}x_1\\
+&amp;=u + (c + \bar{c})x_2 + c\bar{c}x_1 + f(x_1,x_2,t)
+\end{array} \tag{7}
+\]</span></p>
+<p>辅组滑动变量<span class="math inline">\(s\)</span>求导得</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\dot{s} 
+&amp;= \dot{u} + (c + \bar{c})\dot{x}_2 + c\bar{c}\dot{x}_1 + \dot{f}(x_1,x_2,t)\\
+&amp;= v + (c + \bar{c})(u + f(x_1,x_2,t)) + c\bar{c}x_2 + \dot{f}(x_1,x_2,t)\\
+&amp;= v + (c + \bar{c})u + c\bar{c}x_2 + (c + \bar{c})f(x_1,x_2,t) + \dot{f}(x_1,x_2,t)
+\end{array} \tag{8}
+\]</span></p>
+<p>根据李亚普洛夫稳定条件，设计滑模控制项<span class="math inline">\(v\)</span>，得到如下等式：</p>
+<p><span class="math display">\[
+s\dot{s} = s
+\bigl(
+v + (c + \bar{c})u + c\bar{c}x_2 + (c + \bar{c})f(x_1,x_2,t) + \dot{f}(x_1,x_2,t)
+\bigr) \tag{9}
+\]</span></p>
+<p>选择如下控制率：</p>
+<p><span class="math display">\[
+v = -c\bar{c}x_2 - (c + \bar{c})u + v_1 \tag{10}
+\]</span></p>
+<p>将等式(10)带入等式(9)得</p>
+<p><span class="math display">\[
+s\dot{s} = s
+\bigl(
+v_1 + (c + \bar{c})f(x_1,x_2,t) + \dot{f}(x_1,x_2,t)
+\bigr) \tag{11}
+\]</span></p>
+<p>由于有界干扰项<span class="math inline">\(\rvert f(x_1,x_2,t) \leq L\)</span>且<span class="math inline">\(\rvert \dot{f(x_1,x_2,t)} \rvert \leq \bar{L}\)</span>，故得</p>
+<p><span class="math display">\[
+s\dot{s} \leq sv_1 + \rvert s \rvert \bigl( (c + \bar{c})L + \bar{L}\bigr) \tag{12}
+\]</span></p>
+<p>选择切换函数为<span class="math inline">\(v_1 = - \rho sign(s)\)</span>，其中<span class="math inline">\(\rho &gt; 0\)</span>，带入等式(12)得</p>
+<p><span class="math display">\[
+s\dot{s} \leq \rvert s \rvert \bigl(-\rho + \bar{L} + (c + \bar{c})L \bigr) \tag{13}
+\]</span></p>
+<p>根据有限时间收敛条件</p>
+<p><span class="math display">\[
+s\dot{s} \leq -\frac{\alpha}{\sqrt{2}}\rvert s\rvert \tag{14}
+\]</span></p>
+<p>结合等式(13)和(14),计算控制增益<span class="math inline">\(\rho\)</span>如下：</p>
+<p><span class="math display">\[
+\rho = \bar{L} + (c + \bar{c})L + \frac{\alpha}{\sqrt{2}} \tag{15}
+\]</span></p>
+<p>驱使<span class="math inline">\(s\)</span>在有限时间<span class="math inline">\(t_r \leq \frac{\sqrt{2}\rvert s(0) \rvert}{\alpha}\)</span>内使<span class="math inline">\(s\)</span>收敛于0的控制率<span class="math inline">\(v\)</span>为</p>
+<p><span class="math display">\[
+v = -c\bar{c}x_2 - (c + \bar{c})u - \rho \cdot sign(s) \tag{16}
+\]</span></p>
+<h4 id="仿真结果-1">仿真结果</h4>
+<p>如下图所示，包含高频切换项的<span class="math inline">\(\rho sign(s)\)</span>的控制率导致了抖振。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/NvsdctofEuqlKni.png" /></p>
+<p>但如下图所示，抖振在实际物理控制率<span class="math inline">\(u = \int vdt\)</span>中逐步衰减。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/gsIFvU3k7RONlBe.png" /></p>
+]]></content>
+      <categories>
+        <category>控制算法</category>
+        <category>滑模控制</category>
+      </categories>
+      <tags>
+        <tag>避免抖振</tag>
+        <tag>chattering avoidance</tag>
+        <tag>滑模控制</tag>
+        <tag>准滑动模态</tag>
+        <tag>Quasi-Sliding Mode</tag>
+        <tag>渐近滑动模态</tag>
+        <tag>抖振衰减</tag>
+        <tag>Chattering Attenuation</tag>
+        <tag>抖振消除</tag>
+        <tag>Chattering Elimination</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>控制算法-滑模控制介绍</title>
     <url>/2019/12/21/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E4%BB%8B%E7%BB%8D/</url>
     <content><![CDATA[<h2 id="一维运动模型">一维运动模型</h2>
@@ -4253,140 +4387,6 @@ u = -c \cdot x_2 - \rho \cdot sign(\sigma) \tag{20}
         <tag>sliding mode variable</tag>
         <tag>sliding mode surface</tag>
         <tag>chattering</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>控制算法-滑模控制抖振消除</title>
-    <url>/2019/12/27/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E6%8A%96%E6%8C%AF%E6%B6%88%E9%99%A4/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>在实际控制系统中，包括直流电机和飞机控制，通过连续或者平滑控制信号来避免控制抖振都是非常重要的方式。进一步说，飞机的气动表面不能高频来回运动，但同时对于边界模型不确定且存在外部干扰的控制系统，渴望保持其鲁棒性或不敏感度。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/e6fD51xMwEGqdnO.jpg" alt="重庆美术学院" /><figcaption aria-hidden="true">重庆美术学院</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="消抖方法">消抖方法</h2>
-<h3 id="抖振消除">抖振消除</h3>
-<p>一个显而易见使控制函数连续且平滑的解决方案就是通过一些连续或平滑函数代替非连续函数<span class="math inline">\(v(\sigma) = -\rho sign(\sigma)\)</span>。进一步说，它可以被"sigmoid function"替代。</p>
-<p><span class="math display">\[
-sign(\sigma) \approx \frac{\sigma}{\rvert \sigma \rvert + \varepsilon} \tag{1}
-\]</span></p>
-<p>其中，<span class="math inline">\(\varepsilon\)</span>是一个很小的正标量。可以看出，对于所有<span class="math inline">\(\sigma \neq 0\)</span>，下述等式成立：</p>
-<p><span class="math display">\[
-\lim_{\varepsilon \to 0}\frac{\sigma}{\rvert \sigma \rvert + \varepsilon} = sign(\sigma) \tag{2}
-\]</span></p>
-<p>对于<span class="math inline">\(\varepsilon\)</span>的选择需要权衡既要保持系统的性能理想又要确保控制的平滑。</p>
-<p>关于 Sigmoid Function 的图形如下：</p>
-<p><img data-src="https://i.loli.net/2021/08/30/NoXcDfzSPqBFMQJ.png" /></p>
-<p>使用伪滑动模态控制率如下：</p>
-<p><span class="math display">\[
-u = -c \cdot x_2 - \rho\frac{\sigma}{\rvert \sigma \rvert + \varepsilon} \tag{3}
-\]</span></p>
-<h4 id="仿真结果">仿真结果</h4>
-<p><img data-src="https://i.loli.net/2021/08/30/gsIFvU3k7RONlBe.png" /></p>
-<p><img data-src="https://i.loli.net/2021/08/30/FyCmKcoS1YnELZ6.png" /></p>
-<p><img data-src="https://i.loli.net/2021/08/30/xA2XwCuNatFjLpk.png" /></p>
-<p>由上图可知，平滑控制函数不能够在存在外部干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>时，使得滑模变量在有限时间内收敛于0。并且滑模变量和状态变量都不能收敛于0，但由于干扰项<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>影响，使其收敛到原点附近的范围。实现平滑控制函数的代价是鲁棒性的损失和准确性降低。因为滑模变量在有限的时间内没有趋向于0，所以等式(3)所设计的平滑控制从技术上讲不是滑模控制，在系统中也不是理想的滑动模态。但是在等式(3)中平滑控制率下的系统性能接近于离散滑模控制下的系统性能。这就为我们将等式(3)对应的平滑控制率称为<strong>准滑模控制</strong>(<em>quasi-sliding mode control</em>)提供了依据，而当滑模面收敛于原点时，就叫做 <strong>准滑动模态</strong>(<em>quasi-sliding mode</em>)</p>
-<h3 id="抖振衰减">抖振衰减</h3>
-<p>考虑设计另一种对边界干扰具有鲁棒性的连续控制器，设计思想就是根据控制函数的微分形式设计滑模控制器。在这种情况下，高频切换函数的积分作为实际控制是连续的。这种方法叫做 <strong>抖振衰减</strong>(<em>chattering attenuation</em>)，这是因为在高频切换函数积分后仍然能在滑模控制中观察到一些周期性残差。</p>
-<h4 id="微分方程">微分方程</h4>
-<p>系统微分方程如下：</p>
-<p><span class="math display">\[
-\left \{
-\begin{array}{rl}
-&amp;\dot{x}_1 = x_2 &amp;x_1(0) &amp;= x_{10}\\
-&amp;\dot{x}_2 = u + f(x_1,x_2,t) &amp;x_2(0) &amp;= x_{20}\\
-&amp;\dot{u} = v &amp;u(0) &amp;= 0
-\end{array}
-\right. \tag{4}
-\]</span></p>
-<p>如果滑模变量 <span class="math inline">\(\sigma = x_2 + c \cdot x_1\)</span>被限制在有限时间<span class="math inline">\(t = t_r\)</span>内收敛于0，同样对于所有<span class="math inline">\(t \geq t_r\)</span>,状态变量渐进收敛于0。这里假设<span class="math inline">\(\rvert f(x_1,x_2,t) \leq L\)</span>，此外其有界导数<span class="math inline">\(\rvert \dot{f}(x_1,x_2,t) \rvert \leq \bar{L}\)</span>是平滑的。</p>
-<h4 id="辅助滑动变量">辅助滑动变量</h4>
-<p>为了达到抖振衰减，定义如下辅助滑动变量</p>
-<p><span class="math display">\[
-s = \dot{\sigma} + \bar{c}\sigma \tag{5}
-\]</span></p>
-<p>如果设计一个控制率<span class="math inline">\(v\)</span>使得在有限时间内收敛<span class="math inline">\(s \to 0\)</span>，那么理想的滑动模态发生在如下滑模面上：</p>
-<p><span class="math display">\[
-s = \dot{\sigma} + \bar{c}\sigma = 0 \tag{6}
-\]</span></p>
-<p>随着时间的递增，即使存在有界的干扰<span class="math inline">\(f(x_1,x_2,t)\)</span>，只要<span class="math inline">\(\sigma,\dot{\sigma} \to 0\)</span>,与此同时<span class="math inline">\(x_1,x_2 \to 0\)</span>。但是因为原始滑模变量<span class="math inline">\(\sigma\)</span>只是渐进收敛于0，所以对于系统(4)而言，这不是理想的滑动模态，而是 <strong>渐进滑动模态</strong>(<em>asymptotic sliding mode</em>)，这就是衰减抖振所付出的代价。</p>
-<p>根据等式(4)对辅组滑动变量<span class="math inline">\(s\)</span>拆解得</p>
-<p><span class="math display">\[
-\begin{array}{rl}
-s &amp;= \dot{\sigma} + \bar{c}\sigma\\
-&amp;= \dot{x}_2 + c\dot{x}_1 + \bar{c}(x_2 + cx_1)\\
-&amp;= u + f(x_1,x_2,t) + cx_2 + \bar{c}x_2 + c\bar{c}x_1\\
-&amp;=u + (c + \bar{c})x_2 + c\bar{c}x_1 + f(x_1,x_2,t)
-\end{array} \tag{7}
-\]</span></p>
-<p>辅组滑动变量<span class="math inline">\(s\)</span>求导得</p>
-<p><span class="math display">\[
-\begin{array}{rl}
-\dot{s} 
-&amp;= \dot{u} + (c + \bar{c})\dot{x}_2 + c\bar{c}\dot{x}_1 + \dot{f}(x_1,x_2,t)\\
-&amp;= v + (c + \bar{c})(u + f(x_1,x_2,t)) + c\bar{c}x_2 + \dot{f}(x_1,x_2,t)\\
-&amp;= v + (c + \bar{c})u + c\bar{c}x_2 + (c + \bar{c})f(x_1,x_2,t) + \dot{f}(x_1,x_2,t)
-\end{array} \tag{8}
-\]</span></p>
-<p>根据李亚普洛夫稳定条件，设计滑模控制项<span class="math inline">\(v\)</span>，得到如下等式：</p>
-<p><span class="math display">\[
-s\dot{s} = s
-\bigl(
-v + (c + \bar{c})u + c\bar{c}x_2 + (c + \bar{c})f(x_1,x_2,t) + \dot{f}(x_1,x_2,t)
-\bigr) \tag{9}
-\]</span></p>
-<p>选择如下控制率：</p>
-<p><span class="math display">\[
-v = -c\bar{c}x_2 - (c + \bar{c})u + v_1 \tag{10}
-\]</span></p>
-<p>将等式(10)带入等式(9)得</p>
-<p><span class="math display">\[
-s\dot{s} = s
-\bigl(
-v_1 + (c + \bar{c})f(x_1,x_2,t) + \dot{f}(x_1,x_2,t)
-\bigr) \tag{11}
-\]</span></p>
-<p>由于有界干扰项<span class="math inline">\(\rvert f(x_1,x_2,t) \leq L\)</span>且<span class="math inline">\(\rvert \dot{f(x_1,x_2,t)} \rvert \leq \bar{L}\)</span>，故得</p>
-<p><span class="math display">\[
-s\dot{s} \leq sv_1 + \rvert s \rvert \bigl( (c + \bar{c})L + \bar{L}\bigr) \tag{12}
-\]</span></p>
-<p>选择切换函数为<span class="math inline">\(v_1 = - \rho sign(s)\)</span>，其中<span class="math inline">\(\rho &gt; 0\)</span>，带入等式(12)得</p>
-<p><span class="math display">\[
-s\dot{s} \leq \rvert s \rvert \bigl(-\rho + \bar{L} + (c + \bar{c})L \bigr) \tag{13}
-\]</span></p>
-<p>根据有限时间收敛条件</p>
-<p><span class="math display">\[
-s\dot{s} \leq -\frac{\alpha}{\sqrt{2}}\rvert s\rvert \tag{14}
-\]</span></p>
-<p>结合等式(13)和(14),计算控制增益<span class="math inline">\(\rho\)</span>如下：</p>
-<p><span class="math display">\[
-\rho = \bar{L} + (c + \bar{c})L + \frac{\alpha}{\sqrt{2}} \tag{15}
-\]</span></p>
-<p>驱使<span class="math inline">\(s\)</span>在有限时间<span class="math inline">\(t_r \leq \frac{\sqrt{2}\rvert s(0) \rvert}{\alpha}\)</span>内使<span class="math inline">\(s\)</span>收敛于0的控制率<span class="math inline">\(v\)</span>为</p>
-<p><span class="math display">\[
-v = -c\bar{c}x_2 - (c + \bar{c})u - \rho \cdot sign(s) \tag{16}
-\]</span></p>
-<h4 id="仿真结果-1">仿真结果</h4>
-<p>如下图所示，包含高频切换项的<span class="math inline">\(\rho sign(s)\)</span>的控制率导致了抖振。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/NvsdctofEuqlKni.png" /></p>
-<p>但如下图所示，抖振在实际物理控制率<span class="math inline">\(u = \int vdt\)</span>中逐步衰减。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/gsIFvU3k7RONlBe.png" /></p>
-]]></content>
-      <categories>
-        <category>控制算法</category>
-        <category>滑模控制</category>
-      </categories>
-      <tags>
-        <tag>滑模控制</tag>
-        <tag>避免抖振</tag>
-        <tag>chattering avoidance</tag>
-        <tag>准滑动模态</tag>
-        <tag>Quasi-Sliding Mode</tag>
-        <tag>渐近滑动模态</tag>
-        <tag>抖振衰减</tag>
-        <tag>Chattering Attenuation</tag>
-        <tag>抖振消除</tag>
-        <tag>Chattering Elimination</tag>
       </tags>
   </entry>
   <entry>
