@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="[TOC] 1. 概述 联咏IVE主要包括通用滤波、中值滤波、边沿滤波、非极大值抑制、阈值查找表、形态学操作和图像积分等功能。有些功能可以独立运行，有些功能可以通过子功能的组合完成。">
 <meta property="og:type" content="website">
@@ -270,10 +270,10 @@
 <p>如果在嵌入式APP中运行，为了避免重复初始化操作，需要将<code>WITH_INIT_NOVATEK_IVE</code>选项置为<code>OFF</code>。</p>
 <h2 id="算法操作">4. 算法操作</h2>
 <p>如下图所示，是IVE的功能组成框图。如果实际需求是在中间某个功能模块输出，则相应后边的功能模块需要关闭。</p>
-<p><img src="./doc/ive_function.PNG" alt="morphologic_mask" /> ### 4.1. Canny滤波器</p>
+<p><img data-src="./doc/ive_function.PNG" alt="morphologic_mask" /> ### 4.1. Canny滤波器</p>
 <p><strong>Canny</strong>滤波器可以由gauss滤波、边沿滤波、非极大值约束、阈值查找表和形态学操作等组成，其各个模块之间连接框图如下：</p>
 <figure>
-<img src="./doc/IVE.png" alt="ive_canny" /><figcaption aria-hidden="true">ive_canny</figcaption>
+<img data-src="./doc/IVE.png" alt="ive_canny" /><figcaption aria-hidden="true">ive_canny</figcaption>
 </figure>
 <h4 id="功能模块配置">4.1.1. 功能模块配置</h4>
 <ol type="1">
@@ -314,12 +314,12 @@ G_y = \begin{bmatrix}
 </ol>
 <p>测试代码中使用的腐蚀掩码为如下图格式，其中白色对应系数中<code>FALSE</code>，其余部分对应系数为<code>TRUE</code>。</p>
 <figure>
-<img src="./doc/IVE-morphologic_mask.png" alt="morphologic_mask" /><figcaption aria-hidden="true">morphologic_mask</figcaption>
+<img data-src="./doc/IVE-morphologic_mask.png" alt="morphologic_mask" /><figcaption aria-hidden="true">morphologic_mask</figcaption>
 </figure>
 <h4 id="canny滤波结果">4.1.2. Canny滤波结果</h4>
 <p>如下图所示，是Canny滤波器的输出结果与原图的对比。其中，左边是原图，右边是Canny输出结果。</p>
 <figure>
-<img src="./doc/canny_result.PNG" alt="canny" /><figcaption aria-hidden="true">canny</figcaption>
+<img data-src="./doc/canny_result.PNG" alt="canny" /><figcaption aria-hidden="true">canny</figcaption>
 </figure>
 <blockquote>
 <p>注: 由于阈值查找表只有一个阈值可以使用，所以无法实现滞后阈值算法；</p>
@@ -328,15 +328,15 @@ G_y = \begin{bmatrix}
 <p>Sobel滤波器可以由Gauss滤波、中值滤波和边沿滤波组合而成。 #### 4.2.1. X和Y方向的梯度</p>
 <p>如下图所示，左图代表求取的<code>X</code>轴方向的梯度，右图代表求取的<code>Y</code>轴方向梯度。</p>
 <figure>
-<img src="./doc/sobel_x_y.PNG" alt="sobel_x_y" /><figcaption aria-hidden="true">sobel_x_y</figcaption>
+<img data-src="./doc/sobel_x_y.PNG" alt="sobel_x_y" /><figcaption aria-hidden="true">sobel_x_y</figcaption>
 </figure>
 <h4 id="sobel滤波结果">4.2.2. Sobel滤波结果</h4>
 <p>如下图所示，是结合X和Y轴梯度的结果，根据<span class="math inline">\(x^2 + y^2\)</span>求取对应结果。</p>
 <figure>
-<img src="./doc/sobel_result.PNG" alt="sobel_result" /><figcaption aria-hidden="true">sobel_result</figcaption>
+<img data-src="./doc/sobel_result.PNG" alt="sobel_result" /><figcaption aria-hidden="true">sobel_result</figcaption>
 </figure>
 <h3 id="非极大值抑制">4.3. 非极大值抑制</h3>
-<p>Sobel滤波器可以由Gauss滤波、中值滤波、边沿滤波和非极大值抑制组合而成。如下图所示，是非极大值抑制的结果。 <img src="./doc/nomax.PNG" alt="nomax" /></p>
+<p>Sobel滤波器可以由Gauss滤波、中值滤波、边沿滤波和非极大值抑制组合而成。如下图所示，是非极大值抑制的结果。 <img data-src="./doc/nomax.PNG" alt="nomax" /></p>
 
       </div>
       
@@ -388,10 +388,13 @@ G_y = \begin{bmatrix}
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
 
   
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
@@ -405,7 +408,7 @@ G_y = \begin{bmatrix}
 
 
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 
@@ -416,6 +419,9 @@ G_y = \begin{bmatrix}
 <script src="/js/third-party/math/mathjax.js"></script>
 
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" integrity="sha256-4kQf9z5ntdQrzsBC3YSHnEz02Z9C1UeW/E9OgnvlzSY=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/draft/%E8%81%94%E5%92%8FIVE%E4%BB%8B%E7%BB%8D.html"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
 
 <script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"500a67224b79c6f0c24349cdc777ce9e"}</script>

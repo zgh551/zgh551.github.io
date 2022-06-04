@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="1. 概述 目前电机控制的主要问题是控制时间超出了指标要求，根据协议要求，打出弹药包之间的时间间隔区间为[0.02，2.5]s。目前能够达到的指标区间为[0.04,2.5]s，下一步的工作重点是达到指标区间[0.03,2.5]s。 2. 问题描述  8511期望弹药包打出如下的间隔；   BLDC   实际电机可以打出的理想间隔如下：   原因：电机提速有一定的过程，不可能">
 <meta property="og:type" content="website">
@@ -259,10 +259,10 @@
 <li>8511期望弹药包打出如下的间隔；</li>
 </ul>
 <figure>
-<img src="C:\Users\Zhu%20Guohua\Pictures\BLDC.png" alt="BLDC" /><figcaption aria-hidden="true">BLDC</figcaption>
+<img data-src="C:\Users\Zhu%20Guohua\Pictures\BLDC.png" alt="BLDC" /><figcaption aria-hidden="true">BLDC</figcaption>
 </figure>
 <ul>
-<li><p>实际电机可以打出的理想间隔如下： <img src="C:\Users\Zhu%20Guohua\Pictures\BLDC-第%201%20页%20的副本.png" alt="BLDC-第 1 页 的副本" /></p>
+<li><p>实际电机可以打出的理想间隔如下： <img data-src="C:\Users\Zhu%20Guohua\Pictures\BLDC-第%201%20页%20的副本.png" alt="BLDC-第 1 页 的副本" /></p>
 <blockquote>
 <p>原因：电机提速有一定的过程，不可能瞬间达到最高速度。只能尽量提高电机的加速度，减少电机速度爬升时间。</p>
 </blockquote></li>
@@ -275,7 +275,7 @@
 </ul>
 <p>减速段由于要保证最终停止时的位置准确，之前的方案是采用位置控制环路，来保证电机位置准确。但是实际测试减速段采用位置控制的速度曲线如下：</p>
 <figure>
-<img src="C:\Users\Zhu%20Guohua\Pictures\BLDC-第%203%20页%20的副本.png" alt="BLDC-第 3 页 的副本" /><figcaption aria-hidden="true">BLDC-第 3 页 的副本</figcaption>
+<img data-src="C:\Users\Zhu%20Guohua\Pictures\BLDC-第%203%20页%20的副本.png" alt="BLDC-第 3 页 的副本" /><figcaption aria-hidden="true">BLDC-第 3 页 的副本</figcaption>
 </figure>
 <p>由于引入位置环路，减速曲线呈非线性形式，离目标越近，减速度的变化率也越低。这就导致减速时间过长，目前测试减速段大概需要150ms的时间。</p>
 <ul>
@@ -283,14 +283,14 @@
 </ul>
 <p>由于位置控制带来的减速时间过长，尝试最后减速段采用速度控制减速。如下图所示，减速度时间很明显缩短，但是最终电机停止的位置很不理想，存在明显的超调现象。就算按照理论计算提前减速，也无法消除位置超调。</p>
 <figure>
-<img src="C:\Users\Zhu%20Guohua\Pictures\BLDC-第%203%20页.png" alt="BLDC-第 3 页" /><figcaption aria-hidden="true">BLDC-第 3 页</figcaption>
+<img data-src="C:\Users\Zhu%20Guohua\Pictures\BLDC-第%203%20页.png" alt="BLDC-第 3 页" /><figcaption aria-hidden="true">BLDC-第 3 页</figcaption>
 </figure>
 <ul>
 <li>后续调试思路</li>
 </ul>
 <p>调整位置环参数，缩短减速段的时间。通过增大参数P,可以滞后电机开始减速度的时间点，从而缩短减速阶段。</p>
 <figure>
-<img src="C:\Users\Zhu%20Guohua\Pictures\BLDC-第%203%20页%20的副本%20的副本.png" alt="BLDC-第 3 页 的副本 的副本" /><figcaption aria-hidden="true">BLDC-第 3 页 的副本 的副本</figcaption>
+<img data-src="C:\Users\Zhu%20Guohua\Pictures\BLDC-第%203%20页%20的副本%20的副本.png" alt="BLDC-第 3 页 的副本 的副本" /><figcaption aria-hidden="true">BLDC-第 3 页 的副本 的副本</figcaption>
 </figure>
 <h2 id="关于指标">3. 关于指标</h2>
 <p>目前8511对于指标要求不是很明确，假设目标间隔时间为<code>20ms</code>，按照协议和电机的实际情况，<strong>间隔时间</strong>可以理解为如下：</p>
@@ -299,14 +299,14 @@
 </ul>
 <p>即总的投放时间满足要求，保证平均到每包的间隔满足要求。</p>
 <figure>
-<img src="C:\Users\Zhu%20Guohua\Pictures\BLDC-第%201%20页%20的副本%20的副本.png" alt="BLDC-第 1 页 的副本 的副本" /><figcaption aria-hidden="true">BLDC-第 1 页 的副本 的副本</figcaption>
+<img data-src="C:\Users\Zhu%20Guohua\Pictures\BLDC-第%201%20页%20的副本%20的副本.png" alt="BLDC-第 1 页 的副本 的副本" /><figcaption aria-hidden="true">BLDC-第 1 页 的副本 的副本</figcaption>
 </figure>
 <ul>
 <li><strong>瞬时</strong>时间间隔</li>
 </ul>
 <p>忽略起步和减速段的时间，只关注中间速度段的间隔时间满足目标值。</p>
 <figure>
-<img src="C:\Users\Zhu%20Guohua\Pictures\BLDC-第%201%20页%20的副本.png" alt="BLDC-第 1 页 的副本" /><figcaption aria-hidden="true">BLDC-第 1 页 的副本</figcaption>
+<img data-src="C:\Users\Zhu%20Guohua\Pictures\BLDC-第%201%20页%20的副本.png" alt="BLDC-第 1 页 的副本" /><figcaption aria-hidden="true">BLDC-第 1 页 的副本</figcaption>
 </figure>
 <h2 id="低速控制">4. 低速控制</h2>
 <p>目前电机无电流环，如果能够实现电流环，可以实现较理想的低速的控制，目前的低速控制只是一个折中的方案，使用位置控制间接得实现低速控制电机，但目前控制过程存在卡顿现象。</p>
@@ -316,7 +316,7 @@
 </ul>
 <p>互锁电路的延迟导致最终输出到MOS的PWM波形占空比不能覆盖完整，目前可能只能达到[0%,70%]。由于采用磁矢量控制方式，这会导致输出的矢量不连续，也就无法生成完整的电流波形，如下图所示：</p>
 <figure>
-<img src="C:\Users\ZHUGUO~1\AppData\Local\Temp\WeChat%20Files\7d77c10f223bc4a88565558374e87ad.png" alt="7d77c10f223bc4a88565558374e87ad" /><figcaption aria-hidden="true">7d77c10f223bc4a88565558374e87ad</figcaption>
+<img data-src="C:\Users\ZHUGUO~1\AppData\Local\Temp\WeChat%20Files\7d77c10f223bc4a88565558374e87ad.png" alt="7d77c10f223bc4a88565558374e87ad" /><figcaption aria-hidden="true">7d77c10f223bc4a88565558374e87ad</figcaption>
 </figure>
 <ul>
 <li>其它</li>
@@ -375,10 +375,13 @@
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
 
   
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
@@ -392,7 +395,7 @@
 
 
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 
@@ -403,6 +406,9 @@
 <script src="/js/third-party/math/mathjax.js"></script>
 
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" integrity="sha256-4kQf9z5ntdQrzsBC3YSHnEz02Z9C1UeW/E9OgnvlzSY=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/draft/BLDC-Question.html"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
 
 <script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"fcecaea8abcb276eaf6ad98975fc5bc2"}</script>

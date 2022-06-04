@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="概述 A*算法是一种基于图搜索的路径搜索算法,通过结合移动代价和启发代价,优化路径的搜索性能.">
 <meta property="og:type" content="article">
@@ -319,11 +319,11 @@
     
     <div class="post-body" itemprop="articleBody">
         <h2 id="概述">概述</h2>
-<p>A*算法是一种基于图搜索的路径搜索算法,通过结合移动代价和启发代价,优化路径的搜索性能. <img src="https://i.loli.net/2021/08/30/kMIZKgcV7PnNQEC.jpg" alt="青岛" /> <span id="more"></span></p>
+<p>A*算法是一种基于图搜索的路径搜索算法,通过结合移动代价和启发代价,优化路径的搜索性能. <img data-src="https://i.loli.net/2021/08/30/kMIZKgcV7PnNQEC.jpg" alt="青岛" /> <span id="more"></span></p>
 <h2 id="算法描述">算法描述</h2>
 <h3 id="确定规划的起点和终点">确定规划的起点和终点</h3>
 <p>下图所示,红色方块代表规划<strong>起始点</strong>,绿色方块代表<strong>终点</strong>,深灰色方块代表<strong>障碍物</strong>区域,其余白色方块代表可行驶区域(free space).首先将起始点节点推送到open集合中.</p>
-<p><img src="https://i.loli.net/2021/08/30/3agpvPEB89XTLK4.png" alt="原始地图给定起始点和终点" style="zoom:50%;" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/3agpvPEB89XTLK4.png" alt="原始地图给定起始点和终点" style="zoom:50%;" /></p>
 <h3 id="产生临近节点">产生临近节点</h3>
 <p>每次从open集合中取出<strong>总代价值</strong>最小的节点,由于当前open集合中只有起始节点,所以此时从open集合中取出的就是起始节点,并将该节点推入close集合.</p>
 <p>如下图所示,基于起始节点生成相邻节点,并计算每个节点的代价值.其中<strong>A</strong>*节点的代价值由<strong>移动代价</strong>和<strong>启发代价</strong>组成,即<span class="math inline">\(F = G + H\)</span>.</p>
@@ -332,7 +332,7 @@
 <li><strong>移动代价</strong> 采用欧拉距离计算移动代价值</li>
 <li><strong>启动代价</strong> 采用曼哈顿距离计算启发代价值</li>
 </ul>
-<p><img src="https://i.loli.net/2021/08/30/6sE9MRizIfejx4H.png" alt="临近节点产生" style="zoom:50%;" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/6sE9MRizIfejx4H.png" alt="临近节点产生" style="zoom:50%;" /></p>
 <h4 id="图例说明">图例说明</h4>
 <p>下图是对上图中每个节点中小方格的说明:</p>
 <ul>
@@ -341,10 +341,10 @@
 <li><strong>最上方</strong>的矩形方格代表总的代价值</li>
 <li><strong>中间</strong>的紫色方格代表父节点的方向</li>
 </ul>
-<p><img src="https://i.loli.net/2021/08/30/dk7cMlj1O5ACWNZ.png" style="zoom: 80%;" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/dk7cMlj1O5ACWNZ.png" style="zoom: 80%;" /></p>
 <h3 id="节点选择">节点选择</h3>
 <p>A*算法下一节点的选择,是从open集合中选取总代价值最小的节点.如下图所示,位于起始点右侧的节点代价值最小,图中使用浅绿色蒙板覆盖该节点表示选中.</p>
-<p><img src="https://i.loli.net/2021/08/30/yaH7igL1RWFxMEI.png" alt="选择价值最低节点" style="zoom:80%;" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/yaH7igL1RWFxMEI.png" alt="选择价值最低节点" style="zoom:80%;" /></p>
 <h3 id="节点扩展">节点扩展</h3>
 <p>基于选中的节点,根据扩展规则,生成新的临近节点,计算临近节点时只需要计算<strong>移动代价</strong>.</p>
 <p>如下图中的右侧所示,对于新生成的8个节点需要做如下条件判断:</p>
@@ -361,21 +361,21 @@
 </ol></li>
 </ul>
 <p>如下图所示,当前节点的左侧的节点已经在close集合中,直接跳过该节点;当前节点左上角,左下角,上方和下方的节点已经在open集合中,所以需要比较新节点与open集合中节点的移动代价.通过比较,这四个新节点的移动代价大于相应open集合中节点的移动代价,所以跳过这些节点;当前节点右侧三个新节点都不在open集合中,所以直接将它们推入open集合.</p>
-<p><img src="https://i.loli.net/2021/08/30/zdJIXQBpYuF7OAZ.png" style="zoom: 67%;" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/zdJIXQBpYuF7OAZ.png" style="zoom: 67%;" /></p>
 <p>基于扩展规则,不断推出总代价值最小的节点,并扩展这些节点.下图中,当前节点右侧三个新节点与障碍存在碰撞,所以直接跳过.</p>
-<p><img src="https://i.loli.net/2021/08/30/pqgZ2vl5XixR4mU.png" style="zoom: 67%;" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/pqgZ2vl5XixR4mU.png" style="zoom: 67%;" /></p>
 <p>如下图所示,如果存在总代价相等的情况,则先推出最新推入的节点.下图中,假设右下方总代价值为64的节点是新推进open集合的节点.</p>
-<p><img src="https://i.loli.net/2021/08/30/JENcBzb1UmMZYLX.png" style="zoom:67%;" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/JENcBzb1UmMZYLX.png" style="zoom:67%;" /></p>
 <p>如下图所示,继续推出新的节点,并迭代更新.</p>
-<p><img src="https://i.loli.net/2021/08/30/v4cL526HZYWtbXh.png" style="zoom:67%;" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/v4cL526HZYWtbXh.png" style="zoom:67%;" /></p>
 <p>如下图所示,新的节点有的与障碍物存在碰撞,有的已经在close集合中,有的移动代价大于原先的节点;但当前节点下方的节点,其移动代价小于open集中对应节点的代价,所以需替换open集合中该节点的移动代价,并将其父节点指向当前节点.</p>
-<p><img src="https://i.loli.net/2021/08/30/pBPmRbjvfouhLzq.png" style="zoom:67%;" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/pBPmRbjvfouhLzq.png" style="zoom:67%;" /></p>
 <h3 id="迭代">迭代</h3>
 <p>如下图所示,直到从open集合中推出的节点是终点,表明搜索结束.浅绿色蒙板包含的区域属于close集合,其它搜索过的节点属于open集合.如果遍历所有open集合的节点都无法到达终点,则搜索失败.</p>
-<p><img src="https://i.loli.net/2020/10/31/w3grmTFfHltY24U.png" alt="搜索完成" style="zoom: 67%;" /></p>
+<p><img data-src="https://i.loli.net/2020/10/31/w3grmTFfHltY24U.png" alt="搜索完成" style="zoom: 67%;" /></p>
 <h3 id="获取路径">获取路径</h3>
 <p>如下图所示,搜索结束后,以终点为起始节点,根据节点所指向的父节点,反向更新搜索路径,直到节点的父节点指向为空,即到达起始点.</p>
-<p><img src="https://i.loli.net/2020/10/31/Eqa4sbG6jgUnXVI.png" alt="搜索结果" style="zoom: 67%;" /></p>
+<p><img data-src="https://i.loli.net/2020/10/31/Eqa4sbG6jgUnXVI.png" alt="搜索结果" style="zoom: 67%;" /></p>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.redblobgames.com/pathfinding/a-star/introduction.html">Introduction to the A* Algorithm</a></li>
@@ -479,10 +479,13 @@
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
 
   
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
@@ -496,7 +499,7 @@
 
 
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 
@@ -507,6 +510,9 @@
 <script src="/js/third-party/math/mathjax.js"></script>
 
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" integrity="sha256-4kQf9z5ntdQrzsBC3YSHnEz02Z9C1UeW/E9OgnvlzSY=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2020/04/15/%E5%9F%BA%E4%BA%8E%E5%9B%BE%E6%90%9C%E7%B4%A2-AStar/"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
 
 <script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"9f2fdc3ef92d099818a1dd1db1a8181c"}</script>

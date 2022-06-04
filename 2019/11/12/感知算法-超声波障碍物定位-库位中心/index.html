@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="概述 垂直车位的检测存在许多技术上的瓶颈，通过超声波一次性检测很难达到较高的精度，而通过车辆泊车过程中的多次的库位定位，可以有效提高车位的定位精度。本文主要介绍垂直车位情形下，车辆已经进库的情形，如何通过辆边的障碍物，重新定位库位的中心。  菊花展">
 <meta property="og:type" content="article">
@@ -301,18 +301,18 @@
         <h2 id="概述">概述</h2>
 <p>垂直车位的检测存在许多技术上的瓶颈，通过超声波一次性检测很难达到较高的精度，而通过车辆泊车过程中的多次的库位定位，可以有效提高车位的定位精度。本文主要介绍垂直车位情形下，车辆已经进库的情形，如何通过辆边的障碍物，重新定位库位的中心。</p>
 <figure>
-<img src="https://i.loli.net/2021/08/30/sYMfyTvGl5WFk6V.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
+<img data-src="https://i.loli.net/2021/08/30/sYMfyTvGl5WFk6V.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
 </figure>
 <span id="more"></span>
 <h2 id="数据处理">数据处理</h2>
 <h3 id="概述-1">概述</h3>
 <p>超声波的数据处理，主要将冗余的数据剔除和一些无效数据滤除。下面介绍了一些实际采用的超声波数据的滤波算法。</p>
 <h3 id="原始数据">原始数据</h3>
-<p>如下图所示，是车辆垂直进库过程中实际采集的数据，蓝色代表车辆左侧采集到的数据，橘黄色代表车辆右侧采集的数据。从图中可以看出，原始超声数据比较杂乱，很多无效数据都记录了下来。比如未检测到超声回波的数据，首先应该把这些无效数据滤除。 <img src="https://img-blog.csdnimg.cn/20190522172808439.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="原始数据" /></p>
+<p>如下图所示，是车辆垂直进库过程中实际采集的数据，蓝色代表车辆左侧采集到的数据，橘黄色代表车辆右侧采集的数据。从图中可以看出，原始超声数据比较杂乱，很多无效数据都记录了下来。比如未检测到超声回波的数据，首先应该把这些无效数据滤除。 <img data-src="https://img-blog.csdnimg.cn/20190522172808439.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="原始数据" /></p>
 <h3 id="第一级滤波">第一级滤波</h3>
-<p>如下图所示，是超声波数据第一级滤波后的结果，第一级滤波主要滤波无效的超声波数据，包括超声无回波的数据、超声回波幅值小于阀值的数据和车辆停止采集的冗余数据。将这些无效数据滤除后，得到如下比较整洁的数据图。图中绿色数据代表车辆后轴中心的轨迹坐标。虽然经过一级滤波后数据趋势有所改善，但仍然不便于直接进行线性拟合。因为图中存在车头的弧线段和一些突变边沿数据，所以数据还需进一步的滤波。 <img src="https://img-blog.csdnimg.cn/20190522173940224.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="第一级滤波" /></p>
+<p>如下图所示，是超声波数据第一级滤波后的结果，第一级滤波主要滤波无效的超声波数据，包括超声无回波的数据、超声回波幅值小于阀值的数据和车辆停止采集的冗余数据。将这些无效数据滤除后，得到如下比较整洁的数据图。图中绿色数据代表车辆后轴中心的轨迹坐标。虽然经过一级滤波后数据趋势有所改善，但仍然不便于直接进行线性拟合。因为图中存在车头的弧线段和一些突变边沿数据，所以数据还需进一步的滤波。 <img data-src="https://img-blog.csdnimg.cn/20190522173940224.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="第一级滤波" /></p>
 <h3 id="第二级滤波">第二级滤波</h3>
-<p>如下图所示，是超声数据进行二级滤波后的效果。从图中可以看出二级滤波后，数据更加平滑，可以进行线性拟合。二级滤波的算法，主要采用数据的分布特性，提取数据中分布集中的数据点，将分散的数据剔除，这样就可以得到平滑的车辆边沿曲线，最后采用最小二乘法拟合直线。 <img src="https://img-blog.csdnimg.cn/2019052217495454.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="第二级滤波" /> 根据库位边沿拟合的两个直线，求得新的中心线所在的直线，然后根据求得的中心线与车辆轨迹的偏差去调整车辆的入库轨迹。</p>
+<p>如下图所示，是超声数据进行二级滤波后的效果。从图中可以看出二级滤波后，数据更加平滑，可以进行线性拟合。二级滤波的算法，主要采用数据的分布特性，提取数据中分布集中的数据点，将分散的数据剔除，这样就可以得到平滑的车辆边沿曲线，最后采用最小二乘法拟合直线。 <img data-src="https://img-blog.csdnimg.cn/2019052217495454.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="第二级滤波" /> 根据库位边沿拟合的两个直线，求得新的中心线所在的直线，然后根据求得的中心线与车辆轨迹的偏差去调整车辆的入库轨迹。</p>
 <h2 id="软件实现">软件实现</h2>
 <h3 id="概述-2">概述</h3>
 <p>软件实现部分使用<strong>Python</strong>进行前期的算法验证，利用python具有的强大的数学运算库，可以方便地进行前期的算法验证。</p>
@@ -448,10 +448,13 @@
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
 
   
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
@@ -465,7 +468,7 @@
 
 
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 
@@ -476,6 +479,9 @@
 <script src="/js/third-party/math/mathjax.js"></script>
 
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" integrity="sha256-4kQf9z5ntdQrzsBC3YSHnEz02Z9C1UeW/E9OgnvlzSY=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2019/11/12/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E4%B8%AD%E5%BF%83/"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
 
 <script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"289fccb2f5aae2a3035d6778c455c190"}</script>

@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="概述 本文主要分析CRTP协议的结构，对该协议结构的理解，有助于后续的数据扩展和对软件架构的理解。为了和Crazyflie通信，Crazyflie 飞控中提出一种高层次的协议叫做 CRTP (Crazy RealTime Protocol)。这种简单的协议使用一些可以收发数据的双向目标端口，但是大都时候通信由主机发起。">
 <meta property="og:type" content="article">
@@ -310,7 +310,7 @@
     <div class="post-body" itemprop="articleBody">
         <h2 id="概述">概述</h2>
 <p>本文主要分析CRTP协议的结构，对该协议结构的理解，有助于后续的数据扩展和对软件架构的理解。为了和Crazyflie通信，<strong>Crazyflie</strong> 飞控中提出一种高层次的协议叫做 <strong>CRTP</strong> (<code>Crazy RealTime Protocol</code>)。这种简单的协议使用一些可以收发数据的双向目标端口，但是大都时候通信由主机发起。</p>
-<p><img src="https://i.loli.net/2021/08/30/1kaHc4AvGdPVZ3t.jpg" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/1kaHc4AvGdPVZ3t.jpg" /></p>
 <span id="more"></span>
 <h2 id="物理载体">物理载体</h2>
 <p>当前CRTP同时支持 Crazyradio 和 USB(只针对Crazyflie 2.0)模式。</p>
@@ -415,17 +415,17 @@
 </ul>
 <h4 id="代码分析">代码分析</h4>
 <p>参考源文件 <strong>console.c</strong>，函数调用关系如下：</p>
-<p><img src="https://i.loli.net/2021/08/30/co8R6P7NvJUEbd2.png" style="zoom:67%;" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/co8R6P7NvJUEbd2.png" style="zoom:67%;" /></p>
 <h5 id="consoleinit函数说明">consoleInit函数说明</h5>
 <p>该函数用于初始化相关变量，并创建二值型信号量<strong>synch</strong>用于任务间，任务和中断间同步。</p>
 <h6 id="流程图">流程图</h6>
-<p><img src="https://i.loli.net/2021/08/30/UpS7EqtLHMgZTb4.png" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/UpS7EqtLHMgZTb4.png" /></p>
 <h5 id="consoletest函数说明">consoleTest函数说明</h5>
 <p>该函数返回初始化结果，初始化成功即测试通过。</p>
 <h5 id="consoleputs函数说明">consolePuts函数说明</h5>
 <p>该函数用于发送字符串。</p>
 <h6 id="流程图-1">流程图</h6>
-<p><img src="https://i.loli.net/2021/08/30/zfXnJgUK2LDhoqk.png" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/zfXnJgUK2LDhoqk.png" /></p>
 <p>该函数主要通过调用<strong>consolePutchar</strong>函数，实现字符串的发送。</p>
 <h5 id="consoleputchar函数说明">consolePutchar函数说明</h5>
 <p>该函数用于发送单字节字符。</p>
@@ -435,11 +435,11 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> DEBUG_PRINT(fmt, ...) consolePrintf(DEBUG_FMT(fmt), ##__VA_ARGS__)</span></span><br></pre></td></tr></table></figure>
 <p>使用<strong>DEBUG_PRINT</strong>宏定义映射<strong>consolePrintf</strong>函数，通过无线模块或者USB接口发送，并在控制台显示。</p>
 <h6 id="流程图-2">流程图</h6>
-<p><img src="https://i.loli.net/2021/08/30/8NzcIVtgue7W49x.png" style="zoom: 50%;" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/8NzcIVtgue7W49x.png" style="zoom: 50%;" /></p>
 <h5 id="consoleputcharfromisr函数说明">consolePutcharFromISR函数说明</h5>
 <p>该函数用于在中断中运行，进行字符的发送工作。</p>
 <h6 id="流程图-3">流程图</h6>
-<p><img src="https://i.loli.net/2021/08/30/7n8b19MoajglFEZ.png" style="zoom:50%;" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/7n8b19MoajglFEZ.png" style="zoom:50%;" /></p>
 <h5 id="consolesendmessage函数说明">consoleSendMessage函数说明</h5>
 <p>该函数用于将消息缓存区的的数据<strong>messageToPrint</strong>，通过<strong>CRTP</strong>函数发送出去。</p>
 <h5 id="addbufferfullmarker">addBufferFullMarker</h5>
@@ -838,7 +838,7 @@
 </ul>
 <h4 id="逻辑流程图">逻辑流程图</h4>
 <p>对于客户端获取信息和读写存储器是可选择的，但是Crazyflie Python 客户端总是在连接状态下载关于存储器的信息。</p>
-<p><img src="https://i.loli.net/2021/08/30/YCcEy3ufIKjP7gW.png" style="zoom:67%;" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/YCcEy3ufIKjP7gW.png" style="zoom:67%;" /></p>
 <h4 id="通信协议-2">通信协议</h4>
 <p>存储器端口使用3个不同的通道：</p>
 <table>
@@ -2166,10 +2166,13 @@
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
 
   
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
@@ -2183,7 +2186,7 @@
 
 
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 
@@ -2194,6 +2197,9 @@
 <script src="/js/third-party/math/mathjax.js"></script>
 
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" integrity="sha256-4kQf9z5ntdQrzsBC3YSHnEz02Z9C1UeW/E9OgnvlzSY=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2020/01/29/crazyflie-CRTP%E8%A7%A3%E6%9E%90/"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
 
 <script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"f7f1d18163ac2400d3db6ed7b430efa9"}</script>

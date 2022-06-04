@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="Opportunity knocks but once">
 <meta property="og:type" content="website">
@@ -294,7 +294,7 @@
     <div class="post-body" itemprop="articleBody">
           <h2 id="一维运动模型">一维运动模型</h2>
 <p>考虑简单的单位质量块的一维运动模型，使用位移和速度状态变量进行描述。</p>
-<p><img src="https://i.loli.net/2021/08/30/5gi8qy1jdHrvePa.png" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/5gi8qy1jdHrvePa.png" /></p>
 <p>定义位移变量<span class="math inline">\(x_1 = x\)</span>和速度变量<span class="math inline">\(x_2 = \dot{x_1} = v\)</span>，运动模型的微分形式使用<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>表示如下：</p>
 <p><span class="math display">\[
 \left\{
@@ -408,7 +408,7 @@
 </ul>
 <p>假设车辆纵向速度<span class="math inline">\(V_x\)</span>恒定且行驶路径的转弯半径<span class="math inline">\(R\)</span>不变，其中转弯半径<span class="math inline">\(R\)</span>足够大，以满足上述章节的小角度近似假设。</p>
 <figure>
-<img src="https://i.loli.net/2021/08/30/SxsNHoFEdQjv5bP.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
+<img data-src="https://i.loli.net/2021/08/30/SxsNHoFEdQjv5bP.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
 </figure>
           <!--noindex-->
             <div class="post-button">
@@ -508,7 +508,7 @@
     
     <div class="post-body" itemprop="articleBody">
           <h2 id="概述">概述</h2>
-<p>当车辆速度很高时，单车模型中前后轮的速度矢量不再与轮子方向一致。此时运动学模型就不能准确地描述车辆的运动状态，这就需要使用动力学模型对车辆进行建模。车辆单车模型中需要考虑两个维度的信息，这两个维度分别指代表车辆横向位置信息的<span class="math inline">\(y\)</span>和表示车辆偏航角信息的<span class="math inline">\(\psi\)</span>。下面分析过程中，先不考虑路堤角度的影响。 <img src="https://i.loli.net/2021/08/30/fQ7RUE9SO6ADnXN.jpg" alt="菊花展" /></p>
+<p>当车辆速度很高时，单车模型中前后轮的速度矢量不再与轮子方向一致。此时运动学模型就不能准确地描述车辆的运动状态，这就需要使用动力学模型对车辆进行建模。车辆单车模型中需要考虑两个维度的信息，这两个维度分别指代表车辆横向位置信息的<span class="math inline">\(y\)</span>和表示车辆偏航角信息的<span class="math inline">\(\psi\)</span>。下面分析过程中，先不考虑路堤角度的影响。 <img data-src="https://i.loli.net/2021/08/30/fQ7RUE9SO6ADnXN.jpg" alt="菊花展" /></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B/#more" rel="contents">
@@ -609,7 +609,7 @@
           <h2 id="概述">概述</h2>
 <p>车辆横向运动学模型描述了车辆横向运动的数学模型，该模型不考虑车辆的受力情况。一般考虑运动学模型时，将车辆模型简化成单车模型(bicycle model)。</p>
 <figure>
-<img src="https://i.loli.net/2021/08/30/ot5fGZUwzhgNx94.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
+<img data-src="https://i.loli.net/2021/08/30/ot5fGZUwzhgNx94.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
 </figure>
           <!--noindex-->
             <div class="post-button">
@@ -707,7 +707,7 @@
           <h2 id="问题概述">问题概述</h2>
 <p>常见的直线特征提取算法是最小二乘法进行的直线拟合，但是线性二次拟合的效果容易受噪声影响，导致拟合效果较差。本文基于直线方程的另一种形式，详细给出最优直线的推导过程。</p>
 <figure>
-<img src="https://i.loli.net/2021/08/30/Q7SMVU8LzrANGlv.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
+<img data-src="https://i.loli.net/2021/08/30/Q7SMVU8LzrANGlv.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
 </figure>
           <!--noindex-->
             <div class="post-button">
@@ -796,7 +796,7 @@
           <h2 id="概述">概述</h2>
 <p>垂直车位的检测存在许多技术上的瓶颈，通过超声波一次性检测很难达到较高的精度，而通过车辆泊车过程中的多次的库位定位，可以有效提高车位的定位精度。本文主要介绍垂直车位情形下，车辆已经进库的情形，如何通过辆边的障碍物，重新定位库位的中心。</p>
 <figure>
-<img src="https://i.loli.net/2021/08/30/sYMfyTvGl5WFk6V.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
+<img data-src="https://i.loli.net/2021/08/30/sYMfyTvGl5WFk6V.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
 </figure>
           <!--noindex-->
             <div class="post-button">
@@ -898,7 +898,7 @@
           <h2 id="概述">概述</h2>
 <p>基于纯超声的垂直车位检测存在一些技术瓶颈，比如超声波的更新频率较低、探测开角较大等，都是影响检测精度的关键因素。另外对于垂直车位，车辆头部情况复杂、存在各种结构的进气栅格、引擎盖的高度不一等，增大了超声检测的难度。基于上述传感器本身性能限制和探测环境的复杂性，一次性精确检测很难实现，目前常规算法检测精度大概在30cm左右。为了进一步提升超声波检测的精度，利用车辆泊车过程中的检测的超声数据，重新进行库位的定位。</p>
 <figure>
-<img src="https://i.loli.net/2021/08/30/eSXfcn2BYoTNR4K.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
+<img data-src="https://i.loli.net/2021/08/30/eSXfcn2BYoTNR4K.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
 </figure>
           <!--noindex-->
             <div class="post-button">
@@ -996,7 +996,7 @@
           <h2 id="概述">概述</h2>
 <p>车辆控制中，如何舒适平衡的停车也是一个比较讲究的事。日常生活中，对于一个刚接触车的新手，控车时可能会猛踩刹车，给人一种很冲的感觉。但是对于老司机，每次踩刹车都是先轻踩，然后逐渐增大踩刹车的力度，这样对于乘客来说就会感觉很舒适。</p>
 <figure>
-<img src="https://i.loli.net/2021/08/30/T3i8DBrFA7zSRPv.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
+<img data-src="https://i.loli.net/2021/08/30/T3i8DBrFA7zSRPv.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
 </figure>
           <!--noindex-->
             <div class="post-button">
@@ -1094,7 +1094,7 @@
           <h2 id="概述">概述</h2>
 <p>霍夫变换算法主要用于图像中的特征匹配，常见的应用场景是进行图像中的直线或者圆形的识别。该算法的原理就是实现笛卡尔空间到霍夫空间的转换，将在笛卡尔空间下难以判定的特性，转到霍夫空间，从而将问题简化。</p>
 <figure>
-<img src="https://i.loli.net/2021/08/30/hyaDQrwBu37YFfJ.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
+<img data-src="https://i.loli.net/2021/08/30/hyaDQrwBu37YFfJ.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
 </figure>
           <!--noindex-->
             <div class="post-button">
@@ -1192,7 +1192,7 @@
           <h2 id="概述">概述</h2>
 <p>线性差值在实际应用非常广泛，比如航空航天行业中广泛用到气动数据的插值，经常会用到三线性到四线性的插值，在汽车行业很多标定数据而需要使用双线性插值，本篇文章主要讲述双线性插值的实现方式。</p>
 <figure>
-<img src="https://i.loli.net/2021/08/30/yLw1Imexs68bTHc.jpg" alt="重庆博物馆" /><figcaption aria-hidden="true">重庆博物馆</figcaption>
+<img data-src="https://i.loli.net/2021/08/30/yLw1Imexs68bTHc.jpg" alt="重庆博物馆" /><figcaption aria-hidden="true">重庆博物馆</figcaption>
 </figure>
           <!--noindex-->
             <div class="post-button">
@@ -1264,10 +1264,13 @@
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
 
   
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
@@ -1281,7 +1284,7 @@
 
 
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 
@@ -1292,6 +1295,9 @@
 <script src="/js/third-party/math/mathjax.js"></script>
 
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" integrity="sha256-4kQf9z5ntdQrzsBC3YSHnEz02Z9C1UeW/E9OgnvlzSY=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/page/3/"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
 
 <script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"9d8d3da09189165dcde8f1d3e109ad78"}</script>

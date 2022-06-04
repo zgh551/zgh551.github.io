@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="概述 基于纯超声的垂直车位检测存在一些技术瓶颈，比如超声波的更新频率较低、探测开角较大等，都是影响检测精度的关键因素。另外对于垂直车位，车辆头部情况复杂、存在各种结构的进气栅格、引擎盖的高度不一等，增大了超声检测的难度。基于上述传感器本身性能限制和探测环境的复杂性，一次性精确检测很难实现，目前常规算法检测精度大概在30cm左右。为了进一步提升超声波检测的精度，利用车辆泊车过程中的检测的超声数据，">
 <meta property="og:type" content="article">
@@ -318,30 +318,30 @@
         <h2 id="概述">概述</h2>
 <p>基于纯超声的垂直车位检测存在一些技术瓶颈，比如超声波的更新频率较低、探测开角较大等，都是影响检测精度的关键因素。另外对于垂直车位，车辆头部情况复杂、存在各种结构的进气栅格、引擎盖的高度不一等，增大了超声检测的难度。基于上述传感器本身性能限制和探测环境的复杂性，一次性精确检测很难实现，目前常规算法检测精度大概在30cm左右。为了进一步提升超声波检测的精度，利用车辆泊车过程中的检测的超声数据，重新进行库位的定位。</p>
 <figure>
-<img src="https://i.loli.net/2021/08/30/eSXfcn2BYoTNR4K.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
+<img data-src="https://i.loli.net/2021/08/30/eSXfcn2BYoTNR4K.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
 </figure>
 <span id="more"></span>
 <h2 id="超声重定位">超声重定位</h2>
 <h3 id="概述-1">概述</h3>
 <p>首先车辆先通过超声波传感器确定车位的大概位置，然后规划车辆进行倒车入库，在入库的过程中，进行前车车头边沿的重新检测，并通过尾部超声波进行后车的检测，当车辆离后车距离达到30~40cm时，车辆停止。通过后置的短距超声波，使用三角定位算法实现，进行后车边沿数据的采集。等待数据量足够时，一般可以设定50个数据点左右。停止超声数据的推送，开始进行边沿算法的计算，从而实现垂直车位的二次定位。</p>
-<p><img src="https://i.loli.net/2021/08/30/mC9TIKJhZdqGfMB.png" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/mC9TIKJhZdqGfMB.png" /></p>
 <h3 id="数据滤波">数据滤波</h3>
 <h4 id="状态滤波">状态滤波</h4>
 <p>传感器本身会输出一些状态信号，如噪声干扰、硬件故障、盲区、振玲故障、通信故障和正常等状态。可以通过传感器输出的这些状态信号进行数据的一级滤波，只保留状态输出为正常的信号。</p>
 <h4 id="幅值滤波">幅值滤波</h4>
 <p>超声波的<strong>Level</strong>值反应了声波的回波强度，因此可以使用回波强度的大小，去滤除一部分无效信号，比如回波为0值数据。这些数据反应了未探测到障碍物，或者是障碍物的特殊结构反射了声波，特殊的材料吸收了声波。 比如某些车型的车头设计有很大的进气栅格，这种结构就会减少反射声波的强度，从而导致强度降低。</p>
-<p><img src="https://i.loli.net/2021/08/30/OVlckaCFD34UqPY.png" alt="幅值滤波" style="zoom: 80%;" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/OVlckaCFD34UqPY.png" alt="幅值滤波" style="zoom: 80%;" /></p>
 <p>当超声波探测到车辆边沿时，此时由于很多回波反射方向变化，所以传感器接收到的强度变低。</p>
-<p><img src="https://i.loli.net/2021/08/30/M9wzFi37mrlEYku.png" style="zoom:80%;" /></p>
-<p>通过一系列的滤波操作，可以得出以下图形。其中蓝色是滤波前的原始数据，黄色是滤波后的数据。可以从下图看出，通过滤波操作可以滤除一些无效信号点。 <img src="https://img-blog.csdnimg.cn/20190513171545723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt=""  /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/M9wzFi37mrlEYku.png" style="zoom:80%;" /></p>
+<p>通过一系列的滤波操作，可以得出以下图形。其中蓝色是滤波前的原始数据，黄色是滤波后的数据。可以从下图看出，通过滤波操作可以滤除一些无效信号点。 <img data-src="https://img-blog.csdnimg.cn/20190513171545723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt=""  /></p>
 <hr />
 <h3 id="边沿检测">边沿检测</h3>
 <h4 id="概述-2">概述</h4>
 <p>对原始数据进行处理后，可以得到一组有效的超声信号，基于这组数据，可以进行车辆边沿的检测。</p>
 <h4 id="距离疏密程度">距离疏密程度</h4>
-<p>由于所有的坐标点都已经转化到了地面坐标系下，所以只需要进行x方向的疏密度分析。从下图可知，在车辆边沿处，点比较稀疏，有的地方存在很长一段距离无数据点。这种情况一般是车头处存在镂空的结构，或者声波发生了散射，导致声波强度减小。所以在确定车辆边沿点时，需设置一个疏密距离阀值，当距离值大于阀值时，才认为该点是边界的跳变点。 <img src="https://img-blog.csdnimg.cn/20190513192450664.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
+<p>由于所有的坐标点都已经转化到了地面坐标系下，所以只需要进行x方向的疏密度分析。从下图可知，在车辆边沿处，点比较稀疏，有的地方存在很长一段距离无数据点。这种情况一般是车头处存在镂空的结构，或者声波发生了散射，导致声波强度减小。所以在确定车辆边沿点时，需设置一个疏密距离阀值，当距离值大于阀值时，才认为该点是边界的跳变点。 <img data-src="https://img-blog.csdnimg.cn/20190513192450664.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
 <h3 id="数据分布">数据分布</h3>
-<p>对于后车的边沿定位，使用的是车辆后方的短距传感器，该传感器使用三角定位原理，确定后车边沿的坐标值。可以从图中看出，图片左侧数据点描绘的是后车的边沿，可以通过数据的分布情况，及集中程度，确定最有可能车辆边沿的值。 <img src="https://img-blog.csdnimg.cn/20190513194816201.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /> 如下图所示，是对上图x轴做了数值分布分析，可以看出，大部分点的x轴坐标都分布于区域5中，所以最后取区域5中的点作为可信的坐标点。 <img src="https://img-blog.csdnimg.cn/20190513201643149.PNG#pic_center" /></p>
+<p>对于后车的边沿定位，使用的是车辆后方的短距传感器，该传感器使用三角定位原理，确定后车边沿的坐标值。可以从图中看出，图片左侧数据点描绘的是后车的边沿，可以通过数据的分布情况，及集中程度，确定最有可能车辆边沿的值。 <img data-src="https://img-blog.csdnimg.cn/20190513194816201.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /> 如下图所示，是对上图x轴做了数值分布分析，可以看出，大部分点的x轴坐标都分布于区域5中，所以最后取区域5中的点作为可信的坐标点。 <img data-src="https://img-blog.csdnimg.cn/20190513201643149.PNG#pic_center" /></p>
 <h2 id="结论">结论</h2>
 
     </div>
@@ -441,10 +441,13 @@
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
 
   
 <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
@@ -458,7 +461,7 @@
 
 
   
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 
@@ -469,6 +472,9 @@
 <script src="/js/third-party/math/mathjax.js"></script>
 
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" integrity="sha256-4kQf9z5ntdQrzsBC3YSHnEz02Z9C1UeW/E9OgnvlzSY=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2019/11/11/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E8%A7%92%E7%82%B9/"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
 
 <script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"3706886816d534b3638c6509ea8ef071"}</script>
