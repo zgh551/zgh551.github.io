@@ -2838,57 +2838,6 @@ e_{\psi}\\
       </tags>
   </entry>
   <entry>
-    <title>车辆停车优化</title>
-    <url>/2019/11/11/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BD%A6%E8%BE%86%E5%81%9C%E8%BD%A6%E4%BC%98%E5%8C%96/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>车辆控制中，如何舒适平衡的停车也是一个比较讲究的事。日常生活中，对于一个刚接触车的新手，控车时可能会猛踩刹车，给人一种很冲的感觉。但是对于老司机，每次踩刹车都是先轻踩，然后逐渐增大踩刹车的力度，这样对于乘客来说就会感觉很舒适。</p>
-<figure>
-<img src="https://i.loli.net/2021/08/30/T3i8DBrFA7zSRPv.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="模型">模型</h2>
-<p>为了模拟出舒适的停车体验，使用变减速度的速度模型进行车辆停车控制。假设<strong>加速度的变化率</strong>为<span class="math inline">\(\dot{a}\)</span>，则<strong>加速度</strong>与<strong>加速度变化率</strong>的关系为</p>
-<p><span class="math display">\[
-\dot{a} * t = a \tag{1}
-\]</span></p>
-<p>对应的减速度曲线如下图所示：</p>
-<figure>
-<img src="https://i.loli.net/2021/08/30/exlCYdmJbpOk1IA.png" alt="减速度曲线" /><figcaption aria-hidden="true">减速度曲线</figcaption>
-</figure>
-<p>对等式(1)求导得<strong>速度</strong>与<strong>加速度的变化率</strong>的关系为 <span class="math display">\[
-v_0 - \int_0^{t}a*dt = v \Longrightarrow v_0 - \frac{1}{2}\dot{a}*t^2 = v \tag{2}
-\]</span></p>
-<p>由于减速度一直变化，对应的速度曲线如下图所示：</p>
-<figure>
-<img src="https://i.loli.net/2021/08/30/peAHWyGjz6cCm8L.png" alt="速度曲线" /><figcaption aria-hidden="true">速度曲线</figcaption>
-</figure>
-<p>图中速度曲线下方的面积<span class="math inline">\(S\)</span>为行驶的位移，根据上述速度曲线，车辆运动模型如下：</p>
-<p><span class="math display">\[
-\int_0^{t}vdt = S \Longrightarrow v_0*t - \frac{1}{6}\dot{a}t^3 = S
-\]</span></p>
-<p>当速度从<span class="math inline">\(v_0\)</span>下降到0的过程中，时间<span class="math inline">\(t_0\)</span>为：</p>
-<p><span class="math display">\[
-v_0 - \frac{1}{2}\dot{a}*t^2 = 0 \Longrightarrow t_0 = {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}
-\]</span></p>
-<p>将时间<span class="math inline">\(t_0\)</span>代入得：</p>
-<p><span class="math display">\[
-t_0*(v_0 - \frac{1}{6}\dot{a}{t_0}^2) = S \Longrightarrow {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}} * (v_0 - \frac{1}{6}\dot{a}\frac{2*v_0}{\dot{a}}) = S\\
-{(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}*\frac{2*v_0}{3} = S
-\]</span></p>
-<p>计算<span class="math inline">\(\dot{a}\)</span>得：</p>
-<p><span class="math display">\[
-\dot{a} = \frac{8 {v_0}^3}{9S^2}
-\]</span></p>
-<p>所以当控制车辆减速时，根据当前车辆速度<span class="math inline">\(v_0\)</span>和距离停车点的位移<span class="math inline">\(S\)</span>，计算出减速度的增量<span class="math inline">\(\dot{a}\)</span>，控制输出的减速度<span class="math inline">\(a = a - \dot{a}*dt\)</span>。</p>
-]]></content>
-      <categories>
-        <category>控制算法</category>
-      </categories>
-      <tags>
-        <tag>速度曲线</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>控制算法-路径跟踪</title>
     <url>/2020/02/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -2974,6 +2923,57 @@ t_0*(v_0 - \frac{1}{6}\dot{a}{t_0}^2) = S \Longrightarrow {(\frac{2*v_0}{\dot{a}
         <tag>Stanley法</tag>
         <tag>运动学模型</tag>
         <tag>转向控制</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>车辆停车优化</title>
+    <url>/2019/11/11/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BD%A6%E8%BE%86%E5%81%9C%E8%BD%A6%E4%BC%98%E5%8C%96/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>车辆控制中，如何舒适平衡的停车也是一个比较讲究的事。日常生活中，对于一个刚接触车的新手，控车时可能会猛踩刹车，给人一种很冲的感觉。但是对于老司机，每次踩刹车都是先轻踩，然后逐渐增大踩刹车的力度，这样对于乘客来说就会感觉很舒适。</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/T3i8DBrFA7zSRPv.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="模型">模型</h2>
+<p>为了模拟出舒适的停车体验，使用变减速度的速度模型进行车辆停车控制。假设<strong>加速度的变化率</strong>为<span class="math inline">\(\dot{a}\)</span>，则<strong>加速度</strong>与<strong>加速度变化率</strong>的关系为</p>
+<p><span class="math display">\[
+\dot{a} * t = a \tag{1}
+\]</span></p>
+<p>对应的减速度曲线如下图所示：</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/exlCYdmJbpOk1IA.png" alt="减速度曲线" /><figcaption aria-hidden="true">减速度曲线</figcaption>
+</figure>
+<p>对等式(1)求导得<strong>速度</strong>与<strong>加速度的变化率</strong>的关系为 <span class="math display">\[
+v_0 - \int_0^{t}a*dt = v \Longrightarrow v_0 - \frac{1}{2}\dot{a}*t^2 = v \tag{2}
+\]</span></p>
+<p>由于减速度一直变化，对应的速度曲线如下图所示：</p>
+<figure>
+<img src="https://i.loli.net/2021/08/30/peAHWyGjz6cCm8L.png" alt="速度曲线" /><figcaption aria-hidden="true">速度曲线</figcaption>
+</figure>
+<p>图中速度曲线下方的面积<span class="math inline">\(S\)</span>为行驶的位移，根据上述速度曲线，车辆运动模型如下：</p>
+<p><span class="math display">\[
+\int_0^{t}vdt = S \Longrightarrow v_0*t - \frac{1}{6}\dot{a}t^3 = S
+\]</span></p>
+<p>当速度从<span class="math inline">\(v_0\)</span>下降到0的过程中，时间<span class="math inline">\(t_0\)</span>为：</p>
+<p><span class="math display">\[
+v_0 - \frac{1}{2}\dot{a}*t^2 = 0 \Longrightarrow t_0 = {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}
+\]</span></p>
+<p>将时间<span class="math inline">\(t_0\)</span>代入得：</p>
+<p><span class="math display">\[
+t_0*(v_0 - \frac{1}{6}\dot{a}{t_0}^2) = S \Longrightarrow {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}} * (v_0 - \frac{1}{6}\dot{a}\frac{2*v_0}{\dot{a}}) = S\\
+{(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}*\frac{2*v_0}{3} = S
+\]</span></p>
+<p>计算<span class="math inline">\(\dot{a}\)</span>得：</p>
+<p><span class="math display">\[
+\dot{a} = \frac{8 {v_0}^3}{9S^2}
+\]</span></p>
+<p>所以当控制车辆减速时，根据当前车辆速度<span class="math inline">\(v_0\)</span>和距离停车点的位移<span class="math inline">\(S\)</span>，计算出减速度的增量<span class="math inline">\(\dot{a}\)</span>，控制输出的减速度<span class="math inline">\(a = a - \dot{a}*dt\)</span>。</p>
+]]></content>
+      <categories>
+        <category>控制算法</category>
+      </categories>
+      <tags>
+        <tag>速度曲线</tag>
       </tags>
   </entry>
   <entry>
