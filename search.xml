@@ -6564,9 +6564,9 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
   <entry>
     <title>树莓派系统安装</title>
     <url>/2022/12/26/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85/</url>
-    <content><![CDATA[<h2 id="section"></h2>
-<h1 id="概述">概述</h1>
+    <content><![CDATA[<h1 id="概述">概述</h1>
 <p>本文讲述了树莓派系统的安装过程，并描述系统环境的配置，让其可以满足基本开发需求。</p>
+<p><img data-src="https://s3.bmp.ovh/imgs/2023/01/01/48c15813d627dec0.jpg" /></p>
 <span id="more"></span>
 <h1 id="硬件环境准备">硬件环境准备</h1>
 <h2 id="卡片计算机">卡片计算机</h2>
@@ -6604,8 +6604,8 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
 <p>从树莓派官网下载 <a href="https://www.raspberrypi.com/software/">Raspberry Pi Imager</a> 工具，进行系统镜像的烧录。</p>
 <p><img data-src="https://s3.bmp.ovh/imgs/2022/12/26/a6df9e3221c7bd5d.png" /></p>
 <p>点击右下角的设置按钮，开启SSH功能并创建用户名和密码，如果希望通过wifi连接，可以配置wifi热点名和密码。</p>
-<h2 id="系统准备">系统准备</h2>
-<h3 id="更换镜像源">更换镜像源</h3>
+<h1 id="系统准备">系统准备</h1>
+<h2 id="更新镜像源">更新镜像源</h2>
 <p>参考 <a href="https://mirrors.tuna.tsinghua.edu.cn/help/raspbian/">清华树莓派镜像站</a> 配置系统镜像源。</p>
 <p>备份镜像源文件，通过如下命令：</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cp</span> /etc/apt/sources.list /tmp/sources.list.backup</span></span><br></pre></td></tr></table></figure>
