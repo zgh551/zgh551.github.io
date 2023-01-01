@@ -6480,6 +6480,8 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
     <url>/2022/12/26/Home-Assistant-Supervised-%E5%AE%89%E8%A3%85/</url>
     <content><![CDATA[<h1 id="概述">概述</h1>
 <p>本文讲述 <strong>Home Assistant Supervisor</strong> 的安装步骤，虽然官方有详细的安装指导，但是由于软件源大都在国外，某些步骤可能需要科学上网才能解决。本文实际部署的硬件平台是 Raspberry Pi 3 Model，请参考 做好硬件和软件环境的准备。</p>
+<p><img data-src="https://s3.bmp.ovh/imgs/2023/01/01/eca88d886cc33e9a.jpg" /></p>
+<span id="more"></span>
 <h1 id="前期准备">前期准备</h1>
 <h2 id="系统确认">系统确认</h2>
 <p>参考官方说明文档 <a href="https://www.home-assistant.io/more-info/unsupported/os">Operating System</a> 确认目前支持的系统。目前 Home Assistant Supervisor 支持的操作系统类型是 Debian 11 (Bullseye)，可以支持</p>

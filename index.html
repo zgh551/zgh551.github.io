@@ -365,7 +365,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-01-01 15:21:16" itemprop="dateModified" datetime="2023-01-01T15:21:16+08:00">2023-01-01</time>
+      <time title="修改时间：2023-01-01 16:23:21" itemprop="dateModified" datetime="2023-01-01T16:23:21+08:00">2023-01-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -389,73 +389,15 @@
     <div class="post-body" itemprop="articleBody">
           <h1 id="概述">概述</h1>
 <p>本文讲述 <strong>Home Assistant Supervisor</strong> 的安装步骤，虽然官方有详细的安装指导，但是由于软件源大都在国外，某些步骤可能需要科学上网才能解决。本文实际部署的硬件平台是 Raspberry Pi 3 Model，请参考 做好硬件和软件环境的准备。</p>
-<h1 id="前期准备">前期准备</h1>
-<h2 id="系统确认">系统确认</h2>
-<p>参考官方说明文档 <a target="_blank" rel="noopener" href="https://www.home-assistant.io/more-info/unsupported/os">Operating System</a> 确认目前支持的系统。目前 Home Assistant Supervisor 支持的操作系统类型是 Debian 11 (Bullseye)，可以支持</p>
-<h2 id="apparmor配置">Apparmor配置</h2>
-<p>默认树莓派最新的发布版本是安装了 apparmor 工具的，Supervisor 要求系统开机时激活apparmor 服务，需要在<code>/boot/cmdline.txt</code>文件中，追加 <code>apparmor=1 security=apparmor</code> 内容。详细参考 <a target="_blank" rel="noopener" href="https://github.com/Kanga-Who/home-assistant/issues/25">how to enable apparmor</a> 内容。</p>
-<h2 id="cgroup配置">cgroup配置</h2>
-<p>打开 <code>/etc/default/grub</code> 文件，如果不存该文件则创建，并在文件中写入 <code>systemd.unified_cgroup_hierarchy=false</code> 内容。</p>
-<p>打开 <code>/boot/cmdline.txt</code> 文件，并追加 <code>systemd.unified_cgroup_hierarchy=false</code> 内容。</p>
-<h2 id="networkmanager配置">NetworkManager配置</h2>
-<p>由于Home Assistant Supervisor 需要 <code>NetworkManager</code> 的支持，而树莓派官方系统默认采用 <code>dhcpcd</code>网络配置工具。所以需要通过<strong>raspi-config</strong>工具切换网络配置工具。</p>
-<p>通过如下命令，打开树莓派配置工具</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo raspi-config</span><br></pre></td></tr></table></figure>
-<p>如下图所示，选择 <mark>Advanced Options</mark></p>
-<p><img data-src="https://s3.bmp.ovh/imgs/2023/01/01/ff1e0866079cc9e0.png" title="" alt="" data-align="center"></p>
-<p>选择 <mark>Network Config</mark></p>
-<p><img data-src="https://s3.bmp.ovh/imgs/2023/01/01/25b0190151f2570f.png" title="" alt="" data-align="center"></p>
-<p>最后将网络配置器切换到 <mark>NetworkManager</mark>，按下回车键 Enter 保存配置，此时需要会提示是否 reboot ,请选择yes，重启树莓派。</p>
-<p><img data-src="https://s3.bmp.ovh/imgs/2023/01/01/b9281b0f4fd84e7a.png" title="" alt="" data-align="center"></p>
-<h1 id="supervisor-安装步骤">Supervisor 安装步骤</h1>
-<h2 id="依赖软件安装">依赖软件安装</h2>
-<p>通过如下命令安装依赖软件：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install \</span><br><span class="line">apparmor \</span><br><span class="line">jq \</span><br><span class="line">wget \</span><br><span class="line">curl \</span><br><span class="line">udisks2 \</span><br><span class="line">libglib2.0-bin \</span><br><span class="line">network-manager \</span><br><span class="line">dbus \</span><br><span class="line">lsb-release \</span><br><span class="line">systemd-journal-remote -y</span><br></pre></td></tr></table></figure>
-<h2 id="docker-ce-安装">Docker-CE 安装</h2>
-<p>下载安装脚本，命令如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL get.docker.com</span><br></pre></td></tr></table></figure>
-<p>国内用户建议通过阿里镜像源进行安装：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh get-docker.sh --mirror Aliyun</span><br></pre></td></tr></table></figure>
-<p>将当前用户添加进dockert组中：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo usermod -aG docker <span class="variable">$USER</span></span><br></pre></td></tr></table></figure>
-<h2 id="os-agent-安装">OS-Agent 安装</h2>
-<p>由于Supervisor依赖 <strong>OS-Agent</strong> 软件包，但该软件不在Debian官方软件源内，需要前往Github仓库 <a target="_blank" rel="noopener" href="https://github.com/home-assistant/os-agent">os-agent</a> 下载。</p>
-<p><img data-src="https://s3.bmp.ovh/imgs/2023/01/01/99f64464d0d1f039.png" /></p>
-<p>通过如下指令查看芯片架构类型：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">uname</span> -m</span></span><br></pre></td></tr></table></figure>
-<p>如果输出 <code>aarch64</code> ，则下载 <code>os-agent_1.4.1_linux_aarch64.deb</code> 软件包。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">wget -c https://github.com/home-assistant/os-agent/releases/download/1.4.1/os-agent_1.4.1_linux_aarch64.deb</span></span><br></pre></td></tr></table></figure>
-<p>然后使用 <code>dpkg</code>命令安装：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo dpkg -i os-agent_1.4.1_linux_aarch64.deb</span><br></pre></td></tr></table></figure>
-<p>判断是否安装成功</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">gdbus introspect --system --dest io.hass.os --object-path /io/hass/os</span></span><br></pre></td></tr></table></figure>
-<p>上述命令如果不输出错误信息，而是输出包含 <code>interface</code> 字段的信息则说明安装成功，树莓派安装后输出如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">node /io/hass/os &#123;</span><br><span class="line">  interface org.freedesktop.DBus.Introspectable &#123;</span><br><span class="line">    methods:</span><br><span class="line">      Introspect(out s out);</span><br><span class="line">    signals:</span><br><span class="line">    properties:</span><br><span class="line">  &#125;;</span><br><span class="line">  interface org.freedesktop.DBus.Properties &#123;</span><br><span class="line">    methods:</span><br><span class="line">      Get(in  s interface,</span><br><span class="line">          in  s property,</span><br><span class="line">          out v value);</span><br><span class="line">      GetAll(in  s interface,</span><br><span class="line">             out a&#123;sv&#125; props);</span><br><span class="line">      Set(in  s interface,</span><br><span class="line">          in  s property,</span><br><span class="line">          in  v value);</span><br><span class="line">    signals:</span><br><span class="line">      PropertiesChanged(s interface,</span><br><span class="line">                        a&#123;sv&#125; changed_properties,</span><br><span class="line">                        as invalidates_properties);</span><br><span class="line">    properties:</span><br><span class="line">  &#125;;</span><br><span class="line">  interface io.hass.os &#123;</span><br><span class="line">    methods:</span><br><span class="line">    signals:</span><br><span class="line">    properties:</span><br><span class="line">      @org.freedesktop.DBus.Property.EmitsChangedSignal(&quot;invalidates&quot;)</span><br><span class="line">      readonly s Version = &#x27;1.4.1&#x27;;</span><br><span class="line">      @org.freedesktop.DBus.Property.EmitsChangedSignal(&quot;true&quot;)</span><br><span class="line">      readwrite b Diagnostics = false;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h2 id="supervisor-安装">Supervisor 安装</h2>
-<p>前往 <a target="_blank" rel="noopener" href="https://github.com/home-assistant/supervised-installer/releases">Releases · home-assistant/supervised-installer · GitHub</a>下载与 OS-Agent版本匹配的Debian包。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wget -c https://github.com/home-assistant/supervised-installer/releases/download/1.4.1/homeassistant-supervised.deb</span><br></pre></td></tr></table></figure>
-<p>执行安装命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo dpkg -i homeassistant-supervised.deb</span><br></pre></td></tr></table></figure>
-<p>安装过程中会弹出配置窗口，根据实际硬件和系统位宽选择对应的即可。</p>
-<p>安装成功后，需要等待一段时间，时间长短由实际网络情况决定。如果想确认系统是否在运行相关安装操作，可查看系统进程，如果出现下图中的进程，则说明正在下载相关的docker镜像。</p>
-<p><img data-src="https://s3.bmp.ovh/imgs/2023/01/01/27828012ad450222.png" /></p>
-<p>通过如下指令可以查看docker镜像的下载情况：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker images | grep ghcr.io/home-assistant</span><br></pre></td></tr></table></figure>
-<p>如下镜像列表，说明 <strong>Supervisor</strong> 需求的所有基础镜像都下载完成。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ghcr.io/home-assistant/raspberrypi3-64-homeassistant   2022.12.8   bdb17d6196f1   10 days ago     1.42GB</span><br><span class="line">ghcr.io/home-assistant/aarch64-hassio-supervisor       latest      274d5e89d465   12 days ago     314MB</span><br><span class="line">ghcr.io/home-assistant/aarch64-hassio-cli              2022.11.0   a3ff4e00a9a0   8 weeks ago     116MB</span><br><span class="line">ghcr.io/home-assistant/aarch64-hassio-audio            2022.07.0   c4435f74fa3c   5 months ago    152MB</span><br><span class="line">ghcr.io/home-assistant/aarch64-hassio-dns              2022.04.1   362b749494ab   8 months ago    96.7MB</span><br><span class="line">ghcr.io/home-assistant/aarch64-hassio-multicast        2022.02.0   3ce91958464c   10 months ago   81.5MB</span><br><span class="line">ghcr.io/home-assistant/aarch64-hassio-observer         2021.10.0   9c3593efc7e1   14 months ago   89.2MB</span><br></pre></td></tr></table></figure>
-<p>另外可以使用如下命令查看相关容器是否创建成功：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker ps</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">CONTAINER ID   IMAGE                                                            COMMAND   CREATED        STATUS        PORTS                                   NAMES</span><br><span class="line">8a35d1671da0   ghcr.io/home-assistant/aarch64-hassio-multicast:2022.02.0        <span class="string">&quot;/init&quot;</span>   21 hours ago   Up 21 hours                                           hassio_multicast</span><br><span class="line">fe5d313af4a6   ghcr.io/home-assistant/aarch64-hassio-audio:2022.07.0            <span class="string">&quot;/init&quot;</span>   21 hours ago   Up 21 hours                                           hassio_audio</span><br><span class="line">af22688c8288   ghcr.io/home-assistant/aarch64-hassio-dns:2022.04.1              <span class="string">&quot;/init&quot;</span>   21 hours ago   Up 21 hours                                           hassio_dns</span><br><span class="line">b5255dbcb17d   ghcr.io/home-assistant/aarch64-hassio-cli:2022.11.0              <span class="string">&quot;/init&quot;</span>   21 hours ago   Up 21 hours                                           hassio_cli</span><br><span class="line">7acff09641e5   ghcr.io/home-assistant/aarch64-hassio-observer:2021.10.0         <span class="string">&quot;/init&quot;</span>   6 days ago     Up 21 hours   0.0.0.0:4357-&gt;80/tcp, :::4357-&gt;80/tcp   hassio_observer</span><br><span class="line">cb3b24d10901   ghcr.io/home-assistant/raspberrypi3-64-homeassistant:2022.12.8   <span class="string">&quot;/init&quot;</span>   7 days ago     Up 21 hours                                           homeassistant</span><br><span class="line">7e49186c9adf   ghcr.io/home-assistant/aarch64-hassio-supervisor:latest          <span class="string">&quot;/init&quot;</span>   7 days ago     Up 21 hours                                           hassio_supervisor</span><br></pre></td></tr></table></figure>
-<p>进一步访问 <code>IP:4357</code> 端口，确认 Supervisor 工作状态是否正常。 <img data-src="https://s3.bmp.ovh/imgs/2023/01/01/c8b095d572622e38.png" alt="supervisor状态" /></p>
-<p>最后通过访问 <code>IP:8123</code> 端口，进行 <strong>Home Assisistant</strong> 的相关配置。</p>
-<h1 id="参考">参考</h1>
-<ol type="1">
-<li><p><a target="_blank" rel="noopener" href="https://github.com/home-assistant/supervised-installer">supervised-installer: Installer for a generic Linux system</a></p></li>
-<li><p><a target="_blank" rel="noopener" href="https://github.com/home-assistant/os-agent/tree/main#using-home-assistant-supervised-on-debian">os-agent: Daemon allowing to control OS features through D-Bus</a></p></li>
-<li><p><a target="_blank" rel="noopener" href="https://www.mintimate.cn/2022/03/29/raspberryInsatllHAS/#%E5%89%8D%E8%A8%80">详解树莓派上如何安装Home Assistant Supervised - 雨月空间站</a></p></li>
-<li><p><a target="_blank" rel="noopener" href="https://www.home-assistant.io/more-info/unsupported/network_manager">Network Manager - Home Assistant</a></p></li>
-</ol>
-
+<p><img data-src="https://s3.bmp.ovh/imgs/2023/01/01/eca88d886cc33e9a.jpg" /></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/12/26/Home-Assistant-Supervised-%E5%AE%89%E8%A3%85/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
