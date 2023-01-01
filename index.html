@@ -269,7 +269,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-01-01 15:38:30" itemprop="dateModified" datetime="2023-01-01T15:38:30+08:00">2023-01-01</time>
+      <time title="修改时间：2023-01-01 15:43:16" itemprop="dateModified" datetime="2023-01-01T15:43:16+08:00">2023-01-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -294,55 +294,14 @@
           <h2 id="section"></h2>
 <h1 id="概述">概述</h1>
 <p>本文讲述了树莓派系统的安装过程，并描述系统环境的配置，让其可以满足基本开发需求。</p>
-<h1 id="硬件环境准备">硬件环境准备</h1>
-<h2 id="卡片计算机">卡片计算机</h2>
-<p>本文演示所用的计算机是 Raspberry Pi 3 Model B，其参数如下：</p>
-<ul>
-<li>Quad Core 1.2GHz Broadcom BCM2837 64bit CPU</li>
-<li>1GB RAM</li>
-<li>BCM43438 wireless LAN and Bluetooth Low Energy (BLE) on board</li>
-<li>100 Base Ethernet</li>
-<li>40-pin extended GPIO</li>
-<li>4 USB 2 ports</li>
-<li>4 Pole stereo output and composite video port</li>
-<li>Full size HDMI</li>
-<li>CSI camera port for connecting a Raspberry Pi camera</li>
-<li>DSI display port for connecting a Raspberry Pi touchscreen display</li>
-<li>Micro SD port for loading your operating system and storing data</li>
-<li>Upgraded switched Micro USB power source up to 2.5A</li>
-</ul>
-<h2 id="电源适配器">电源适配器</h2>
-<p>根据官方推荐参数，请选用输出电流可达2.5A的电源适配器，如果电源适配的输出功率不够，可能会导致系统不稳定的情况。例如在使用ssh连接卡片计算机时，如果计算机负载过高，会出现ssh连接断开的的情况。</p>
-<h2 id="sd卡">SD卡</h2>
-<p>推荐选用SD卡的容量至少32GB，该容量可以满足大部分场景需求。</p>
-<h1 id="软件环境准备">软件环境准备</h1>
-<h2 id="系统下载">系统下载</h2>
-<p>首先从 <a target="_blank" rel="noopener" href="https://www.raspberrypi.com/software/operating-systems/">树莓派官网</a> 下载最新的系统镜像，本文演示的系统镜像信息如下：</p>
-<ul>
-<li><p>Raspberry Pi OS Lite</p></li>
-<li><p>Release date: September 22nd 2022</p></li>
-<li><p>System: 64-bit</p></li>
-<li><p>Kernel version: 5.15</p></li>
-<li><p>Debian version: 11 (bullseye)</p></li>
-<li><p>Size: 289MB：72c773781a0a57160eb3fa8bb2a927642fe60c3af62bc980827057bcecb7b98b</p></li>
-</ul>
-<h2 id="镜像烧录工具下载">镜像烧录工具下载</h2>
-<p>从树莓派官网下载 <a target="_blank" rel="noopener" href="https://www.raspberrypi.com/software/">Raspberry Pi Imager</a> 工具，进行系统镜像的烧录。</p>
-<p><img data-src="https://s3.bmp.ovh/imgs/2022/12/26/a6df9e3221c7bd5d.png" /></p>
-<p>点击右下角的设置按钮，开启SSH功能并创建用户名和密码，如果希望通过wifi连接，可以配置wifi热点名和密码。</p>
-<h2 id="系统准备">系统准备</h2>
-<h3 id="更换镜像源">更换镜像源</h3>
-<p>参考 <a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/help/raspbian/">清华树莓派镜像站</a> 配置系统镜像源。</p>
-<p>备份镜像源文件，通过如下命令：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cp</span> /etc/apt/sources.list /tmp/sources.list.backup</span></span><br></pre></td></tr></table></figure>
-<p>通过下面的指令替换原文件的内容并更新到系统镜像源。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -e <span class="string">&#x27;s/http:\/\/deb.debian.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/;</span></span></span><br><span class="line">        s/http:\/\/security.debian.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/&#x27; \</span><br><span class="line">        /tmp/sources.list.backup &gt; /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
-<p>同理，执行下述命令，替换为清华镜像源:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash"><span class="built_in">cp</span> /etc/apt/sources.list.d/raspi.list /tmp/raspi.list.backup</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sed -e <span class="string">&#x27;s/http:\/\/archive.raspberrypi.org\/debian/https:\/\/mirrors.tuna.tsinghua.edu.cn\/raspberrypi/&#x27;</span> \</span></span><br><span class="line"><span class="language-bash">        /tmp/raspi.list.backup &gt; /etc/apt/sources.list.d/raspi.list</span></span><br></pre></td></tr></table></figure>
-<p>执行下述命令，更新系统镜像源:</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">apt-get update --fix-missing</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">apt-get upgrade -y</span></span><br></pre></td></tr></table></figure>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/12/26/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
