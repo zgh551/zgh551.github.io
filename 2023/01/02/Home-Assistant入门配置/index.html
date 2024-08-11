@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.2.0">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
@@ -23,15 +22,16 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="概述 本文讲述Home Assistant相关配置。 插件安装 Terminal 点击 配置 菜单栏，在页面中选中 加载项 菜单，然后在新的页面中点击右下角的 加载项商店 按钮，在搜索界面输入 SSH 关键字。最终会有两个版本的ssh终端，其中一个官方版本，一个是社区的版本，点击社区版本图标执行安装操作； 然后重启， 在配置界面 配置本地的ssh key公钥信息，一般会在本地用户的.s">
+    <meta name="description" content="概述 本文讲述Home Assistant相关配置，如何使用Home Assistant进行智能家居的搭建。  LUTOS概念">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Home Assistant入门配置">
 <meta property="og:url" content="https://zgh551.github.io/2023/01/02/Home-Assistant%E5%85%A5%E9%97%A8%E9%85%8D%E7%BD%AE/index.html">
 <meta property="og:site_name" content="Henry-Z">
-<meta property="og:description" content="概述 本文讲述Home Assistant相关配置。 插件安装 Terminal 点击 配置 菜单栏，在页面中选中 加载项 菜单，然后在新的页面中点击右下角的 加载项商店 按钮，在搜索界面输入 SSH 关键字。最终会有两个版本的ssh终端，其中一个官方版本，一个是社区的版本，点击社区版本图标执行安装操作； 然后重启， 在配置界面 配置本地的ssh key公钥信息，一般会在本地用户的.s">
+<meta property="og:description" content="概述 本文讲述Home Assistant相关配置，如何使用Home Assistant进行智能家居的搭建。  LUTOS概念">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/08/11/NqMX1oPC4wl5Apx.jpg">
 <meta property="og:image" content="https://s3.bmp.ovh/imgs/2023/01/02/5123659e1b1d893f.png">
 <meta property="og:image" content="https://s3.bmp.ovh/imgs/2023/01/02/e5534bd22dabea43.png">
 <meta property="og:image" content="https://s3.bmp.ovh/imgs/2023/01/02/f195a5bbfbbf7784.png">
@@ -43,12 +43,12 @@
 <meta property="og:image" content="https://s2.loli.net/2023/03/19/Im981QRu3WkDjUG.png">
 <meta property="og:image" content="https://s2.loli.net/2023/03/19/JNCIm3QloLOfb25.png">
 <meta property="article:published_time" content="2023-01-02T08:16:02.000Z">
-<meta property="article:modified_time" content="2023-03-19T08:13:46.830Z">
+<meta property="article:modified_time" content="2024-08-11T02:55:14.037Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="Home Assistant">
 <meta property="article:tag" content="HACS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://s3.bmp.ovh/imgs/2023/01/02/5123659e1b1d893f.png">
+<meta name="twitter:image" content="https://s2.loli.net/2024/08/11/NqMX1oPC4wl5Apx.jpg">
 
 
 <link rel="canonical" href="https://zgh551.github.io/2023/01/02/Home-Assistant%E5%85%A5%E9%97%A8%E9%85%8D%E7%BD%AE/">
@@ -166,7 +166,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">插件安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#terminal"><span class="nav-number">2.1.</span> <span class="nav-text">Terminal</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hacs"><span class="nav-number">2.2.</span> <span class="nav-text">HACS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">2.2.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0hacs%E9%9B%86%E6%88%90%E7%BB%84%E4%BB%B6"><span class="nav-number">2.2.2.</span> <span class="nav-text">添加HACS集成组件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%B1%B3%E5%AE%B6%E7%89%A9%E8%81%94%E7%BD%91%E6%8F%92%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">安装米家物联网插件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#xiaomi-miot%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">3.1.</span> <span class="nav-text">Xiaomi MIoT插件安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A6%E6%88%B7%E9%85%8D%E7%BD%AE"><span class="nav-number">3.2.</span> <span class="nav-text">账户配置</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">插件安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#terminal"><span class="nav-number">2.1.</span> <span class="nav-text">Terminal</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hacs"><span class="nav-number">2.2.</span> <span class="nav-text">HACS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">2.2.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0hacs%E9%9B%86%E6%88%90%E7%BB%84%E4%BB%B6"><span class="nav-number">2.2.2.</span> <span class="nav-text">添加HACS集成组件</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E7%B1%B3%E5%AE%B6%E7%89%A9%E8%81%94%E7%BD%91%E6%8F%92%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">安装米家物联网插件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#xiaomi-miot%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">3.1.</span> <span class="nav-text">Xiaomi MIoT插件安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B4%A6%E6%88%B7%E9%85%8D%E7%BD%AE"><span class="nav-number">3.2.</span> <span class="nav-text">账户配置</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -285,7 +285,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-19 16:13:46" itemprop="dateModified" datetime="2023-03-19T16:13:46+08:00">2023-03-19</time>
+      <time title="修改时间：2024-08-11 10:55:14" itemprop="dateModified" datetime="2024-08-11T10:55:14+08:00">2024-08-11</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -314,49 +314,63 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="概述">概述</h1>
-<p>本文讲述Home Assistant相关配置。</p>
-<h1 id="插件安装">插件安装</h1>
-<h2 id="terminal">Terminal</h2>
+        <h2 id="概述">概述</h2>
+<p>本文讲述Home Assistant相关配置，如何使用Home Assistant进行智能家居的搭建。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/NqMX1oPC4wl5Apx.jpg" alt="LUTOS概念" /><figcaption aria-hidden="true">LUTOS概念</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="插件安装">插件安装</h2>
+<h3 id="terminal">Terminal</h3>
 <p>点击 <code>配置</code> 菜单栏，在页面中选中 <code>加载项</code> 菜单，然后在新的页面中点击右下角的 <code>加载项商店</code> 按钮，在搜索界面输入 <strong>SSH</strong> 关键字。最终会有两个版本的ssh终端，其中一个官方版本，一个是社区的版本，点击社区版本图标执行安装操作；</p>
 <p>然后重启，</p>
 <p>在配置界面 配置本地的ssh key公钥信息，一般会在本地用户的.shh目录下，拷贝密钥粘贴到 <strong>authorized_keys</strong> 字段。</p>
 <p>打开侧边栏显示，此时就可以看到快捷按钮；</p>
-<h2 id="hacs">HACS</h2>
-<h3 id="安装">安装</h3>
+<h3 id="hacs">HACS</h3>
+<h4 id="安装">安装</h4>
 <p>请参考 <a target="_blank" rel="noopener" href="https://hacs.xyz/docs/setup/download">HACS官方教程</a>，打开ssh终端，输入如下命令：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -c https://get.hacs.xyz | bash -</span><br></pre></td></tr></table></figure>
 <p>国内网络由于各种限制，可能需要科学上网才能访问安装脚本网址，当然也可以通过代理的方式下载，具体指令如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -c https://ghproxy.com/https://raw.githubusercontent.com/hacs/get/main/get | bash -</span><br></pre></td></tr></table></figure>
 <p>等待安装完成，会在 <code>/root/config/custom_components</code>目录下会生成 <code>hacs</code>目录。</p>
 <p>安装完成后，需要重启一下。</p>
-<h3 id="添加hacs集成组件">添加HACS集成组件</h3>
+<h4 id="添加hacs集成组件">添加HACS集成组件</h4>
 <p>首先点击左侧的 <code>配置</code> 菜单栏，然后选择 <code>设备与服务</code> 功能进入集成配置界面，在界面的右下角点击 <code>添加集成</code> 按钮，在搜索框内输入 <strong>HACS</strong> ：</p>
-<p><img title="" data-src="https://s3.bmp.ovh/imgs/2023/01/02/5123659e1b1d893f.png" alt="" data-align="center" width="388"></p>
+<p><img title="HACS" data-src="https://s3.bmp.ovh/imgs/2023/01/02/5123659e1b1d893f.png" alt="" data-align="center" width="388"></p>
 <p>然后会弹出如下窗口，4个选项都勾选上：</p>
 <p><img title="" data-src="https://s3.bmp.ovh/imgs/2023/01/02/e5534bd22dabea43.png" alt="" data-align="center" width="392"></p>
 <p>复制框中的KEY码，然后点击跳转链接：</p>
 <p><img title="" data-src="https://s3.bmp.ovh/imgs/2023/01/02/f195a5bbfbbf7784.png" alt="" data-align="center" width="395"></p>
 <p>在如下图的网页界面上粘贴Key码，并点击 <code>Continue</code> 按钮。</p>
-<p><img data-src="https://s3.bmp.ovh/imgs/2023/01/02/60d90d9d3c2c4b51.png" /></p>
+<figure>
+<img data-src="https://s3.bmp.ovh/imgs/2023/01/02/60d90d9d3c2c4b51.png" alt="Continue" /><figcaption aria-hidden="true">Continue</figcaption>
+</figure>
 <p>然后登陆自己的 Github 账号，绑定 HACS 服务</p>
-<p><img data-src="https://s3.bmp.ovh/imgs/2023/01/02/00c7b419c498bd6b.png" /></p>
+<figure>
+<img data-src="https://s3.bmp.ovh/imgs/2023/01/02/00c7b419c498bd6b.png" alt="login" /><figcaption aria-hidden="true">login</figcaption>
+</figure>
 <p>出现如下图所示界面，表示绑定成功，回到Home Assistant 界面。</p>
 <p><img title="" data-src="https://s3.bmp.ovh/imgs/2023/01/02/188fb48c0f9af031.png" alt="" width="365" data-align="center"></p>
 <p><img title="" data-src="https://s3.bmp.ovh/imgs/2023/01/02/f166eae5a8355b60.png" alt="" width="389" data-align="center"></p>
 <p>然后左侧侧边栏中将会出现 HACS快捷按钮。</p>
 <p>点击 集成 , 右下角 <strong>浏览并下载库</strong></p>
-<h1 id="安装米家物联网插件">安装米家物联网插件</h1>
-<h2 id="xiaomi-miot插件安装">Xiaomi MIoT插件安装</h2>
+<h2 id="安装米家物联网插件">安装米家物联网插件</h2>
+<h3 id="xiaomi-miot插件安装">Xiaomi MIoT插件安装</h3>
 <p>首先在Home Assistant Community Store(HACS)中安装Xiaomi MIoT组件。点击左侧侧边栏上的HACS图标， 然后选择进入 <code>集成</code> 配置界面, 单击界面右下角 <code>浏览并下载库</code>，输入 <code>xiaomi</code> 等关键字，然后从下拉列表中选择 <code>Xiaomi MIoT</code> , 最后点击右下角的 <code>下载</code> 按钮, 则相关插件文件会下载到 <code>/config/custom_components/xiaomi_miot_raw</code> 目录下。 下载完成后，需要进行重启操作。</p>
-<h2 id="账户配置">账户配置</h2>
+<h3 id="账户配置">账户配置</h3>
 <p>首先点击左侧侧边栏的 <code>配置</code> 菜单，进入 <code>设备与服务</code> 配置界面，然后点击界面右下角的 <code>添加集成</code> 按钮，在搜索窗口中输入 <code>xaiomi</code> 等关键字，选择 <code>Xiaomi MIoT</code>图标。</p>
 <p>如下图所示，选择采用小米账号登陆，点击 <code>提交</code>：</p>
-<p><img data-src="https://s2.loli.net/2023/03/19/oWziSDOaZgvrq6u.png" /></p>
+<figure>
+<img data-src="https://s2.loli.net/2023/03/19/oWziSDOaZgvrq6u.png" alt="login" /><figcaption aria-hidden="true">login</figcaption>
+</figure>
 <p>通过如下窗口填写自己的小米账号和密码，并点击 <code>提交</code>：</p>
-<p><img data-src="https://s2.loli.net/2023/03/19/Im981QRu3WkDjUG.png" /></p>
+<figure>
+<img data-src="https://s2.loli.net/2023/03/19/Im981QRu3WkDjUG.png" alt="submit" /><figcaption aria-hidden="true">submit</figcaption>
+</figure>
 <p>然后勾选需要集成的设备，最后出现如下窗口说明添加成功。</p>
-<p><img data-src="https://s2.loli.net/2023/03/19/JNCIm3QloLOfb25.png" /></p>
+<figure>
+<img data-src="https://s2.loli.net/2023/03/19/JNCIm3QloLOfb25.png" alt="success" /><figcaption aria-hidden="true">success</figcaption>
+</figure>
 
     </div>
 

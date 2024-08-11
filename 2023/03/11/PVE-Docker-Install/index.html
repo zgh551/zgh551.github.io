@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.2.0">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
@@ -23,22 +22,24 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="概述 本文主要介绍PVE虚拟环境中如何构建LXC容器，通过LXC隔离PVE环境，并在LXC容器中创建Docker服务。 使用PVE中模版LXC容器，在其中安装Docker 软件源更新 1sed -e &amp;#x27;s&#x2F;www.debian.org&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;&amp;#x27; tmp&#x2F;sources.list.backup &gt; &#x2F;etc&#x2F;apt">
+    <meta name="description" content="概述 本文主要介绍在Proxmox VE（PVE）虚拟化环境中，如何构建LXC容器以隔离PVE环境。我们将使用PVE中的模版创建LXC容器，并在其中安装Docker服务。通过这种方式，我们可以在PVE虚拟环境中安全地部署和管理Docker应用。  本田概念">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PVE-Docker服务部署">
 <meta property="og:url" content="https://zgh551.github.io/2023/03/11/PVE-Docker-Install/index.html">
 <meta property="og:site_name" content="Henry-Z">
-<meta property="og:description" content="概述 本文主要介绍PVE虚拟环境中如何构建LXC容器，通过LXC隔离PVE环境，并在LXC容器中创建Docker服务。 使用PVE中模版LXC容器，在其中安装Docker 软件源更新 1sed -e &amp;#x27;s&#x2F;www.debian.org&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;&amp;#x27; tmp&#x2F;sources.list.backup &gt; &#x2F;etc&#x2F;apt">
+<meta property="og:description" content="概述 本文主要介绍在Proxmox VE（PVE）虚拟化环境中，如何构建LXC容器以隔离PVE环境。我们将使用PVE中的模版创建LXC容器，并在其中安装Docker服务。通过这种方式，我们可以在PVE虚拟环境中安全地部署和管理Docker应用。  本田概念">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/08/11/5Epb3dFI62zAaMQ.jpg">
 <meta property="article:published_time" content="2023-03-11T09:08:02.000Z">
-<meta property="article:modified_time" content="2024-08-10T09:41:57.022Z">
+<meta property="article:modified_time" content="2024-08-11T02:55:07.265Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="PVE">
 <meta property="article:tag" content="LXC">
 <meta property="article:tag" content="Docker">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2024/08/11/5Epb3dFI62zAaMQ.jpg">
 
 
 <link rel="canonical" href="https://zgh551.github.io/2023/03/11/PVE-Docker-Install/">
@@ -156,7 +157,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E6%BA%90%E6%9B%B4%E6%96%B0"><span class="nav-number">1.1.</span> <span class="nav-text">软件源更新</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker%E5%AE%89%E8%A3%85"><span class="nav-number">1.2.</span> <span class="nav-text">docker安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E6%98%BE%E5%8D%A1"><span class="nav-number">1.3.</span> <span class="nav-text">配置显卡</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#portainer%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">portainer安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%82%E8%BD%BDsamba%E6%9C%8D%E5%8A%A1"><span class="nav-number">3.</span> <span class="nav-text">挂载Samba服务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">3.1.</span> <span class="nav-text">软件安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E6%8C%82%E8%BD%BD"><span class="nav-number">3.2.</span> <span class="nav-text">手动挂载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E6%9C%BA%E8%87%AA%E5%8A%A8%E6%8C%82%E8%BD%BD"><span class="nav-number">3.3.</span> <span class="nav-text">开机自动挂载</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E5%AE%83%E5%8F%82%E6%95%B0"><span class="nav-number">3.3.1.</span> <span class="nav-text">其它参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E6%8C%82%E8%BD%BD"><span class="nav-number">3.4.</span> <span class="nav-text">执行挂载</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85jellyfin%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.</span> <span class="nav-text">安装jellyfin服务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-aria2"><span class="nav-number">5.</span> <span class="nav-text">安装 Aria2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">5.1.</span> <span class="nav-text">环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD%E5%8D%B7"><span class="nav-number">5.2.</span> <span class="nav-text">挂载卷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%AB%AF%E5%8F%A3"><span class="nav-number">5.3.</span> <span class="nav-text">网络端口</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85ariang"><span class="nav-number">6.</span> <span class="nav-text">安装AriaNg</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E6%BA%90%E6%9B%B4%E6%96%B0"><span class="nav-number">1.1.</span> <span class="nav-text">软件源更新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker%E5%AE%89%E8%A3%85"><span class="nav-number">1.2.</span> <span class="nav-text">docker安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E6%98%BE%E5%8D%A1"><span class="nav-number">1.3.</span> <span class="nav-text">配置显卡</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#portainer%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">portainer安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%82%E8%BD%BDsamba%E6%9C%8D%E5%8A%A1"><span class="nav-number">3.</span> <span class="nav-text">挂载Samba服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">3.1.</span> <span class="nav-text">软件安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E6%8C%82%E8%BD%BD"><span class="nav-number">3.2.</span> <span class="nav-text">手动挂载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E6%9C%BA%E8%87%AA%E5%8A%A8%E6%8C%82%E8%BD%BD"><span class="nav-number">3.3.</span> <span class="nav-text">开机自动挂载</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B6%E5%AE%83%E5%8F%82%E6%95%B0"><span class="nav-number">3.3.1.</span> <span class="nav-text">其它参数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E6%8C%82%E8%BD%BD"><span class="nav-number">3.4.</span> <span class="nav-text">执行挂载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85jellyfin%E6%9C%8D%E5%8A%A1"><span class="nav-number">4.</span> <span class="nav-text">安装jellyfin服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-aria2"><span class="nav-number">5.</span> <span class="nav-text">安装 Aria2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">5.1.</span> <span class="nav-text">环境变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%82%E8%BD%BD%E5%8D%B7"><span class="nav-number">5.2.</span> <span class="nav-text">挂载卷</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%AB%AF%E5%8F%A3"><span class="nav-number">5.3.</span> <span class="nav-text">网络端口</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85ariang"><span class="nav-number">6.</span> <span class="nav-text">安装AriaNg</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -275,7 +276,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-10 17:41:57" itemprop="dateModified" datetime="2024-08-10T17:41:57+08:00">2024-08-10</time>
+      <time title="修改时间：2024-08-11 10:55:07" itemprop="dateModified" datetime="2024-08-11T10:55:07+08:00">2024-08-11</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -304,49 +305,52 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="概述">概述</h1>
-<p>本文主要介绍PVE虚拟环境中如何构建LXC容器，通过LXC隔离PVE环境，并在LXC容器中创建Docker服务。</p>
-<p>使用PVE中模版LXC容器，在其中安装Docker</p>
-<h2 id="软件源更新">软件源更新</h2>
+        <h2 id="概述">概述</h2>
+<p>本文主要介绍在Proxmox VE（PVE）虚拟化环境中，如何构建LXC容器以隔离PVE环境。我们将使用PVE中的模版创建LXC容器，并在其中安装Docker服务。通过这种方式，我们可以在PVE虚拟环境中安全地部署和管理Docker应用。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/5Epb3dFI62zAaMQ.jpg" alt="本田概念" /><figcaption aria-hidden="true">本田概念</figcaption>
+</figure>
+<span id="more"></span>
+<h3 id="软件源更新">软件源更新</h3>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -e <span class="string">&#x27;s/www.debian.org/mirrors.tuna.tsinghua.edu.cn/&#x27;</span> tmp/sources.list.backup &gt; /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
-<h2 id="docker安装">docker安装</h2>
+<h3 id="docker安装">docker安装</h3>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL get.docker.com -o /tmp/get-docker.sh</span><br></pre></td></tr></table></figure>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh /tmp/get-docker.sh --mirror Aliyun</span><br></pre></td></tr></table></figure>
-<h2 id="配置显卡">配置显卡</h2>
+<h3 id="配置显卡">配置显卡</h3>
 <p>通过 <code>ls -l /dev/dri</code> 命令查询设备号</p>
 <p>在PVE终端打开 <code>vim /etc/pve/lxc/[CT_ID].conf</code> 文件，写入如下代码，将设备挂载到LXC容器中。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">lxc.cgroup2.devices.allow: c 226:0 rwm</span><br><span class="line">lxc.cgroup2.devices.allow: c 226:128 rwm</span><br><span class="line">lxc.cgroup2.devices.allow: c 29:0 rwm</span><br><span class="line">lxc.mount.entry: /dev/dri dev/dri none <span class="built_in">bind</span>,optional,create=<span class="built_in">dir</span></span><br><span class="line">lxc.mount.entry: /dev/fb0 dev/fb0 none <span class="built_in">bind</span>,optional,create=file</span><br></pre></td></tr></table></figure>
 <p>PVE下默认限制了LXC容器权限，不能直接挂载NFS共享文件。简单粗暴的方法是直接取消限制，修改容器配置文件，追加一行。这种做法取消所有安全规则，不够安全，下面是单独设置nfs的方法，参考 <a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2008005"></a></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lxc.apparmor.profile: unconfined</span><br></pre></td></tr></table></figure>
-<h1 id="portainer安装">portainer安装</h1>
+<h2 id="portainer安装">portainer安装</h2>
 <p>安装docker管理服务，提供可视化的界面。采用官方镜像进行安装</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker volume create portainer_data</span><br></pre></td></tr></table></figure>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">-p 8000:8000 -p 9000:9000 \</span><br><span class="line">--name=portainer --restart=always \</span><br><span class="line">-v /var/run/docker.sock:/var/run/docker.sock \</span><br><span class="line">-v portainer_data:/data \</span><br><span class="line">portainer/portainer</span><br></pre></td></tr></table></figure>
 <p>-d: 后台运行； --restart: 当容器退出时的重启策略；</p>
-<h1 id="挂载samba服务">挂载Samba服务</h1>
-<h2 id="软件安装">软件安装</h2>
+<h2 id="挂载samba服务">挂载Samba服务</h2>
+<h3 id="软件安装">软件安装</h3>
 <p>通过安装如下SMB组件：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt install cifs-utils -y</span><br></pre></td></tr></table></figure>
 <p>采用如下工具查询服务信息：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">smbclient -L &lt;服务器IP或主机名&gt;  -U  &lt;用户名&gt;</span><br></pre></td></tr></table></figure>
-<h2 id="手动挂载">手动挂载</h2>
+<h3 id="手动挂载">手动挂载</h3>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount -t cifs &lt;共享点路径(//192.168.1.12/share)&gt; &lt;挂载点(/mnt)&gt; -o username=&lt;用户名&gt;</span><br></pre></td></tr></table></figure>
 <p>或者</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount.cifs &lt;共享点路径(//192.168.1.12/share)&gt; &lt;挂载点(/mnt)&gt; -o username=&lt;用户名&gt;</span><br></pre></td></tr></table></figure>
 <p>通过 <code>mount -l | grep &lt;挂载点&gt;</code> 命令查看挂载情况。</p>
-<h2 id="开机自动挂载">开机自动挂载</h2>
+<h3 id="开机自动挂载">开机自动挂载</h3>
 <p>通过配置 <code>/etc/fstab</code> 文件</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;共享点路径&gt; &lt;挂载点&gt; cifs username=&lt;用户名&gt;,password=&lt;密码&gt; 0 0</span><br></pre></td></tr></table></figure>
 <p>该方式存在账号密码泄露风险，故可以使用文件保存账号信息，配置如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;共享点路径&gt; &lt;挂载点&gt; cifs credentials=&lt;凭证文件路径&gt; 0 0</span><br></pre></td></tr></table></figure>
 <p>凭证文件中的内容格式如下：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">username=value</span><br><span class="line">password=value</span><br><span class="line">domain=value [option]</span><br></pre></td></tr></table></figure>
-<h3 id="其它参数">其它参数</h3>
+<h4 id="其它参数">其它参数</h4>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;共享点路径&gt; &lt;挂载点&gt; cifs credentials=&lt;凭证文件路径&gt;,iocharset-utf8,rw 0 0</span><br></pre></td></tr></table></figure>
 <p><code>iocharset</code>:</p>
-<h2 id="执行挂载">执行挂载</h2>
+<h3 id="执行挂载">执行挂载</h3>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount -a</span><br></pre></td></tr></table></figure>
-<h1 id="安装jellyfin服务">安装jellyfin服务</h1>
+<h2 id="安装jellyfin服务">安装jellyfin服务</h2>
 <p>nyanmisaka/jellyfin:latest</p>
 <ul>
 <li>端口8096映射</li>
@@ -356,18 +360,18 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">invalid CapDrop: capability not supported by your kernel or not available <span class="keyword">in</span> the current environment: <span class="string">&quot;CAP_MAC_ADMIN&quot;</span></span><br></pre></td></tr></table></figure>
 <p>尝试在conf文件中添加：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lxc.cap.drop: </span><br></pre></td></tr></table></figure>
-<h1 id="安装-aria2">安装 Aria2</h1>
+<h2 id="安装-aria2">安装 Aria2</h2>
 <ul>
 <li>镜像名：p3terx/aria2-pro</li>
 </ul>
-<h2 id="环境变量">环境变量</h2>
+<h3 id="环境变量">环境变量</h3>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- PUID=65534</span><br><span class="line">- PGID=65534</span><br><span class="line">- UMASK_SET=022</span><br><span class="line">- RPC_SECRET=&lt;password&gt;</span><br><span class="line">- RPC_PORT=6800</span><br><span class="line">- LISTEN_PORT=6888</span><br><span class="line">- DISK_CACHE=64M</span><br><span class="line">- IPV6_MODE=false</span><br><span class="line">- UPDATE_TRACKERS=true</span><br><span class="line">- CUSTOM_TRACKER_URL=</span><br><span class="line">- TZ=Asia/Shanghai</span><br></pre></td></tr></table></figure>
-<h2 id="挂载卷">挂载卷</h2>
+<h3 id="挂载卷">挂载卷</h3>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">volumes:</span><br><span class="line">  - $&#123;PWD&#125;/aria2-config:/config</span><br><span class="line">  - $&#123;PWD&#125;/aria2-downloads:/downloads</span><br></pre></td></tr></table></figure>
-<h2 id="网络端口">网络端口</h2>
+<h3 id="网络端口">网络端口</h3>
 <p>如果桥接模式，需要暴露端口号</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- 6800:6800</span><br><span class="line">- 6888:6888</span><br><span class="line">- 6888:6888/udp</span><br></pre></td></tr></table></figure>
-<h1 id="安装ariang">安装AriaNg</h1>
+<h2 id="安装ariang">安装AriaNg</h2>
 <p>镜像： p3terx/ariang</p>
 
     </div>

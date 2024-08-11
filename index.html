@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.2.0">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
@@ -23,7 +22,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="Opportunity knocks but once">
 <meta property="og:type" content="website">
@@ -269,7 +268,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-10 17:41:57" itemprop="dateModified" datetime="2024-08-10T17:41:57+08:00">2024-08-10</time>
+      <time title="修改时间：2024-08-11 10:55:07" itemprop="dateModified" datetime="2024-08-11T10:55:07+08:00">2024-08-11</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -291,72 +290,19 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="概述">概述</h1>
-<p>本文主要介绍PVE虚拟环境中如何构建LXC容器，通过LXC隔离PVE环境，并在LXC容器中创建Docker服务。</p>
-<p>使用PVE中模版LXC容器，在其中安装Docker</p>
-<h2 id="软件源更新">软件源更新</h2>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -e <span class="string">&#x27;s/www.debian.org/mirrors.tuna.tsinghua.edu.cn/&#x27;</span> tmp/sources.list.backup &gt; /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
-<h2 id="docker安装">docker安装</h2>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL get.docker.com -o /tmp/get-docker.sh</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sh /tmp/get-docker.sh --mirror Aliyun</span><br></pre></td></tr></table></figure>
-<h2 id="配置显卡">配置显卡</h2>
-<p>通过 <code>ls -l /dev/dri</code> 命令查询设备号</p>
-<p>在PVE终端打开 <code>vim /etc/pve/lxc/[CT_ID].conf</code> 文件，写入如下代码，将设备挂载到LXC容器中。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">lxc.cgroup2.devices.allow: c 226:0 rwm</span><br><span class="line">lxc.cgroup2.devices.allow: c 226:128 rwm</span><br><span class="line">lxc.cgroup2.devices.allow: c 29:0 rwm</span><br><span class="line">lxc.mount.entry: /dev/dri dev/dri none <span class="built_in">bind</span>,optional,create=<span class="built_in">dir</span></span><br><span class="line">lxc.mount.entry: /dev/fb0 dev/fb0 none <span class="built_in">bind</span>,optional,create=file</span><br></pre></td></tr></table></figure>
-<p>PVE下默认限制了LXC容器权限，不能直接挂载NFS共享文件。简单粗暴的方法是直接取消限制，修改容器配置文件，追加一行。这种做法取消所有安全规则，不够安全，下面是单独设置nfs的方法，参考 <a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2008005"></a></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lxc.apparmor.profile: unconfined</span><br></pre></td></tr></table></figure>
-<h1 id="portainer安装">portainer安装</h1>
-<p>安装docker管理服务，提供可视化的界面。采用官方镜像进行安装</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker volume create portainer_data</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker run -d \</span><br><span class="line">-p 8000:8000 -p 9000:9000 \</span><br><span class="line">--name=portainer --restart=always \</span><br><span class="line">-v /var/run/docker.sock:/var/run/docker.sock \</span><br><span class="line">-v portainer_data:/data \</span><br><span class="line">portainer/portainer</span><br></pre></td></tr></table></figure>
-<p>-d: 后台运行； --restart: 当容器退出时的重启策略；</p>
-<h1 id="挂载samba服务">挂载Samba服务</h1>
-<h2 id="软件安装">软件安装</h2>
-<p>通过安装如下SMB组件：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt install cifs-utils -y</span><br></pre></td></tr></table></figure>
-<p>采用如下工具查询服务信息：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">smbclient -L &lt;服务器IP或主机名&gt;  -U  &lt;用户名&gt;</span><br></pre></td></tr></table></figure>
-<h2 id="手动挂载">手动挂载</h2>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount -t cifs &lt;共享点路径(//192.168.1.12/share)&gt; &lt;挂载点(/mnt)&gt; -o username=&lt;用户名&gt;</span><br></pre></td></tr></table></figure>
-<p>或者</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount.cifs &lt;共享点路径(//192.168.1.12/share)&gt; &lt;挂载点(/mnt)&gt; -o username=&lt;用户名&gt;</span><br></pre></td></tr></table></figure>
-<p>通过 <code>mount -l | grep &lt;挂载点&gt;</code> 命令查看挂载情况。</p>
-<h2 id="开机自动挂载">开机自动挂载</h2>
-<p>通过配置 <code>/etc/fstab</code> 文件</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;共享点路径&gt; &lt;挂载点&gt; cifs username=&lt;用户名&gt;,password=&lt;密码&gt; 0 0</span><br></pre></td></tr></table></figure>
-<p>该方式存在账号密码泄露风险，故可以使用文件保存账号信息，配置如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;共享点路径&gt; &lt;挂载点&gt; cifs credentials=&lt;凭证文件路径&gt; 0 0</span><br></pre></td></tr></table></figure>
-<p>凭证文件中的内容格式如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">username=value</span><br><span class="line">password=value</span><br><span class="line">domain=value [option]</span><br></pre></td></tr></table></figure>
-<h3 id="其它参数">其它参数</h3>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;共享点路径&gt; &lt;挂载点&gt; cifs credentials=&lt;凭证文件路径&gt;,iocharset-utf8,rw 0 0</span><br></pre></td></tr></table></figure>
-<p><code>iocharset</code>:</p>
-<h2 id="执行挂载">执行挂载</h2>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount -a</span><br></pre></td></tr></table></figure>
-<h1 id="安装jellyfin服务">安装jellyfin服务</h1>
-<p>nyanmisaka/jellyfin:latest</p>
-<ul>
-<li>端口8096映射</li>
-<li>设备 <code>/devdri</code> 映射</li>
-</ul>
-<p>如果出现如下错误</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">invalid CapDrop: capability not supported by your kernel or not available <span class="keyword">in</span> the current environment: <span class="string">&quot;CAP_MAC_ADMIN&quot;</span></span><br></pre></td></tr></table></figure>
-<p>尝试在conf文件中添加：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lxc.cap.drop: </span><br></pre></td></tr></table></figure>
-<h1 id="安装-aria2">安装 Aria2</h1>
-<ul>
-<li>镜像名：p3terx/aria2-pro</li>
-</ul>
-<h2 id="环境变量">环境变量</h2>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- PUID=65534</span><br><span class="line">- PGID=65534</span><br><span class="line">- UMASK_SET=022</span><br><span class="line">- RPC_SECRET=&lt;password&gt;</span><br><span class="line">- RPC_PORT=6800</span><br><span class="line">- LISTEN_PORT=6888</span><br><span class="line">- DISK_CACHE=64M</span><br><span class="line">- IPV6_MODE=false</span><br><span class="line">- UPDATE_TRACKERS=true</span><br><span class="line">- CUSTOM_TRACKER_URL=</span><br><span class="line">- TZ=Asia/Shanghai</span><br></pre></td></tr></table></figure>
-<h2 id="挂载卷">挂载卷</h2>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">volumes:</span><br><span class="line">  - $&#123;PWD&#125;/aria2-config:/config</span><br><span class="line">  - $&#123;PWD&#125;/aria2-downloads:/downloads</span><br></pre></td></tr></table></figure>
-<h2 id="网络端口">网络端口</h2>
-<p>如果桥接模式，需要暴露端口号</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- 6800:6800</span><br><span class="line">- 6888:6888</span><br><span class="line">- 6888:6888/udp</span><br></pre></td></tr></table></figure>
-<h1 id="安装ariang">安装AriaNg</h1>
-<p>镜像： p3terx/ariang</p>
-
+          <h2 id="概述">概述</h2>
+<p>本文主要介绍在Proxmox VE（PVE）虚拟化环境中，如何构建LXC容器以隔离PVE环境。我们将使用PVE中的模版创建LXC容器，并在其中安装Docker服务。通过这种方式，我们可以在PVE虚拟环境中安全地部署和管理Docker应用。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/5Epb3dFI62zAaMQ.jpg" alt="本田概念" /><figcaption aria-hidden="true">本田概念</figcaption>
+</figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/03/11/PVE-Docker-Install/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -420,7 +366,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-03-19 16:13:46" itemprop="dateModified" datetime="2023-03-19T16:13:46+08:00">2023-03-19</time>
+      <time title="修改时间：2024-08-11 10:55:14" itemprop="dateModified" datetime="2024-08-11T10:55:14+08:00">2024-08-11</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -442,50 +388,19 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="概述">概述</h1>
-<p>本文讲述Home Assistant相关配置。</p>
-<h1 id="插件安装">插件安装</h1>
-<h2 id="terminal">Terminal</h2>
-<p>点击 <code>配置</code> 菜单栏，在页面中选中 <code>加载项</code> 菜单，然后在新的页面中点击右下角的 <code>加载项商店</code> 按钮，在搜索界面输入 <strong>SSH</strong> 关键字。最终会有两个版本的ssh终端，其中一个官方版本，一个是社区的版本，点击社区版本图标执行安装操作；</p>
-<p>然后重启，</p>
-<p>在配置界面 配置本地的ssh key公钥信息，一般会在本地用户的.shh目录下，拷贝密钥粘贴到 <strong>authorized_keys</strong> 字段。</p>
-<p>打开侧边栏显示，此时就可以看到快捷按钮；</p>
-<h2 id="hacs">HACS</h2>
-<h3 id="安装">安装</h3>
-<p>请参考 <a target="_blank" rel="noopener" href="https://hacs.xyz/docs/setup/download">HACS官方教程</a>，打开ssh终端，输入如下命令：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -c https://get.hacs.xyz | bash -</span><br></pre></td></tr></table></figure>
-<p>国内网络由于各种限制，可能需要科学上网才能访问安装脚本网址，当然也可以通过代理的方式下载，具体指令如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -c https://ghproxy.com/https://raw.githubusercontent.com/hacs/get/main/get | bash -</span><br></pre></td></tr></table></figure>
-<p>等待安装完成，会在 <code>/root/config/custom_components</code>目录下会生成 <code>hacs</code>目录。</p>
-<p>安装完成后，需要重启一下。</p>
-<h3 id="添加hacs集成组件">添加HACS集成组件</h3>
-<p>首先点击左侧的 <code>配置</code> 菜单栏，然后选择 <code>设备与服务</code> 功能进入集成配置界面，在界面的右下角点击 <code>添加集成</code> 按钮，在搜索框内输入 <strong>HACS</strong> ：</p>
-<p><img title="" data-src="https://s3.bmp.ovh/imgs/2023/01/02/5123659e1b1d893f.png" alt="" data-align="center" width="388"></p>
-<p>然后会弹出如下窗口，4个选项都勾选上：</p>
-<p><img title="" data-src="https://s3.bmp.ovh/imgs/2023/01/02/e5534bd22dabea43.png" alt="" data-align="center" width="392"></p>
-<p>复制框中的KEY码，然后点击跳转链接：</p>
-<p><img title="" data-src="https://s3.bmp.ovh/imgs/2023/01/02/f195a5bbfbbf7784.png" alt="" data-align="center" width="395"></p>
-<p>在如下图的网页界面上粘贴Key码，并点击 <code>Continue</code> 按钮。</p>
-<p><img data-src="https://s3.bmp.ovh/imgs/2023/01/02/60d90d9d3c2c4b51.png" /></p>
-<p>然后登陆自己的 Github 账号，绑定 HACS 服务</p>
-<p><img data-src="https://s3.bmp.ovh/imgs/2023/01/02/00c7b419c498bd6b.png" /></p>
-<p>出现如下图所示界面，表示绑定成功，回到Home Assistant 界面。</p>
-<p><img title="" data-src="https://s3.bmp.ovh/imgs/2023/01/02/188fb48c0f9af031.png" alt="" width="365" data-align="center"></p>
-<p><img title="" data-src="https://s3.bmp.ovh/imgs/2023/01/02/f166eae5a8355b60.png" alt="" width="389" data-align="center"></p>
-<p>然后左侧侧边栏中将会出现 HACS快捷按钮。</p>
-<p>点击 集成 , 右下角 <strong>浏览并下载库</strong></p>
-<h1 id="安装米家物联网插件">安装米家物联网插件</h1>
-<h2 id="xiaomi-miot插件安装">Xiaomi MIoT插件安装</h2>
-<p>首先在Home Assistant Community Store(HACS)中安装Xiaomi MIoT组件。点击左侧侧边栏上的HACS图标， 然后选择进入 <code>集成</code> 配置界面, 单击界面右下角 <code>浏览并下载库</code>，输入 <code>xiaomi</code> 等关键字，然后从下拉列表中选择 <code>Xiaomi MIoT</code> , 最后点击右下角的 <code>下载</code> 按钮, 则相关插件文件会下载到 <code>/config/custom_components/xiaomi_miot_raw</code> 目录下。 下载完成后，需要进行重启操作。</p>
-<h2 id="账户配置">账户配置</h2>
-<p>首先点击左侧侧边栏的 <code>配置</code> 菜单，进入 <code>设备与服务</code> 配置界面，然后点击界面右下角的 <code>添加集成</code> 按钮，在搜索窗口中输入 <code>xaiomi</code> 等关键字，选择 <code>Xiaomi MIoT</code>图标。</p>
-<p>如下图所示，选择采用小米账号登陆，点击 <code>提交</code>：</p>
-<p><img data-src="https://s2.loli.net/2023/03/19/oWziSDOaZgvrq6u.png" /></p>
-<p>通过如下窗口填写自己的小米账号和密码，并点击 <code>提交</code>：</p>
-<p><img data-src="https://s2.loli.net/2023/03/19/Im981QRu3WkDjUG.png" /></p>
-<p>然后勾选需要集成的设备，最后出现如下窗口说明添加成功。</p>
-<p><img data-src="https://s2.loli.net/2023/03/19/JNCIm3QloLOfb25.png" /></p>
-
+          <h2 id="概述">概述</h2>
+<p>本文讲述Home Assistant相关配置，如何使用Home Assistant进行智能家居的搭建。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/NqMX1oPC4wl5Apx.jpg" alt="LUTOS概念" /><figcaption aria-hidden="true">LUTOS概念</figcaption>
+</figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/01/02/Home-Assistant%E5%85%A5%E9%97%A8%E9%85%8D%E7%BD%AE/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -647,7 +562,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-01-02 11:07:57" itemprop="dateModified" datetime="2023-01-02T11:07:57+08:00">2023-01-02</time>
+      <time title="修改时间：2024-08-11 10:53:59" itemprop="dateModified" datetime="2024-08-11T10:53:59+08:00">2024-08-11</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -671,7 +586,9 @@
     <div class="post-body" itemprop="articleBody">
           <h1 id="概述">概述</h1>
 <p>本文讲述 <strong>Home Assistant Supervisor</strong> 的安装步骤，虽然官方有详细的安装指导，但是由于软件源大都在国外，某些步骤可能需要科学上网才能解决。本文实际部署的硬件平台是 <strong>Raspberry Pi 3 Model</strong>，请参考 <a href="https://zgh551.github.io/2022/12/26/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85/">树莓派系统安装</a> 做好硬件和软件环境的准备。</p>
-<p><img data-src="https://s3.bmp.ovh/imgs/2023/01/01/eca88d886cc33e9a.jpg" /></p>
+<figure>
+<img data-src="https://s3.bmp.ovh/imgs/2023/01/01/eca88d886cc33e9a.jpg" alt="上海天文馆" /><figcaption aria-hidden="true">上海天文馆</figcaption>
+</figure>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2022/12/26/Home-Assistant-Supervised-%E5%AE%89%E8%A3%85/#more" rel="contents">
@@ -743,7 +660,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2021-10-15 21:39:03" itemprop="dateModified" datetime="2021-10-15T21:39:03+08:00">2021-10-15</time>
+      <time title="修改时间：2024-08-11 10:54:33" itemprop="dateModified" datetime="2024-08-11T10:54:33+08:00">2024-08-11</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -771,7 +688,9 @@
     <div class="post-body" itemprop="articleBody">
           <h1 id="概述">1. 概述</h1>
 <p>本文分析<strong>executor_lib</strong>函数的处理过程，其中包括<strong>DSO</strong>模块的编译和<strong>imported modules</strong>模块的序列化。</p>
-<p><img data-src="https://i.loli.net/2021/10/10/3h8wfXOej514JLH.jpg" /></p>
+<figure>
+<img data-src="https://i.loli.net/2021/10/10/3h8wfXOej514JLH.jpg" alt="条子泥" /><figcaption aria-hidden="true">条子泥</figcaption>
+</figure>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2021/10/08/TVM-ExportLibrary/#more" rel="contents">
