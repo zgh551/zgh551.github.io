@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="1AYoSrGqW5qB6rPYnoXq_tIpkaudIK3MXrpUhL_69NI">
+  <meta name="msvalidate.01" content="DF49D5E49BAD0CB8947DDD3824A370B1">
+  <meta name="baidu-site-verification" content="code-EEmJnUEq0A">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="斯坦福   应用领域">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3D对象检测-PointNet">
+<meta property="og:url" content="https://zgh551.github.io/2024/08/12/3D-ObjectDetector-PointNet/index.html">
+<meta property="og:site_name" content="Henry-Z">
+<meta property="og:description" content="斯坦福   应用领域">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/08/14/u6cbaUOS5k29lpN.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/14/PEtF4XDLnedfIry.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/14/m6ROVc2pqUlag8Q.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/14/kofRgVOS2Pptzjd.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/14/QFgs96A1okcEDwR.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/14/pFd8gTPwhsOr3vL.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/14/TJIg8oe5U3Ayvsx.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/14/Tk5Pb6eltBfqEnv.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/14/37IcEnkjMt9YSa2.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/14/mvyhd4YpqS92WGH.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/14/irh4pde5QSWl6v2.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/14/d2aDmFjMe6Z3Qc1.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/14/qFk36xvbHUaRdjp.png">
+<meta property="article:published_time" content="2024-08-12T09:18:16.000Z">
+<meta property="article:modified_time" content="2024-08-14T15:26:32.562Z">
+<meta property="article:author" content="Henry">
+<meta property="article:tag" content="object detector">
+<meta property="article:tag" content="3D">
+<meta property="article:tag" content="LiDAR">
+<meta property="article:tag" content="PointNet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2024/08/14/u6cbaUOS5k29lpN.png">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2024/08/12/3D-ObjectDetector-PointNet/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/08/12/3D-ObjectDetector-PointNet/","path":"2024/08/12/3D-ObjectDetector-PointNet/","title":"3D对象检测-PointNet"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>3D对象检测-PointNet | Henry-Z</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ML9CRPRYFK"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ML9CRPRYFK","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?c8e65d830c8cd51e920dc7e7c0be8744"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Henry-Z</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">102</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">37</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%90%86%E8%AE%BA%E5%88%86%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">理论分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%82%B9%E4%BA%91%E5%AD%98%E5%9C%A8%E4%B8%A4%E4%B8%AA%E9%97%AE%E9%A2%98"><span class="nav-number">1.1.</span> <span class="nav-text">点云存在两个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%A0%E5%BA%8F%E6%80%A7"><span class="nav-number">1.1.1.</span> <span class="nav-text">无序性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E5%8F%98%E6%8D%A2%E5%90%8E%E5%88%86%E7%B1%BB%E7%BB%93%E6%9E%9C%E4%B8%80%E8%87%B4"><span class="nav-number">1.1.2.</span> <span class="nav-text">旋转变换后分类结果一致</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%B2%81%E6%A3%92%E6%80%A7%E5%A5%BD"><span class="nav-number">2.</span> <span class="nav-text">鲁棒性好</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="nav-number">3.</span> <span class="nav-text">实验结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84"><span class="nav-number">4.</span> <span class="nav-text">网络结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#share-mlp"><span class="nav-number">4.1.</span> <span class="nav-text">Share MLP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%A0%81"><span class="nav-number">5.</span> <span class="nav-text">网络代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#t-net"><span class="nav-number">5.1.</span> <span class="nav-text">T-Net</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Henry"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Henry</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">102</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:henryzhu551@gmail.com" title="E-Mail → mailto:henryzhu551@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fa-solid fa-c fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fab fa-linkedin fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/zgh551" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/08/12/3D-ObjectDetector-PointNet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="3D对象检测-PointNet | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          3D对象检测-PointNet
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-12 17:18:16" itemprop="dateCreated datePublished" datetime="2024-08-12T17:18:16+08:00">2024-08-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-14 23:26:32" itemprop="dateModified" datetime="2024-08-14T23:26:32+08:00">2024-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D-object-detector/" itemprop="url" rel="index"><span itemprop="name">3D object detector</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D-object-detector/PointNet/" itemprop="url" rel="index"><span itemprop="name">PointNet</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <figure>
+<img data-src="https://s2.loli.net/2024/08/14/u6cbaUOS5k29lpN.png" alt="斯坦福" /><figcaption aria-hidden="true">斯坦福</figcaption>
+</figure>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/14/PEtF4XDLnedfIry.png" alt="应用领域" /><figcaption aria-hidden="true">应用领域</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="理论分析">理论分析</h2>
+<h3 id="点云存在两个问题">点云存在两个问题</h3>
+<h4 id="无序性">无序性</h4>
+<p>点云是一组无序的向量，其中点的不同排序，结果应该一致。 <img data-src="https://s2.loli.net/2024/08/14/m6ROVc2pqUlag8Q.png" alt="无序性" /></p>
+<p>如何解决？</p>
+<ul>
+<li>方式一：按照一定规则对点集进行排序;</li>
+<li>方式二：将点集的所有排列作为增强数据，训练一个循环网络;</li>
+<li>方式三：利用一个对称函数将所有信息进行聚合; 其中， 方式一看似简单，但是在高维空间中，实际上不存在一个在一般意义上相对于点扰动稳定的排序方式。 方式二被证明对于长度小的序列(几十个)有较好的鲁棒性，但对于动不动上千的点云数据不太合适。 因此，PointNet采用方式三，具体三种方式的精度对比如下：</li>
+</ul>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/14/kofRgVOS2Pptzjd.png" alt="实现顺序不变性的三种方法" /><figcaption aria-hidden="true">实现顺序不变性的三种方法</figcaption>
+</figure>
+<p>文章的主要思想是对集合中的变换元素应用对称函数来近似定义在点集上的通用函数： <span class="math display">\[f({x_1,...,x_n})\approx g(h(x_1),...,h(x_n))\]</span> 其中，<span class="math inline">\(h\)</span>函数使用 MLP 网络近似，<span class="math inline">\(g\)</span>函数使用 单变量函数与 MaxPool 函数的组合。</p>
+<p>常见的对称函数有:</p>
+<ul>
+<li>求和函数 <span class="math display">\[g(x_1,x_2,...,x_n) = x_1 + x_2 + ... + x_n\]</span></li>
+<li>求最大值函数 <span class="math display">\[g(x_1,x_2,...,x_n) = \max \{ x_1,x_2,...,x_n \}\]</span> 通过一系列的<span class="math inline">\(h\)</span>函数可以捕获点集合的不同属性(3D结构特征等) 故 PointNet 选择采用多层感知机(MLP)和最大池化(MaxPool)算子构建网络框架。</li>
+</ul>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/14/QFgs96A1okcEDwR.png" alt="MLP" /><figcaption aria-hidden="true">MLP</figcaption>
+</figure>
+<h4 id="旋转变换后分类结果一致">旋转变换后分类结果一致</h4>
+<p>要做到旋转的一致性，PointNet引入T-Net得到一个旋转矩阵，对输入特征进行自动对齐。将正则化项添加到我们的softmax训练损失中，即将特征变换矩阵约束为接近正交矩阵（正交变换不会丢失输入中的信息）。</p>
+<p><img data-src="https://s2.loli.net/2024/08/14/pFd8gTPwhsOr3vL.png" /> <img data-src="https://s2.loli.net/2024/08/14/TJIg8oe5U3Ayvsx.png" /></p>
+<p>实验发现，通过添加正则化项，优化变得更加稳定，并且模型也获得了更好的性能。</p>
+<p><img data-src="https://s2.loli.net/2024/08/14/Tk5Pb6eltBfqEnv.png" /></p>
+<p>使用输入变换精度可以提升0.8%，而增加正则损失对高维度的变换是有效的。</p>
+<h2 id="鲁棒性好">鲁棒性好</h2>
+<p><img data-src="https://s2.loli.net/2024/08/14/37IcEnkjMt9YSa2.png" /></p>
+<h2 id="实验结果">实验结果</h2>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/14/mvyhd4YpqS92WGH.png" alt="分类结果" /><figcaption aria-hidden="true">分类结果</figcaption>
+</figure>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/14/irh4pde5QSWl6v2.png" alt="分割结果" /><figcaption aria-hidden="true">分割结果</figcaption>
+</figure>
+<h2 id="网络结构">网络结构</h2>
+<p><img data-src="https://s2.loli.net/2024/08/14/d2aDmFjMe6Z3Qc1.png" /></p>
+<ul>
+<li>分类网路只使用global特征进行预测；</li>
+<li>语义分割网络使用local和global特征进行预测；</li>
+</ul>
+<h3 id="share-mlp">Share MLP</h3>
+<p>PointNet使用二维卷积网络来实现Shared MLP。</p>
+<p><img data-src="https://s2.loli.net/2024/08/14/qFk36xvbHUaRdjp.png" /></p>
+<h2 id="网络代码">网络代码</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_model</span>(<span class="params">point_cloud, is_training, bn_decay=<span class="literal">None</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; Classification PointNet, input is BxNx3, output Bx40 &quot;&quot;&quot;</span></span><br><span class="line">    batch_size = point_cloud.get_shape()[<span class="number">0</span>].value</span><br><span class="line">    num_point = point_cloud.get_shape()[<span class="number">1</span>].value</span><br><span class="line">    end_points = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> tf.variable_scope(<span class="string">&#x27;transform_net1&#x27;</span>) <span class="keyword">as</span> sc:</span><br><span class="line">        transform = input_transform_net(point_cloud, is_training, bn_decay, K=<span class="number">3</span>)</span><br><span class="line">    point_cloud_transformed = tf.matmul(point_cloud, transform)</span><br><span class="line">    input_image = tf.expand_dims(point_cloud_transformed, -<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    net = tf_util.conv2d(input_image, <span class="number">64</span>, [<span class="number">1</span>,<span class="number">3</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv1&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">64</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv2&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> tf.variable_scope(<span class="string">&#x27;transform_net2&#x27;</span>) <span class="keyword">as</span> sc:</span><br><span class="line">        transform = feature_transform_net(net, is_training, bn_decay, K=<span class="number">64</span>)</span><br><span class="line">    end_points[<span class="string">&#x27;transform&#x27;</span>] = transform</span><br><span class="line">    net_transformed = tf.matmul(tf.squeeze(net, axis=[<span class="number">2</span>]), transform)</span><br><span class="line">    net_transformed = tf.expand_dims(net_transformed, [<span class="number">2</span>])</span><br><span class="line"></span><br><span class="line">    net = tf_util.conv2d(net_transformed, <span class="number">64</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv3&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">128</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv4&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">1024</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv5&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Symmetric function: max pooling</span></span><br><span class="line">    net = tf_util.max_pool2d(net, [num_point,<span class="number">1</span>],</span><br><span class="line">                             padding=<span class="string">&#x27;VALID&#x27;</span>, scope=<span class="string">&#x27;maxpool&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    net = tf.reshape(net, [batch_size, -<span class="number">1</span>])</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">512</span>, bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                                  scope=<span class="string">&#x27;fc1&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.dropout(net, keep_prob=<span class="number">0.7</span>, is_training=is_training,</span><br><span class="line">                          scope=<span class="string">&#x27;dp1&#x27;</span>)</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">256</span>, bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                                  scope=<span class="string">&#x27;fc2&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.dropout(net, keep_prob=<span class="number">0.7</span>, is_training=is_training,</span><br><span class="line">                          scope=<span class="string">&#x27;dp2&#x27;</span>)</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">40</span>, activation_fn=<span class="literal">None</span>, scope=<span class="string">&#x27;fc3&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> net, end_points</span><br></pre></td></tr></table></figure>
+<h3 id="t-net">T-Net</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">input_transform_net</span>(<span class="params">point_cloud, is_training, bn_decay=<span class="literal">None</span>, K=<span class="number">3</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; Input (XYZ) Transform Net, input is BxNx3 gray image</span></span><br><span class="line"><span class="string">        Return:</span></span><br><span class="line"><span class="string">            Transformation matrix of size 3xK &quot;&quot;&quot;</span></span><br><span class="line">    batch_size = point_cloud.get_shape()[<span class="number">0</span>].value</span><br><span class="line">    num_point = point_cloud.get_shape()[<span class="number">1</span>].value</span><br><span class="line"></span><br><span class="line">    input_image = tf.expand_dims(point_cloud, -<span class="number">1</span>)</span><br><span class="line">    net = tf_util.conv2d(input_image, <span class="number">64</span>, [<span class="number">1</span>,<span class="number">3</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;tconv1&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">128</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;tconv2&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">1024</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;tconv3&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.max_pool2d(net, [num_point,<span class="number">1</span>],</span><br><span class="line">                             padding=<span class="string">&#x27;VALID&#x27;</span>, scope=<span class="string">&#x27;tmaxpool&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    net = tf.reshape(net, [batch_size, -<span class="number">1</span>])</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">512</span>, bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                                  scope=<span class="string">&#x27;tfc1&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">256</span>, bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                                  scope=<span class="string">&#x27;tfc2&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> tf.variable_scope(<span class="string">&#x27;transform_XYZ&#x27;</span>) <span class="keyword">as</span> sc:</span><br><span class="line">        <span class="keyword">assert</span>(K==<span class="number">3</span>)</span><br><span class="line">        weights = tf.get_variable(<span class="string">&#x27;weights&#x27;</span>, [<span class="number">256</span>, <span class="number">3</span>*K],</span><br><span class="line">                                  initializer=tf.constant_initializer(<span class="number">0.0</span>),</span><br><span class="line">                                  dtype=tf.float32)</span><br><span class="line">        biases = tf.get_variable(<span class="string">&#x27;biases&#x27;</span>, [<span class="number">3</span>*K],</span><br><span class="line">                                 initializer=tf.constant_initializer(<span class="number">0.0</span>),</span><br><span class="line">                                 dtype=tf.float32)</span><br><span class="line">        biases += tf.constant([<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>], dtype=tf.float32)</span><br><span class="line">        transform = tf.matmul(net, weights)</span><br><span class="line">        transform = tf.nn.bias_add(transform, biases)</span><br><span class="line"></span><br><span class="line">    transform = tf.reshape(transform, [batch_size, <span class="number">3</span>, K])</span><br><span class="line">    <span class="keyword">return</span> transform</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Henry 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Henry 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/object-detector/" rel="tag"># object detector</a>
+              <a href="/tags/3D/" rel="tag"># 3D</a>
+              <a href="/tags/LiDAR/" rel="tag"># LiDAR</a>
+              <a href="/tags/PointNet/" rel="tag"># PointNet</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/11/3D-ObjectDetector-LiDAR/" rel="prev" title="3D对象检测-基于LiDAR">
+                  <i class="fa fa-chevron-left"></i> 3D对象检测-基于LiDAR
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/08/13/3D-ObjectDetector-PointNet++/" rel="next" title="3D对象检测-PointNet++">
+                  3D对象检测-PointNet++ <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Henry</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.1.1/mermaid.min.js","integrity":"sha256-8L3O8tirFUa8Va4NSTAyIbHJeLd6OnlcxgupV9F77e0="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.1/es5/tex-mml-chtml.js","integrity":"sha256-hlC2uSQYTmPsrzGZTEQEg9PZ1a/+SV6VBCTclohf2og="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" integrity="sha256-4kQf9z5ntdQrzsBC3YSHnEz02Z9C1UeW/E9OgnvlzSY=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2024/08/12/3D-ObjectDetector-PointNet/"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"514a74746b5628ad886c488b9e80b3d1"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

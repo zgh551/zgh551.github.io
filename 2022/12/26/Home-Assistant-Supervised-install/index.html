@@ -27,7 +27,7 @@
     <meta name="description" content="概述 本文讲述 Home Assistant Supervisor 的安装步骤，虽然官方有详细的安装指导，但是由于软件源大都在国外，某些步骤可能需要科学上网才能解决。本文实际部署的硬件平台是 Raspberry Pi 3 Model，请参考 树莓派系统安装 做好硬件和软件环境的准备。  上海天文馆">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Home Assistant(Supervisor)安装">
-<meta property="og:url" content="https://zgh551.github.io/2022/12/26/Home-Assistant-Supervised-%E5%AE%89%E8%A3%85/index.html">
+<meta property="og:url" content="https://zgh551.github.io/2022/12/26/Home-Assistant-Supervised-install/index.html">
 <meta property="og:site_name" content="Henry-Z">
 <meta property="og:description" content="概述 本文讲述 Home Assistant Supervisor 的安装步骤，虽然官方有详细的安装指导，但是由于软件源大都在国外，某些步骤可能需要科学上网才能解决。本文实际部署的硬件平台是 Raspberry Pi 3 Model，请参考 树莓派系统安装 做好硬件和软件环境的准备。  上海天文馆">
 <meta property="og:locale" content="zh_CN">
@@ -41,7 +41,7 @@
 <meta property="og:image" content="https://s3.bmp.ovh/imgs/2023/01/01/c8b095d572622e38.png">
 <meta property="og:image" content="https://s3.bmp.ovh/imgs/2023/01/01/968c870c39329428.png">
 <meta property="article:published_time" content="2022-12-26T13:08:50.000Z">
-<meta property="article:modified_time" content="2024-08-11T02:53:59.332Z">
+<meta property="article:modified_time" content="2024-08-14T14:28:33.300Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="Home Assistant">
 <meta property="article:tag" content="Supervised">
@@ -50,11 +50,11 @@
 <meta name="twitter:image" content="https://s3.bmp.ovh/imgs/2023/01/01/eca88d886cc33e9a.jpg">
 
 
-<link rel="canonical" href="https://zgh551.github.io/2022/12/26/Home-Assistant-Supervised-%E5%AE%89%E8%A3%85/">
+<link rel="canonical" href="https://zgh551.github.io/2022/12/26/Home-Assistant-Supervised-install/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2022/12/26/Home-Assistant-Supervised-%E5%AE%89%E8%A3%85/","path":"2022/12/26/Home-Assistant-Supervised-安装/","title":"Home Assistant(Supervisor)安装"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2022/12/26/Home-Assistant-Supervised-install/","path":"2022/12/26/Home-Assistant-Supervised-install/","title":"Home Assistant(Supervisor)安装"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>Home Assistant(Supervisor)安装 | Henry-Z</title>
@@ -108,7 +108,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">98</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">24</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">35</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">102</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">37</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -165,7 +165,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">前期准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E7%A1%AE%E8%AE%A4"><span class="nav-number">2.1.</span> <span class="nav-text">系统确认</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#apparmor%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">Apparmor配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cgroup%E9%85%8D%E7%BD%AE"><span class="nav-number">2.3.</span> <span class="nav-text">cgroup配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#networkmanager%E9%85%8D%E7%BD%AE"><span class="nav-number">2.4.</span> <span class="nav-text">NetworkManager配置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#supervisor-%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4"><span class="nav-number">3.</span> <span class="nav-text">Supervisor 安装步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">3.1.</span> <span class="nav-text">依赖软件安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker-ce-%E5%AE%89%E8%A3%85"><span class="nav-number">3.2.</span> <span class="nav-text">Docker-CE 安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#os-agent-%E5%AE%89%E8%A3%85"><span class="nav-number">3.3.</span> <span class="nav-text">OS-Agent 安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#supervisor-%E5%AE%89%E8%A3%85"><span class="nav-number">3.4.</span> <span class="nav-text">Supervisor 安装</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">前期准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E7%A1%AE%E8%AE%A4"><span class="nav-number">2.1.</span> <span class="nav-text">系统确认</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#apparmor%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">Apparmor配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cgroup%E9%85%8D%E7%BD%AE"><span class="nav-number">2.3.</span> <span class="nav-text">cgroup配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#networkmanager%E9%85%8D%E7%BD%AE"><span class="nav-number">2.4.</span> <span class="nav-text">NetworkManager配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#supervisor-%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4"><span class="nav-number">3.</span> <span class="nav-text">Supervisor 安装步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="nav-number">3.1.</span> <span class="nav-text">依赖软件安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker-ce-%E5%AE%89%E8%A3%85"><span class="nav-number">3.2.</span> <span class="nav-text">Docker-CE 安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#os-agent-%E5%AE%89%E8%A3%85"><span class="nav-number">3.3.</span> <span class="nav-text">OS-Agent 安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#supervisor-%E5%AE%89%E8%A3%85"><span class="nav-number">3.4.</span> <span class="nav-text">Supervisor 安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -180,18 +180,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">41</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-count">37</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">98</span>
+        <span class="site-state-item-count">102</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -248,7 +248,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2022/12/26/Home-Assistant-Supervised-%E5%AE%89%E8%A3%85/">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2022/12/26/Home-Assistant-Supervised-install/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -284,7 +284,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-11 10:53:59" itemprop="dateModified" datetime="2024-08-11T10:53:59+08:00">2024-08-11</time>
+      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -293,6 +293,10 @@
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
           <a href="/categories/Home-Assistant/" itemprop="url" rel="index"><span itemprop="name">Home Assistant</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Home-Assistant/install/" itemprop="url" rel="index"><span itemprop="name">install</span></a>
         </span>
     </span>
 
@@ -313,37 +317,37 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="概述">概述</h1>
+        <h2 id="概述">概述</h2>
 <p>本文讲述 <strong>Home Assistant Supervisor</strong> 的安装步骤，虽然官方有详细的安装指导，但是由于软件源大都在国外，某些步骤可能需要科学上网才能解决。本文实际部署的硬件平台是 <strong>Raspberry Pi 3 Model</strong>，请参考 <a href="https://zgh551.github.io/2022/12/26/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85/">树莓派系统安装</a> 做好硬件和软件环境的准备。</p>
 <figure>
 <img data-src="https://s3.bmp.ovh/imgs/2023/01/01/eca88d886cc33e9a.jpg" alt="上海天文馆" /><figcaption aria-hidden="true">上海天文馆</figcaption>
 </figure>
 <span id="more"></span>
-<h1 id="前期准备">前期准备</h1>
-<h2 id="系统确认">系统确认</h2>
+<h2 id="前期准备">前期准备</h2>
+<h3 id="系统确认">系统确认</h3>
 <p>参考官方说明文档 <a target="_blank" rel="noopener" href="https://www.home-assistant.io/more-info/unsupported/os">Operating System</a> 获取目前支持的系统信息，可知，目前 Home Assistant Supervisor 支持的操作系统类型是 Debian 11 (Bullseye)，参考 <a href="https://zgh551.github.io/2022/12/26/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85/">树莓派系统安装</a> 完成系统的准备工作。</p>
-<h2 id="apparmor配置">Apparmor配置</h2>
+<h3 id="apparmor配置">Apparmor配置</h3>
 <p>默认树莓派最新的发布版本是安装了 apparmor 工具的，Supervisor 要求系统开机时激活apparmor 服务，需要在<code>/boot/cmdline.txt</code>文件中，追加 <code>apparmor=1 security=apparmor</code> 内容。详细参考 <a target="_blank" rel="noopener" href="https://github.com/Kanga-Who/home-assistant/issues/25">how to enable apparmor</a> 内容。</p>
-<h2 id="cgroup配置">cgroup配置</h2>
+<h3 id="cgroup配置">cgroup配置</h3>
 <p>打开 <code>/etc/default/grub</code> 文件，如果不存该文件则创建，并在文件中写入 <code>systemd.unified_cgroup_hierarchy=false</code> 内容。</p>
 <p>打开 <code>/boot/cmdline.txt</code> 文件，并追加 <code>systemd.unified_cgroup_hierarchy=false</code> 内容。</p>
-<h2 id="networkmanager配置">NetworkManager配置</h2>
+<h3 id="networkmanager配置">NetworkManager配置</h3>
 <p>由于Home Assistant Supervisor 需要 <code>NetworkManager</code> 的支持，而树莓派官方系统默认采用 <code>dhcpcd</code>网络配置工具。所以需要通过<strong>raspi-config</strong>工具切换网络配置工具。</p>
 <p>通过如下命令，打开树莓派配置工具</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo raspi-config</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo raspi-config</span><br></pre></td></tr></table></figure>
 <p>如下图所示，选择 <mark>Advanced Options</mark> ：</p>
 <p><img data-src="https://s3.bmp.ovh/imgs/2023/01/01/ff1e0866079cc9e0.png" title="" alt="" data-align="center"></p>
 <p>进入后，选择 <mark>Network Config</mark> ：</p>
 <p><img data-src="https://s3.bmp.ovh/imgs/2023/01/01/25b0190151f2570f.png" title="" alt="" data-align="center"></p>
 <p>最后将网络配置器切换到 <mark>NetworkManager</mark>，按下回车键 Enter 保存配置，此时需要会提示是否 reboot ,请选择yes，重启树莓派。</p>
 <p><img data-src="https://s3.bmp.ovh/imgs/2023/01/01/b9281b0f4fd84e7a.png" title="" alt="" data-align="center"></p>
-<h1 id="supervisor-安装步骤">Supervisor 安装步骤</h1>
-<h2 id="依赖软件安装">依赖软件安装</h2>
+<h2 id="supervisor-安装步骤">Supervisor 安装步骤</h2>
+<h3 id="依赖软件安装">依赖软件安装</h3>
 <p>首先更新系统软件源：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update --fix-missing</span><br><span class="line">sudo apt-get upgrade -y</span><br></pre></td></tr></table></figure>
 <p>然后通过如下命令安装依赖软件：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install \</span><br><span class="line">apparmor \</span><br><span class="line">jq \</span><br><span class="line">wget \</span><br><span class="line">curl \</span><br><span class="line">udisks2 \</span><br><span class="line">libglib2.0-bin \</span><br><span class="line">network-manager \</span><br><span class="line">dbus \</span><br><span class="line">lsb-release \</span><br><span class="line">systemd-journal-remote -y</span><br></pre></td></tr></table></figure>
-<h2 id="docker-ce-安装">Docker-CE 安装</h2>
+<h3 id="docker-ce-安装">Docker-CE 安装</h3>
 <p>下载安装脚本，命令如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL get.docker.com -o get-docker.sh</span><br></pre></td></tr></table></figure>
 <p>国内用户建议通过阿里镜像源进行安装：</p>
@@ -351,7 +355,7 @@
 <p>将当前用户添加进dockert组中：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo usermod -aG docker <span class="variable">$USER</span></span><br></pre></td></tr></table></figure>
 <p>需要重启才能生效。</p>
-<h2 id="os-agent-安装">OS-Agent 安装</h2>
+<h3 id="os-agent-安装">OS-Agent 安装</h3>
 <p>由于Supervisor依赖 <strong>OS-Agent</strong> 软件包，但该软件不在Debian官方软件源内，需要前往Github仓库 <a target="_blank" rel="noopener" href="https://github.com/home-assistant/os-agent">os-agent</a> 下载。</p>
 <p><img data-src="https://s3.bmp.ovh/imgs/2023/01/01/99f64464d0d1f039.png" /></p>
 <p>通过如下指令查看芯片架构类型：</p>
@@ -366,7 +370,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gdbus introspect --system --dest io.hass.os --object-path /io/hass/os</span><br></pre></td></tr></table></figure>
 <p>上述命令如果不输出错误信息，而是输出包含 <code>interface</code> 字段的信息则说明安装成功，树莓派安装后输出如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">node /io/hass/os &#123;</span><br><span class="line">  interface org.freedesktop.DBus.Introspectable &#123;</span><br><span class="line">    methods:</span><br><span class="line">      Introspect(out s out);</span><br><span class="line">    signals:</span><br><span class="line">    properties:</span><br><span class="line">  &#125;;</span><br><span class="line">  interface org.freedesktop.DBus.Properties &#123;</span><br><span class="line">    methods:</span><br><span class="line">      Get(in  s interface,</span><br><span class="line">          in  s property,</span><br><span class="line">          out v value);</span><br><span class="line">      GetAll(in  s interface,</span><br><span class="line">             out a&#123;sv&#125; props);</span><br><span class="line">      Set(in  s interface,</span><br><span class="line">          in  s property,</span><br><span class="line">          in  v value);</span><br><span class="line">    signals:</span><br><span class="line">      PropertiesChanged(s interface,</span><br><span class="line">                        a&#123;sv&#125; changed_properties,</span><br><span class="line">                        as invalidates_properties);</span><br><span class="line">    properties:</span><br><span class="line">  &#125;;</span><br><span class="line">  interface io.hass.os &#123;</span><br><span class="line">    methods:</span><br><span class="line">    signals:</span><br><span class="line">    properties:</span><br><span class="line">      @org.freedesktop.DBus.Property.EmitsChangedSignal(&quot;invalidates&quot;)</span><br><span class="line">      readonly s Version = &#x27;1.4.1&#x27;;</span><br><span class="line">      @org.freedesktop.DBus.Property.EmitsChangedSignal(&quot;true&quot;)</span><br><span class="line">      readwrite b Diagnostics = false;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h2 id="supervisor-安装">Supervisor 安装</h2>
+<h3 id="supervisor-安装">Supervisor 安装</h3>
 <p>前往 <a target="_blank" rel="noopener" href="https://github.com/home-assistant/supervised-installer/releases">Releases · home-assistant/supervised-installer · GitHub</a>下载与 OS-Agent版本匹配的Debian包。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -c https://github.com/home-assistant/supervised-installer/releases/download/1.4.1/homeassistant-supervised.deb</span><br></pre></td></tr></table></figure>
 <p>如果网络无法下载，可以尝试如下代理：</p>
@@ -388,7 +392,7 @@
 <p>进一步访问 <code>IP:4357</code> 端口，确认 Supervisor 工作状态是否正常。 <img data-src="https://s3.bmp.ovh/imgs/2023/01/01/c8b095d572622e38.png" alt="supervisor状态" /></p>
 <p>最后通过访问 <code>IP:8123</code> 端口，进行 <strong>Home Assisistant</strong> 的相关配置，如下图所示，需要等待一段时间，等待系统启动完成，然后创建账户配置基本选项。</p>
 <p><img data-src="https://s3.bmp.ovh/imgs/2023/01/01/968c870c39329428.png" title="" alt="" data-align="center"></p>
-<h1 id="参考">参考</h1>
+<h2 id="参考">参考</h2>
 <ol type="1">
 <li><p><a target="_blank" rel="noopener" href="https://github.com/home-assistant/supervised-installer">supervised-installer: Installer for a generic Linux system</a></p></li>
 <li><p><a target="_blank" rel="noopener" href="https://github.com/home-assistant/os-agent/tree/main#using-home-assistant-supervised-on-debian">os-agent: Daemon allowing to control OS features through D-Bus</a></p></li>
@@ -524,11 +528,11 @@
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" integrity="sha256-4kQf9z5ntdQrzsBC3YSHnEz02Z9C1UeW/E9OgnvlzSY=" crossorigin="anonymous"></script>
-  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2022/12/26/Home-Assistant-Supervised-%E5%AE%89%E8%A3%85/"}</script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2022/12/26/Home-Assistant-Supervised-install/"}</script>
   <script src="/js/third-party/quicklink.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
 
-<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"71af56055779a4e2fdca416afd5b6c14"}</script>
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"7a36bf9a6ce57e40fb3046afda57c5ee"}</script>
 <script src="/js/third-party/comments/gitalk.js"></script>
 
 </body>

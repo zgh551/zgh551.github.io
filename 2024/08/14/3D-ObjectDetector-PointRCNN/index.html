@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="1AYoSrGqW5qB6rPYnoXq_tIpkaudIK3MXrpUhL_69NI">
+  <meta name="msvalidate.01" content="DF49D5E49BAD0CB8947DDD3824A370B1">
+  <meta name="baidu-site-verification" content="code-EEmJnUEq0A">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="概述 PointRCNN 将目标检测任务分为两个阶段： 第一阶段：借助点云分割为前景点和背景，并以自下而上的方式直接从点云生成少量高质量的目标候选框； 第二阶段：再对候选目标框进行优化调整，细化目标框的边界。  网络框图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3D对象检测-PointRCNN">
+<meta property="og:url" content="https://zgh551.github.io/2024/08/14/3D-ObjectDetector-PointRCNN/index.html">
+<meta property="og:site_name" content="Henry-Z">
+<meta property="og:description" content="概述 PointRCNN 将目标检测任务分为两个阶段： 第一阶段：借助点云分割为前景点和背景，并以自下而上的方式直接从点云生成少量高质量的目标候选框； 第二阶段：再对候选目标框进行优化调整，细化目标框的边界。  网络框图">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.imgur.com/vjhaAba.png">
+<meta property="og:image" content="https://i.imgur.com/ZRLf9rx.png">
+<meta property="og:image" content="https://i.imgur.com/0I8vtBI.png">
+<meta property="og:image" content="https://i.imgur.com/w8GPWoq.png">
+<meta property="og:image" content="https://i.imgur.com/7mQkKBl.png">
+<meta property="og:image" content="https://i.imgur.com/9dADvbT.png">
+<meta property="og:image" content="https://i.imgur.com/b9JL9bs.png">
+<meta property="og:image" content="https://i.imgur.com/kSAlhfQ.png">
+<meta property="og:image" content="https://i.imgur.com/N8ckrGn.png">
+<meta property="og:image" content="https://i.imgur.com/kyfKYpu.png">
+<meta property="og:image" content="https://i.imgur.com/Diaxp82.png">
+<meta property="og:image" content="https://i.imgur.com/qcigbhB.png">
+<meta property="og:image" content="https://i.imgur.com/qwA8Ymp.png">
+<meta property="og:image" content="https://i.imgur.com/TeRLPcZ.png">
+<meta property="og:image" content="https://i.imgur.com/UFJtQI0.png">
+<meta property="og:image" content="https://i.imgur.com/7Ou7d2W.png">
+<meta property="og:image" content="https://i.imgur.com/PlexIPj.png">
+<meta property="og:image" content="https://i.imgur.com/G3Nb70B.png">
+<meta property="og:image" content="https://i.imgur.com/3f8EokP.png">
+<meta property="og:image" content="https://i.imgur.com/aNhRcqU.png">
+<meta property="article:published_time" content="2024-08-14T09:18:16.000Z">
+<meta property="article:modified_time" content="2024-08-14T15:26:48.673Z">
+<meta property="article:author" content="Henry">
+<meta property="article:tag" content="object detector">
+<meta property="article:tag" content="3D">
+<meta property="article:tag" content="LiDAR">
+<meta property="article:tag" content="PointNet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/vjhaAba.png">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2024/08/14/3D-ObjectDetector-PointRCNN/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/08/14/3D-ObjectDetector-PointRCNN/","path":"2024/08/14/3D-ObjectDetector-PointRCNN/","title":"3D对象检测-PointRCNN"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>3D对象检测-PointRCNN | Henry-Z</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ML9CRPRYFK"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ML9CRPRYFK","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?c8e65d830c8cd51e920dc7e7c0be8744"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Henry-Z</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">102</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">37</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5"><span class="nav-number">2.</span> <span class="nav-text">第一阶段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#backbone%E7%BD%91%E7%BB%9C"><span class="nav-number">2.1.</span> <span class="nav-text">Backbone网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E6%99%AF%E7%82%B9%E5%88%86%E5%89%B2%E7%BD%91%E7%BB%9C"><span class="nav-number">2.2.</span> <span class="nav-text">前景点分割网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Ebin%E7%9A%843d-box%E5%9B%9E%E5%BD%92%E7%BD%91%E7%BB%9C"><span class="nav-number">2.3.</span> <span class="nav-text">基于bin的3D Box回归网络</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%8E%A8%E5%AF%BC"><span class="nav-number">2.3.1.</span> <span class="nav-text">表达式推导</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ground-truth-%E8%AE%A1%E7%AE%97"><span class="nav-number">2.3.2.</span> <span class="nav-text">Ground-Truth 计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E4%BD%8D%E8%A7%92%E8%AE%A1%E7%AE%97"><span class="nav-number">2.3.3.</span> <span class="nav-text">方位角计算</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E9%98%B6%E6%AE%B5-1"><span class="nav-number">2.3.3.1.</span> <span class="nav-text">第一阶段</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5"><span class="nav-number">2.3.4.</span> <span class="nav-text">第二阶段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#box%E5%9B%9E%E5%BD%92%E6%B5%81%E7%A8%8B"><span class="nav-number">2.3.5.</span> <span class="nav-text">Box回归流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E5%86%97%E4%BD%99proposal"><span class="nav-number">2.3.6.</span> <span class="nav-text">删除冗余Proposal</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%B7%9D%E7%A6%BB%E7%9A%84nms"><span class="nav-number">2.3.7.</span> <span class="nav-text">基于距离的NMS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E4%BB%A3%E7%A0%81"><span class="nav-number">2.3.8.</span> <span class="nav-text">相关代码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5-1"><span class="nav-number">3.</span> <span class="nav-text">第二阶段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%BA%E5%9F%9F%E6%B1%A0%E5%8C%96"><span class="nav-number">3.1.</span> <span class="nav-text">区域池化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A9%E5%A4%A7%E5%80%99%E9%80%89%E6%A1%86%E8%8C%83%E5%9B%B4"><span class="nav-number">3.1.1.</span> <span class="nav-text">扩大候选框范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E8%81%9A%E5%90%88roi_pooling"><span class="nav-number">3.1.2.</span> <span class="nav-text">特征聚合(ROI_Pooling)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%87%E5%87%86%E5%9D%90%E6%A0%87%E5%8F%98%E6%8D%A2"><span class="nav-number">3.2.</span> <span class="nav-text">标准坐标变换</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E7%89%B9%E5%BE%81"><span class="nav-number">3.2.1.</span> <span class="nav-text">局部特征</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%80%99%E9%80%89%E6%A1%86%E7%BB%86%E5%8C%96%E7%9A%84%E7%89%B9%E5%BE%81%E5%AD%A6%E4%B9%A0"><span class="nav-number">3.3.</span> <span class="nav-text">候选框细化的特征学习</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%80%99%E9%80%89%E6%A1%86%E7%BB%86%E5%8C%96%E6%8D%9F%E5%A4%B1"><span class="nav-number">3.4.</span> <span class="nav-text">候选框细化损失</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%86%E5%8C%96%E6%8D%9F%E5%A4%B1"><span class="nav-number">3.4.1.</span> <span class="nav-text">细化损失</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%95%B0%E6%8D%AE"><span class="nav-number">4.</span> <span class="nav-text">实验数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Henry"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Henry</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">102</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:henryzhu551@gmail.com" title="E-Mail → mailto:henryzhu551@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fa-solid fa-c fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fab fa-linkedin fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/zgh551" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/08/14/3D-ObjectDetector-PointRCNN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="3D对象检测-PointRCNN | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          3D对象检测-PointRCNN
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-08-14 17:18:16 / 修改时间：23:26:48" itemprop="dateCreated datePublished" datetime="2024-08-14T17:18:16+08:00">2024-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D-object-detector/" itemprop="url" rel="index"><span itemprop="name">3D object detector</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D-object-detector/PointRCNN/" itemprop="url" rel="index"><span itemprop="name">PointRCNN++</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">概述</h2>
+<p>PointRCNN 将目标检测任务分为两个阶段： 第一阶段：借助点云分割为前景点和背景，并以自下而上的方式直接从点云生成少量高质量的目标候选框； 第二阶段：再对候选目标框进行优化调整，细化目标框的边界。</p>
+<figure>
+<img data-src="https://i.imgur.com/vjhaAba.png" alt="网络框图" /><figcaption aria-hidden="true">网络框图</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="第一阶段">第一阶段</h2>
+<p>首先从原始点云数据中通过神经网络生成高度可信的3D边界框，该操作进一步缩小了3D边界框的搜索范围，让第二阶段重点强化这些候选框的细节。</p>
+<figure>
+<img data-src="https://i.imgur.com/ZRLf9rx.png" alt="backbone" /><figcaption aria-hidden="true">backbone</figcaption>
+</figure>
+<h3 id="backbone网络">Backbone网络</h3>
+<p>使用<code>PointNet++(MSG)</code>作为骨干网络，输出逐点的特征。添加一个分割头用于估计前景掩码，一个Box回归头用于生成3D候选框。</p>
+<h3 id="前景点分割网络">前景点分割网络</h3>
+<p>由于对室外场景来说，前景点的数量通常远小于背景点的数量，因此分割网络使用 Focus Loss(焦点损失) 函数来处理类别不平衡的问题。</p>
+<figure>
+<img data-src="https://i.imgur.com/0I8vtBI.png" alt="12" /><figcaption aria-hidden="true">12</figcaption>
+</figure>
+<p><span class="math display">\[\mathcal{L}_{focal} = -\alpha_{t}(1-p_{t})^{\lambda}\log(p_{t})\]</span> 其中， <span class="math display">\[
+p_{t} = \begin{cases}
+p &amp; \text{前景} \\
+1-p &amp; \text{背景}
+\end{cases}
+\]</span> 在训练点云分割时，保持原论文的默认参数，<span class="math inline">\(\alpha_{t}=0.25\)</span>，<span class="math inline">\(\lambda=2\)</span>。</p>
+<h3 id="基于bin的3d-box回归网络">基于bin的3D Box回归网络</h3>
+<p>为了约束生成的3D候选框，提出了基于bin的回归损失来评估对象的3D边界框。使用该方法模型训练时可以更快收敛。</p>
+<figure>
+<img data-src="https://i.imgur.com/w8GPWoq.png" alt="基于Bin的定位图示" /><figcaption aria-hidden="true">基于Bin的定位图示</figcaption>
+</figure>
+<p><code>bin</code>可以直观理解为刻度尺上的一个刻度，相对于直接使用回归任务对x和z进行学习，不如将这些变量视为一个整数(分类任务)和一个浮点数(回归任务)分别学习效果好。 其中，目标对象中心点位置可分解为如下表示： <span class="math display">\[bin_x^{(p)}=\lfloor \frac{x^p-x^{(p)}+\mathcal{S}}{\delta} \rfloor, bin_z^{(p)}=\lfloor \frac{z^p-z^{(p)}+\mathcal{S}}{\delta} \rfloor\]</span> <span class="math display">\[{res_u^{(p)} \atop u\in\set{x,z}}=\frac{1}{C}\big(u^p-u^{(p)}+\mathcal{S}-(bin_u^{(p)}*\delta+\frac{\delta}{2})\big)\]</span> <span class="math display">\[res_y^{(p)}=y^p-y^{(p)}\]</span> 其中，</p>
+<ol type="1">
+<li><span class="math inline">\((x^{(p)},y^{(p)},z^{(p)})\)</span>：表示受关注的前景点坐标；</li>
+<li><span class="math inline">\((x^p,y^p,z^p)\)</span>：表示前景点对应对象的中心坐标；</li>
+<li><span class="math inline">\(bin_{x}^{(p)}\)</span>和<span class="math inline">\(bin_z^{(p)}\)</span>：表示沿<span class="math inline">\(X\)</span>和<span class="math inline">\(Z\)</span>轴分配的Ground-Truthbin；</li>
+<li><span class="math inline">\(res_{x}^{(p)}\)</span>和<span class="math inline">\(res_z^{(p)}\)</span>：表示在被分配的bin中进一步细化位置的Ground-Truth残差；</li>
+<li><span class="math inline">\(\mathcal{C}\)</span>：表示bin长度的标准化系数，即归一化到[-1,1]区间，原文中<span class="math inline">\(\mathcal{C}=\delta\)</span>；</li>
+</ol>
+<h4 id="表达式推导">表达式推导</h4>
+<p>考虑x轴方向的表示<span class="math inline">\(bin_x^{(p)}=\lfloor \frac{x^p-x^{(p)}+\mathcal{S}}{\delta} \rfloor\)</span> 则量化后的中心点相对位置表示如下： <span class="math display">\[\lfloor x^p-x^{(p)} \rfloor = bin_x^{(p)}*\delta-\mathcal{S}\]</span> 实际中心点的相对位置为<span class="math inline">\(x^p-x^{(p)}\)</span> 则残差可表示为 <span class="math display">\[res_x^{(p)} = x^p-x^{(p)} - \lfloor x^p-x^{(p)} \rfloor\]</span> 代入得 <span class="math display">\[res_x^{(p)} = x^p-x^{(p)} - bin_x^{(p)}*\delta+\mathcal{S} \in [0,\delta)\]</span> 由于<span class="math inline">\(x^p-x^{(p)} \geqq \lfloor x^p-x^{(p)} \rfloor\)</span>，故<span class="math inline">\(res_x^{(p)} \geqq 0\)</span> 为了方便计算，将数据分布限制在正负区间，故对残差减去<span class="math inline">\(\frac{\delta}{2}\)</span>得 <span class="math display">\[res_x^{(p)} = x^p-x^{(p)}+\mathcal{S} -（bin_x^{(p)}*\delta+\frac{\delta}{2}） \in [-\frac{\delta}{2},\frac{\delta}{2})\]</span> 考虑到超参数<span class="math inline">\(\delta\)</span>的范围是不定的，需对残差输出做标准化处理，即 <span class="math display">\[res_x^{(p)} = \frac{1}{\delta}\big(x^p-x^{(p)}+\mathcal{S}-bin_x^{(p)}*\delta+\frac{\delta}{2}）\big) \in [-\frac{1}{2},\frac{1}{2})\]</span></p>
+<h4 id="ground-truth-计算">Ground-Truth 计算</h4>
+<p>参考官方代码库参数设置，<span class="math inline">\(S=3\)</span>,<span class="math inline">\(\delta=0.5\)</span>，假设真实的目标中心相对前景点的坐标为<span class="math inline">\((2.125,1.375)\)</span>，则对应的bin和res计算如下： X轴： <span class="math display">\[bin_x^{(p)}=\lfloor\frac{2.125-0+3}{0.5}\rfloor=10\]</span> <span class="math display">\[res_x^{(p)}=\frac{1}{0.5}(2.125-0+3-(10*0.5+0.25))=-0.25\]</span> 同理Z轴计算如下： <span class="math display">\[bin_z^{(p)}=\lfloor\frac{1.375-0+3}{0.5}\rfloor=8\]</span> <span class="math display">\[res_z^{(p)}=\frac{1}{0.5}(1.375-0+3-(8*0.5+0.25))=0.25\]</span></p>
+<figure>
+<img data-src="https://i.imgur.com/7mQkKBl.png" alt="回归计算图示" /><figcaption aria-hidden="true">回归计算图示</figcaption>
+</figure>
+<h4 id="方位角计算">方位角计算</h4>
+<h5 id="第一阶段-1">第一阶段</h5>
+<p>在第一阶段，考虑方位角的表示，将<span class="math inline">\(2\pi\)</span>划分为<span class="math inline">\(n\)</span>个bin，原文中<span class="math inline">\(n=12\)</span>，则<span class="math inline">\(\delta=\frac{\pi}{6}\)</span>，<span class="math inline">\(S=0\)</span>，故 <span class="math display">\[
+bin_{\theta}^{(p)}=\lfloor \frac{\theta^p-\theta^{(p)}+S}{\delta} \rfloor
+\]</span> 量化方位角位角表示为<span class="math inline">\(\lfloor \theta^p-\theta^{(p)} \rfloor=bin_{\theta}^{(p)}*\delta - \mathcal{S}\)</span>，原始方位角偏差表示为<span class="math inline">\({\theta}^p-{\theta}^{(p)}\)</span> 故残差可表示为 <span class="math display">\[
+res_{\theta}^{(p)}=\theta^p-\theta^{(p)} - \lfloor \frac{\theta^p-\theta^{(p)}}{\delta} \rfloor
+\]</span> 代入得 <span class="math display">\[
+res_{\theta}^{(p)}=\theta^p-\theta^{(p)}+\mathcal{S}-bin_{\theta}^{(p)}*\delta \in [0,\delta)
+\]</span> 减去偏执<span class="math inline">\(\frac{\delta}{2}\)</span>，保证数据正负分布 <span class="math display">\[res_{\theta}^{(p)}=\theta^p-\theta^{(p)}+\mathcal{S}-bin_{\theta}^{(p)}*\delta-\frac{\delta}{2} \in [-\frac{\delta}{2},\frac{\delta}{2})\]</span> 标准化处理得，除以系数<span class="math inline">\(\frac{\delta}{2}\)</span>得 <span class="math display">\[{res_{\theta}^{(p)}}=\frac{2}{\delta}\big(\theta^p-\theta^{(p)}+\mathcal{S}-(bin_x^{(p)}*\delta+\frac{\delta}{2})\big)\in[-1,1)\]</span></p>
+<h4 id="第二阶段">第二阶段</h4>
+<figure>
+<img data-src="https://i.imgur.com/9dADvbT.png" alt="方位角示图" /><figcaption aria-hidden="true">方位角示图</figcaption>
+</figure>
+<p>在第二阶段，进一步细化时，考虑方位角的表示，将<span class="math inline">\(\frac{\pi}{2}\)</span>划分为<span class="math inline">\(n\)</span>个bin，原文中<span class="math inline">\(n=12\)</span>，则<span class="math inline">\(\delta=\frac{\pi}{24}\)</span>，<span class="math inline">\(S=\frac{\pi}{4}\)</span>，故 <span class="math display">\[bin_{\theta}^{(p)}=\lfloor \frac{\theta^p-\theta^{(p)}+S}{\delta} \rfloor\]</span> 量化方位角位角表示为<span class="math inline">\(\lfloor \theta^p-\theta^{(p)} \rfloor=bin_{\theta}^{(p)}*\delta - \mathcal{S}\)</span>，原始方位角偏差表示为<span class="math inline">\({\theta}^p-{\theta}^{(p)}\)</span> 故残差可表示为 <span class="math display">\[res_{\theta}^{(p)}=\theta^p-\theta^{(p)} - \lfloor \frac{\theta^p-\theta^{(p)}}{\delta} \rfloor\]</span> 代入得 <span class="math display">\[res_{\theta}^{(p)}=\theta^p-\theta^{(p)}+\mathcal{S}-bin_{\theta}^{(p)}*\delta \in [0,\delta)\]</span> 减去偏执<span class="math inline">\(\frac{\delta}{2}\)</span>，保证数据正负分布 <span class="math display">\[res_{\theta}^{(p)}=\theta^p-\theta^{(p)}+\mathcal{S}-bin_{\theta}^{(p)}*\delta-\frac{\delta}{2} \in [-\frac{\delta}{2},\frac{\delta}{2})\]</span> 标准化处理得，除以系数<span class="math inline">\(\frac{\delta}{2}\)</span>得 <span class="math display">\[{res_{\theta}^{(p)}}=\frac{2}{\delta}\big(\theta^p-\theta^{(p)}+\mathcal{S}-(bin_x^{(p)}*\delta+\frac{\delta}{2})\big)\in[-1,1)\]</span></p>
+<h4 id="box回归流程">Box回归流程</h4>
+<figure>
+<img data-src="https://i.imgur.com/b9JL9bs.png" alt="76 channel regression" /><figcaption aria-hidden="true">76 channel regression</figcaption>
+</figure>
+<p>如下图所示，计算完真值bin和res后，作者将bin视为分类任务进行学习，也就是将bin看作是一个个类别(共12类)，将res视为回归任务。</p>
+<figure>
+<img data-src="https://i.imgur.com/kSAlhfQ.png" alt="RPN-ProposalLayer" /><figcaption aria-hidden="true">RPN-ProposalLayer</figcaption>
+</figure>
+<p>推理阶段，对于基于bin预测的参数<span class="math inline">\(x,z,\theta\)</span>，首先选择预测置信度最高的bin中心。 整体3D边界框回归损失<span class="math inline">\(\mathcal{L}_{reg}\)</span>表示如下：</p>
+<ul>
+<li>基于bin的回归 <span class="math display">\[\mathcal{L}_{bin}^{(p)}=\sum_{u\in\set{x,z,\theta}}{\mathcal{F}_{cls}(\widehat{bin}_u^{(p)},bin_u^{(p)}) + \mathcal{F}_{reg}(\widehat{res}_u^{(p)},res_u^{(p)})}\]</span></li>
+<li>直接回归 <span class="math display">\[\mathcal{L}_{res}^{(p)}=\sum_{v\in\set{y,h,w,l}}{\mathcal{F}_{cls}(\widehat{res}_v^{(p)},res_v^{(p)})}\]</span></li>
+<li>总体回归 <span class="math display">\[\mathcal{L}_{reg}=\frac{1}{N_{pos}}\sum_{p\in{pos}}{(\mathcal{L}_{bin}^{(p)}+\mathcal{L}_{res}^{(p)})}\]</span> 其中， <span class="math inline">\(N_{pos}\)</span>：表示前景点的数量； <span class="math inline">\(\widehat{bin}_u^{(p)} \text{和} \widehat{res}_u^{(p)}\)</span>：表示预测的bin分配和前景点p的残差； <span class="math inline">\({bin}_u^{(p)} \text{和} {res}_u^{(p)}\)</span>：表示计算的bin和res目标真值； <span class="math inline">\(\mathcal{F}_{cls}\)</span>：表示交叉熵分类损失； <span class="math inline">\(\mathcal{F}_{reg}\)</span>：表示平滑L1损失；</li>
+</ul>
+<h4 id="删除冗余proposal">删除冗余Proposal</h4>
+<p>就算每个前景点预测一个proposal Box，仍然会输出很多Box，所以下一步就是如何去除冗余的预测框数量。</p>
+<figure>
+<img data-src="https://i.imgur.com/N8ckrGn.png" alt="Proposal Box" /><figcaption aria-hidden="true">Proposal Box</figcaption>
+</figure>
+<h4 id="基于距离的nms">基于距离的NMS</h4>
+<p>基于鸟瞰视图的IoU进行NMS，以生成少量高质量的proposals。</p>
+<ul>
+<li>训练阶段 使用IoU=0.85阈值做NMS计算，保留300个proposal来训练第二阶段子网络。</li>
+<li>推理阶段 使用IoU=0.80阈值做NMS计算，保留前100个用于细化第二阶段子网络。</li>
+</ul>
+<p><img data-src="https://i.imgur.com/kyfKYpu.png" /></p>
+<h4 id="相关代码">相关代码</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">decode_bbox_target</span>(<span class="params">roi_box3d, pred_reg, loc_scope, loc_bin_size, num_head_bin, anchor_size,</span></span><br><span class="line"><span class="params">                       get_xz_fine=<span class="literal">True</span>, get_y_by_bin=<span class="literal">False</span>, loc_y_scope=<span class="number">0.5</span>, loc_y_bin_size=<span class="number">0.25</span>, get_ry_fine=<span class="literal">False</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    :param roi_box3d: (N, 7)</span></span><br><span class="line"><span class="string">    :param pred_reg: (N, C)</span></span><br><span class="line"><span class="string">    :param loc_scope:</span></span><br><span class="line"><span class="string">    :param loc_bin_size:</span></span><br><span class="line"><span class="string">    :param num_head_bin:</span></span><br><span class="line"><span class="string">    :param anchor_size:</span></span><br><span class="line"><span class="string">    :param get_xz_fine:</span></span><br><span class="line"><span class="string">    :param get_y_by_bin:</span></span><br><span class="line"><span class="string">    :param loc_y_scope:</span></span><br><span class="line"><span class="string">    :param loc_y_bin_size:</span></span><br><span class="line"><span class="string">    :param get_ry_fine:</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    anchor_size = anchor_size.to(roi_box3d.get_device())</span><br><span class="line">    per_loc_bin_num = <span class="built_in">int</span>(loc_scope / loc_bin_size) * <span class="number">2</span></span><br><span class="line">    loc_y_bin_num = <span class="built_in">int</span>(loc_y_scope / loc_y_bin_size) * <span class="number">2</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># recover xz localization</span></span><br><span class="line">    x_bin_l, x_bin_r = <span class="number">0</span>, per_loc_bin_num</span><br><span class="line">    z_bin_l, z_bin_r = per_loc_bin_num, per_loc_bin_num * <span class="number">2</span></span><br><span class="line">    start_offset = z_bin_r</span><br><span class="line"></span><br><span class="line">    x_bin = torch.argmax(pred_reg[:, x_bin_l: x_bin_r], dim=<span class="number">1</span>)</span><br><span class="line">    z_bin = torch.argmax(pred_reg[:, z_bin_l: z_bin_r], dim=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    pos_x = x_bin.<span class="built_in">float</span>() * loc_bin_size + loc_bin_size / <span class="number">2</span> - loc_scope</span><br><span class="line">    pos_z = z_bin.<span class="built_in">float</span>() * loc_bin_size + loc_bin_size / <span class="number">2</span> - loc_scope</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> get_xz_fine:</span><br><span class="line">        x_res_l, x_res_r = per_loc_bin_num * <span class="number">2</span>, per_loc_bin_num * <span class="number">3</span></span><br><span class="line">        z_res_l, z_res_r = per_loc_bin_num * <span class="number">3</span>, per_loc_bin_num * <span class="number">4</span></span><br><span class="line">        start_offset = z_res_r</span><br><span class="line"></span><br><span class="line">        x_res_norm = torch.gather(pred_reg[:, x_res_l: x_res_r], dim=<span class="number">1</span>, index=x_bin.unsqueeze(dim=<span class="number">1</span>)).squeeze(dim=<span class="number">1</span>)</span><br><span class="line">        z_res_norm = torch.gather(pred_reg[:, z_res_l: z_res_r], dim=<span class="number">1</span>, index=z_bin.unsqueeze(dim=<span class="number">1</span>)).squeeze(dim=<span class="number">1</span>)</span><br><span class="line">        x_res = x_res_norm * loc_bin_size</span><br><span class="line">        z_res = z_res_norm * loc_bin_size</span><br><span class="line"></span><br><span class="line">        pos_x += x_res</span><br><span class="line">        pos_z += z_res</span><br><span class="line"></span><br><span class="line">    <span class="comment"># recover y localization</span></span><br><span class="line">    <span class="keyword">if</span> get_y_by_bin:</span><br><span class="line">        y_bin_l, y_bin_r = start_offset, start_offset + loc_y_bin_num</span><br><span class="line">        y_res_l, y_res_r = y_bin_r, y_bin_r + loc_y_bin_num</span><br><span class="line">        start_offset = y_res_r</span><br><span class="line"></span><br><span class="line">        y_bin = torch.argmax(pred_reg[:, y_bin_l: y_bin_r], dim=<span class="number">1</span>)</span><br><span class="line">        y_res_norm = torch.gather(pred_reg[:, y_res_l: y_res_r], dim=<span class="number">1</span>, index=y_bin.unsqueeze(dim=<span class="number">1</span>)).squeeze(dim=<span class="number">1</span>)</span><br><span class="line">        y_res = y_res_norm * loc_y_bin_size</span><br><span class="line">        pos_y = y_bin.<span class="built_in">float</span>() * loc_y_bin_size + loc_y_bin_size / <span class="number">2</span> - loc_y_scope + y_res</span><br><span class="line">        pos_y = pos_y + roi_box3d[:, <span class="number">1</span>]</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        y_offset_l, y_offset_r = start_offset, start_offset + <span class="number">1</span></span><br><span class="line">        start_offset = y_offset_r</span><br><span class="line"></span><br><span class="line">        pos_y = roi_box3d[:, <span class="number">1</span>] + pred_reg[:, y_offset_l]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># recover ry rotation</span></span><br><span class="line">    ry_bin_l, ry_bin_r = start_offset, start_offset + num_head_bin</span><br><span class="line">    ry_res_l, ry_res_r = ry_bin_r, ry_bin_r + num_head_bin</span><br><span class="line"></span><br><span class="line">    ry_bin = torch.argmax(pred_reg[:, ry_bin_l: ry_bin_r], dim=<span class="number">1</span>)</span><br><span class="line">    ry_res_norm = torch.gather(pred_reg[:, ry_res_l: ry_res_r], dim=<span class="number">1</span>, index=ry_bin.unsqueeze(dim=<span class="number">1</span>)).squeeze(dim=<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">if</span> get_ry_fine:</span><br><span class="line">        <span class="comment"># divide pi/2 into several bins</span></span><br><span class="line">        angle_per_class = (np.pi / <span class="number">2</span>) / num_head_bin</span><br><span class="line">        ry_res = ry_res_norm * (angle_per_class / <span class="number">2</span>)</span><br><span class="line">        ry = (ry_bin.<span class="built_in">float</span>() * angle_per_class + angle_per_class / <span class="number">2</span>) + ry_res - np.pi / <span class="number">4</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        angle_per_class = (<span class="number">2</span> * np.pi) / num_head_bin</span><br><span class="line">        ry_res = ry_res_norm * (angle_per_class / <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># bin_center is (0, 30, 60, 90, 120, ..., 270, 300, 330)</span></span><br><span class="line">        ry = (ry_bin.<span class="built_in">float</span>() * angle_per_class + ry_res) % (<span class="number">2</span> * np.pi)</span><br><span class="line">        ry[ry &gt; np.pi] -= <span class="number">2</span> * np.pi</span><br><span class="line"></span><br><span class="line">    <span class="comment"># recover size</span></span><br><span class="line">    size_res_l, size_res_r = ry_res_r, ry_res_r + <span class="number">3</span></span><br><span class="line">    <span class="keyword">assert</span> size_res_r == pred_reg.shape[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">    size_res_norm = pred_reg[:, size_res_l: size_res_r]</span><br><span class="line">    hwl = size_res_norm * anchor_size + anchor_size</span><br><span class="line"></span><br><span class="line">    <span class="comment"># shift to original coords</span></span><br><span class="line">    roi_center = roi_box3d[:, <span class="number">0</span>:<span class="number">3</span>]</span><br><span class="line">    shift_ret_box3d = torch.cat((pos_x.view(-<span class="number">1</span>, <span class="number">1</span>), pos_y.view(-<span class="number">1</span>, <span class="number">1</span>), pos_z.view(-<span class="number">1</span>, <span class="number">1</span>), hwl, ry.view(-<span class="number">1</span>, <span class="number">1</span>)), dim=<span class="number">1</span>)</span><br><span class="line">    ret_box3d = shift_ret_box3d</span><br><span class="line">    <span class="keyword">if</span> roi_box3d.shape[<span class="number">1</span>] == <span class="number">7</span>:</span><br><span class="line">        roi_ry = roi_box3d[:, <span class="number">6</span>]</span><br><span class="line">        ret_box3d = rotate_pc_along_y_torch(shift_ret_box3d, - roi_ry)</span><br><span class="line">        ret_box3d[:, <span class="number">6</span>] += roi_ry</span><br><span class="line">    ret_box3d[:, [<span class="number">0</span>, <span class="number">2</span>]] += roi_center[:, [<span class="number">0</span>, <span class="number">2</span>]]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ret_box3d</span><br></pre></td></tr></table></figure>
+<hr />
+<h2 id="第二阶段-1">第二阶段</h2>
+<p>在获得第一阶段生成的一系列3D边界框后，我们需要进一步优化Box的位置和朝向细节。为了学习每个proposal的局部特征，作者提出了根据每个3D预选框的位置，从第一阶段汇集3D点(xyz, depth, intensity)和相应的点特征，便于后续更好得进行框得细节优化。</p>
+<h3 id="区域池化">区域池化</h3>
+<h4 id="扩大候选框范围">扩大候选框范围</h4>
+<p>如下图所示，将候选框得范围扩大一个常数<span class="math inline">\(\eta\)</span>，表达如下：</p>
+<ul>
+<li>第一阶段生成的候选框 <span class="math display">\[b_i=(x_i,y_i,z_i,h_i,w_i,l_i,\theta_i)\]</span></li>
+<li>扩大<span class="math inline">\(\eta\)</span>后的候选框 <span class="math display">\[b_i^e=(x_i, y_i, z_i, h_i+\eta, w_i+\eta, l_i+\eta, \theta_i)\]</span></li>
+</ul>
+<figure>
+<img data-src="https://i.imgur.com/Diaxp82.png" alt="扩大候选框" /><figcaption aria-hidden="true">扩大候选框</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/qcigbhB.png" alt="扩大范围对性能的影响" /><figcaption aria-hidden="true">扩大范围对性能的影响</figcaption>
+</figure>
+<h4 id="特征聚合roi_pooling">特征聚合(ROI_Pooling)</h4>
+<figure>
+<img data-src="https://i.imgur.com/qwA8Ymp.png" alt="ROI Pooling and transformation" /><figcaption aria-hidden="true">ROI Pooling and transformation</figcaption>
+</figure>
+<p>对扩大后的候选框内的所有点进行特征聚合，主要包括：</p>
+<ol type="1">
+<li>原始点云坐标<span class="math inline">\((x,y,z)\)</span>；</li>
+<li>激光反射强度<span class="math inline">\(intensity\)</span>；</li>
+<li>原始点云深度信息(d)；</li>
+<li>原始点的类别信息(前景点，背景点)m；</li>
+<li>第一阶段由PointNet++网络生成的<span class="math inline">\(C\)</span>维特征向量；</li>
+</ol>
+<h3 id="标准坐标变换">标准坐标变换</h3>
+<p>标准坐标系统的定义：</p>
+<ol type="1">
+<li>坐标原点是候选框的中心；</li>
+<li>X和Z轴近似与地面平行，X轴指向候选框的朝向；</li>
+<li>Y轴垂直向下；</li>
+</ol>
+<figure>
+<img data-src="https://i.imgur.com/TeRLPcZ.png" alt="标准坐标变换" /><figcaption aria-hidden="true">标准坐标变换</figcaption>
+</figure>
+<h4 id="局部特征">局部特征</h4>
+<p>尽管标准坐标变换能够提升局部空间特征学习的稳定性，但却不可避免得丢失了每个物体得深度信息。例如，由于激光雷达传感器的角度扫描分辨率固定，远处物体的点通常要比附近物体少得多。为了补偿丢失的深度信息，作者引入了点到传感器的距离信息，并加入到点的特征中： <span class="math display">\[d^{(p)}=\sqrt{(x^{(p)})^2,(y^{(p)})^2,(z^{(p)})^2 }\]</span></p>
+<h3 id="候选框细化的特征学习">候选框细化的特征学习</h3>
+<p>如下图所示，通过结合变换后的局部空间点<span class="math inline">\(\tilde{p}\)</span>和以及他们的来自第一阶段的全局语义特征<span class="math inline">\(f^{(p)}\)</span>，来进一步细化框和置信度。</p>
+<p><img data-src="https://i.imgur.com/UFJtQI0.png" /></p>
+<figure>
+<img data-src="https://i.imgur.com/7Ou7d2W.png" alt="feature merge" /><figcaption aria-hidden="true">feature merge</figcaption>
+</figure>
+<p>进一步获得用于置信度分类和框细化的判别性特征向量。</p>
+<p><img data-src="https://i.imgur.com/PlexIPj.png" /> <img data-src="https://i.imgur.com/G3Nb70B.png" alt="SA" /> <img data-src="https://i.imgur.com/3f8EokP.png" alt="Box Reg" /></p>
+<h3 id="候选框细化损失">候选框细化损失</h3>
+<p>作者继续采用基于bin的回归损失来细化候选框，如果真实框的3D IoU大于0.55，则将其分配给3D候选框用以框的细化学习。同时，3D候选框和相应的3D真实框转换到标准坐标系统下，即 - 3D proposal Box <span class="math display">\[b_{i}=(x_{i},y_{i},z_{i},h_{i},w_{i},l_{i},\theta{i})\]</span> - 3D ground-truth Box <span class="math display">\[b_{i}=(x_{i}^{gt},y_{i}^{gt},z_{i}^{gt},h_{i}^{gt},w_{i}^{gt},l_{i}^{gt},\theta{i}^{gt})\]</span> 相应坐标变换后为： - 3D proposal Box(CT) <span class="math display">\[\tilde{b_{i}}=(0,0,0,h_{i},w_{i},l_{i},0)\]</span> - 3D ground-truth Box(CT) <span class="math display">\[\tilde{b_{i}}=(x_{i}^{gt}-x_i,y_{i}^{gt}-y_i,z_{i}^{gt}-z_i,h_{i}^{gt},w_{i}^{gt},l_{i}^{gt},\theta{i}^{gt}-\theta_i)\]</span> 第<span class="math inline">\(i\)</span>个候选框的中心位置训练目标<span class="math inline">\((bin_{\vartriangle{x}}^i,bin_{\vartriangle{z}}^i,res_{\vartriangle{x}}^i,res_{\vartriangle{z}}^i,res_{\vartriangle{y}}^i)\)</span>设置与之前的相同，除了使用较小的搜索范围<span class="math inline">\(\mathcal{S}\)</span>来细化3D候选框的位置。至于3D Box的大小任然直接回归残差<span class="math inline">\((res_{\vartriangle{h}}^i,res_{\vartriangle{w}}^i,res_{\vartriangle{l}}^i)\)</span>。</p>
+<h4 id="细化损失">细化损失</h4>
+<p><span class="math display">\[\mathcal{L}_{refine}=\frac{1}{\lVert\mathcal{B}\rVert}\sum_{i \in \mathcal{B}}{\mathcal{F}_{cls}(prob_i,label_i)} + \frac{1}{\lVert\mathcal{B_{pos}}\rVert}\sum_{i \in \mathcal{B_{pos}}}{(\tilde{\mathcal{L}}_{bin}^{i}+\tilde{\mathcal{L}}_{res}^{i})}\]</span> 其中 <span class="math inline">\(\mathcal{B}\)</span>：第一阶段的候选框集合； <span class="math inline">\(\mathcal{B_{pos}}\)</span>：保留用于回归的正候选框；</p>
+<p>最后基于鸟瞰视角的定向NMS，其IoU阈值=0.01，去除重叠的边界框。</p>
+<h2 id="实验数据">实验数据</h2>
+<p><img data-src="https://i.imgur.com/aNhRcqU.png" /></p>
+<h2 id="参考">参考</h2>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1812.04244">PointRCNN: 3D Object Proposal Generation and Detection from Point Cloud</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Henry 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Henry 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/object-detector/" rel="tag"># object detector</a>
+              <a href="/tags/3D/" rel="tag"># 3D</a>
+              <a href="/tags/LiDAR/" rel="tag"># LiDAR</a>
+              <a href="/tags/PointNet/" rel="tag"># PointNet</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/13/3D-ObjectDetector-PointNet++/" rel="prev" title="3D对象检测-PointNet++">
+                  <i class="fa fa-chevron-left"></i> 3D对象检测-PointNet++
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Henry</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.1.1/mermaid.min.js","integrity":"sha256-8L3O8tirFUa8Va4NSTAyIbHJeLd6OnlcxgupV9F77e0="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.1/es5/tex-mml-chtml.js","integrity":"sha256-hlC2uSQYTmPsrzGZTEQEg9PZ1a/+SV6VBCTclohf2og="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" integrity="sha256-4kQf9z5ntdQrzsBC3YSHnEz02Z9C1UeW/E9OgnvlzSY=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2024/08/14/3D-ObjectDetector-PointRCNN/"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"73d0e58d2e911800c81a10b3ee0fb914"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

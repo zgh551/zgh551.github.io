@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/08/30/ESWCixm4uDdRv61.jpg">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/yCQc9YA6UNxbdqH.png">
 <meta property="article:published_time" content="2020-04-15T08:06:11.000Z">
-<meta property="article:modified_time" content="2021-08-30T08:11:50.798Z">
+<meta property="article:modified_time" content="2024-08-14T14:28:33.340Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="路径规划">
 <meta property="article:tag" content="ReedsSheep">
@@ -102,7 +102,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">98</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">24</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">35</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">102</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">37</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -159,7 +159,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B2%E7%BA%BF"><span class="nav-number">2.</span> <span class="nav-text">曲线</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dubins%E6%9B%B2%E7%BA%BF"><span class="nav-number">2.1.</span> <span class="nav-text">Dubins曲线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#reedsheep%E6%9B%B2%E7%BA%BF"><span class="nav-number">2.2.</span> <span class="nav-text">ReedSHeep曲线</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E6%A0%87%E7%AC%A6%E5%8F%B7"><span class="nav-number">2.2.1.</span> <span class="nav-text">下标符号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E7%94%B1%E5%8F%82%E6%95%B0%E6%95%B0%E9%87%8F"><span class="nav-number">2.2.2.</span> <span class="nav-text">自由参数数量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B4%A7%E5%87%91%E8%A1%A8%E7%A4%BA"><span class="nav-number">2.2.3.</span> <span class="nav-text">紧凑表示</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%85%E5%88%86%E9%9B%86%E5%90%88"><span class="nav-number">2.2.4.</span> <span class="nav-text">充分集合</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%81%E8%AE%B8%E8%B7%AF%E5%BE%84"><span class="nav-number">3.</span> <span class="nav-text">允许路径</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E8%A1%8C%E8%B7%AF%E5%BE%84"><span class="nav-number">3.1.</span> <span class="nav-text">可行路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%8D%E7%BD%AE%E5%A7%BF%E6%80%81%E7%BB%9F%E4%B8%80"><span class="nav-number">3.2.</span> <span class="nav-text">位置姿态统一</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">4.</span> <span class="nav-text">类型转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E5%8F%98%E6%8D%A2timeflip"><span class="nav-number">4.1.</span> <span class="nav-text">时间变换(timeflip)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E5%B0%84%E5%8F%98%E6%8D%A2reflect"><span class="nav-number">4.2.</span> <span class="nav-text">反射变换(reflect)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%86%E5%90%91%E5%8F%98%E6%8D%A2backwards"><span class="nav-number">4.3.</span> <span class="nav-text">逆向变换(backwards)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E8%AE%A1%E7%AE%97"><span class="nav-number">5.</span> <span class="nav-text">公式计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">5.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F-l_ts_ul_v"><span class="nav-number">5.2.</span> <span class="nav-text">公式 \(L^+_tS^+_uL^+_v\)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F-l_ts_ur_v"><span class="nav-number">5.3.</span> <span class="nav-text">公式 \(L^+_tS^+_uR^+_v\)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F-l_tr-_ul_v"><span class="nav-number">5.4.</span> <span class="nav-text">公式 \(L^+_tR^-_uL^+_v\)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B2%E7%BA%BF"><span class="nav-number">2.</span> <span class="nav-text">曲线</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dubins%E6%9B%B2%E7%BA%BF"><span class="nav-number">2.1.</span> <span class="nav-text">Dubins曲线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#reedsheep%E6%9B%B2%E7%BA%BF"><span class="nav-number">2.2.</span> <span class="nav-text">ReedSHeep曲线</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E6%A0%87%E7%AC%A6%E5%8F%B7"><span class="nav-number">2.2.1.</span> <span class="nav-text">下标符号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E7%94%B1%E5%8F%82%E6%95%B0%E6%95%B0%E9%87%8F"><span class="nav-number">2.2.2.</span> <span class="nav-text">自由参数数量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B4%A7%E5%87%91%E8%A1%A8%E7%A4%BA"><span class="nav-number">2.2.3.</span> <span class="nav-text">紧凑表示</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%85%E5%88%86%E9%9B%86%E5%90%88"><span class="nav-number">2.2.4.</span> <span class="nav-text">充分集合</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%81%E8%AE%B8%E8%B7%AF%E5%BE%84"><span class="nav-number">3.</span> <span class="nav-text">允许路径</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E8%A1%8C%E8%B7%AF%E5%BE%84"><span class="nav-number">3.1.</span> <span class="nav-text">可行路径</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%8D%E7%BD%AE%E5%A7%BF%E6%80%81%E7%BB%9F%E4%B8%80"><span class="nav-number">3.2.</span> <span class="nav-text">位置姿态统一</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">4.</span> <span class="nav-text">类型转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E5%8F%98%E6%8D%A2timeflip"><span class="nav-number">4.1.</span> <span class="nav-text">时间变换(timeflip)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E5%B0%84%E5%8F%98%E6%8D%A2reflect"><span class="nav-number">4.2.</span> <span class="nav-text">反射变换(reflect)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%86%E5%90%91%E5%8F%98%E6%8D%A2backwards"><span class="nav-number">4.3.</span> <span class="nav-text">逆向变换(backwards)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E8%AE%A1%E7%AE%97"><span class="nav-number">5.</span> <span class="nav-text">公式计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F-l_ts_ul_v"><span class="nav-number">5.1.</span> <span class="nav-text">公式 \(L^+_tS^+_uL^+_v\)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F-l_ts_ur_v"><span class="nav-number">5.2.</span> <span class="nav-text">公式 \(L^+_tS^+_uR^+_v\)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F-l_tr-_ul_v"><span class="nav-number">5.3.</span> <span class="nav-text">公式 \(L^+_tR^-_uL^+_v\)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -174,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">41</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-count">37</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">98</span>
+        <span class="site-state-item-count">102</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -278,7 +278,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2021-08-30 16:11:50" itemprop="dateModified" datetime="2021-08-30T16:11:50+08:00">2021-08-30</time>
+      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -707,7 +707,6 @@ q_g=
 <p>逆向变换将目标点<span class="math inline">\((x,y,\psi)\)</span>转化为<span class="math inline">\(\bigl(x\cos(\psi)+y\sin(\psi),x\sin(\psi)-y\cos(\psi),\psi\bigr)\)</span>。所以可以通过公式<span class="math inline">\(L^+R^-S^-L^-\)</span>到达点<span class="math inline">\(\bigl(x\cos(\psi)+y\sin(\psi),x\sin(\psi)-y\cos(\psi),\psi\bigr)\)</span>，从而获得<span class="math inline">\(L^-S^-R^-L^+\)</span>到达点<span class="math inline">\((x,y,\psi)\)</span>的解。</p>
 <p>通过这个变换可以消除上述列表中一些字段，最终保留9个字段讨论如下。</p>
 <h2 id="公式计算">公式计算</h2>
-<h3 id="概述-1">概述</h3>
 <p>通过上述3种变换，还剩9个公式需要求解。这9个表达式都是从点<span class="math inline">\((0,0,0)\)</span>到点<span class="math inline">\((x,y,\psi)\)</span>，为了更加方便表述，定义如下符号：</p>
 <ul>
 <li>极坐标</li>
@@ -789,7 +788,7 @@ S_t^+(x,y,\psi) &amp;= (x+t\cos(\psi),y + t\sin(\psi),\psi)
 \begin{array}{cl}
 x &amp;=   u\cos{t} + \sin{(t+v)} \\
 y &amp;=   1 + u\sin{t} - \cos{(t + v)} \\
-\psi &amp;=   t + v 
+\psi &amp;=   t + v
 \end{array}
 \]</span></p>
 <p>将$= t + v $带入得</p>
@@ -880,7 +879,7 @@ v &amp;= M(\psi - t)
 \begin{array}{cl}
 x &amp;= u\cos{t} - \sin{(t-v)}+2\sin{t}   \\
 y &amp;= u\sin{t} + \cos{(t - v)}-2\cos{t} +1 \\
-\psi &amp;=    t - v 
+\psi &amp;=    t - v
 \end{array}
 \]</span></p>
 <p>将<span class="math inline">\(\psi = t -v\)</span>带入得</p>
@@ -957,11 +956,11 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
 </tbody>
 </table>
 <h2 id="参考">参考</h2>
-<ul>
+<ol type="1">
 <li><a target="_blank" rel="noopener" href="https://ompl.kavrakilab.org/ReedsSheppStateSpace_8cpp_source.html">参考源码</a></li>
 <li><a target="_blank" rel="noopener" href="http://www.banbeichadexiaojiubei.com/index.php/2020/03/23/%e8%87%aa%e5%8a%a8%e9%a9%be%e9%a9%b6%e8%bf%90%e5%8a%a8%e8%a7%84%e5%88%92-reeds-shepp%e6%9b%b2%e7%ba%bf/">自动驾驶运动规划-Reeds Shepp曲线</a></li>
 <li><a target="_blank" rel="noopener" href="https://projecteuclid.org/download/pdf_1/euclid.pjm/1102645450">算法论文</a></li>
-</ul>
+</ol>
 
     </div>
 

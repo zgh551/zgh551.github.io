@@ -34,7 +34,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/08/30/Q7SMVU8LzrANGlv.jpg">
 <meta property="og:image" content="https://i.loli.net/2021/08/30/qEJyiMoPC2jwhLn.gif">
 <meta property="article:published_time" content="2019-11-22T01:35:45.000Z">
-<meta property="article:modified_time" content="2021-08-30T07:49:06.016Z">
+<meta property="article:modified_time" content="2024-08-14T14:28:33.318Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="特征提取">
 <meta property="article:tag" content="超声波">
@@ -100,7 +100,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">98</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">24</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">35</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">102</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">37</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -172,18 +172,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">41</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-count">37</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">98</span>
+        <span class="site-state-item-count">102</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -276,7 +276,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2021-08-30 15:49:06" itemprop="dateModified" datetime="2021-08-30T15:49:06+08:00">2021-08-30</time>
+      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -411,28 +411,35 @@ A = \sum_{i=0}^{k}\cos^2\theta*x_iy_i - \sin\theta\cos\theta*x_i^2 + \sin\theta\
 \end{array}
 \]</span></p>
 <ul>
-<li><p><strong>B</strong> <span class="math display">\[
+<li><strong>B</strong></li>
+</ul>
+<p><span class="math display">\[
 \begin{array}{l}
 B = \sum_{i=0}^{k}(\cos\theta*x_i + \sin\theta*y_i) \\
 \quad = \cos\theta\sum_{i=0}^{k}x_i + \sin\theta\sum_{i=0}^{k}y_i \tag{16}
 \end{array}
-\]</span></p></li>
-<li><p><strong>C</strong> <span class="math display">\[
+\]</span></p>
+<ul>
+<li><strong>C</strong></li>
+</ul>
+<p><span class="math display">\[
 \begin{array}{l}
 C = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y)(\cos\theta*y_i - \sin\theta*x_i) \\
 \quad =\cos^2\theta*V_x\sum_{i=0}^{k}y_i - \sin\theta\cos\theta*V_x\sum_{i=0}^{k}x_i+\sin\theta\cos\theta*V_y\sum_{i=0}^{k}y_i -\sin^2\theta*V_y\sum_{i=0}^{k}x_i\\
 \quad =(\cos^2\theta - \sin^2\theta)\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} - \sin\theta\cos\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i)\\
 \quad =\cos2\theta\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} - 0.5\sin2\theta(V_x\sum_{i=0}^{k}x_i - V_y\sum_{i=0}^{k}y_i)\tag{17}
 \end{array}
-\]</span></p></li>
-<li><p><strong>D</strong> <span class="math display">\[
+\]</span></p>
+<ul>
+<li><strong>D</strong></li>
+</ul>
+<p><span class="math display">\[
 \begin{array}{l}
 D = \sum_{i=0}^{k}(\cos\theta*V_x + \sin\theta*V_y) \\
 \quad =\cos\theta*V_x\sum_{i=0}^{k} + \sin\theta*V_y\sum_{i=0}^{k} \\
 \quad =\cos\theta\sum_{i=0}^{k}x_i + \sin\theta\sum_{i=0}^{k}y_i \tag{18}
 \end{array}
-\]</span></p></li>
-</ul>
+\]</span></p>
 <p>故等式(13)可以表示为</p>
 <p><span class="math display">\[
 A - B - C + D = 0 \tag{19}
@@ -451,23 +458,29 @@ A - C = 0 \tag{20}
 \]</span></p>
 <p>令</p>
 <ul>
-<li><p><span class="math inline">\(V_{xy}\)</span> <span class="math display">\[
+<li><span class="math inline">\(V_{xy}\)</span></li>
+</ul>
+<p><span class="math display">\[
 \begin{array}{l}
 V_{xy} = \sum_{i=0}^{k}x_iy_i - \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k}\\
 \qquad = \sum_{i=0}^{k}x_iy_i - \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} -\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k} + \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}y_i}{k}\\
 \qquad = \sum_{i=0}^{k}x_iy_i - \sum_{i=0}^{k}x_iV_y - \sum_{i=0}^{k}y_iV_x + \sum_{i=0}^{k}V_xV_y\\
 \qquad = \sum_{i=0}^{k}(x_i - V_x)(y_i - V_y)\tag{23}
 \end{array}
-\]</span></p></li>
-<li><p><span class="math inline">\(V_{xx}\)</span> <span class="math display">\[
+\]</span></p>
+<ul>
+<li><span class="math inline">\(V_{xx}\)</span></li>
+</ul>
+<p><span class="math display">\[
 \begin{array}{l}
 V_{xx} = \sum_{i=0}^{k}x_i^2 - V_x\sum_{i=0}^{k}x_i\\
 \qquad = \sum_{i=0}^{k}x_i^2 - 2\frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}x_i}{k} + \frac{\sum_{i=0}^{k}x_i\sum_{i=0}^{k}x_i}{k}\\
 \qquad =\sum_{i=0}^{k}x_i^2 - 2V_x\sum_{i=0}^{k}x_i + \sum_{i=0}^{k}V_xV_x\\
 \qquad =\sum_{i=0}^{k}(x_i - V_x)^2 \tag{24}
 \end{array}
-\]</span></p></li>
-<li><p><span class="math inline">\(V_{yy}\)</span></p></li>
+\]</span></p>
+<ul>
+<li><span class="math inline">\(V_{yy}\)</span></li>
 </ul>
 <p><span class="math display">\[
 V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \tag{25}

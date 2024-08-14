@@ -94,7 +94,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">98</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">24</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">35</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">102</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">37</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -165,18 +165,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">41</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-count">37</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">98</span>
+        <span class="site-state-item-count">102</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -223,6 +223,618 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/08/14/3D-ObjectDetector-PointRCNN/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/08/14/3D-ObjectDetector-PointRCNN/" class="post-title-link" itemprop="url">3D对象检测-PointRCNN</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-08-14 17:18:16 / 修改时间：23:26:48" itemprop="dateCreated datePublished" datetime="2024-08-14T17:18:16+08:00">2024-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D-object-detector/" itemprop="url" rel="index"><span itemprop="name">3D object detector</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D-object-detector/PointRCNN/" itemprop="url" rel="index"><span itemprop="name">PointRCNN++</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="概述">概述</h2>
+<p>PointRCNN 将目标检测任务分为两个阶段： 第一阶段：借助点云分割为前景点和背景，并以自下而上的方式直接从点云生成少量高质量的目标候选框； 第二阶段：再对候选目标框进行优化调整，细化目标框的边界。</p>
+<figure>
+<img data-src="https://i.imgur.com/vjhaAba.png" alt="网络框图" /><figcaption aria-hidden="true">网络框图</figcaption>
+</figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/08/14/3D-ObjectDetector-PointRCNN/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/08/13/3D-ObjectDetector-PointNet++/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/08/13/3D-ObjectDetector-PointNet++/" class="post-title-link" itemprop="url">3D对象检测-PointNet++</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-13 13:18:16" itemprop="dateCreated datePublished" datetime="2024-08-13T13:18:16+08:00">2024-08-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-14 23:26:41" itemprop="dateModified" datetime="2024-08-14T23:26:41+08:00">2024-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D-object-detector/" itemprop="url" rel="index"><span itemprop="name">3D object detector</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D-object-detector/PointNet/" itemprop="url" rel="index"><span itemprop="name">PointNet++</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <figure>
+<img data-src="https://s2.loli.net/2024/08/14/GICOxSBjTH3MNrf.png" alt="网络框图" /><figcaption aria-hidden="true">网络框图</figcaption>
+</figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/08/13/3D-ObjectDetector-PointNet++/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/08/12/3D-ObjectDetector-PointNet/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/08/12/3D-ObjectDetector-PointNet/" class="post-title-link" itemprop="url">3D对象检测-PointNet</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-12 17:18:16" itemprop="dateCreated datePublished" datetime="2024-08-12T17:18:16+08:00">2024-08-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-14 23:26:32" itemprop="dateModified" datetime="2024-08-14T23:26:32+08:00">2024-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D-object-detector/" itemprop="url" rel="index"><span itemprop="name">3D object detector</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D-object-detector/PointNet/" itemprop="url" rel="index"><span itemprop="name">PointNet</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <figure>
+<img data-src="https://s2.loli.net/2024/08/14/u6cbaUOS5k29lpN.png" alt="斯坦福" /><figcaption aria-hidden="true">斯坦福</figcaption>
+</figure>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/14/PEtF4XDLnedfIry.png" alt="应用领域" /><figcaption aria-hidden="true">应用领域</figcaption>
+</figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/08/12/3D-ObjectDetector-PointNet/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/08/11/3D-ObjectDetector-LiDAR/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/08/11/3D-ObjectDetector-LiDAR/" class="post-title-link" itemprop="url">3D对象检测-基于LiDAR</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-11 14:18:16" itemprop="dateCreated datePublished" datetime="2024-08-11T14:18:16+08:00">2024-08-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-14 23:32:42" itemprop="dateModified" datetime="2024-08-14T23:32:42+08:00">2024-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D-object-detector/" itemprop="url" rel="index"><span itemprop="name">3D object detector</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D-object-detector/%E5%9F%BA%E4%BA%8ELiDAR/" itemprop="url" rel="index"><span itemprop="name">基于LiDAR</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="概述">概述</h2>
+<p>先进的3D对象检测方法提出了各种从稀疏的点云数据中学习辨别特征的方法:</p>
+<ol type="1">
+<li>将点云投影到鸟瞰图，并利用2D CNN学习点云特征以生成3D预测框；</li>
+<li>将点云分组为体素，并使用3D CNN学习体素的特征来生成3D框；</li>
+<li>直接采样点云数据，并使用MLP学习点云特征来生成3D框；</li>
+</ol>
+<p><img data-src="https://i.imgur.com/QYni6kX.jpeg" /></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/08/11/3D-ObjectDetector-LiDAR/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/08/10/3D-ObjectDetector-Express/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/08/10/3D-ObjectDetector-Express/" class="post-title-link" itemprop="url">3D对象检测-表示方法</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-10 16:28:16" itemprop="dateCreated datePublished" datetime="2024-08-10T16:28:16+08:00">2024-08-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-14 23:26:10" itemprop="dateModified" datetime="2024-08-14T23:26:10+08:00">2024-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D-object-detector/" itemprop="url" rel="index"><span itemprop="name">3D object detector</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3D-object-detector/%E5%AF%B9%E8%B1%A1%E8%A1%A8%E7%A4%BA/" itemprop="url" rel="index"><span itemprop="name">对象表示</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="概述">概述</h2>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/12/Unj3fezCXNtkRyG.png" alt="表示方法" /><figcaption aria-hidden="true">表示方法</figcaption>
+</figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/08/10/3D-ObjectDetector-Express/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/08/09/3D-ObjectDetector/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/08/09/3D-ObjectDetector/" class="post-title-link" itemprop="url">3D对象检测-概述</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-09 14:48:16" itemprop="dateCreated datePublished" datetime="2024-08-09T14:48:16+08:00">2024-08-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-14 23:31:00" itemprop="dateModified" datetime="2024-08-14T23:31:00+08:00">2024-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/object-detector/" itemprop="url" rel="index"><span itemprop="name">object detector</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/object-detector/%E6%A6%82%E8%BF%B0/" itemprop="url" rel="index"><span itemprop="name">概述</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="概述">概述</h2>
+<p>在自动驾驶领域，感知系统是必不可少的模块，通常使用多模态数据(激光雷达的点云、摄像头的图片、高清地图等)作为输入，预测道路上关键元素的几何形状和语义信息，为目标跟踪、轨迹预测和路径规划模块提供可靠的观察结果。 为了全面了解行驶环境，涉及许多视觉任务，包括：对象检测、跟踪、车道线检测、语义分割和实例分割。其中，3D对象检测是自动驾驶感知系统最不可或缺的任务。 3D对象检测的目标：</p>
+<ol type="1">
+<li>位置：(x, y, z)</li>
+<li>大小：(l, w , h)</li>
+<li>朝向： (<span class="math inline">\(\theta\)</span>)</li>
+<li>类别： (轿车、自行车、行人...)</li>
+</ol>
+<p>相对于2D对象检测，其只在图像上生成边界框，而忽略物体与当前车辆的实际距离信息。3D对象检测重点关注于现实世界3维坐标系中的对象位置和识别。通过3D对象检测预测的几何信息可以直接测量当前车辆于关键对象之间的距离。</p>
+<p><img data-src="https://i.imgur.com/vPtnare.jpeg" /></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/08/09/3D-ObjectDetector/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -330,7 +942,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2023/01/02/Home-Assistant%E5%85%A5%E9%97%A8%E9%85%8D%E7%BD%AE/">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2023/01/02/Home-Assistant-configure/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -348,7 +960,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2023/01/02/Home-Assistant%E5%85%A5%E9%97%A8%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">Home Assistant入门配置</a>
+          <a href="/2023/01/02/Home-Assistant-configure/" class="post-title-link" itemprop="url">Home Assistant入门配置</a>
         </h2>
 
         <div class="post-meta-container">
@@ -366,7 +978,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-11 10:55:14" itemprop="dateModified" datetime="2024-08-11T10:55:14+08:00">2024-08-11</time>
+      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -375,6 +987,10 @@
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
           <a href="/categories/Home-Assistant/" itemprop="url" rel="index"><span itemprop="name">Home Assistant</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Home-Assistant/configure/" itemprop="url" rel="index"><span itemprop="name">configure</span></a>
         </span>
     </span>
 
@@ -395,7 +1011,7 @@
 </figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2023/01/02/Home-Assistant%E5%85%A5%E9%97%A8%E9%85%8D%E7%BD%AE/#more" rel="contents">
+              <a class="btn" href="/2023/01/02/Home-Assistant-configure/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -464,7 +1080,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2023-01-02 11:06:02" itemprop="dateModified" datetime="2023-01-02T11:06:02+08:00">2023-01-02</time>
+      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -486,7 +1102,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="概述">概述</h1>
+          <h2 id="概述">概述</h2>
 <p>本文讲述了树莓派系统的安装过程，并描述系统环境的配置，让其可以满足基本开发需求。</p>
 <figure>
 <img data-src="https://s3.bmp.ovh/imgs/2023/01/01/48c15813d627dec0.jpg" alt="高达模型" /><figcaption aria-hidden="true">高达模型</figcaption>
@@ -526,7 +1142,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2022/12/26/Home-Assistant-Supervised-%E5%AE%89%E8%A3%85/">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2022/12/26/Home-Assistant-Supervised-install/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -544,7 +1160,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/12/26/Home-Assistant-Supervised-%E5%AE%89%E8%A3%85/" class="post-title-link" itemprop="url">Home Assistant(Supervisor)安装</a>
+          <a href="/2022/12/26/Home-Assistant-Supervised-install/" class="post-title-link" itemprop="url">Home Assistant(Supervisor)安装</a>
         </h2>
 
         <div class="post-meta-container">
@@ -562,7 +1178,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-11 10:53:59" itemprop="dateModified" datetime="2024-08-11T10:53:59+08:00">2024-08-11</time>
+      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -572,6 +1188,10 @@
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
           <a href="/categories/Home-Assistant/" itemprop="url" rel="index"><span itemprop="name">Home Assistant</span></a>
         </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Home-Assistant/install/" itemprop="url" rel="index"><span itemprop="name">install</span></a>
+        </span>
     </span>
 
   
@@ -584,618 +1204,14 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="概述">概述</h1>
+          <h2 id="概述">概述</h2>
 <p>本文讲述 <strong>Home Assistant Supervisor</strong> 的安装步骤，虽然官方有详细的安装指导，但是由于软件源大都在国外，某些步骤可能需要科学上网才能解决。本文实际部署的硬件平台是 <strong>Raspberry Pi 3 Model</strong>，请参考 <a href="https://zgh551.github.io/2022/12/26/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85/">树莓派系统安装</a> 做好硬件和软件环境的准备。</p>
 <figure>
 <img data-src="https://s3.bmp.ovh/imgs/2023/01/01/eca88d886cc33e9a.jpg" alt="上海天文馆" /><figcaption aria-hidden="true">上海天文馆</figcaption>
 </figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/12/26/Home-Assistant-Supervised-%E5%AE%89%E8%A3%85/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      
-
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2021/10/08/TVM-ExportLibrary/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Henry">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Henry-Z">
-      <meta itemprop="description" content="Opportunity knocks but once">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Henry-Z">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/10/08/TVM-ExportLibrary/" class="post-title-link" itemprop="url">TVM export_lib函数分析</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-10-08 09:13:46" itemprop="dateCreated datePublished" datetime="2021-10-08T09:13:46+08:00">2021-10-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-11 10:54:33" itemprop="dateModified" datetime="2024-08-11T10:54:33+08:00">2024-08-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/TVM/" itemprop="url" rel="index"><span itemprop="name">TVM</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/TVM/Runtime/" itemprop="url" rel="index"><span itemprop="name">Runtime</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="概述">1. 概述</h1>
-<p>本文分析<strong>executor_lib</strong>函数的处理过程，其中包括<strong>DSO</strong>模块的编译和<strong>imported modules</strong>模块的序列化。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/10/10/3h8wfXOej514JLH.jpg" alt="条子泥" /><figcaption aria-hidden="true">条子泥</figcaption>
-</figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/10/08/TVM-ExportLibrary/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      
-
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2021/09/29/TVM-LoadFromFile/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Henry">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Henry-Z">
-      <meta itemprop="description" content="Opportunity knocks but once">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Henry-Z">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/09/29/TVM-LoadFromFile/" class="post-title-link" itemprop="url">TVM LoadFromFile函数分析</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-09-29 20:02:06" itemprop="dateCreated datePublished" datetime="2021-09-29T20:02:06+08:00">2021-09-29</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-12-31 17:19:32" itemprop="dateModified" datetime="2022-12-31T17:19:32+08:00">2022-12-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/TVM/" itemprop="url" rel="index"><span itemprop="name">TVM</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/TVM/Runtime/" itemprop="url" rel="index"><span itemprop="name">Runtime</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="概述">1. 概述</h1>
-<p>本文主要分析动态库(.so)文件的加载过程，其中包括模块的<strong>反序列化</strong>和<strong>GraphExecuter</strong> 的创建流程。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/10/07/pxhqTXVPRGmSMv5.jpg" alt="东台条子泥" /><figcaption aria-hidden="true">东台条子泥</figcaption>
-</figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/09/29/TVM-LoadFromFile/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      
-
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2021/03/17/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96_NEON%E5%90%8E%E5%A4%84%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Henry">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Henry-Z">
-      <meta itemprop="description" content="Opportunity knocks but once">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Henry-Z">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/17/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96_NEON%E5%90%8E%E5%A4%84%E7%90%86/" class="post-title-link" itemprop="url">算法优化-1bit转8bit-NEON处理</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-03-17 10:37:21" itemprop="dateCreated datePublished" datetime="2021-03-17T10:37:21+08:00">2021-03-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2021-08-30 16:15:43" itemprop="dateModified" datetime="2021-08-30T16:15:43+08:00">2021-08-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">算法优化</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96/NEON/" itemprop="url" rel="index"><span itemprop="name">NEON</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="概述">1. 概述</h2>
-<p>使用IVE可以加速sobel滤波器和canny滤波器，但是IVE生成的滤波器结果格式不满足实际需求。为此，需要通过软件方式将IVE的输出结果转化成需要的形式，可以使用c语言、NEON Intrinscis和NEON汇编等方式去实现。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/luRx6nbg58KvOp2.jpg" alt="大连" /><figcaption aria-hidden="true">大连</figcaption>
-</figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/03/17/%E7%AE%97%E6%B3%95%E4%BC%98%E5%8C%96_NEON%E5%90%8E%E5%A4%84%E7%90%86/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      
-
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/11/04/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B-apollo/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Henry">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Henry-Z">
-      <meta itemprop="description" content="Opportunity knocks but once">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Henry-Z">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/11/04/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B-apollo/" class="post-title-link" itemprop="url">碰撞检测-apollo</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-11-04 14:27:53" itemprop="dateCreated datePublished" datetime="2020-11-04T14:27:53+08:00">2020-11-04</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2021-08-30 16:16:31" itemprop="dateModified" datetime="2021-08-30T16:16:31+08:00">2021-08-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">碰撞检测算法</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="概述">概述</h2>
-<p>本文主要分析<strong>aplollo</strong>代码中关于障碍物碰撞检测相关算法，该算法通过将车辆抽象成二维矩形盒(Box)，建立点与矩形盒、线段与矩形盒、矩形盒与矩形盒的碰撞检测算法。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/WiSODpuQYsy4KkC.jpg" alt="大连" /><figcaption aria-hidden="true">大连</figcaption>
-</figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/11/04/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B-apollo/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      
-
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/09/17/%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88-%E8%B7%AF%E9%9D%A2%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Henry">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Henry-Z">
-      <meta itemprop="description" content="Opportunity knocks but once">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Henry-Z">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/09/17/%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88-%E8%B7%AF%E9%9D%A2%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97/" class="post-title-link" itemprop="url">传感器融合-路面坡度计算</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-09-17 17:58:19" itemprop="dateCreated datePublished" datetime="2020-09-17T17:58:19+08:00">2020-09-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2021-08-30 16:13:15" itemprop="dateModified" datetime="2021-08-30T16:13:15+08:00">2021-08-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">传感器融合算法</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="概述">概述</h2>
-<p>本文主要介绍一种计算车辆坡度角的方法，利用有限的两轴加速度传感器并结合车辆动力学特性，实时估算车辆的坡度角。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/wI6rcvWo2CzU9Fe.jpg" alt="青岛" /><figcaption aria-hidden="true">青岛</figcaption>
-</figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/09/17/%E4%BC%A0%E6%84%9F%E5%99%A8%E8%9E%8D%E5%90%88-%E8%B7%AF%E9%9D%A2%E5%9D%A1%E5%BA%A6%E8%AE%A1%E7%AE%97/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      
-
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/04/15/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92-ReedsShepp%E6%9B%B2%E7%BA%BF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Henry">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Henry-Z">
-      <meta itemprop="description" content="Opportunity knocks but once">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Henry-Z">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/04/15/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92-ReedsShepp%E6%9B%B2%E7%BA%BF/" class="post-title-link" itemprop="url">路径规划-ReedsShepp曲线</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2020-04-15 16:06:11" itemprop="dateCreated datePublished" datetime="2020-04-15T16:06:11+08:00">2020-04-15</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2021-08-30 16:11:50" itemprop="dateModified" datetime="2021-08-30T16:11:50+08:00">2021-08-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92/" itemprop="url" rel="index"><span itemprop="name">路径规划</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92/%E5%87%A0%E4%BD%95%E8%B7%AF%E5%BE%84/" itemprop="url" rel="index"><span itemprop="name">几何路径</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="概述">概述</h2>
-<p><strong>ReedsShepp</strong>算法简称<strong>RS</strong>，由 <strong>J.AReeds</strong>和<strong>L.A.Sheep</strong>于1990年发表的论文<a target="_blank" rel="noopener" href="https://projecteuclid.org/download/pdf_1/euclid.pjm/1102645450">(optimal path for a car that goes both forward and backwards)</a>。该方法基于<strong>Dubins</strong>算法进行改进，将反向运动加入到规划中，这就使得在某些情况下可以得出比<strong>Dubins</strong>曲线更优的解。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/ESWCixm4uDdRv61.jpg" alt="青岛" /><figcaption aria-hidden="true">青岛</figcaption>
-</figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/04/15/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92-ReedsShepp%E6%9B%B2%E7%BA%BF/#more" rel="contents">
+              <a class="btn" href="/2022/12/26/Home-Assistant-Supervised-install/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1221,7 +1237,7 @@
 
 
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 </div>

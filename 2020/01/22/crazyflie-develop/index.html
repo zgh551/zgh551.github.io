@@ -27,7 +27,7 @@
     <meta name="description" content="概述 嵌入式软件开发主要包括编译(build)、调试(debug)和烧录(flash)三个步骤。本文结合crazefie项目，说明开发流程。  上海科技馆-静物">
 <meta property="og:type" content="article">
 <meta property="og:title" content="crazyflie-开发说明">
-<meta property="og:url" content="https://zgh551.github.io/2020/01/22/crazyflie-%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E/index.html">
+<meta property="og:url" content="https://zgh551.github.io/2020/01/22/crazyflie-develop/index.html">
 <meta property="og:site_name" content="Henry-Z">
 <meta property="og:description" content="概述 嵌入式软件开发主要包括编译(build)、调试(debug)和烧录(flash)三个步骤。本文结合crazefie项目，说明开发流程。  上海科技馆-静物">
 <meta property="og:locale" content="zh_CN">
@@ -36,7 +36,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/08/30/BxSWetJvMy7R1uG.png">
 <meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE2NTYzMC5naWY">
 <meta property="article:published_time" content="2020-01-22T03:10:47.000Z">
-<meta property="article:modified_time" content="2021-08-30T08:00:30.750Z">
+<meta property="article:modified_time" content="2024-08-14T14:28:33.306Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="crazyflie">
 <meta property="article:tag" content="开发说明">
@@ -44,11 +44,11 @@
 <meta name="twitter:image" content="https://i.loli.net/2021/08/30/hpJQSXx9corO15W.jpg">
 
 
-<link rel="canonical" href="https://zgh551.github.io/2020/01/22/crazyflie-%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E/">
+<link rel="canonical" href="https://zgh551.github.io/2020/01/22/crazyflie-develop/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2020/01/22/crazyflie-%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E/","path":"2020/01/22/crazyflie-开发说明/","title":"crazyflie-开发说明"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2020/01/22/crazyflie-develop/","path":"2020/01/22/crazyflie-develop/","title":"crazyflie-开发说明"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>crazyflie-开发说明 | Henry-Z</title>
@@ -102,7 +102,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">98</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">24</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">35</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">102</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">37</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -159,7 +159,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E6%BA%90%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">准备源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">3.</span> <span class="nav-text">环境搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F"><span class="nav-number">3.1.</span> <span class="nav-text">虚拟机镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">3.1.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#virtualbox"><span class="nav-number">3.1.2.</span> <span class="nav-text">VirtualBox</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BDbitcraze%E9%95%9C%E5%83%8F"><span class="nav-number">3.1.3.</span> <span class="nav-text">下载bitcraze镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%BC%E5%85%A5%E9%95%9C%E5%83%8F"><span class="nav-number">3.1.4.</span> <span class="nav-text">导入镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E9%95%9C%E5%83%8F"><span class="nav-number">3.1.5.</span> <span class="nav-text">启动镜像</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker%E9%95%9C%E5%83%8F%E6%96%B9%E5%BC%8F"><span class="nav-number">3.2.</span> <span class="nav-text">Docker镜像方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85docker"><span class="nav-number">3.2.1.</span> <span class="nav-text">安装Docker</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BDdocker%E9%95%9C%E5%83%8F"><span class="nav-number">3.2.2.</span> <span class="nav-text">下载Docker镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9B%E5%85%A5%E4%BA%A4%E4%BA%92%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.2.3.</span> <span class="nav-text">进入交互模式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E5%B7%A5%E5%85%B7%E9%93%BE%E9%85%8D%E7%BD%AE"><span class="nav-number">3.3.</span> <span class="nav-text">本地工具链配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">4.</span> <span class="nav-text">编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95"><span class="nav-number">5.</span> <span class="nav-text">调试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ubuntu"><span class="nav-number">5.1.</span> <span class="nav-text">Ubuntu</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="nav-number">5.1.1.</span> <span class="nav-text">安装依赖</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD"><span class="nav-number">6.</span> <span class="nav-text">下载</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E6%BA%90%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">准备源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="nav-number">3.</span> <span class="nav-text">环境搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%95%9C%E5%83%8F"><span class="nav-number">3.1.</span> <span class="nav-text">虚拟机镜像</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#virtualbox"><span class="nav-number">3.1.1.</span> <span class="nav-text">VirtualBox</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BDbitcraze%E9%95%9C%E5%83%8F"><span class="nav-number">3.1.2.</span> <span class="nav-text">下载bitcraze镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%BC%E5%85%A5%E9%95%9C%E5%83%8F"><span class="nav-number">3.1.3.</span> <span class="nav-text">导入镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E9%95%9C%E5%83%8F"><span class="nav-number">3.1.4.</span> <span class="nav-text">启动镜像</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker%E9%95%9C%E5%83%8F%E6%96%B9%E5%BC%8F"><span class="nav-number">3.2.</span> <span class="nav-text">Docker镜像方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85docker"><span class="nav-number">3.2.1.</span> <span class="nav-text">安装Docker</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BDdocker%E9%95%9C%E5%83%8F"><span class="nav-number">3.2.2.</span> <span class="nav-text">下载Docker镜像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9B%E5%85%A5%E4%BA%A4%E4%BA%92%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.2.3.</span> <span class="nav-text">进入交互模式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E5%B7%A5%E5%85%B7%E9%93%BE%E9%85%8D%E7%BD%AE"><span class="nav-number">3.3.</span> <span class="nav-text">本地工具链配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91"><span class="nav-number">4.</span> <span class="nav-text">编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95"><span class="nav-number">5.</span> <span class="nav-text">调试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ubuntu"><span class="nav-number">5.1.</span> <span class="nav-text">Ubuntu</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96"><span class="nav-number">5.1.1.</span> <span class="nav-text">安装依赖</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD"><span class="nav-number">6.</span> <span class="nav-text">下载</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -174,18 +174,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-count">41</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-count">37</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">98</span>
+        <span class="site-state-item-count">102</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -242,7 +242,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/01/22/crazyflie-%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E/">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/01/22/crazyflie-develop/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -278,7 +278,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2021-08-30 16:00:30" itemprop="dateModified" datetime="2021-08-30T16:00:30+08:00">2021-08-30</time>
+      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -287,6 +287,10 @@
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
           <a href="/categories/crazyflie/" itemprop="url" rel="index"><span itemprop="name">crazyflie</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/crazyflie/%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E/" itemprop="url" rel="index"><span itemprop="name">开发说明</span></a>
         </span>
     </span>
 
@@ -318,11 +322,13 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> --recursive https://github.com/bitcraze/crazyflie-firmware.git</span><br></pre></td></tr></table></figure>
 <p>如果已经克隆了仓库，但是没有添加<code>--recursive</code>选项，需要手动添加子模块</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> crazyflie-firmware</span><br><span class="line">git submodule init</span><br><span class="line">git submodule update</span><br></pre></td></tr></table></figure>
-<p>具体更新哪些子项目模块可以查看<code>.gitmodules</code>文件。 &gt; 注意： &gt; - 问题：如果编译时出现如下错误：<code>make[1]: *** No rule to make target 'libdw1000.o', needed by 'cf2.elf'.  Stop. &gt; Makefile:350: recipe for target 'build' failed</code> &gt; - 解决办法：上述错误原因是因为缺少<code>libdw1000</code>文件，输入<code>git submodule deinit</code>，并删除<code>libdw1000</code>目录里面的<code>.git</code>文件，重新拉取该项目源码。</p>
+<p>具体更新哪些子项目模块可以查看<code>.gitmodules</code>文件。</p>
+<blockquote>
+<p>注意： - 问题：如果编译时出现如下错误：<code>make[1]: *** No rule to make target 'libdw1000.o', needed by 'cf2.elf'.  Stop. Makefile:350: recipe for target 'build' failed</code> - 解决办法：上述错误原因是因为缺少<code>libdw1000</code>文件，输入<code>git submodule deinit</code>，并删除<code>libdw1000</code>目录里面的<code>.git</code>文件，重新拉取该项目源码。</p>
+</blockquote>
 <h2 id="环境搭建">环境搭建</h2>
 <p>官方提供三种环境搭建方式，分别使用虚拟机镜像<a target="_blank" rel="noopener" href="https://github.com/bitcraze/bitcraze-vm">Crazyflie VM</a>、Docker镜像<a target="_blank" rel="noopener" href="https://github.com/bitcraze/toolbelt">toolbelt</a>和本机安装相应的ARM工具链来搭建开发环境。</p>
 <h3 id="虚拟机镜像">虚拟机镜像</h3>
-<h4 id="概述-1">概述</h4>
 <p>本文采用 VirtualBox 虚拟机软件，该软件属于自由软件，方便安装。</p>
 <h4 id="virtualbox">VirtualBox</h4>
 <ul>
@@ -359,7 +365,9 @@
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull bitcraze/builder</span><br></pre></td></tr></table></figure>
 <p>下载过程如下所示，由于文件较大可能需要一段时间。</p>
-<p><img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE2NTYzMC5naWY" /></p>
+<figure>
+<img data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL3pnaDU1MS9GaWd1cmVCZWQvbWFzdGVyL2ltZy8yMDIwMDExNzE2NTYzMC5naWY" alt="镜像拉取" /><figcaption aria-hidden="true">镜像拉取</figcaption>
+</figure>
 <h4 id="进入交互模式">进入交互模式</h4>
 <ul>
 <li>查看镜像是否下载成功</li>
@@ -501,13 +509,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2020/01/22/crazyflie-%E7%9B%AE%E5%BD%95%E5%88%86%E6%9E%90/" rel="prev" title="crazyflie-目录分析">
+                <a href="/2020/01/22/crazyflie-directory/" rel="prev" title="crazyflie-目录分析">
                   <i class="fa fa-chevron-left"></i> crazyflie-目录分析
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2020/01/29/crazyflie-CRTP%E8%A7%A3%E6%9E%90/" rel="next" title="crazyflie-CRTP解析">
-                  crazyflie-CRTP解析 <i class="fa fa-chevron-right"></i>
+                <a href="/2020/01/29/crazyflie-CRTP/" rel="next" title="crazyflie-CRTP协议">
+                  crazyflie-CRTP协议 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -592,11 +600,11 @@
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" integrity="sha256-4kQf9z5ntdQrzsBC3YSHnEz02Z9C1UeW/E9OgnvlzSY=" crossorigin="anonymous"></script>
-  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2020/01/22/crazyflie-%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E/"}</script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2020/01/22/crazyflie-develop/"}</script>
   <script src="/js/third-party/quicklink.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
 
-<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"db7825252fa468e062bd49512e7abed7"}</script>
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"2c3e0bd83dd78860668ffaea11f71f45"}</script>
 <script src="/js/third-party/comments/gitalk.js"></script>
 
 </body>
