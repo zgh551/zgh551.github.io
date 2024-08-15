@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="1AYoSrGqW5qB6rPYnoXq_tIpkaudIK3MXrpUhL_69NI">
+  <meta name="msvalidate.01" content="DF49D5E49BAD0CB8947DDD3824A370B1">
+  <meta name="baidu-site-verification" content="code-EEmJnUEq0A">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="概述 毫米波(mmWave)是一类使用短波长 电磁波的特殊雷达技术。雷达系统发射的电磁波信号被其发射路径上的物体阻挡继而会发生反射。通过捕捉反射信号，雷达系统可以确定物体的距离、速度和角度。 毫米波雷达可发射波长为毫米量级的信号，在电磁频谱中，这种波长被视为短波长，这也是该技术的优势之一，即处理毫米波所需的系统组件(如 天线)尺寸可以做得很小；短波长的另一个优势是高准确度，工作频率为 76~8">
+<meta property="og:type" content="article">
+<meta property="og:title" content="感知-毫米波介绍">
+<meta property="og:url" content="https://zgh551.github.io/2024/08/11/PerceptionMillimeterWaveRadar/index.html">
+<meta property="og:site_name" content="Henry-Z">
+<meta property="og:description" content="概述 毫米波(mmWave)是一类使用短波长 电磁波的特殊雷达技术。雷达系统发射的电磁波信号被其发射路径上的物体阻挡继而会发生反射。通过捕捉反射信号，雷达系统可以确定物体的距离、速度和角度。 毫米波雷达可发射波长为毫米量级的信号，在电磁频谱中，这种波长被视为短波长，这也是该技术的优势之一，即处理毫米波所需的系统组件(如 天线)尺寸可以做得很小；短波长的另一个优势是高准确度，工作频率为 76~8">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.imgur.com/leBJOBt.jpeg">
+<meta property="og:image" content="https://i.imgur.com/NIfN6xU.png">
+<meta property="og:image" content="https://i.imgur.com/hBpBwNo.png">
+<meta property="og:image" content="https://i.imgur.com/neqRgKg.png">
+<meta property="og:image" content="https://i.imgur.com/aysTMZR.png">
+<meta property="og:image" content="https://i.imgur.com/g8bqCZ1.png">
+<meta property="og:image" content="https://i.imgur.com/uLZ5mEJ.png">
+<meta property="og:image" content="https://i.imgur.com/MDH6x2l.png">
+<meta property="og:image" content="https://i.imgur.com/18Ly6Mk.png">
+<meta property="og:image" content="https://i.imgur.com/kKCU5ny.png">
+<meta property="og:image" content="https://i.imgur.com/VZJBBXI.png">
+<meta property="og:image" content="https://i.imgur.com/dabZ5Q8.png">
+<meta property="og:image" content="https://i.imgur.com/2OeIDlr.png">
+<meta property="og:image" content="https://i.imgur.com/nn6SvoL.png">
+<meta property="og:image" content="https://i.imgur.com/DCkSbzg.png">
+<meta property="og:image" content="https://i.imgur.com/YQd1qZB.png">
+<meta property="og:image" content="https://i.imgur.com/EBX8dDj.png">
+<meta property="og:image" content="https://i.imgur.com/dylOKL8.png">
+<meta property="og:image" content="https://i.imgur.com/R3RziuG.png">
+<meta property="og:image" content="https://i.imgur.com/KiSSOwS.png">
+<meta property="og:image" content="https://i.imgur.com/Qf5dgUC.png">
+<meta property="og:image" content="https://i.imgur.com/pkWIbtZ.png">
+<meta property="og:image" content="https://i.imgur.com/JvEornm.png">
+<meta property="og:image" content="https://i.imgur.com/T3dWSHV.png">
+<meta property="article:published_time" content="2024-08-11T04:17:58.000Z">
+<meta property="article:modified_time" content="2024-08-15T15:08:51.285Z">
+<meta property="article:author" content="Henry">
+<meta property="article:tag" content="perception">
+<meta property="article:tag" content="millimeter-wave radar">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/leBJOBt.jpeg">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2024/08/11/PerceptionMillimeterWaveRadar/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/08/11/PerceptionMillimeterWaveRadar/","path":"2024/08/11/PerceptionMillimeterWaveRadar/","title":"感知-毫米波介绍"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>感知-毫米波介绍 | Henry-Z</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ML9CRPRYFK"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ML9CRPRYFK","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?c8e65d830c8cd51e920dc7e7c0be8744"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Henry-Z</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">107</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">44</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">48</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%B7%E8%BE%BE%E4%BF%A1%E5%8F%B7"><span class="nav-number">2.</span> <span class="nav-text">雷达信号</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%B7%E8%BE%BE%E5%B0%84%E9%A2%91%E7%BB%84%E4%BB%B6"><span class="nav-number">2.1.</span> <span class="nav-text">雷达射频组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B7%E9%A2%91%E5%99%A8"><span class="nav-number">2.2.</span> <span class="nav-text">混频器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%B7%9D%E5%8E%9F%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">测距原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E7%9B%AE%E6%A0%87%E6%B5%8B%E8%B7%9D"><span class="nav-number">3.1.</span> <span class="nav-text">单目标测距</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E9%80%9F%E5%8E%9F%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">测速原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9F%E5%BA%A6%E4%BC%B0%E7%AE%97%E5%8E%9F%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">速度估算原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B8%E4%BD%8D%E5%8F%98%E5%8C%96"><span class="nav-number">4.1.1.</span> <span class="nav-text">相位变化</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%92%E5%BA%A6%E6%A3%80%E6%B5%8B%E5%8E%9F%E7%90%86"><span class="nav-number">5.</span> <span class="nav-text">角度检测原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%92%E5%BA%A6%E4%BC%B0%E7%AE%97%E5%8E%9F%E7%90%86"><span class="nav-number">5.1.</span> <span class="nav-text">角度估算原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A2%E5%BD%A2%E5%BE%80%E8%BF%94"><span class="nav-number">5.1.1.</span> <span class="nav-text">波形往返</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A2%E5%BD%A2%E5%8D%95%E7%A8%8B"><span class="nav-number">5.1.2.</span> <span class="nav-text">波形单程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%B0%E8%BE%BE%E8%A7%92%E4%BC%B0%E7%AE%97"><span class="nav-number">5.1.3.</span> <span class="nav-text">到达角估算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%B0%E7%AE%97%E5%87%86%E7%A1%AE%E5%BA%A6"><span class="nav-number">5.1.4.</span> <span class="nav-text">估算准确度</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E8%B7%9D%E5%90%8C%E9%80%9F%E8%A7%92%E5%BA%A6%E4%BC%B0%E7%AE%97"><span class="nav-number">5.2.</span> <span class="nav-text">同距同速角度估算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E8%A7%92%E8%A7%86%E5%9C%BA"><span class="nav-number">5.3.</span> <span class="nav-text">最大角视场</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%92%E5%BA%A6%E5%88%86%E8%BE%A8%E7%8E%87"><span class="nav-number">5.4.</span> <span class="nav-text">角度分辨率</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Henry"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Henry</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">107</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:henryzhu551@gmail.com" title="E-Mail → mailto:henryzhu551@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fa-solid fa-c fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fab fa-linkedin fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/zgh551" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/08/11/PerceptionMillimeterWaveRadar/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="感知-毫米波介绍 | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          感知-毫米波介绍
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-11 12:17:58" itemprop="dateCreated datePublished" datetime="2024-08-11T12:17:58+08:00">2024-08-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-15 23:08:51" itemprop="dateModified" datetime="2024-08-15T23:08:51+08:00">2024-08-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/perception/" itemprop="url" rel="index"><span itemprop="name">perception</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/perception/millimeter-wave-radar/" itemprop="url" rel="index"><span itemprop="name">millimeter-wave radar</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">概述</h2>
+<p>毫米波(mmWave)是一类使用短波长 电磁波的特殊雷达技术。雷达系统发射的电磁波信号被其发射路径上的物体阻挡继而会发生反射。通过捕捉反射信号，雷达系统可以确定物体的距离、速度和角度。</p>
+<p>毫米波雷达可发射波长为毫米量级的信号，在电磁频谱中，这种波长被视为短波长，这也是该技术的优势之一，即处理毫米波所需的系统组件(如 天线)尺寸可以做得很小；短波长的另一个优势是高准确度，工作频率为 76~81 GHz(对应波长约为 4mm)的毫米波系统将能够检测到小至零点几毫米的移动。</p>
+<p>其中，TI公司的器件实现了一种称为 调频连续波(FMCW)的特殊毫米波技术。顾名思义，FMCW 雷达连续发射调频信号，以测量距离、速度和角度。这与周期性发射短脉冲的传统脉冲雷达系统不同。</p>
+<figure>
+<img data-src="https://i.imgur.com/leBJOBt.jpeg" alt="植物" /><figcaption aria-hidden="true">植物</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="雷达信号">雷达信号</h2>
+<p>FMCW雷达系统所用的信号的频率随时间变化呈现线性升高，这种类型的信号也称为 <code>线性调频脉冲</code> 。</p>
+<figure>
+<img data-src="https://i.imgur.com/NIfN6xU.png" alt="线性调频脉冲信号 - 幅度与时间的关系" /><figcaption aria-hidden="true">线性调频脉冲信号 - 幅度与时间的关系</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/hBpBwNo.png" alt="线性调频脉冲信号 - 频率与时间的关系" /><figcaption aria-hidden="true">线性调频脉冲信号 - 频率与时间的关系</figcaption>
+</figure>
+<p>该线性调频脉冲具有起始频率 <span class="math inline">\(f_c\)</span>，带宽 <span class="math inline">\(B\)</span>，持续时间 <span class="math inline">\(T_c\)</span>，斜率<span class="math inline">\(S\)</span>捕捉频率的变化率； <span class="math display">\[f_c = 77 GHz; B=4 GHz ; T_c=40 us; S=100 Mhz/us\]</span></p>
+<h3 id="雷达射频组件">雷达射频组件</h3>
+<figure>
+<img data-src="https://i.imgur.com/neqRgKg.png" alt="FMCW雷达框图" /><figcaption aria-hidden="true">FMCW雷达框图</figcaption>
+</figure>
+<ul>
+<li>合成器：生成一个线性调频脉冲；</li>
+<li>发射天线：该线性调频脉冲由发射天线（TX天线）发射；</li>
+<li>接收天线：接收物体反射的线性调频脉冲信号；</li>
+<li>混频器： 将TX和RX信号合并到一起，生成一个中频 （IF）信号；</li>
+</ul>
+<h3 id="混频器">混频器</h3>
+<p>混频器是一个电子组件，将两个信号合并到一起生成一个具有新频率的信号。 对于两个正弦输入 <span class="math display">\[x_{1}\]</span> 和 <span class="math display">\[x_{2}\]</span>： <span class="math display">\[\begin{equation}
+x_1= sin(w_1*t+ {\phi}_1)
+\end{equation}\]</span> <span class="math display">\[\begin{equation}
+x_2= sin(w_2*t+ {\phi}_2)
+\end{equation}\]</span> 瞬时输出如下： <span class="math display">\[\begin{equation}
+x_{out} = sin[(w_1-w_2)*t + (\phi_{1} - \phi_{2})]
+\end{equation}\]</span></p>
+<h2 id="测距原理">测距原理</h2>
+<h3 id="单目标测距">单目标测距</h3>
+<p>如下图所示，雷达通过TX天线发射的线性调节脉冲信号，经过时间 <span class="math inline">\(t\)</span> 之后，接收天线RX收到目标反射回来的信号，两个信号的频率差为 <span class="math inline">\(S_{\tau}\)</span>： <img data-src="https://i.imgur.com/aysTMZR.png" alt="单目标" /> 由公式(6)可知，混频器的输出信号频率是TX和RX信号频率之差，从上图可知，两条线之间的距离是固定的，故中频信号 (IF信号) 包含一个频率恒定的单音信号。图中显示IF信号的频率为<span class="math inline">\(S_{\tau}\)</span> ，且仅在TX和RX线性调频脉冲重叠的时段有效(图中垂直虚线之间的时间段)。故混频器的输出信号(IF信号)作为时间的幅度函数是一个正弦波。 #### 频率 中频信号的频率<span class="math inline">\(f_0\)</span>可表示为： <span class="math display">\[\begin{equation}
+f_0 = S_\tau = S * \tau
+\end{equation}\]</span> 其中，<span class="math inline">\(S\)</span>为线性调节脉冲信号的斜率，<span class="math inline">\(\tau\)</span>为延时时间。</p>
+<p>由于RX线性调节脉冲是TX线性调节脉冲的延时版本，其中延时可以通过电磁波在发射器与物体之间的传输距离表示如下： <span class="math display">\[
+\begin{equation}
+\tau = \frac{2*d}{c}
+\end{equation}
+\]</span> 其中，<span class="math inline">\(d\)</span>表示毫米波雷达与被检测物体的距离，<span class="math inline">\(c\)</span>表示光速。 结合公式(4)(5)可得中频信号频率与目标距离的关系如下： <span class="math display">\[
+\begin{equation}
+f_0 = S*\tau = \frac{2*S*d}{c}
+\end{equation}
+\]</span> 故得到中频信号的频率即可得到目标与雷达之间的距离： <span class="math display">\[
+\begin{equation}
+d = \frac{f_0*c}{2*S}
+\end{equation}
+\]</span> #### 相位 中频信号IF的初始相位<span class="math inline">\(\Phi_{0}\)</span>是IF信号起始点对应时间点的Tx信号与Rx信号的相位差。假设Tx信号的初始相位为0，经过<span class="math inline">\(\tau\)</span>时间后Rx信号的相位也是0，那么IF信号的初始相位为 <span class="math display">\[
+\begin{equation}
+\phi_0=2{\pi}f_c\tau
+\end{equation}
+\]</span> 结合公式(8)，以及频率与波长得关系<span class="math inline">\(\frac{c}{f}=\lambda\)</span>得 <span class="math display">\[
+\begin{equation}
+\phi_0=\frac{4{\pi}d}{\lambda}
+\end{equation}
+\]</span> 故与雷达相距距离<span class="math inline">\(d\)</span>的物体，IF信号将是一个正弦波，表示如下： <span class="math display">\[
+\begin{equation}
+A*sin(2{\pi}f_0*t + \phi_0)
+\end{equation}
+\]</span> 其中<span class="math inline">\(f_0=\frac{2Sd}{c}\)</span>，<span class="math inline">\(\phi_0=\frac{4{\pi}d}{\lambda}\)</span>。 &gt; 等式(9)是一个近似等式，仅在斜率和距离足够小时才有效；但相位和距离的变化率呈线性关系是正确的，即<span class="math inline">\(\Delta{\phi}=\frac{4\pi{\Delta{d}}}{\lambda}\)</span> <img data-src="https://i.imgur.com/g8bqCZ1.png" /> ### 多目标测距 #### FFT 对于单目标的IF信号，可以通过傅里叶变化(FFT)，将时域信号转为频域信号，时域中的正弦波在频域中产生一个峰值，横坐标对应IF信号的频率。 <img data-src="https://i.imgur.com/uLZ5mEJ.png" /> #### Range-FFT 雷达通过接收不同物体的发射信号，并转为IF信号，利用傅里叶变换将产生一个具有不同的分离峰值的频谱，每个峰值表示在特定距离处存在物体。 <img data-src="https://i.imgur.com/MDH6x2l.png" /> ### 多目标的分辨率 距离分辨率是辨别两个或更多物体的能力。当两个物体靠近到某个位置时，雷达系统将不能将二者区分开。 由傅里叶变换理论可知：观测窗口<span class="math inline">\(T\)</span>可以分辨时间间隔超过<span class="math inline">\(\frac{1}{T}\)</span>Hz的频率分量。这意味着IF信号的频率差值满足公式(14)中关系，就可以分辨两个IF单音信号。 <span class="math display">\[
+\begin{equation}
+\Delta{f} &gt; \frac{1}{T_{c}}
+\end{equation}
+\]</span> 其中，<span class="math inline">\(T_{c}\)</span>是观测时间长度，<span class="math inline">\(\Delta{f}\)</span>表示两个IF信号之间得频率差值。 由公式(9)得 <span class="math display">\[
+\begin{equation}
+\Delta{f} = \frac{2*S*\Delta{d}}{c}
+\end{equation}
+\]</span> 结合公式(14)和(15)得 <span class="math display">\[
+\begin{equation}
+\Delta{d} &gt; \frac{c}{2*S*T_c} = \frac{c}{2*B}
+\end{equation}
+\]</span> 故距离分辨率<span class="math inline">\(d_{res}\)</span>取决于线性调节脉冲扫频得带宽 <span class="math display">\[
+\begin{equation}
+d_{res}  = \frac{c}{2*B}
+\end{equation}
+\]</span> 根据公式(17)可知，线性调频脉冲带宽为数<code>GHz</code>的<code>FMCW</code>雷达，将有约数厘米的距离分辨率。 &gt; 距离分辨率由线性调频脉冲带宽决定。 例如，带宽为4GHz的线性调频脉冲可转化为 3.75 cm的距离分辨率。 下图所示，当线性调频脉冲的带宽由<span class="math inline">\(B_1\)</span>提升至<span class="math inline">\(B_2\)</span>后，提高了两个目标的分辨率。<br />
+<img data-src="https://i.imgur.com/18Ly6Mk.png" /> ### 最远探测距离 一般IF信号经过数字化处理(LPF+ADC)，才在DSP上进行进一步处理，因此，中频信号的完整性，很大程度上取决于ADC的采样频率<span class="math inline">\(F_s\)</span>。 <img data-src="https://i.imgur.com/kKCU5ny.png" /> 根据采样定理知， <span class="math display">\[
+\begin{equation}
+F_s &gt; 2* f_{IF_{max}} = \frac{2*S*d_{max}}{c}
+\end{equation}
+\]</span> 故最大距离表示为 <span class="math display">\[
+\begin{equation}
+d_{max} = \frac{F_{s}*c}{2*S}
+\end{equation}
+\]</span> ADC的采样频率限制了雷达的最远探测距离。</p>
+<h2 id="测速原理">测速原理</h2>
+<p>测速的基本原理是基于多普勒效应：</p>
+<blockquote>
+<p>当移动台以恒定的速率沿某一方向移动时，由于传播路程差的原因，会造成相位和频率的变化，通常将这种变化称为多普勒频移。它揭示了波的属性在运动中发生变化的规律。</p>
+</blockquote>
+<h3 id="速度估算原理">速度估算原理</h3>
+<h4 id="相位变化">相位变化</h4>
+<p>当物体静止时，输出IF信号如下： <img data-src="https://i.imgur.com/VZJBBXI.png" alt="静止物体" /> 当物体运动时，接收信号发生了延时，IF信号的相位也发生了改变。 <img data-src="https://i.imgur.com/dabZ5Q8.png" alt="运动物体" /> 则在<span class="math inline">\(\Delta{\tau}\)</span>时间内，相位的变化量为 <span class="math display">\[
+\begin{equation}
+\Delta{\phi}=2\pi{f_c}{\Delta}\tau=\frac{4\pi{\Delta}d}{\lambda}
+\end{equation}
+\]</span> #### 相位求解 具有相同频率、不同初始相位的正弦信号经过FFT变换，在相同横坐标位置处（频率相等）产生峰值，但峰值信号的相位不同，峰值的相位等于正弦波的初始相位。 <img data-src="https://i.imgur.com/2OeIDlr.png" /> #### 估算原理 FMCW雷达发送间隔为<span class="math inline">\(T_c\)</span>的两个线性调频脉冲信号，每个反射的调频脉冲信号通过Range-FFT进行处理，对应每个调频脉冲信号的Range-FFT，将在同一位置出现峰值，但相位不同。该相位差与物体移动的位移有关。 <img data-src="https://i.imgur.com/nn6SvoL.png" alt="估算原理" /> 根据物体相对雷达的速度在<span class="math inline">\(T_C\)</span>时间内的位移(<span class="math inline">\(\Delta{d}=v*{T}_c\)</span>)，代入公式(20)得 <span class="math display">\[
+\begin{equation}
+v=\frac{\lambda{\Delta}\phi}{4\pi{T_c}}
+\end{equation}
+\]</span> ### 最大速度 由于速度测量基于相位差，因而会存在模糊性。仅当<span class="math inline">\(\Delta{\phi}&lt;\pi\)</span>时，具有非模糊性，故结合公式(20)可得 <span class="math display">\[
+\begin{equation}
+v_{max}=\frac{\lambda}{4\pi{T_c}}
+\end{equation}
+\]</span> 因而，想要测量更高的速度需要两个线性调频脉冲之间更短的传输时间。 ### 同一距离处多物体速度估算 如果速度不同的多个移动物体在测量时与雷达的距离相同，则双线性调频脉冲速度测量方法将不起作用，由于物体与雷达的距离相同，因而生成的IF信号频率将相同，经过距离FFT会产生单个峰值，该峰值表示距离相同物体的合并信号。 为测量速度，必须发射<strong>两个以上</strong>的线性调频脉冲信号。对同一距离处多个物体的速度估算，需要发射一组N个等间隔的线性调频脉冲，这组线性调频脉冲称为 <code>线性调频脉冲帧</code>(Frame)。 对于等距不同速的两个物体，在同一帧内，通过Range FFT 后在峰值处提取各相位，并做Doppler FFT，会产生两个具有不同的峰值，其对应的横坐标为各物体的相位差。 <img data-src="https://i.imgur.com/DCkSbzg.png" /> 其中，<span class="math inline">\(\omega_1\)</span>和<span class="math inline">\(\omega_2\)</span>对应各个连续线性调频脉冲之间的相位差。 根据公式(21)得 <span class="math display">\[
+\begin{equation}
+v_1=\frac{\lambda{\omega}_1}{4\pi{T_c}}
+\end{equation}
+\]</span> <span class="math display">\[
+\begin{equation}
+v_2=\frac{\lambda{\omega}_2}{4\pi{T_c}}
+\end{equation}
+\]</span> #### 速度分辨率 根据离散傅里叶变换理论，两个离散频率<span class="math inline">\(\omega_1\)</span>和<span class="math inline">\(\omega_2\)</span>，仅在<span class="math inline">\(\Delta{\omega}&gt;\frac{2\pi}{N}\)</span>时，可以分辨。 <img data-src="https://i.imgur.com/YQd1qZB.png" /> 由上图可知，帧周期<span class="math inline">\(T_f=NT_c\)</span>。故根据公式(20)得 <span class="math display">\[
+\begin{equation}
+\Delta{\phi}=\frac{4\pi{\Delta}d}{\lambda}=\frac{4\pi{v}T_c}{\lambda}&gt;\frac{2\pi}{N}
+\end{equation}
+\]</span> 从而得到速度分辨率为 <span class="math display">\[\begin{equation}
+v&gt;v_{res}=\frac{\lambda}{2T_cN}=\frac{\lambda}{2T_f}
+\end{equation}
+\]</span> 因此，速度分辨率取决于帧的时间(<span class="math inline">\(T_f\)</span>)。</p>
+<h2 id="角度检测原理">角度检测原理</h2>
+<p>FMCW雷达系统使用水平面估算反射信号的角度，该角度称为到达角（AoA）。 <img data-src="https://i.imgur.com/EBX8dDj.png" alt="到达角" /></p>
+<h3 id="角度估算原理">角度估算原理</h3>
+<p>当目标距离发生很小的变化时，就会会导致Range-FFT或Doppler-FFT得峰值处相位发生较大的变化，因此可利用物体与两个天线的距离差<span class="math inline">\(\Delta{d}\)</span>引起的相位变化估算到达角（Angle of Arrival ）。</p>
+<h4 id="波形往返">波形往返</h4>
+<p>如下图所示，根据测速原理知，目标移动<span class="math inline">\(\Delta{d}\)</span>位置，毫米波传播路径往返多走了<span class="math inline">\(2\Delta{d}\)</span>位移，则与相位关系为 <span class="math display">\[
+\begin{equation}
+\Delta{\phi}=\frac{4\pi{\Delta}d}{\lambda}
+\end{equation}
+\]</span> <img data-src="https://i.imgur.com/dylOKL8.png" alt="波形往返" /></p>
+<h4 id="波形单程">波形单程</h4>
+<p>如下图所示，两个接收天线间隔距离为<span class="math inline">\(l\)</span>，毫米波传播路径单程多走了<span class="math inline">\(\Delta{d}\)</span>，故结合公式(27)得 <span class="math display">\[
+\begin{equation}
+\Delta{\phi}=\frac{2\pi{\Delta}d}{\lambda}
+\end{equation}
+\]</span> <img data-src="https://i.imgur.com/R3RziuG.png" alt="波形单程" /></p>
+<h4 id="到达角估算">到达角估算</h4>
+<p>如下图所示，考虑接收天线与目标物体之间得几何关系得 <span class="math display">\[
+\begin{equation}
+\Delta{d}=l*sin(\theta)
+\end{equation}
+\]</span> 代入公式(28)得 <span class="math display">\[
+\begin{equation}
+\theta=sin^{-1}(\frac{\lambda{\Delta}\phi}{2\pi{l}})
+\end{equation}
+\]</span></p>
+<figure>
+<img data-src="https://i.imgur.com/KiSSOwS.png" alt="到达角估算" /><figcaption aria-hidden="true">到达角估算</figcaption>
+</figure>
+<h4 id="估算准确度">估算准确度</h4>
+<p>由于<span class="math inline">\(\Delta{\phi}\)</span>取决于<span class="math inline">\(sin(\theta)\)</span>，是一种非线性的依赖关系，只有当<span class="math inline">\(\theta\)</span>很小时，<span class="math inline">\(sin(\theta)\)</span>才是线性函数的近似值。因此当<span class="math inline">\(\theta\)</span>接近0°时，角度的估算精度较高，<span class="math inline">\(\theta\)</span>接近90°时，估算精度降低。 <img data-src="https://i.imgur.com/Qf5dgUC.png" alt="估算精度" /></p>
+<h3 id="同距同速角度估算">同距同速角度估算</h3>
+<p>假设存在N个接收天线，每个天线计算出的距离和速度信息都相等，可以通过Angle-FFT分离出每组接收天线的相位差。</p>
+<p><img data-src="https://i.imgur.com/pkWIbtZ.png" /></p>
+<p>结合公式(30)知 <span class="math display">\[
+\begin{equation}
+\theta_1=sin^{-1}(\frac{\lambda{\omega}_1}{2\pi{l}})
+\end{equation}
+\]</span> <span class="math display">\[
+\begin{equation}
+\theta_2=sin^{-1}(\frac{\lambda{\omega}_2}{2\pi{l}})
+\end{equation}
+\]</span></p>
+<h3 id="最大角视场">最大角视场</h3>
+<p>雷达的最大角视场由雷达可以估算的最大 AoA 来界定。 当<span class="math inline">\(\Delta{\phi}&gt;\pi\)</span>时，就会产生角度模糊，如下图所示： <img data-src="https://i.imgur.com/JvEornm.png" /> 结合公式(28)(29)得： <span class="math display">\[
+\begin{equation}
+\Delta{\phi}=\frac{2{\pi}lsin(\theta)}{\lambda}&lt;\pi \Longrightarrow \theta_{max}=sin^{-1}（\frac{\lambda}{2l}）
+\end{equation}
+\]</span> 故，当接收天线间隔<span class="math inline">\(l=\frac{\lambda}{2}\)</span>时，会导致<span class="math inline">\(\pm{90}^{\circ}\)</span>的最大角视场。</p>
+<h3 id="角度分辨率">角度分辨率</h3>
+<ul>
+<li>随着到达角（AoA）的增加，角度分辨率逐渐降低。</li>
+</ul>
+<p><img data-src="https://i.imgur.com/T3dWSHV.png" /></p>
+<p>结合公式(28)(29)得 <span class="math display">\[
+\begin{equation}
+\omega=\frac{2{\pi}lsin(\theta)}{\lambda}
+\end{equation}
+\]</span> 则相位差为 <span class="math display">\[
+\begin{aligned}
+{\Delta}\omega&amp; =\omega_2-\omega_1\\
+&amp; =\frac{2{\pi}lsin(\theta+\Delta{\theta})}{\lambda}-\frac{2{\pi}lsin(\theta)}{\lambda}\\
+&amp; =\frac{2{\pi}l}{\lambda} * [sin(\theta+\Delta{\theta})-sin(\theta)] \\
+&amp; = \frac{2{\pi}l}{\lambda} * [sin(\theta)cos(\Delta{\theta})+cos(\theta)sin(\Delta{\theta})-sin(\theta)] \\
+\end{aligned}
+\]</span></p>
+<p>其中，将设<span class="math inline">\(\Delta{\theta}\)</span>趋近于0，则<span class="math inline">\(cos(\Delta{\theta}) \to 1\)</span>，<span class="math inline">\(sin(\Delta{\theta}) \to 0\)</span>，故上述公式可近似为 <span class="math display">\[
+\begin{equation}
+{\Delta}\omega \approx\frac{2{\pi}l}{\lambda}cos(\theta)\Delta{\theta}
+\end{equation}
+\]</span></p>
+<p>根据离散傅里叶变换理论，两个离散频率<span class="math inline">\(\omega_1\)</span>和<span class="math inline">\(\omega_2\)</span>，仅在<span class="math inline">\(\Delta{\omega}&gt;\frac{2\pi}{N}\)</span>时，可以分辨。 <span class="math display">\[
+\begin{equation}
+{\Delta}\omega &gt; \frac{2\pi}{N} \Rightarrow \frac{2{\pi}l}{\lambda}cos(\theta)\Delta{\theta} &gt; \frac{2\pi}{N} \Rightarrow \Delta{\theta}&gt;\frac{\lambda}{Nlcos(\theta)}
+\end{equation}
+\]</span></p>
+<p>因此，角分辨率为 <span class="math display">\[
+\begin{equation}
+\theta{res}=\frac{\lambda}{Nlcos(\theta)}
+\end{equation}
+\]</span> 通常假设<span class="math inline">\(d=\frac{\lambda}{2}\)</span>，<span class="math inline">\(\theta=0\)</span>,得 <span class="math display">\[
+\begin{equation}
+\theta{res}=\frac{2}{N}
+\end{equation}
+\]</span></p>
+<h2 id="总结">总结</h2>
+<ul>
+<li>角度 <span class="math display">\[
+\begin{equation}
+\theta=sin^{-1}(\frac{\lambda{\Delta}\phi}{2\pi{l}})
+\end{equation}
+\]</span></li>
+<li>最大角度 <span class="math display">\[
+\begin{equation}
+\theta_{max}=sin^{-1}（\frac{\lambda}{2l}）
+\end{equation}
+\]</span></li>
+<li>角度分辨率 <span class="math display">\[
+\begin{equation}
+\theta{res}=\frac{2}{N}
+\end{equation}
+\]</span></li>
+</ul>
+<blockquote>
+<p>因此，设计天线的个数以及间距对角度估算起决定性作用。</p>
+</blockquote>
+<h2 id="参考">参考</h2>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39764867/article/details/108987851?spm=1001.2014.3001.5502">汽车FMCW毫米波雷达信号处理流程</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Henry 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Henry 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/perception/" rel="tag"># perception</a>
+              <a href="/tags/millimeter-wave-radar/" rel="tag"># millimeter-wave radar</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/11/PerceptionUltrasonicRadar/" rel="prev" title="感知-超声波">
+                  <i class="fa fa-chevron-left"></i> 感知-超声波
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/08/11/PerceptionMillimeterWaveRadar-3D-4D/" rel="next" title="感知-3D或4D毫米波">
+                  感知-3D或4D毫米波 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Henry</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.1.1/mermaid.min.js","integrity":"sha256-8L3O8tirFUa8Va4NSTAyIbHJeLd6OnlcxgupV9F77e0="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.1/es5/tex-mml-chtml.js","integrity":"sha256-hlC2uSQYTmPsrzGZTEQEg9PZ1a/+SV6VBCTclohf2og="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" integrity="sha256-4kQf9z5ntdQrzsBC3YSHnEz02Z9C1UeW/E9OgnvlzSY=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2024/08/11/PerceptionMillimeterWaveRadar/"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"8d44e06ae985f5fbf2e05b062fb8af6c"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

@@ -94,7 +94,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">102</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">37</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">41</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">107</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">44</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">48</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -165,18 +165,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-count">48</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">37</span>
+        <span class="site-state-item-count">44</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">102</span>
+        <span class="site-state-item-count">107</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -223,6 +223,755 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/02/18/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%9F%BA%E4%BA%8E%E8%BF%90%E5%8A%A8%E6%A8%A1%E5%9E%8B%E7%9A%84LQR%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/02/18/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%9F%BA%E4%BA%8E%E8%BF%90%E5%8A%A8%E6%A8%A1%E5%9E%8B%E7%9A%84LQR%E4%BC%98%E5%8C%96/" class="post-title-link" itemprop="url">控制算法-基于运动模型的LQR优化</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-02-18 12:51:49" itemprop="dateCreated datePublished" datetime="2020-02-18T12:51:49+08:00">2020-02-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">控制算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA/" itemprop="url" rel="index"><span itemprop="name">路径跟踪</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="概述">概述</h2>
+<p>本文主要讲述基于运动学模型的车辆路径跟踪，并使用<strong>LQR</strong>算法求取最优控制率。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/ActOf2zWvkdC4GT.jpg" alt="宏村" /><figcaption aria-hidden="true">宏村</figcaption>
+</figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/02/18/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%9F%BA%E4%BA%8E%E8%BF%90%E5%8A%A8%E6%A8%A1%E5%9E%8B%E7%9A%84LQR%E4%BC%98%E5%8C%96/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/01/29/crazyflie-CRTP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/01/29/crazyflie-CRTP/" class="post-title-link" itemprop="url">crazyflie-CRTP协议</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-29 21:48:16" itemprop="dateCreated datePublished" datetime="2020-01-29T21:48:16+08:00">2020-01-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-15 23:08:29" itemprop="dateModified" datetime="2024-08-15T23:08:29+08:00">2024-08-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/crazyflie/" itemprop="url" rel="index"><span itemprop="name">crazyflie</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/crazyflie/CRTP%E5%8D%8F%E8%AE%AE/" itemprop="url" rel="index"><span itemprop="name">CRTP协议</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="概述">概述</h2>
+<p>本文主要分析CRTP协议的结构，对该协议结构的理解，有助于后续的数据扩展和对软件架构的理解。为了和Crazyflie通信，<strong>Crazyflie</strong> 飞控中提出一种高层次的协议叫做 <strong>CRTP</strong> (<code>Crazy RealTime Protocol</code>)。这种简单的协议使用一些可以收发数据的双向目标端口，但是大都时候通信由主机发起。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/1kaHc4AvGdPVZ3t.jpg" alt="植物" /><figcaption aria-hidden="true">植物</figcaption>
+</figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/01/29/crazyflie-CRTP/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/01/22/crazyflie-develop/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/01/22/crazyflie-develop/" class="post-title-link" itemprop="url">crazyflie-开发说明</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-22 11:10:47" itemprop="dateCreated datePublished" datetime="2020-01-22T11:10:47+08:00">2020-01-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/crazyflie/" itemprop="url" rel="index"><span itemprop="name">crazyflie</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/crazyflie/%E5%BC%80%E5%8F%91%E8%AF%B4%E6%98%8E/" itemprop="url" rel="index"><span itemprop="name">开发说明</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="概述">概述</h2>
+<p>嵌入式软件开发主要包括编译(build)、调试(debug)和烧录(flash)三个步骤。本文结合crazefie项目，说明开发流程。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/hpJQSXx9corO15W.jpg" alt="上海科技馆-静物" /><figcaption aria-hidden="true">上海科技馆-静物</figcaption>
+</figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/01/22/crazyflie-develop/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/01/22/crazyflie-directory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/01/22/crazyflie-directory/" class="post-title-link" itemprop="url">crazyflie-目录分析</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-22 10:56:03" itemprop="dateCreated datePublished" datetime="2020-01-22T10:56:03+08:00">2020-01-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/crazyflie/" itemprop="url" rel="index"><span itemprop="name">crazyflie</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/crazyflie/%E7%9B%AE%E5%BD%95%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">目录分析</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="概述">概述</h2>
+<p>本文主要分析<strong>crazyflie</strong>项目的目录结构，并对主要目录作了简要说明。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/5WUADE8QVGmFRcT.jpg" alt="重庆" /><figcaption aria-hidden="true">重庆</figcaption>
+</figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/01/22/crazyflie-directory/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2020/01/07/%E8%BD%A6%E8%BE%86%E6%9C%AF%E8%AF%AD%E7%BC%A9%E5%86%99/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/01/07/%E8%BD%A6%E8%BE%86%E6%9C%AF%E8%AF%AD%E7%BC%A9%E5%86%99/" class="post-title-link" itemprop="url">车辆术语缩写</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-07 10:43:25" itemprop="dateCreated datePublished" datetime="2020-01-07T10:43:25+08:00">2020-01-07</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%BD%A6%E8%BE%86%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">车辆基础</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="概述">概述</h2>
+<p>本文总结了汽车领域常用汽车术语的缩写，后续会继续补偿完善。</p>
+<h2 id="泊车辅助系统">泊车辅助系统</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">缩写</th>
+<th>英文名称</th>
+<th>中文名称</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>APA</strong></td>
+<td>Auto Parking Assistant</td>
+<td>自动泊车辅助系统</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>RPA</strong></td>
+<td>Remote Parking Assist</td>
+<td>遥控泊车辅助</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>HPA</strong></td>
+<td>Home zone Parking Assist</td>
+<td>家庭区域泊车辅助</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>PIC</strong></td>
+<td>Parking In Control</td>
+<td>泊入控制</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>POC</strong></td>
+<td>Pull Out Control</td>
+<td>泊出控制</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>L-ASP</strong></td>
+<td>Low Speed Autonomous Searching Parking slot</td>
+<td>低速自动寻找车位</td>
+</tr>
+</tbody>
+</table>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/01/07/%E8%BD%A6%E8%BE%86%E6%9C%AF%E8%AF%AD%E7%BC%A9%E5%86%99/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/12/27/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E6%8A%96%E6%8C%AF%E6%B6%88%E9%99%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/12/27/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E6%8A%96%E6%8C%AF%E6%B6%88%E9%99%A4/" class="post-title-link" itemprop="url">控制算法-滑模控制抖振消除</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-27 19:44:03" itemprop="dateCreated datePublished" datetime="2019-12-27T19:44:03+08:00">2019-12-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2021-08-30 16:04:39" itemprop="dateModified" datetime="2021-08-30T16:04:39+08:00">2021-08-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">控制算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6/" itemprop="url" rel="index"><span itemprop="name">滑模控制</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="概述">概述</h2>
+<p>在实际控制系统中，包括直流电机和飞机控制，通过连续或者平滑控制信号来避免控制抖振都是非常重要的方式。进一步说，飞机的气动表面不能高频来回运动，但同时对于边界模型不确定且存在外部干扰的控制系统，渴望保持其鲁棒性或不敏感度。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/e6fD51xMwEGqdnO.jpg" alt="重庆美术学院" /><figcaption aria-hidden="true">重庆美术学院</figcaption>
+</figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/12/27/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E6%8A%96%E6%8C%AF%E6%B6%88%E9%99%A4/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/12/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E9%9D%9E%E6%97%B6%E9%97%B4%E5%8F%82%E8%80%83%E7%9A%84%E8%BD%A6%E8%BE%86%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/12/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E9%9D%9E%E6%97%B6%E9%97%B4%E5%8F%82%E8%80%83%E7%9A%84%E8%BD%A6%E8%BE%86%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA/" class="post-title-link" itemprop="url">控制算法-非时间参考的车辆路径跟踪</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-12-23 16:22:46" itemprop="dateCreated datePublished" datetime="2019-12-23T16:22:46+08:00">2019-12-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">控制算法</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA/" itemprop="url" rel="index"><span itemprop="name">路径跟踪</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="概述">概述</h2>
+<p>基于非时间的参考的路径跟踪方法最早应用于机器人的路径跟踪系统，通过引入非时间参考量代替时间参考量，解决传统路径跟踪方法中将期望轨迹视为时间函数的问题。该方法选择移动机器人实际路径在某参考系下的x 轴投影作为非时间参考量。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/KaPA5HQMmo8WnDZ.jpg" alt="国家会议中心" /><figcaption aria-hidden="true">国家会议中心</figcaption>
+</figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/12/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E9%9D%9E%E6%97%B6%E9%97%B4%E5%8F%82%E8%80%83%E7%9A%84%E8%BD%A6%E8%BE%86%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -514,691 +1263,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      
-
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%A8%A1%E5%9E%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Henry">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Henry-Z">
-      <meta itemprop="description" content="Opportunity knocks but once">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Henry-Z">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%A8%A1%E5%9E%8B/" class="post-title-link" itemprop="url">控制算法-运动学模型</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-12-02 09:14:59" itemprop="dateCreated datePublished" datetime="2019-12-02T09:14:59+08:00">2019-12-02</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">控制算法</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/%E8%BD%A6%E8%BE%86%E6%A8%A1%E5%9E%8B/" itemprop="url" rel="index"><span itemprop="name">车辆模型</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="概述">概述</h2>
-<p>车辆横向运动学模型描述了车辆横向运动的数学模型，该模型不考虑车辆的受力情况。一般考虑运动学模型时，将车辆模型简化成单车模型(bicycle model)。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/ot5fGZUwzhgNx94.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
-</figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BF%90%E5%8A%A8%E5%AD%A6%E6%A8%A1%E5%9E%8B/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      
-
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/11/22/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E7%9B%B4%E7%BA%BF%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Henry">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Henry-Z">
-      <meta itemprop="description" content="Opportunity knocks but once">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Henry-Z">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/11/22/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E7%9B%B4%E7%BA%BF%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96/" class="post-title-link" itemprop="url">直线特征提取</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-11-22 09:35:45" itemprop="dateCreated datePublished" datetime="2019-11-22T09:35:45+08:00">2019-11-22</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">感知算法</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="问题概述">问题概述</h2>
-<p>常见的直线特征提取算法是最小二乘法进行的直线拟合，但是线性二次拟合的效果容易受噪声影响，导致拟合效果较差。本文基于直线方程的另一种形式，详细给出最优直线的推导过程。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/Q7SMVU8LzrANGlv.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
-</figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/11/22/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E7%9B%B4%E7%BA%BF%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      
-
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/11/12/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E4%B8%AD%E5%BF%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Henry">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Henry-Z">
-      <meta itemprop="description" content="Opportunity knocks but once">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Henry-Z">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/11/12/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E4%B8%AD%E5%BF%83/" class="post-title-link" itemprop="url">超声波障碍物定位_库位中心</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-11-12 13:48:08" itemprop="dateCreated datePublished" datetime="2019-11-12T13:48:08+08:00">2019-11-12</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="概述">概述</h2>
-<p>垂直车位的检测存在许多技术上的瓶颈，通过超声波一次性检测很难达到较高的精度，而通过车辆泊车过程中的多次的库位定位，可以有效提高车位的定位精度。本文主要介绍垂直车位情形下，车辆已经进库的情形，如何通过辆边的障碍物，重新定位库位的中心。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/sYMfyTvGl5WFk6V.jpg" alt="菊花展" /><figcaption aria-hidden="true">菊花展</figcaption>
-</figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/11/12/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E4%B8%AD%E5%BF%83/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      
-
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/11/11/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E8%A7%92%E7%82%B9/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Henry">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Henry-Z">
-      <meta itemprop="description" content="Opportunity knocks but once">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Henry-Z">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/11/11/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E8%A7%92%E7%82%B9/" class="post-title-link" itemprop="url">超声波障碍物定位-库位角点</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-11-11 19:50:25" itemprop="dateCreated datePublished" datetime="2019-11-11T19:50:25+08:00">2019-11-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">感知算法</span></a>
-        </span>
-          ，
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95/%E8%B6%85%E5%A3%B0%E6%B3%A2/" itemprop="url" rel="index"><span itemprop="name">超声波</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="概述">概述</h2>
-<p>基于纯超声的垂直车位检测存在一些技术瓶颈，比如超声波的更新频率较低、探测开角较大等，都是影响检测精度的关键因素。另外对于垂直车位，车辆头部情况复杂、存在各种结构的进气栅格、引擎盖的高度不一等，增大了超声检测的难度。基于上述传感器本身性能限制和探测环境的复杂性，一次性精确检测很难实现，目前常规算法检测精度大概在30cm左右。为了进一步提升超声波检测的精度，利用车辆泊车过程中的检测的超声数据，重新进行库位的定位。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/eSXfcn2BYoTNR4K.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
-</figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/11/11/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E8%A7%92%E7%82%B9/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      
-
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/11/11/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BD%A6%E8%BE%86%E5%81%9C%E8%BD%A6%E4%BC%98%E5%8C%96/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Henry">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Henry-Z">
-      <meta itemprop="description" content="Opportunity knocks but once">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Henry-Z">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/11/11/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BD%A6%E8%BE%86%E5%81%9C%E8%BD%A6%E4%BC%98%E5%8C%96/" class="post-title-link" itemprop="url">车辆停车优化</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-11-11 16:46:06" itemprop="dateCreated datePublished" datetime="2019-11-11T16:46:06+08:00">2019-11-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">控制算法</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="概述">概述</h2>
-<p>车辆控制中，如何舒适平衡的停车也是一个比较讲究的事。日常生活中，对于一个刚接触车的新手，控车时可能会猛踩刹车，给人一种很冲的感觉。但是对于老司机，每次踩刹车都是先轻踩，然后逐渐增大踩刹车的力度，这样对于乘客来说就会感觉很舒适。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/T3i8DBrFA7zSRPv.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
-</figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/11/11/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BD%A6%E8%BE%86%E5%81%9C%E8%BD%A6%E4%BC%98%E5%8C%96/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      
-
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/10/20/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E9%9C%8D%E5%A4%AB%E5%8F%98%E6%8D%A2(Hough)-OpenCV%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Henry">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Henry-Z">
-      <meta itemprop="description" content="Opportunity knocks but once">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Henry-Z">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/10/20/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E9%9C%8D%E5%A4%AB%E5%8F%98%E6%8D%A2(Hough)-OpenCV%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">霍夫变换-OpenCV源码分析</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-10-20 16:42:56" itemprop="dateCreated datePublished" datetime="2019-10-20T16:42:56+08:00">2019-10-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">感知算法</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="概述">概述</h2>
-<p>霍夫变换算法主要用于图像中的特征匹配，常见的应用场景是进行图像中的直线或者圆形的识别。该算法的原理就是实现笛卡尔空间到霍夫空间的转换，将在笛卡尔空间下难以判定的特性，转到霍夫空间，从而将问题简化。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/hyaDQrwBu37YFfJ.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
-</figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/10/20/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E9%9C%8D%E5%A4%AB%E5%8F%98%E6%8D%A2(Hough)-OpenCV%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      
-
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2019/10/19/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Henry">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Henry-Z">
-      <meta itemprop="description" content="Opportunity knocks but once">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Henry-Z">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2019/10/19/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC/" class="post-title-link" itemprop="url">双线性插值</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2019-10-19 10:03:41" itemprop="dateCreated datePublished" datetime="2019-10-19T10:03:41+08:00">2019-10-19</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-14 22:28:33" itemprop="dateModified" datetime="2024-08-14T22:28:33+08:00">2024-08-14</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">基础算法</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="概述">概述</h2>
-<p>线性差值在实际应用非常广泛，比如航空航天行业中广泛用到气动数据的插值，经常会用到三线性到四线性的插值，在汽车行业很多标定数据而需要使用双线性插值，本篇文章主要讲述双线性插值的实现方式。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/yLw1Imexs68bTHc.jpg" alt="重庆博物馆" /><figcaption aria-hidden="true">重庆博物馆</figcaption>
-</figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/10/19/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

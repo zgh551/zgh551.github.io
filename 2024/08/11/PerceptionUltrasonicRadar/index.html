@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="1AYoSrGqW5qB6rPYnoXq_tIpkaudIK3MXrpUhL_69NI">
+  <meta name="msvalidate.01" content="DF49D5E49BAD0CB8947DDD3824A370B1">
+  <meta name="baidu-site-verification" content="code-EEmJnUEq0A">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.12.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="概述 在自动驾驶使用场景中，一般会使用各类传感器(摄像头、激光雷达、毫米波雷达和超声波雷达等)来感知周围环境信息，传感器收集的大量信息，通过各类算法最终融合到一个真实的语义地图上，下游模块通过该语义地图做相应的规划和决策。  花孔雀">
+<meta property="og:type" content="article">
+<meta property="og:title" content="感知-超声波">
+<meta property="og:url" content="https://zgh551.github.io/2024/08/11/PerceptionUltrasonicRadar/index.html">
+<meta property="og:site_name" content="Henry-Z">
+<meta property="og:description" content="概述 在自动驾驶使用场景中，一般会使用各类传感器(摄像头、激光雷达、毫米波雷达和超声波雷达等)来感知周围环境信息，传感器收集的大量信息，通过各类算法最终融合到一个真实的语义地图上，下游模块通过该语义地图做相应的规划和决策。  花孔雀">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.imgur.com/8bSceod.jpeg">
+<meta property="og:image" content="https://s2.loli.net/2024/08/11/Fhpx4VjbDR1MkWd.jpg">
+<meta property="og:image" content="https://s2.loli.net/2024/08/11/MRvDS2jpEZy8q1x.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/11/i9kVoaOK6sARbtl.png">
+<meta property="og:image" content="https://i.imgur.com/IOkVufX.png">
+<meta property="og:image" content="https://s2.loli.net/2024/08/11/QRHbErZ64dnyAha.png">
+<meta property="og:image" content="https://i.imgur.com/Q1TE46y.png">
+<meta property="og:image" content="https://i.imgur.com/7Jv1zJY.png">
+<meta property="og:image" content="https://i.imgur.com/tqYI1uX.png">
+<meta property="og:image" content="https://i.imgur.com/u5ZRp4k.png">
+<meta property="og:image" content="https://i.imgur.com/eeJmhsf.png">
+<meta property="og:image" content="https://i.imgur.com/iONqLvF.png">
+<meta property="og:image" content="https://i.imgur.com/3SJXyKP.png">
+<meta property="og:image" content="https://i.imgur.com/mc0mGZv.png">
+<meta property="og:image" content="https://i.imgur.com/8MfDr4e.png">
+<meta property="og:image" content="https://i.imgur.com/8MfDr4e.png">
+<meta property="og:image" content="https://i.imgur.com/qARFFhm.png">
+<meta property="og:image" content="https://i.imgur.com/6eg5g7h.png">
+<meta property="og:image" content="https://i.imgur.com/4c4B4gL.png">
+<meta property="og:image" content="https://i.imgur.com/sUP65dB.png">
+<meta property="og:image" content="https://i.imgur.com/kiMvLSQ.png">
+<meta property="og:image" content="https://i.imgur.com/deGImO6.png">
+<meta property="og:image" content="https://i.imgur.com/OlRqAFZ.png">
+<meta property="og:image" content="https://i.imgur.com/zJmzY9O.png">
+<meta property="og:image" content="https://i.imgur.com/hgwfFJv.png">
+<meta property="og:image" content="https://i.imgur.com/XFIa72C.png">
+<meta property="og:image" content="https://i.imgur.com/EWLv0U6.png">
+<meta property="og:image" content="https://i.imgur.com/Wt7K99i.png">
+<meta property="article:published_time" content="2024-08-11T03:17:58.000Z">
+<meta property="article:modified_time" content="2024-08-15T14:23:28.549Z">
+<meta property="article:author" content="Henry">
+<meta property="article:tag" content="perception">
+<meta property="article:tag" content="ultrasonic">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/8bSceod.jpeg">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2024/08/11/PerceptionUltrasonicRadar/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/08/11/PerceptionUltrasonicRadar/","path":"2024/08/11/PerceptionUltrasonicRadar/","title":"感知-超声波"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>感知-超声波 | Henry-Z</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ML9CRPRYFK"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ML9CRPRYFK","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?c8e65d830c8cd51e920dc7e7c0be8744"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Henry-Z</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">107</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">44</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">48</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B6%85%E5%A3%B0%E6%B3%A2"><span class="nav-number">2.</span> <span class="nav-text">超声波</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%B7%9D%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">测距原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A3%B0%E9%80%9F"><span class="nav-number">2.2.</span> <span class="nav-text">声速</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A3%B0%E6%B3%A2%E7%89%B9%E6%80%A7"><span class="nav-number">2.3.</span> <span class="nav-text">声波特性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8D%E5%B0%84%E7%89%B9%E6%80%A7"><span class="nav-number">2.3.1.</span> <span class="nav-text">反射特性</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A2%99%E9%9D%A2%E5%8F%8D%E5%B0%84"><span class="nav-number">2.3.1.1.</span> <span class="nav-text">墙面反射</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A2%99%E8%A7%92%E5%8F%8D%E5%B0%84"><span class="nav-number">2.3.1.2.</span> <span class="nav-text">墙角反射</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BE%B9%E6%B2%BF%E5%8F%8D%E5%B0%84"><span class="nav-number">2.3.1.3.</span> <span class="nav-text">边沿反射</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84"><span class="nav-number">3.</span> <span class="nav-text">内部结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E5%AE%9A%E4%B9%89"><span class="nav-number">3.1.</span> <span class="nav-text">接口定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BA%BF%E6%96%B9%E5%BC%8F"><span class="nav-number">3.2.</span> <span class="nav-text">总线方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%95%BF%E8%B7%9D%E8%B6%85%E5%A3%B0"><span class="nav-number">3.3.</span> <span class="nav-text">长距超声</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE"><span class="nav-number">3.3.1.</span> <span class="nav-text">通信协议</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%AD%E8%B7%9D%E8%B6%85%E5%A3%B0"><span class="nav-number">3.4.</span> <span class="nav-text">短距超声</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1%E5%8D%8F%E8%AE%AE-1"><span class="nav-number">3.4.1.</span> <span class="nav-text">通信协议</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E4%BD%93%E5%B8%83%E5%B1%80"><span class="nav-number">3.5.</span> <span class="nav-text">总体布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E8%A6%81%E7%82%B9"><span class="nav-number">3.6.</span> <span class="nav-text">安装要点</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Henry"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Henry</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">44</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">107</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zgh551" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:henryzhu551@gmail.com" title="E-Mail → mailto:henryzhu551@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zghforever" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever" rel="noopener" target="_blank"><i class="fa-solid fa-c fa-fw"></i>CSDN</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.linkedin.com/in/zgh551/" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;" rel="noopener" target="_blank"><i class="fab fa-linkedin fa-fw"></i>Linkindin</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/zgh551" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/08/11/PerceptionUltrasonicRadar/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="感知-超声波 | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          感知-超声波
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-11 11:17:58" itemprop="dateCreated datePublished" datetime="2024-08-11T11:17:58+08:00">2024-08-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-08-15 22:23:28" itemprop="dateModified" datetime="2024-08-15T22:23:28+08:00">2024-08-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/perception/" itemprop="url" rel="index"><span itemprop="name">perception</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/perception/ultrasonic/" itemprop="url" rel="index"><span itemprop="name">ultrasonic</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="概述">概述</h2>
+<p>在自动驾驶使用场景中，一般会使用各类传感器(摄像头、激光雷达、毫米波雷达和超声波雷达等)来感知周围环境信息，传感器收集的大量信息，通过各类算法最终融合到一个真实的语义地图上，下游模块通过该语义地图做相应的规划和决策。</p>
+<figure>
+<img data-src="https://i.imgur.com/8bSceod.jpeg" alt="花孔雀" /><figcaption aria-hidden="true">花孔雀</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="超声波">超声波</h2>
+<p>超声波雷达是一种利用声波反射原理进行测距的传感器，主要用于短距离测量，一般测量范围在0.1m-5m之间，具有体积小、成本低、安装方便等特点。</p>
+<h3 id="测距原理">测距原理</h3>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/Fhpx4VjbDR1MkWd.jpg" alt="测距原理" /><figcaption aria-hidden="true">测距原理</figcaption>
+</figure>
+<p><span class="math display">\[
+D = T_{f} * V_{s} * k
+\]</span></p>
+<p>其中，<span class="math inline">\(T_f\)</span>表示超声波的飞行时间，及超声波走完距离<span class="math inline">\(D\)</span>所需的时间，<span class="math inline">\(V_s\)</span>表示声音在空气中的速度，<span class="math inline">\(k\)</span>表示一个接近0.5的常数，一般由传感器的结构决定(收发压电换能器的位置)。</p>
+<h3 id="声速">声速</h3>
+<p>声波在空气的速度与温度的关系近似如下： <span class="math display">\[V_s\approx20.055*\sqrt{T}\]</span> 其中，<span class="math inline">\(T\)</span>表示绝对温度，单位<span class="math inline">\(K\)</span>。 当温度在 <span class="math inline">\(0-40℃\)</span>范围变化是，声速在<span class="math inline">\(330-360 m/s\)</span>范围内变化，因此温度应作为距离的测量的关键因素考虑，故一般要求安装温度传感器获取环境温度。</p>
+<h3 id="声波特性">声波特性</h3>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/MRvDS2jpEZy8q1x.png" alt="声波特性" /><figcaption aria-hidden="true">声波特性</figcaption>
+</figure>
+<ul>
+<li><strong>频率</strong>：声波的频率是指每秒钟内声波完成的全振动次数，单位为赫兹（Hz）。人耳能听到的声音频率范围大约在20 Hz到20,000 Hz之间。超声波传感器通常工作在更高的频率，如几十kHz甚至几百kHz。</li>
+<li><strong>周期</strong>：声波的周期是指完成一次全振动所需要的时间，单位为秒（s）。频率和周期的关系是互为倒数，即 <span class="math inline">\(f = \frac{1}{T}\)</span>，其中<span class="math inline">\(f\)</span>表示频率，<span class="math inline">\(T\)</span>表示周期。</li>
+<li><strong>波长</strong>：声波的波长是指在空气中传播时，两个相邻的同相位点之间的距离，单位为米（m）。波长和频率、声速的关系是 <span class="math inline">\(λ = \frac{v}{f}\)</span>，其中<span class="math inline">\(λ\)</span>表示波长，<span class="math inline">\(v\)</span>表示声速，<span class="math inline">\(f\)</span>表示频率。</li>
+<li><strong>声速</strong>：声速是指声波在介质中传播的速度，单位为米每秒（m/s）。不同介质的声速不同，例如在空气中，声速约为340 m/s；在水中，声速约为1,500 m/s；在钢铁中，声速则高达5,000 m/s以上。</li>
+<li><strong>振幅</strong>：声波的振幅是指声波的最大位移，单位为帕斯卡（Pa）或牛顿每平方米（N/m²）。振幅越大，声音的响度越高；振幅越小，声音的响度越低。</li>
+</ul>
+<p>超声波在不同介质下的传播特性如下：</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/i9kVoaOK6sARbtl.png" alt="声波的反射与折射" /><figcaption aria-hidden="true">声波的反射与折射</figcaption>
+</figure>
+<h4 id="反射特性">反射特性</h4>
+<p>如下图所示，超声波反射一般会遇到如下场景：</p>
+<figure>
+<img data-src="https://i.imgur.com/IOkVufX.png" alt="反射场景" /><figcaption aria-hidden="true">反射场景</figcaption>
+</figure>
+<h5 id="墙面反射">墙面反射</h5>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/QRHbErZ64dnyAha.png" alt="墙面反射" /><figcaption aria-hidden="true">墙面反射</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/Q1TE46y.png" alt="反射原理" /><figcaption aria-hidden="true">反射原理</figcaption>
+</figure>
+<h5 id="墙角反射">墙角反射</h5>
+<figure>
+<img data-src="https://i.imgur.com/7Jv1zJY.png" alt="墙角反射原理" /><figcaption aria-hidden="true">墙角反射原理</figcaption>
+</figure>
+<h5 id="边沿反射">边沿反射</h5>
+<figure>
+<img data-src="https://i.imgur.com/tqYI1uX.png" alt="边沿反射原理" /><figcaption aria-hidden="true">边沿反射原理</figcaption>
+</figure>
+<p>不同场景下，不同入射角下，回波强度如下： <img data-src="https://i.imgur.com/u5ZRp4k.png" alt="信号强度与入射角的关系" /> 实际扫描数据如下： <img data-src="https://i.imgur.com/eeJmhsf.png" alt="实际扫描数据" /></p>
+<h2 id="内部结构">内部结构</h2>
+<figure>
+<img data-src="https://i.imgur.com/iONqLvF.png" alt="超声结构示图" /><figcaption aria-hidden="true">超声结构示图</figcaption>
+</figure>
+<h3 id="接口定义">接口定义</h3>
+<figure>
+<img data-src="https://i.imgur.com/3SJXyKP.png" alt="接口定义" /><figcaption aria-hidden="true">接口定义</figcaption>
+</figure>
+<h3 id="总线方式">总线方式</h3>
+<figure>
+<img data-src="https://i.imgur.com/mc0mGZv.png" alt="Lin总线" /><figcaption aria-hidden="true">Lin总线</figcaption>
+</figure>
+<h3 id="长距超声">长距超声</h3>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://i.imgur.com/8MfDr4e.png" alt="横向" /></div><div class="group-picture-column"><img data-src="https://i.imgur.com/8MfDr4e.png" alt="竖向" /></div></div></div>
+<h4 id="通信协议">通信协议</h4>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://i.imgur.com/qARFFhm.png" alt="数据读取" /></div></div><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://i.imgur.com/6eg5g7h.png" alt="距离转换" /></div><div class="group-picture-column"><img data-src="https://i.imgur.com/4c4B4gL.png" alt="信号强度" /></div></div></div>
+<h3 id="短距超声">短距超声</h3>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://i.imgur.com/sUP65dB.png" alt="横向" /></div><div class="group-picture-column"><img data-src="https://i.imgur.com/kiMvLSQ.png" alt="竖向" /></div></div></div>
+<h4 id="通信协议-1">通信协议</h4>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://i.imgur.com/deGImO6.png" alt="数据读取" /></div><div class="group-picture-column"><img data-src="https://i.imgur.com/OlRqAFZ.png" alt="距离转换" /></div></div></div>
+<h3 id="总体布局">总体布局</h3>
+<figure>
+<img data-src="https://i.imgur.com/zJmzY9O.png" alt="安装布局" /><figcaption aria-hidden="true">安装布局</figcaption>
+</figure>
+<h3 id="安装要点">安装要点</h3>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://i.imgur.com/hgwfFJv.png" alt="1" /></div><div class="group-picture-column"><img data-src="https://i.imgur.com/XFIa72C.png" alt="2" /></div></div><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://i.imgur.com/EWLv0U6.png" alt="3" /></div><div class="group-picture-column"><img data-src="https://i.imgur.com/Wt7K99i.png" alt="4" /></div></div></div>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Henry 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Henry 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/perception/" rel="tag"># perception</a>
+              <a href="/tags/ultrasonic/" rel="tag"># ultrasonic</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/10/3D-ObjectDetector-Express/" rel="prev" title="3D Object Detector-表示方法">
+                  <i class="fa fa-chevron-left"></i> 3D Object Detector-表示方法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/08/11/PerceptionMillimeterWaveRadar/" rel="next" title="感知-毫米波介绍">
+                  感知-毫米波介绍 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Henry</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.0.6/medium-zoom.min.js" integrity="sha256-EdPgYcPk/IIrw7FYeuJQexva49pVRZNmt3LculEr7zM=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/9.1.1/mermaid.min.js","integrity":"sha256-8L3O8tirFUa8Va4NSTAyIbHJeLd6OnlcxgupV9F77e0="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.1/es5/tex-mml-chtml.js","integrity":"sha256-hlC2uSQYTmPsrzGZTEQEg9PZ1a/+SV6VBCTclohf2og="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.2.0/quicklink.umd.js" integrity="sha256-4kQf9z5ntdQrzsBC3YSHnEz02Z9C1UeW/E9OgnvlzSY=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2024/08/11/PerceptionUltrasonicRadar/"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.7.2/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"6f796b9b7a9a3ac5a6d691ad0248af46"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

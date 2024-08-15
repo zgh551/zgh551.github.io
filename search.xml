@@ -4500,11 +4500,11 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
       </tags>
   </entry>
   <entry>
-    <title>3D对象检测-表示方法</title>
+    <title>3D Object Detector-表示方法</title>
     <url>/2024/08/10/3D-ObjectDetector-Express/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <figure>
-<img data-src="https://s2.loli.net/2024/08/12/Unj3fezCXNtkRyG.png" alt="表示方法" /><figcaption aria-hidden="true">表示方法</figcaption>
+<img data-src="https://i.imgur.com/0RO0rIZ.png" alt="表示方法" /><figcaption aria-hidden="true">表示方法</figcaption>
 </figure>
 <span id="more"></span>
 <h2 id="显性表示">显性表示</h2>
@@ -4547,17 +4547,16 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
 <p>如果大家对隐式表示感兴趣，后续会做详细的论文解读。</p>
 ]]></content>
       <categories>
-        <category>3D object detector</category>
+        <category>3D Object Detector</category>
         <category>对象表示</category>
       </categories>
       <tags>
-        <tag>object detector</tag>
-        <tag>3D</tag>
         <tag>LiDAR</tag>
+        <tag>3D Object Detector</tag>
       </tags>
   </entry>
   <entry>
-    <title>3D对象检测-基于LiDAR</title>
+    <title>3D Object Detector Base LiDAR</title>
     <url>/2024/08/11/3D-ObjectDetector-LiDAR/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>先进的3D对象检测方法提出了各种从稀疏的点云数据中学习辨别特征的方法:</p>
@@ -4648,17 +4647,16 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
 </ol>
 ]]></content>
       <categories>
-        <category>3D object detector</category>
-        <category>基于LiDAR</category>
+        <category>3D Object Detector</category>
+        <category>Base LiDAR</category>
       </categories>
       <tags>
-        <tag>object detector</tag>
-        <tag>3D</tag>
         <tag>LiDAR</tag>
+        <tag>3D Object Detector</tag>
       </tags>
   </entry>
   <entry>
-    <title>3D对象检测-PointNet++</title>
+    <title>3D Object Detector PointNet++</title>
     <url>/2024/08/13/3D-ObjectDetector-PointNet++/</url>
     <content><![CDATA[<figure>
 <img data-src="https://s2.loli.net/2024/08/14/GICOxSBjTH3MNrf.png" alt="网络框图" /><figcaption aria-hidden="true">网络框图</figcaption>
@@ -4715,18 +4713,16 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
 </blockquote>
 ]]></content>
       <categories>
-        <category>3D object detector</category>
+        <category>3D Object Detector</category>
         <category>PointNet++</category>
       </categories>
       <tags>
-        <tag>object detector</tag>
-        <tag>3D</tag>
         <tag>LiDAR</tag>
-        <tag>PointNet</tag>
+        <tag>3D Object Detector</tag>
       </tags>
   </entry>
   <entry>
-    <title>3D对象检测-PointNet</title>
+    <title>3D Object Detector PointNet</title>
     <url>/2024/08/12/3D-ObjectDetector-PointNet/</url>
     <content><![CDATA[<figure>
 <img data-src="https://s2.loli.net/2024/08/14/u6cbaUOS5k29lpN.png" alt="斯坦福" /><figcaption aria-hidden="true">斯坦福</figcaption>
@@ -4787,18 +4783,16 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">input_transform_net</span>(<span class="params">point_cloud, is_training, bn_decay=<span class="literal">None</span>, K=<span class="number">3</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; Input (XYZ) Transform Net, input is BxNx3 gray image</span></span><br><span class="line"><span class="string">        Return:</span></span><br><span class="line"><span class="string">            Transformation matrix of size 3xK &quot;&quot;&quot;</span></span><br><span class="line">    batch_size = point_cloud.get_shape()[<span class="number">0</span>].value</span><br><span class="line">    num_point = point_cloud.get_shape()[<span class="number">1</span>].value</span><br><span class="line"></span><br><span class="line">    input_image = tf.expand_dims(point_cloud, -<span class="number">1</span>)</span><br><span class="line">    net = tf_util.conv2d(input_image, <span class="number">64</span>, [<span class="number">1</span>,<span class="number">3</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;tconv1&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">128</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;tconv2&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">1024</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;tconv3&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.max_pool2d(net, [num_point,<span class="number">1</span>],</span><br><span class="line">                             padding=<span class="string">&#x27;VALID&#x27;</span>, scope=<span class="string">&#x27;tmaxpool&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    net = tf.reshape(net, [batch_size, -<span class="number">1</span>])</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">512</span>, bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                                  scope=<span class="string">&#x27;tfc1&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">256</span>, bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                                  scope=<span class="string">&#x27;tfc2&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> tf.variable_scope(<span class="string">&#x27;transform_XYZ&#x27;</span>) <span class="keyword">as</span> sc:</span><br><span class="line">        <span class="keyword">assert</span>(K==<span class="number">3</span>)</span><br><span class="line">        weights = tf.get_variable(<span class="string">&#x27;weights&#x27;</span>, [<span class="number">256</span>, <span class="number">3</span>*K],</span><br><span class="line">                                  initializer=tf.constant_initializer(<span class="number">0.0</span>),</span><br><span class="line">                                  dtype=tf.float32)</span><br><span class="line">        biases = tf.get_variable(<span class="string">&#x27;biases&#x27;</span>, [<span class="number">3</span>*K],</span><br><span class="line">                                 initializer=tf.constant_initializer(<span class="number">0.0</span>),</span><br><span class="line">                                 dtype=tf.float32)</span><br><span class="line">        biases += tf.constant([<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>], dtype=tf.float32)</span><br><span class="line">        transform = tf.matmul(net, weights)</span><br><span class="line">        transform = tf.nn.bias_add(transform, biases)</span><br><span class="line"></span><br><span class="line">    transform = tf.reshape(transform, [batch_size, <span class="number">3</span>, K])</span><br><span class="line">    <span class="keyword">return</span> transform</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
-        <category>3D object detector</category>
+        <category>3D Object Detector</category>
         <category>PointNet</category>
       </categories>
       <tags>
-        <tag>object detector</tag>
-        <tag>3D</tag>
         <tag>LiDAR</tag>
-        <tag>PointNet</tag>
+        <tag>3D Object Detector</tag>
       </tags>
   </entry>
   <entry>
-    <title>3D对象检测-PointRCNN</title>
+    <title>3D Object Detector PointRCNN</title>
     <url>/2024/08/14/3D-ObjectDetector-PointRCNN/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>PointRCNN 将目标检测任务分为两个阶段： 第一阶段：借助点云分割为前景点和背景，并以自下而上的方式直接从点云生成少量高质量的目标候选框； 第二阶段：再对候选目标框进行优化调整，细化目标框的边界。</p>
@@ -4947,18 +4941,16 @@ res_{\theta}^{(p)}=\theta^p-\theta^{(p)}+\mathcal{S}-bin_{\theta}^{(p)}*\delta 
 </ol>
 ]]></content>
       <categories>
-        <category>3D object detector</category>
-        <category>PointRCNN++</category>
+        <category>3D Object Detector</category>
+        <category>PointRCNN</category>
       </categories>
       <tags>
-        <tag>object detector</tag>
-        <tag>3D</tag>
         <tag>LiDAR</tag>
-        <tag>PointNet</tag>
+        <tag>3D Object Detector</tag>
       </tags>
   </entry>
   <entry>
-    <title>3D对象检测-概述</title>
+    <title>3D Object Detector Introduce</title>
     <url>/2024/08/09/3D-ObjectDetector/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>在自动驾驶领域，感知系统是必不可少的模块，通常使用多模态数据(激光雷达的点云、摄像头的图片、高清地图等)作为输入，预测道路上关键元素的几何形状和语义信息，为目标跟踪、轨迹预测和路径规划模块提供可靠的观察结果。 为了全面了解行驶环境，涉及许多视觉任务，包括：对象检测、跟踪、车道线检测、语义分割和实例分割。其中，3D对象检测是自动驾驶感知系统最不可或缺的任务。 3D对象检测的目标：</p>
@@ -4969,7 +4961,9 @@ res_{\theta}^{(p)}=\theta^p-\theta^{(p)}+\mathcal{S}-bin_{\theta}^{(p)}*\delta 
 <li>类别： (轿车、自行车、行人...)</li>
 </ol>
 <p>相对于2D对象检测，其只在图像上生成边界框，而忽略物体与当前车辆的实际距离信息。3D对象检测重点关注于现实世界3维坐标系中的对象位置和识别。通过3D对象检测预测的几何信息可以直接测量当前车辆于关键对象之间的距离。</p>
-<p><img data-src="https://i.imgur.com/vPtnare.jpeg" /></p>
+<figure>
+<img data-src="https://i.imgur.com/vPtnare.jpeg" alt="保时捷" /><figcaption aria-hidden="true">保时捷</figcaption>
+</figure>
 <span id="more"></span>
 <h2 id="d对象检测是什么">3D对象检测是什么？</h2>
 <p>简单讲就是从传感器数据中预测3D对象的边界框，使用简洁的数学公式表达通用的3D对象检测如下： <span class="math display">\[\beta = f_{det}(\Gamma_{sensor})\]</span> 其中</p>
@@ -5084,13 +5078,12 @@ res_{\theta}^{(p)}=\theta^p-\theta^{(p)}+\mathcal{S}-bin_{\theta}^{(p)}*\delta 
 </ol>
 ]]></content>
       <categories>
-        <category>object detector</category>
-        <category>概述</category>
+        <category>3D Object Detector</category>
+        <category>Introduce</category>
       </categories>
       <tags>
-        <tag>object detector</tag>
-        <tag>3D</tag>
         <tag>LiDAR</tag>
+        <tag>3D Object Detector</tag>
       </tags>
   </entry>
   <entry>
@@ -5437,7 +5430,9 @@ res_{\theta}^{(p)}=\theta^p-\theta^{(p)}+\mathcal{S}-bin_{\theta}^{(p)}*\delta 
     <url>/2020/01/29/crazyflie-CRTP/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>本文主要分析CRTP协议的结构，对该协议结构的理解，有助于后续的数据扩展和对软件架构的理解。为了和Crazyflie通信，<strong>Crazyflie</strong> 飞控中提出一种高层次的协议叫做 <strong>CRTP</strong> (<code>Crazy RealTime Protocol</code>)。这种简单的协议使用一些可以收发数据的双向目标端口，但是大都时候通信由主机发起。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/1kaHc4AvGdPVZ3t.jpg" /></p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/1kaHc4AvGdPVZ3t.jpg" alt="植物" /><figcaption aria-hidden="true">植物</figcaption>
+</figure>
 <span id="more"></span>
 <h2 id="物理载体">物理载体</h2>
 <p>当前CRTP同时支持 Crazyradio 和 USB(只针对Crazyflie 2.0)模式。</p>
@@ -7467,6 +7462,820 @@ res_{\theta}^{(p)}=\theta^p-\theta^{(p)}+\mathcal{S}-bin_{\theta}^{(p)}*\delta 
         <tag>crazyflie</tag>
         <tag>硬件设计</tag>
         <tag>Hardware</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>3D Object Detector IPOD</title>
+    <url>/2024/08/15/3D-ObjectDetector-IPOD/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<figure>
+<img data-src="https://i.imgur.com/50FMneL.png" alt="网络框图" /><figcaption aria-hidden="true">网络框图</figcaption>
+</figure>
+<ol type="1">
+<li>第一个子采样网络用于过滤掉大多数的背景点；</li>
+<li>第二阶段是基于点基础的候选框生成；</li>
+<li>第三个组成部分是网络架构，由主干网络、proposal特征生成模块和边界框预测网络组成，它对生成的候选框进行分类和回归；</li>
+</ol>
+<span id="more"></span>
+<h2 id="proposal特征生成模块">proposal特征生成模块</h2>
+<p>通过结合位置信息和上下文特征来生成从内部点的质心到目标实例对象中心的偏移量。将预测的残差添加回位置信息，以使特征几何变换更加鲁棒。</p>
+<figure>
+<img data-src="https://i.imgur.com/NCBqQfR.png" alt="proposal" /><figcaption aria-hidden="true">proposal</figcaption>
+</figure>
+<h2 id="backbone和bbox回归">Backbone和bbox回归</h2>
+<figure>
+<img data-src="https://i.imgur.com/R80Gskn.png" alt="Backbone" /><figcaption aria-hidden="true">Backbone</figcaption>
+</figure>
+<h3 id="backbone">Backbone</h3>
+<p>主干网络以原始点云数据<span class="math inline">\((x,y,z,r)\)</span>作为输入，通过堆叠SA层和FP层模块来提取每个点的局部和全局特征。</p>
+<h3 id="bounding-box预测网络">Bounding-box预测网络</h3>
+<p>它将proposal特征生成模块中的特征作为输入。产生分类和回归预测。</p>
+<h2 id="实验数据">实验数据</h2>
+<figure>
+<img data-src="https://i.imgur.com/icjWCAD.png" alt="实验数据" /><figcaption aria-hidden="true">实验数据</figcaption>
+</figure>
+<h2 id="参考">参考</h2>
+<ol type="1">
+<li><a href="https://arxiv.org/pdf/1812.05276">IPOD: Intensive Point-based Object Detector for Point Cloud</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>3D Object Detector</category>
+        <category>IPOD</category>
+      </categories>
+      <tags>
+        <tag>LiDAR</tag>
+        <tag>3D Object Detector</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>3D Object Detector 3DSSD</title>
+    <url>/2024/08/15/3D-ObjectDetector-3DSSD/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>3DSSD是基于点的单阶段3D目标检测网络，该模型的提出背景是在3D单阶段目标检测器大都是基于体素，其在转换过程中会丢失信息，而基于点的检测器大都是两阶段网络，精度虽然高，但是推理性能差。而此时，基于点的单阶段网络还未充分探索。作者基于点基础，提出了一个轻量级且高效的单阶段网络(3DSSD)，可以很好地在精度和效率之间保持平衡。 <img data-src="https://i.imgur.com/6IPCPg1.png" alt="网络框图" /> 作者通过分析两阶段网络各个部分耗时情况，发现SA层对于提取点得特征是必要的，但FP和细化模块确实限制了基于点的方法的效率。 <img data-src="https://i.imgur.com/FVDI9t1.png" alt="各阶段时间" /></p>
+<span id="more"></span>
+<h2 id="backbone">Backbone</h2>
+<figure>
+<img data-src="https://i.imgur.com/gL42xwh.png" alt="Backbone: (左)KITTI (右)nuScenes" /><figcaption aria-hidden="true">Backbone: (左)KITTI (右)nuScenes</figcaption>
+</figure>
+<h2 id="融合采样">融合采样</h2>
+<p>F-FPS采样可以保留大都数前景点，但由于采样点数量的限制，很多背景点都被过滤掉（背景点语义特征与前景点语义特征相隔较大），这虽然对回归检测框有好处，但是背景点太少的话对分类任务不太友好（样本不均衡）。基于这一点考虑，作者将D-FPS和F-FPS进行融合，以保证有足够的前景点用于回归，以及足够的背景点用于分类，最终的采样点由D-FPS和F-FPS组成。</p>
+<h2 id="cg层">CG层</h2>
+<p>为了降低计算成本，并发挥融合采样的优势，作者提出在预测头之前加一个候选生成层，该层是SA层的变体。 因为D-FPS中的点大都是负样本点，对于边界框框回归是无用的。因此只使用F-FPS中的点作为初始中心点，这些初始中心点在其相对位置的监督下偏移到相应示例，如下图所示： <img data-src="https://i.imgur.com/8zQAWXX.png" /> 将这些平移操作后的新点称为候选点，将这些候选点作为CG层的中心点，而为何使用候选点而不是原始点作为中心点是从性能角度考虑的。 接下来，从来自D-FPS和F-FPS的<code>整个点集</code>中找到每个<code>候选点</code>在预定义阈值范围内的<code>周围点</code>。将他们的标准化位置和语义特征连接作为输入，并应用MLP层提取特征。这些特征将会被送到预测头用于回归和分类。</p>
+<h2 id="anchor-free回归">Anchor Free回归</h2>
+<p>对于回归分支需要回归的主要有中心点坐标、大小以及偏转角。</p>
+<ul>
+<li>中心点 候选点到标注中心的距离<span class="math inline">\((d_x,d_y,d_z)\)</span></li>
+<li>大小 候选点预测到的框大小与对应的Gt bbox的大小偏差<span class="math inline">\((d_l,d_w,d_h)\)</span></li>
+<li>偏转角 每个候选点预测的角度与实例Gt bbox的转角的偏移，这里引入了bin+res的形式进行回归（这个可参考<a href="https://zgh551.github.io/2024/08/14/3D-ObjectDetector-PointRCNN/">PointRCNN</a>，就是把角度划分成不同的区域(12)，然后引入分类和回归损失）。</li>
+</ul>
+<h2 id="d中心分配策略">3D中心分配策略</h2>
+<p>在训练过程中，需要给每一个候选点分配一个标签，在2D检测器中通常采用IOU，设定一个阈值，超过某个阈值的作为正样本，或者是采样掩膜的方式来给每个像素分配一个标签。这里借鉴<a href="https://arxiv.org/pdf/1904.01355.pdf">FCOS</a>中心域的思想来给每个候选点分配一个标签，其可以产生连续的中心域标签，可以更好的进行框回归。 <img data-src="https://i.imgur.com/MwXEirt.png" alt="红色到蓝色表示1到0" /></p>
+<p>如上图所示，离中心点越近其值接近于1，越远则接近于0. <span class="math display">\[centerness^* = \sqrt{\frac{\min(l*,r*)}{\max(l*,r*)}\times\frac{\min(t*,b*)}{\max(t*,b*)}}\]</span></p>
+<h3 id="扩展到3维表示">扩展到3维表示</h3>
+<p><span class="math display">\[l_{ctrness} = \sqrt[3]{\frac{\min(f,b)}{\max(f,b)}\times\frac{\min(l,r)}{\max(l,r)}\times\frac{\min(t,d)}{\max(t,d)}}\]</span></p>
+<p>其中，$(f, b, l, r, t, d) <span class="math inline">\(表示中心点到前后左右上下表面的距离。 首先判断候选点在哪个真实框里面，得到\)</span>_{mask}$，其值非0即1。最后的分类标签是两者的乘积。 <span class="math display">\[u = \mathcal{l}_{ctrness}*\mathcal{l}_{mask}\]</span></p>
+<h2 id="损失函数">损失函数</h2>
+<p>损失函数主要包含分类、回归和偏移损失三部分。 <span class="math display">\[
+L=\frac{1}{N_c}\sum_i{L_c(s_i,u_i)} + \lambda_1\frac{1}{N_p}\sum_i{[u_i&gt;0]L_r} + \lambda_2\frac{1}{N_p^*}L_s
+\]</span></p>
+<ol type="1">
+<li><span class="math inline">\(N_c\)</span>：表示总的候选点数量；</li>
+<li><span class="math inline">\(N_p\)</span>：表示正候选点数量，正候选点是位于前景实例中的候选点；</li>
+</ol>
+<h3 id="回归损失">回归损失</h3>
+<p>回归损失包含 中心点距离损失(<span class="math inline">\(L_{dist}\)</span>)、候选框大小损失(<span class="math inline">\(L_{size}\)</span>)、角度损失(<span class="math inline">\(L_{angle}\)</span>)和角点位置损失(<span class="math inline">\(L_{corner}\)</span>)四部分。</p>
+<h4 id="smooth_l1">smooth_L1</h4>
+<p>中心点距离损失(<span class="math inline">\(L_{dist}\)</span>)和候选框大小损失(<span class="math inline">\(L_{size}\)</span>)采用smooth_L1损失 <span class="math display">\[
+smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
+\lvert x \rvert - 0.5 &amp;\text{otherwise} \end{cases}
+\]</span></p>
+<h4 id="基于bin">基于bin</h4>
+<p>角度损失(<span class="math inline">\(L_{angle}\)</span>)采用bin + res 策略，损失表示如下： <span class="math display">\[L_{angle}=L_c(d^a_c,t^a_{c})+ D(d_r^a,t_r^a)\]</span></p>
+<h4 id="角点损失">角点损失</h4>
+<p>计算预测框的8个角点与真实角点之间的距离损失。 <span class="math display">\[L_{corner}=\sum_{m=1}^{8}\|P_m-G_m\|\]</span></p>
+<h3 id="偏移损失">偏移损失</h3>
+<p>偏移损失应用在候选点生成（CG层中）的监督任务中，作者利用了smooth-l1损失函数来计算，用于度量预测的偏移值与候选点到真实中心点实际距离的差异。</p>
+<h2 id="实验数据">实验数据</h2>
+<h3 id="性能数据">性能数据</h3>
+<figure>
+<img data-src="https://i.imgur.com/iIQxk38.png" alt="性能" /><figcaption aria-hidden="true">性能</figcaption>
+</figure>
+<h3 id="精度数据">精度数据</h3>
+<figure>
+<img data-src="https://i.imgur.com/wkBf9kh.png" alt="精度" /><figcaption aria-hidden="true">精度</figcaption>
+</figure>
+<ul>
+<li>L：表示激光雷达</li>
+<li>R：表示RGB图像</li>
+</ul>
+<h2 id="参考">参考</h2>
+<ol type="1">
+<li><a href="https://arxiv.org/pdf/2002.10187">3DSSD: Point-based 3D Single Stage Object Detector</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>3D Object Detector</category>
+        <category>3DSSD</category>
+      </categories>
+      <tags>
+        <tag>LiDAR</tag>
+        <tag>3D Object Detector</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>3D Object Detector Point-GNN</title>
+    <url>/2024/08/15/3D-ObjectDetector-Point-GNN/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>如下是三种常见的点云表示和处理方法: <img data-src="https://i.imgur.com/sI3M4V6.png" alt="点云数据表示" /></p>
+<p>如下图所示，网络架构主要由三部分组成：图构建、T次迭代GNN和边界框合并和评分。</p>
+<figure>
+<img data-src="https://i.imgur.com/t9YbwlP.png" alt="网络架构" /><figcaption aria-hidden="true">网络架构</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="图构建">图构建</h2>
+<h3 id="点云表示">点云表示</h3>
+<p>定义一个包含 <span class="math inline">\(N\)</span>个点的点云集合<span class="math inline">\(P = \{ p_1,..., p_N \}\)</span>，其中， 每个点<span class="math inline">\(p_i=(x_i,s_i)\)</span>包含3D坐标信息<span class="math inline">\(x_i \in \mathcal{R}^3\)</span>和一个长度为<span class="math inline">\(k\)</span>的向量表示点的属性的状态信息 <span class="math inline">\(s_i \in \mathcal{R}^k\)</span>。状态值<span class="math inline">\(s_i\)</span>可以是激光的反射强度或者周围对象特征的编码。 使用点<span class="math inline">\(P\)</span>作为顶点以固定半径<span class="math inline">\(r\)</span>连接其邻近点构建图<span class="math inline">\(G=(P,E)\)</span>，其中 <span class="math display">\[E = \{(p_i,p_j) | \|x_i-x_j\|_2 &lt; r\}\]</span></p>
+<h3 id="cell-list查找算法">Cell list查找算法</h3>
+<p>通过使用单元列表查找给定截止距离内的点对，我们可以有效地解决问题，运行时间复杂度为<span class="math inline">\(\mathcal{O}(cN)\)</span>，其中<span class="math inline">\(c\)</span>是半径内邻居的最大数量。</p>
+<figure>
+<img data-src="https://i.imgur.com/9PhIEmm.png" alt="cell list查找算法" /><figcaption aria-hidden="true">cell list查找算法</figcaption>
+</figure>
+<p>具体做法如下:</p>
+<ol type="1">
+<li>将空间划分为多个小的单元格(cell)。</li>
+<li>将每个点都存储在对应的单元格中。</li>
+<li>对于需要查找邻域的某个点,只需要检查该点所在单元格及其周围邻居单元格内的点,就可以高效地找到在给定截断距离内的所有点对。 这种基于cell list的方法可以大大提高邻域搜索的效率,避免了逐一检查所有点对的开销。</li>
+</ol>
+<h3 id="体素下采样算法">体素下采样算法</h3>
+<blockquote>
+<p>实际点云包含数万个点，哪怕基于上述的cell list查找算法，仍然会带来巨大的计算负担。</p>
+</blockquote>
+<p>故，作者提出基于体素的下采样点云，得到<span class="math inline">\(\hat{P}\)</span>来进行图构建。 其中，体素下采样指的是：</p>
+<ol type="1">
+<li>将原始的点云数据划分成多个三维体素(voxel)。</li>
+<li>对于每个非空的体素,选择该体素内的一个代表性点作为下采样后的点。通常选择该体素内点的平均位置或中心点。</li>
+</ol>
+<p>这样做的目的是:</p>
+<ol type="1">
+<li>降低点云的数据量,加快后续的图构建和计算过程。</li>
+<li>消除原始点云中可能存在的噪声和不均匀分布,使得图结构更加稳定。</li>
+</ol>
+<blockquote>
+<p>注：这里的体素仅用于降低点云的密度，并不用作点云的表示，仍然使用图来表示下采样后的点云。</p>
+</blockquote>
+<h4 id="如何在体素网格中保留原始点云信息">如何在体素网格中保留原始点云信息？</h4>
+<p>将原始点云的信息编码(encode)到体素网格的初始状态值<span class="math inline">\(s_i\)</span>中，具体操作如下:</p>
+<ol type="1">
+<li>对于体素网格中的每个顶点,搜索其半径为<span class="math display">\[r_0\]</span>的邻域内的原始点云数据。</li>
+<li>对于每个顶点的邻域点云数据,使用神经网络模型提取它们的局部特征，不仅要保存它的平均属性,还要提取它所包含的原始点云数据的局部几何特征。这里使用了一种能够处理无序点集的神经网络架构(backbone),如PointNet或PointNet++。
+<ul>
+<li>利用MLP(多层感知机)对每个点云数据点的反射强度和相对坐标进行嵌入编码。这可以学习到每个点的局部特征表示。</li>
+<li>然后使用Max pooling对这些局部特征进行聚合,得到每个体素的特征向量。这种聚合操作可以捕获体素内部点云数据的最显著特征。</li>
+<li>将这些聚合后的特征向量作为体素网格中每个顶点的初始状态值。这样可以在后续的优化过程中,利用这些丰富的局部特征信息来指导网格的优化。</li>
+</ul></li>
+<li>将提取的局部特征编码到对应的体素中,以此来保留原始点云的细节信息。</li>
+</ol>
+<h2 id="具备自动注册功能的图神经网络">具备自动注册功能的图神经网络</h2>
+<h3 id="图神经网络消息传递">图神经网络消息传递</h3>
+<p>典型的图神经网络通过聚合沿边的特征来细化顶点特征。</p>
+<p><img data-src="https://i.imgur.com/qTW2aMc.png" /> <img data-src="https://i.imgur.com/q59Ru8B.png" /></p>
+<p>第<span class="math inline">\(t+1\)</span>次迭代中，以如下形式更新每个顶点的特征：</p>
+<p><span class="math display">\[e_{ij}^{t} = f^t(v_i^t, v_j^t)\]</span> <span class="math display">\[v_{i}^{t+1} = g^{t}(\rho(\{ e_{ij}^t |(i,j) \in E\}), v_i^t )\]</span></p>
+<ol type="1">
+<li><span class="math inline">\(v^t\)</span>：表示第t次迭代的顶点特征；</li>
+<li><span class="math inline">\(e^t\)</span>：表示第t次迭代的边沿特征；</li>
+<li><span class="math inline">\(f^t(.)\)</span>：计算两个顶点间的边沿特征；</li>
+<li><span class="math inline">\(\rho^t(.)\)</span>：是一个集合函数，聚合每个顶点的边沿特征；</li>
+<li><span class="math inline">\(g^t(.)\)</span>：采用聚合的边沿特征来更新顶点特征；</li>
+</ol>
+<h3 id="针对对象检测的改进">针对对象检测的改进</h3>
+<p>我们设计 GNN 来细化顶点的状态，以包含有关顶点所属对象的信息。为了实现这个目标，优化了上述公式，使用它的邻近状态更新顶点的状态： <span class="math display">\[s_{i}^{t+1} = g^{t}(\rho(\{ f^t(x_j-x_i, s_j^t) |(i,j) \in E\}), s_i^t )\]</span> 使用相对坐标作为函数<span class="math inline">\(f^t(.)\)</span>的输入来提取边沿特征。使用相对坐标可以消除整个点云的全局平移对特征提取的影响，但其对邻域内的平移仍然是敏感的。</p>
+<blockquote>
+<p>当顶点添加一个小的平移，其邻域内的局部特征仍然是相似的，但是邻域内的相对坐标都变化了，这就引起了函数<span class="math inline">\(f^t(.)\)</span>的输入方差变大。</p>
+</blockquote>
+<p>为了减少平移方差，使用中心顶点的结构特征而不是其坐标来对齐邻近节点的坐标。因为中心顶点的已经从上一次迭代中捕获了邻近点的结构特征信息，使用它预测对齐偏移，提出如下 自动注册机制： <span class="math display">\[\varDelta{x}_{i}^{t} = h^{t}(s_i^t)\]</span> <span class="math display">\[s_{i}^{t+1} = g^{t}(\rho(\{ f^t(x_j-x_i+\varDelta{x}_{i}^{t}, s_j^t) |(i,j) \in E\}), s_i^t )\]</span> 关于模型中的<span class="math inline">\(f^t(.)\)</span>、<span class="math inline">\(h^t(.)\)</span>和<span class="math inline">\(g^t(.)\)</span>使用 <code>多层感知器(MLP)</code> 去学习函数参数，并在函数<span class="math inline">\(g^t(.)\)</span>内添加<code>残差连接</code>。 <span class="math inline">\(\rho^t(.)\)</span>函数选择 <code>MAX</code> 用于提升鲁棒性。 图神经网络单次迭代步骤如下： <span class="math display">\[\varDelta{x}_{i}^{t} = \mathbf{MLP}_h^{t}(s_i^t)\]</span> <span class="math display">\[e_{ij}^{t} = \mathbf{MLP}_f^{t}([x_j-x_i+\varDelta{x}, s_j^t])\]</span> <span class="math display">\[s_{i}^{t+1} = \mathbf{MLP}_g^{t}(\mathbf{Max}(\{e_{ij}|(i,j) \in E\})) + s_i^t\]</span></p>
+<ol type="1">
+<li>每次迭代中使用不同的<span class="math inline">\(\mathbf{MLP}^{t}\)</span>,各个迭代之间不共享；</li>
+<li>经过多次迭代后，使用顶点的状态值去预测类别和对象的边界框；</li>
+<li>多类分类分支负责预测对象类别的概率。</li>
+<li>定位分支负责预测每个对象类别的边界框坐标。</li>
+</ol>
+<p><img data-src="https://i.imgur.com/IkZCpG4.png" /></p>
+<h2 id="边界框的合并与评分">边界框的合并与评分</h2>
+<figure>
+<img data-src="https://i.imgur.com/HHn7hDY.png" alt="NMS算法" /><figcaption aria-hidden="true">NMS算法</figcaption>
+</figure>
+<p><span class="math display">\[o_i=\frac{1}{l_iw_ih_i}\prod_{v\in\{v_i^l,v_i^w,v_i^h\}}\max_{p_j\in{b_i}}(v^Tx_j)-\min_{p_j\in{b_i}}(v^Tx_j)\]</span></p>
+<h2 id="实验数据">实验数据</h2>
+<figure>
+<img data-src="https://i.imgur.com/twDelef.png" alt="实验数据" /><figcaption aria-hidden="true">实验数据</figcaption>
+</figure>
+]]></content>
+      <categories>
+        <category>3D Object Detector</category>
+        <category>Point-GNN</category>
+      </categories>
+      <tags>
+        <tag>LiDAR</tag>
+        <tag>3D Object Detector</tag>
+        <tag>Graph Nueral Network</tag>
+        <tag>GNN</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Graph Nueral Network</title>
+    <url>/2024/08/15/GraphNeuralNetwork/</url>
+    <content><![CDATA[<h2 id="应用领域">应用领域</h2>
+<p><img data-src="https://i.imgur.com/yhg8Q4N.png" alt="图(a)道路网络 ；图(b)分子结构；图(c)电路图" /> <img data-src="https://i.imgur.com/TtTcROe.png" alt="图(d)飞机点云图" /> <img data-src="https://i.imgur.com/EpXSl6d.png" alt="图(a)社交网络-无向；图(b)论文引用网络-有向；图(c)知识图谱-有向-异构" /></p>
+<span id="more"></span>
+<h3 id="任务目标">任务目标</h3>
+<p>可以根据预测目标是节点、边沿还是整个图的属性来进行广泛的分组。</p>
+<h4 id="图级别任务">图级别任务</h4>
+<ul>
+<li>回归任务 预测某个分子的熔点；</li>
+<li>分类任务 预测某个分子是否具有毒性； 特定分子是否溶于水；</li>
+</ul>
+<figure>
+<img data-src="https://i.imgur.com/QiouUeB.png" alt="Graph分类" /><figcaption aria-hidden="true">Graph分类</figcaption>
+</figure>
+<h4 id="节点级任务">节点级任务</h4>
+<p>网络使用图结构和节点嵌入为图的每个节点分配一个标签（分类）或一个或多个值（回归）。 例如，上述飞机的点云图，预测节点是属于机身还是机翼；</p>
+<figure>
+<img data-src="https://i.imgur.com/7DJb1rc.png" alt="Node分类" /><figcaption aria-hidden="true">Node分类</figcaption>
+</figure>
+<h4 id="边沿预测任务">边沿预测任务</h4>
+<p>网络预测节点 n 和 m 之间是否应该存在边。 例如，在社交网络环境中，网络可能会预测两个人是否认识并喜欢对方，如果是的话，建议他们进行联系。 了解蛋白质网络中的一些相互作用，并希望预测任何其他相互作用的存在；</p>
+<figure>
+<img data-src="https://i.imgur.com/lxYizxU.png" alt="边沿预测" /><figcaption aria-hidden="true">边沿预测</figcaption>
+</figure>
+<h4 id="图表示学习">图表示学习</h4>
+<p>我们还可以在图上使用深度学习来发现有用的内部表示，这些表示随后可以促进一系列下游任务。 例如，我们可以通过在大型分子结构语料库上训练深度学习系统来寻求建立分子的基础模型。目标是，一旦经过训练，这样的基础模型就可以通过使用小型标记数据集来针对特定任务进行微调。</p>
+<h2 id="图表示">图表示</h2>
+<ul>
+<li>节点嵌入： 存储节点处的信息，例如社交网络中，每个人都可以通过包含兴趣、年龄和学历等信息组成的固定长度向量表征；</li>
+<li>边沿嵌入：存储边沿处的信息，例如道路网络中，每个边沿可以包含道路长度、车道数、事故频率和限速等信息表征； 图由一组<span class="math inline">\(\mathbf{N}\)</span>个点相互连接组成的<span class="math inline">\(\mathbf{E}\)</span>个边沿组成，可以使用3个矩阵<span class="math inline">\((\mathbf{A}, \mathbf{X}, \mathbf{E})\)</span>对其进行编码，分别代表<code>图结构</code>、<code>节点嵌入</code>和<code>边沿嵌入</code>。</li>
+</ul>
+<figure>
+<img data-src="https://i.imgur.com/JIho9IF.png" alt="数据嵌入" /><figcaption aria-hidden="true">数据嵌入</figcaption>
+</figure>
+<h3 id="邻接矩阵">邻接矩阵</h3>
+<p>图的结构可以使用邻接矩阵表示节点间的连接关系。无向图，该矩阵始终是对称的。</p>
+<p><img data-src="https://i.imgur.com/pkj1KrF.png" /></p>
+<blockquote>
+<p>如果图很大如何存储？</p>
+</blockquote>
+<p>对于大型稀疏图来说，使用邻接矩阵存储会浪费大量内存，因为大部分元素都是0。 存储为连接列表 (m, n) 是一种更节省内存的方法，尤其适用于图节点数量众多但边相对较少的情况。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">edge_list = [(<span class="number">0</span>, <span class="number">1</span>), (<span class="number">0</span>, <span class="number">3</span>), (<span class="number">1</span>, <span class="number">2</span>), (<span class="number">2</span>, <span class="number">4</span>)]</span><br></pre></td></tr></table></figure>
+<h3 id="节点嵌入矩阵">节点嵌入矩阵</h3>
+<p>第<span class="math inline">\(\mathbf{n}\)</span>个节点具有一个长度为<span class="math inline">\(\mathbf{D}\)</span>的节点嵌入向量<span class="math inline">\(\mathbf{x}^n\)</span> ，将这些嵌入向量连接到一起并存储到<span class="math inline">\(\mathbf{D}\times\mathbf{N}\)</span>的节点数据矩阵<span class="math inline">\(\mathbf{X}\)</span>中。</p>
+<h3 id="边沿嵌入矩阵">边沿嵌入矩阵</h3>
+<p>第<span class="math inline">\(\mathbf{e}\)</span>个边沿具有一个长度为<span class="math inline">\(\mathbf{D}_E\)</span>的边沿嵌入向量<span class="math inline">\(\mathbf{e}^e\)</span>，将这些嵌入向量连接到一起并存储到<span class="math inline">\(\mathbf{D}_E\times\mathbf{E}\)</span>的节点数据矩阵<span class="math inline">\(\mathbf{E}\)</span>中。</p>
+<h2 id="等变性和不变性">等变性和不变性</h2>
+<p>图中节点的索引顺序是任意的，节点索引的排列不会影响到图的表达，任何模型都必须尊重这一属性。</p>
+<h3 id="节点索引的排序">节点索引的排序</h3>
+<p>可以使用一个排列矩阵<span class="math inline">\(P\)</span>表示节点的重新排序，其每行和每列只包含一个1。 例如，实现排列顺序从 <span class="math inline">\((A,B,C,D,E) \to (C,E,A,D,B)\)</span>，则相应的排列矩阵表示如下： <span class="math display">\[
+P = \begin{pmatrix}
+   0 &amp; 0 &amp; 1 &amp; 0 &amp; 0 \\
+   0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\
+1 &amp; 0 &amp; 0 &amp; 0 &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\
+0 &amp; 1 &amp; 0 &amp; 0 &amp; 0
+\end{pmatrix}\]</span></p>
+<p>可以通过矩阵<span class="math inline">\(P\)</span>实现对矩阵<span class="math inline">\(X\)</span>的重新排列 <span class="math display">\[\tilde{X}=XP\]</span> 对于邻接矩阵<span class="math inline">\(A\)</span>，行列都会被排列 <span class="math display">\[\tilde{A}=P^TAP\]</span></p>
+<h3 id="不变性">不变性</h3>
+<figure>
+<img data-src="https://i.imgur.com/40m2RJE.png" alt="不变性" /><figcaption aria-hidden="true">不变性</figcaption>
+</figure>
+<p>当将深度学习应用于图结构数据时，我们需要以数字形式表示图结构，以便将其输入神经网络，这需要我们为节点分配顺序。然而，我们选择的具体顺序是任意的，因此确保图的任何全局属性不依赖于此顺序非常重要。换句话说，网络预测必须对节点标签重新排序保持不变， <span class="math display">\[y(\tilde{X},\tilde{A})=y(X,A)\]</span> 其中，<span class="math inline">\(y(.)\)</span>函数是网络的输出。</p>
+<h3 id="等变性">等变性</h3>
+<figure>
+<img data-src="https://i.imgur.com/0ShUBEv.png" alt="等变性" /><figcaption aria-hidden="true">等变性</figcaption>
+</figure>
+<p>我们可能还想做出与各个节点相关的预测。在这种情况下，如果我们对节点标签重新排序，则相应的预测应该显示相同的重新排序，以便给定的预测始终与相同的节点相关联，而不管顺序的选择如何。换句话说，节点预测应该与节点标签重新排序是等变的。这可以表示为 <span class="math display">\[\bf{y}(\tilde{X},\tilde{A}) = \bf{y}(X,A)P\]</span> 其中，<span class="math inline">\(\bf{y}(.)\)</span>函数是网络输出的向量，每个节点一个元素.</p>
+<h2 id="消息传递">消息传递</h2>
+<p>在应用深度神经网络在图结构数据时，在节点标签排列情况下，确保等变性和不变性是设计网络时的关键考虑因素。 - 节点级预测网络：要求整个网络保持等变性； - 图级别任务：对于不同的输入排列，要求最后一层要保持不变性； - 确保每一层都是高度灵活的非线性函数，并且其参数可微； - 图的输入尺寸是变化的，固定长度表示是不合适的，需要能处理可变长度输入； - 参数共享;</p>
+<h3 id="卷积滤波">卷积滤波</h3>
+<p>为了开发满足上述要求的网络框架，可以从卷积神经网络中寻求灵感； - 图像可以视为图结构数据的特定实例； - 节点：像素 - 边沿：图像中的相邻的像素对；</p>
+<p><img data-src="https://i.imgur.com/AQOAPy0.png" /></p>
+<p>卷积滤波器更新<span class="math inline">\(l+1\)</span>层像素表达式如下： <span class="math display">\[z_i^{(l+1)}=f\large(\sum_jw_jz_j^{(l)} + b\large)\]</span> 上述表达可知，如果<span class="math inline">\(l+1\)</span>层的像素重新排列，其输出并不具备 等变性，因为其权重向量。 尝试如下修改： <span class="math display">\[z_i^{(l+1)}=f\large(w_{neigh}\sum_jz_j^{(l)} + w_{self}z_i^{(l)}+ b\large)\]</span> 上述表达式，可以解释为通过从邻近节点传递到节点<span class="math display">\[i\]</span>的消息传递来收集来自邻近节点的信息，从而更新节点<span class="math inline">\(i\)</span>处的局部表示<span class="math inline">\(z_i\)</span>。 上述表达式中，通过简单的 求和函数 来聚合相邻节点的信息。对于输入节点的排序，显然是不变的。 这种不变性取决于所用节点共享参数<span class="math inline">\(w_{neigh}, w_{self}, b\)</span>。</p>
+<h3 id="图卷积网络gcn">图卷积网络(GCN)</h3>
+<p>准确得讲，本文主要介绍 <code>spatial-based convolutional graph neural networks</code>(基于空间的卷积图神经网络)，简称 <code>GCN</code>。之所以称为基于空间，是因为使用原始的图结构信息。这与基于频谱(spectral-based)的方法形成对比，后者在傅里叶域应用卷积。 可以将网络的每层处理分为两个阶段：</p>
+<ol type="1">
+<li><code>aggregation</code>(聚合) 对于每个节点 n，消息从其邻居传递到该节点并以排列不变的方式组合形成新的向量<span class="math inline">\(z_n^{(l)}\)</span>。 <span class="math display">\[z_n^{(l)} = \large\mathcal{Aggregate}(\{h_m^{(l)}:m \in \mathcal{N}(n)\})\]</span></li>
+<li><code>update</code>(更新) 将来自相邻节点的聚合信息(<span class="math inline">\(z_n^{(l)}\)</span>)与来自节点本身的本地信息相结合，并用于计算该节点的修改后的嵌入向量。 <span class="math display">\[\large h_n^{(l+1)}=\mathcal{Update}(h_n^{(l)},z_n^{(l)})\]</span></li>
+</ol>
+<blockquote>
+<p>节点嵌入通常使用观察到的节点数据进行初始化，例如<span class="math inline">\(h_n^{0}=\bf{x}_n\)</span>。</p>
+</blockquote>
+<p>上述框架称为： 消息传递神经网络</p>
+<p><img data-src="https://i.imgur.com/X7mJy1b.png" /></p>
+<h4 id="聚合算子">聚合算子</h4>
+<ul>
+<li>求和 <span class="math display">\[\large\mathcal{Aggregate}(\{h_m^{(l)}:m \in \mathcal{N}(n)\}) = \sum_{m\in\mathcal{N}(n)}h_m^{(l)}\]</span> &gt; 邻接节点较多的节点比邻接节点较少的节点相比，影响更大；</li>
+<li>平均值 <span class="math display">\[\large\mathcal{Aggregate}(\{h_m^{(l)}:m \in \mathcal{N}(n)\}) = \frac{1}{|\mathcal{N}(n)|}\sum_{m\in\mathcal{N}(n)}h_m^{(l)}\]</span> 其中<span class="math inline">\(|\mathcal{N}(n)|\)</span>表示邻域集合<span class="math inline">\(\mathcal{N}(n)\)</span>中的节点数。 &gt; 这种归一化方式，丢弃了有关网络结构数据的信息，并被证明不如简单求和强大;</li>
+<li>Kipf归一化 <span class="math display">\[\large\mathcal{Aggregate}(\{h_m^{(l)}:m \in \mathcal{N}(n)\}) = \sum_{m\in\mathcal{N}(n)}\frac{h_m^{(l)}}{\sqrt{|\mathcal{N}(n)||\mathcal{N}(m)|}}\]</span></li>
+<li>Max Pooling <span class="math display">\[\large\mathcal{Aggregate}(\{h_m^{(l)}:m \in \mathcal{N}(n)\}) = \mathcal{Max}_{m\in\mathcal{N}(n)} h_m^{(l)}\]</span></li>
+<li>MLP <span class="math display">\[\large\mathcal{Aggregate}(\{h_m^{(l)}:m \in \mathcal{N}(n)\}) = \mathcal{MLP}_{\theta}\bigg(\sum_{m\in\mathcal{N}(n)} \mathcal{MLP}_{\phi}(h_m^{(l)})\bigg)\]</span> 其中，<span class="math inline">\(\mathcal{MLP}_{\theta}和\mathcal{MLP}_{\phi}\)</span>的参数在<span class="math inline">\(l\)</span>层内共享。</li>
+</ul>
+<h4 id="感受野">感受野</h4>
+<figure>
+<img data-src="https://i.imgur.com/ERwsL3W.png" alt="随着层数增多，感受野增大" /><figcaption aria-hidden="true">随着层数增多，感受野增大</figcaption>
+</figure>
+<h4 id="更新算子">更新算子</h4>
+<p><span class="math display">\[\large\mathcal{Update}(h_n^{(l)},z_n^{(l)})=f({W}_{self}h_n^{(l)} + {W}_{neigh}z_n^{l} + b)\]</span> 其中， 1. <span class="math inline">\(f(.)\)</span>表示非线性函数，例如 Relu。 2. <span class="math inline">\(W_{self}, W_{neigh}和b\)</span>表示学习的权重和偏置；</p>
+<p>为此，神经网络可以表示为连续变换节点嵌入的一组序列： <span class="math display">\[H^{(1)}=F(X,A,W^{(1)})\]</span> <span class="math display">\[H^{(2)}=F(H^{(1)},A,W^{(2)})\]</span> ... <span class="math display">\[H^{(L)}=F(H^{(L-1)},A,W^{(L)})\]</span> <img data-src="https://i.imgur.com/5bWvMlx.png" /></p>
+<h2 id="通用图网络">通用图网络</h2>
+<p>目前为止，图网络已经有了很多扩展和变体。</p>
+<h3 id="边沿嵌入">边沿嵌入</h3>
+<figure>
+<img data-src="https://i.imgur.com/XdMtOkZ.png" alt="边沿嵌入" /><figcaption aria-hidden="true">边沿嵌入</figcaption>
+</figure>
+<p><span class="math display">\[e_{nm}^{l+1}=\mathcal{Update}_{edge}\big(e_{nm}^{(l)},h_n^{(l)},h_m^{(l)}\big)\]</span> <span class="math display">\[z_n^{(l+1)}=\mathcal{Aggregate}_{node}(\set{e_{nm}^{(l)}:m \in \mathcal{N}(n)})\]</span> <span class="math display">\[h_n^{l+1}=\mathcal{Update}_{node}(h_n^{(l)},z_n^{(l+1)})\]</span></p>
+]]></content>
+      <categories>
+        <category>Graph Nueral Network</category>
+      </categories>
+      <tags>
+        <tag>Graph Nueral Network</tag>
+        <tag>GNN</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>感知-3D或4D毫米波</title>
+    <url>/2024/08/11/PerceptionMillimeterWaveRadar-3D-4D/</url>
+    <content><![CDATA[<h2 id="d毫米波雷达">4D毫米波雷达</h2>
+<p>如下图所示，TI给出的4D毫米波方案示例。</p>
+<figure>
+<img data-src="https://i.imgur.com/Xnc6kF7.png" alt="毫米波指标" /><figcaption aria-hidden="true">毫米波指标</figcaption>
+</figure>
+<span id="more"></span>
+<figure>
+<img data-src="https://i.imgur.com/CADixJ2.png" alt="毫米波硬件电路" /><figcaption aria-hidden="true">毫米波硬件电路</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/rhLCILo.png" alt="PCB" /><figcaption aria-hidden="true">PCB</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/TfD7cjH.png" alt="TX和RX通道间距" /><figcaption aria-hidden="true">TX和RX通道间距</figcaption>
+</figure>
+<p>该双芯片级联方案包含6个TX通道和8个RX通道，在MIMO虚拟阵列中提供48个虚拟通道，其中MIMO阵列在方向角上提供约3度的孔径受限角分辨率。</p>
+<figure>
+<img data-src="https://i.imgur.com/qCQfDhe.png" alt="MINO虚拟阵列" /><figcaption aria-hidden="true">MINO虚拟阵列</figcaption>
+</figure>
+<p>如下图所示，两个角反射器放置在距离雷达约9.5m的径向距离处的同一距离单元中。</p>
+<p><img data-src="https://i.imgur.com/wYIhmd5.png" alt="角反射器" /> <img data-src="https://i.imgur.com/D35cdhl.png" alt="角度分辨率测量" /></p>
+<h2 id="d与4d毫米波对比">3D与4D毫米波对比</h2>
+<h3 id="地面井盖">地面井盖</h3>
+<figure>
+<img data-src="https://i.imgur.com/ZReja0C.png" alt="3D Radar" /><figcaption aria-hidden="true">3D Radar</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/L9jPrtb.png" alt="4D Radar" /><figcaption aria-hidden="true">4D Radar</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/5cqH0Qe.png" alt="4D Radar" /><figcaption aria-hidden="true">4D Radar</figcaption>
+</figure>
+<h3 id="指示牌和交通杆">指示牌和交通杆</h3>
+<figure>
+<img data-src="https://i.imgur.com/Ajh8La9.png" alt="4D Radar" /><figcaption aria-hidden="true">4D Radar</figcaption>
+</figure>
+<h3 id="低速物体">低速物体</h3>
+<figure>
+<img data-src="https://i.imgur.com/KA0mYhx.png" alt="4D Radar 横向车辆" /><figcaption aria-hidden="true">4D Radar 横向车辆</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/3IeUGpk.png" alt="4D Radar 横向行人" /><figcaption aria-hidden="true">4D Radar 横向行人</figcaption>
+</figure>
+<h2 id="d与激光雷达对比">4D与激光雷达对比</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">技术参数</th>
+<th>激光雷达</th>
+<th>4D毫米波</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">最大点云数</td>
+<td>70000</td>
+<td>3072</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">最远距离</td>
+<td>180m</td>
+<td>300m</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">工作周期</td>
+<td>100ms</td>
+<td>60ms</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">朝向估计误差</td>
+<td>1°</td>
+<td>2.5°</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">尺寸估计误差</td>
+<td>0.2m</td>
+<td>0.5m</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">俯仰角分辨率</td>
+<td>0.2°</td>
+<td>2.3°</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">方位角分辨率</td>
+<td>0.2°</td>
+<td>1.2°</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">距离分辨率</td>
+<td>0.05m</td>
+<td>0.4m</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">速度分辨率</td>
+<td></td>
+<td>0.1m/s</td>
+</tr>
+</tbody>
+</table>
+<h3 id="距离与朝向">距离与朝向</h3>
+<figure>
+<img data-src="https://i.imgur.com/u477tic.png" alt="激光雷达" /><figcaption aria-hidden="true">激光雷达</figcaption>
+</figure>
+<h3 id="近处小目标">近处小目标</h3>
+<figure>
+<img data-src="https://i.imgur.com/6jQbwF3.png" alt="激光雷达" /><figcaption aria-hidden="true">激光雷达</figcaption>
+</figure>
+<h3 id="d毫米波的优势">4D毫米波的优势</h3>
+<h4 id="可穿透性">可穿透性</h4>
+<figure>
+<img data-src="https://i.imgur.com/00jyGW5.png" alt="可穿透" /><figcaption aria-hidden="true">可穿透</figcaption>
+</figure>
+<h4 id="波的衍射折射">波的衍射折射</h4>
+<figure>
+<img data-src="https://i.imgur.com/sdc0scr.png" alt="衍射折射" /><figcaption aria-hidden="true">衍射折射</figcaption>
+</figure>
+<h3 id="激光雷达">激光雷达</h3>
+<figure>
+<img data-src="https://i.imgur.com/Pg9d8QJ.png" alt="激光雷达结构" /><figcaption aria-hidden="true">激光雷达结构</figcaption>
+</figure>
+]]></content>
+      <categories>
+        <category>perception</category>
+        <category>millimeter-wave radar 3D 4D</category>
+      </categories>
+      <tags>
+        <tag>perception</tag>
+        <tag>millimeter-wave radar</tag>
+        <tag>3D millimeter-wave radar</tag>
+        <tag>4D millimeter-wave radar</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>感知-超声波</title>
+    <url>/2024/08/11/PerceptionUltrasonicRadar/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>在自动驾驶使用场景中，一般会使用各类传感器(摄像头、激光雷达、毫米波雷达和超声波雷达等)来感知周围环境信息，传感器收集的大量信息，通过各类算法最终融合到一个真实的语义地图上，下游模块通过该语义地图做相应的规划和决策。</p>
+<figure>
+<img data-src="https://i.imgur.com/8bSceod.jpeg" alt="花孔雀" /><figcaption aria-hidden="true">花孔雀</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="超声波">超声波</h2>
+<p>超声波雷达是一种利用声波反射原理进行测距的传感器，主要用于短距离测量，一般测量范围在0.1m-5m之间，具有体积小、成本低、安装方便等特点。</p>
+<h3 id="测距原理">测距原理</h3>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/Fhpx4VjbDR1MkWd.jpg" alt="测距原理" /><figcaption aria-hidden="true">测距原理</figcaption>
+</figure>
+<p><span class="math display">\[
+D = T_{f} * V_{s} * k
+\]</span></p>
+<p>其中，<span class="math inline">\(T_f\)</span>表示超声波的飞行时间，及超声波走完距离<span class="math inline">\(D\)</span>所需的时间，<span class="math inline">\(V_s\)</span>表示声音在空气中的速度，<span class="math inline">\(k\)</span>表示一个接近0.5的常数，一般由传感器的结构决定(收发压电换能器的位置)。</p>
+<h3 id="声速">声速</h3>
+<p>声波在空气的速度与温度的关系近似如下： <span class="math display">\[V_s\approx20.055*\sqrt{T}\]</span> 其中，<span class="math inline">\(T\)</span>表示绝对温度，单位<span class="math inline">\(K\)</span>。 当温度在 <span class="math inline">\(0-40℃\)</span>范围变化是，声速在<span class="math inline">\(330-360 m/s\)</span>范围内变化，因此温度应作为距离的测量的关键因素考虑，故一般要求安装温度传感器获取环境温度。</p>
+<h3 id="声波特性">声波特性</h3>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/MRvDS2jpEZy8q1x.png" alt="声波特性" /><figcaption aria-hidden="true">声波特性</figcaption>
+</figure>
+<ul>
+<li><strong>频率</strong>：声波的频率是指每秒钟内声波完成的全振动次数，单位为赫兹（Hz）。人耳能听到的声音频率范围大约在20 Hz到20,000 Hz之间。超声波传感器通常工作在更高的频率，如几十kHz甚至几百kHz。</li>
+<li><strong>周期</strong>：声波的周期是指完成一次全振动所需要的时间，单位为秒（s）。频率和周期的关系是互为倒数，即 <span class="math inline">\(f = \frac{1}{T}\)</span>，其中<span class="math inline">\(f\)</span>表示频率，<span class="math inline">\(T\)</span>表示周期。</li>
+<li><strong>波长</strong>：声波的波长是指在空气中传播时，两个相邻的同相位点之间的距离，单位为米（m）。波长和频率、声速的关系是 <span class="math inline">\(λ = \frac{v}{f}\)</span>，其中<span class="math inline">\(λ\)</span>表示波长，<span class="math inline">\(v\)</span>表示声速，<span class="math inline">\(f\)</span>表示频率。</li>
+<li><strong>声速</strong>：声速是指声波在介质中传播的速度，单位为米每秒（m/s）。不同介质的声速不同，例如在空气中，声速约为340 m/s；在水中，声速约为1,500 m/s；在钢铁中，声速则高达5,000 m/s以上。</li>
+<li><strong>振幅</strong>：声波的振幅是指声波的最大位移，单位为帕斯卡（Pa）或牛顿每平方米（N/m²）。振幅越大，声音的响度越高；振幅越小，声音的响度越低。</li>
+</ul>
+<p>超声波在不同介质下的传播特性如下：</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/i9kVoaOK6sARbtl.png" alt="声波的反射与折射" /><figcaption aria-hidden="true">声波的反射与折射</figcaption>
+</figure>
+<h4 id="反射特性">反射特性</h4>
+<p>如下图所示，超声波反射一般会遇到如下场景：</p>
+<figure>
+<img data-src="https://i.imgur.com/IOkVufX.png" alt="反射场景" /><figcaption aria-hidden="true">反射场景</figcaption>
+</figure>
+<h5 id="墙面反射">墙面反射</h5>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/QRHbErZ64dnyAha.png" alt="墙面反射" /><figcaption aria-hidden="true">墙面反射</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/Q1TE46y.png" alt="反射原理" /><figcaption aria-hidden="true">反射原理</figcaption>
+</figure>
+<h5 id="墙角反射">墙角反射</h5>
+<figure>
+<img data-src="https://i.imgur.com/7Jv1zJY.png" alt="墙角反射原理" /><figcaption aria-hidden="true">墙角反射原理</figcaption>
+</figure>
+<h5 id="边沿反射">边沿反射</h5>
+<figure>
+<img data-src="https://i.imgur.com/tqYI1uX.png" alt="边沿反射原理" /><figcaption aria-hidden="true">边沿反射原理</figcaption>
+</figure>
+<p>不同场景下，不同入射角下，回波强度如下： <img data-src="https://i.imgur.com/u5ZRp4k.png" alt="信号强度与入射角的关系" /> 实际扫描数据如下： <img data-src="https://i.imgur.com/eeJmhsf.png" alt="实际扫描数据" /></p>
+<h2 id="内部结构">内部结构</h2>
+<figure>
+<img data-src="https://i.imgur.com/iONqLvF.png" alt="超声结构示图" /><figcaption aria-hidden="true">超声结构示图</figcaption>
+</figure>
+<h3 id="接口定义">接口定义</h3>
+<figure>
+<img data-src="https://i.imgur.com/3SJXyKP.png" alt="接口定义" /><figcaption aria-hidden="true">接口定义</figcaption>
+</figure>
+<h3 id="总线方式">总线方式</h3>
+<figure>
+<img data-src="https://i.imgur.com/mc0mGZv.png" alt="Lin总线" /><figcaption aria-hidden="true">Lin总线</figcaption>
+</figure>
+<h3 id="长距超声">长距超声</h3>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://i.imgur.com/8MfDr4e.png" alt="横向" /></div><div class="group-picture-column"><img data-src="https://i.imgur.com/8MfDr4e.png" alt="竖向" /></div></div></div>
+<h4 id="通信协议">通信协议</h4>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://i.imgur.com/qARFFhm.png" alt="数据读取" /></div></div><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://i.imgur.com/6eg5g7h.png" alt="距离转换" /></div><div class="group-picture-column"><img data-src="https://i.imgur.com/4c4B4gL.png" alt="信号强度" /></div></div></div>
+<h3 id="短距超声">短距超声</h3>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://i.imgur.com/sUP65dB.png" alt="横向" /></div><div class="group-picture-column"><img data-src="https://i.imgur.com/kiMvLSQ.png" alt="竖向" /></div></div></div>
+<h4 id="通信协议-1">通信协议</h4>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://i.imgur.com/deGImO6.png" alt="数据读取" /></div><div class="group-picture-column"><img data-src="https://i.imgur.com/OlRqAFZ.png" alt="距离转换" /></div></div></div>
+<h3 id="总体布局">总体布局</h3>
+<figure>
+<img data-src="https://i.imgur.com/zJmzY9O.png" alt="安装布局" /><figcaption aria-hidden="true">安装布局</figcaption>
+</figure>
+<h3 id="安装要点">安装要点</h3>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://i.imgur.com/hgwfFJv.png" alt="1" /></div><div class="group-picture-column"><img data-src="https://i.imgur.com/XFIa72C.png" alt="2" /></div></div><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://i.imgur.com/EWLv0U6.png" alt="3" /></div><div class="group-picture-column"><img data-src="https://i.imgur.com/Wt7K99i.png" alt="4" /></div></div></div>
+]]></content>
+      <categories>
+        <category>perception</category>
+        <category>ultrasonic</category>
+      </categories>
+      <tags>
+        <tag>perception</tag>
+        <tag>ultrasonic</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>感知-毫米波介绍</title>
+    <url>/2024/08/11/PerceptionMillimeterWaveRadar/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>毫米波(mmWave)是一类使用短波长 电磁波的特殊雷达技术。雷达系统发射的电磁波信号被其发射路径上的物体阻挡继而会发生反射。通过捕捉反射信号，雷达系统可以确定物体的距离、速度和角度。</p>
+<p>毫米波雷达可发射波长为毫米量级的信号，在电磁频谱中，这种波长被视为短波长，这也是该技术的优势之一，即处理毫米波所需的系统组件(如 天线)尺寸可以做得很小；短波长的另一个优势是高准确度，工作频率为 76~81 GHz(对应波长约为 4mm)的毫米波系统将能够检测到小至零点几毫米的移动。</p>
+<p>其中，TI公司的器件实现了一种称为 调频连续波(FMCW)的特殊毫米波技术。顾名思义，FMCW 雷达连续发射调频信号，以测量距离、速度和角度。这与周期性发射短脉冲的传统脉冲雷达系统不同。</p>
+<figure>
+<img data-src="https://i.imgur.com/leBJOBt.jpeg" alt="植物" /><figcaption aria-hidden="true">植物</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="雷达信号">雷达信号</h2>
+<p>FMCW雷达系统所用的信号的频率随时间变化呈现线性升高，这种类型的信号也称为 <code>线性调频脉冲</code> 。</p>
+<figure>
+<img data-src="https://i.imgur.com/NIfN6xU.png" alt="线性调频脉冲信号 - 幅度与时间的关系" /><figcaption aria-hidden="true">线性调频脉冲信号 - 幅度与时间的关系</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/hBpBwNo.png" alt="线性调频脉冲信号 - 频率与时间的关系" /><figcaption aria-hidden="true">线性调频脉冲信号 - 频率与时间的关系</figcaption>
+</figure>
+<p>该线性调频脉冲具有起始频率 <span class="math inline">\(f_c\)</span>，带宽 <span class="math inline">\(B\)</span>，持续时间 <span class="math inline">\(T_c\)</span>，斜率<span class="math inline">\(S\)</span>捕捉频率的变化率； <span class="math display">\[f_c = 77 GHz; B=4 GHz ; T_c=40 us; S=100 Mhz/us\]</span></p>
+<h3 id="雷达射频组件">雷达射频组件</h3>
+<figure>
+<img data-src="https://i.imgur.com/neqRgKg.png" alt="FMCW雷达框图" /><figcaption aria-hidden="true">FMCW雷达框图</figcaption>
+</figure>
+<ul>
+<li>合成器：生成一个线性调频脉冲；</li>
+<li>发射天线：该线性调频脉冲由发射天线（TX天线）发射；</li>
+<li>接收天线：接收物体反射的线性调频脉冲信号；</li>
+<li>混频器： 将TX和RX信号合并到一起，生成一个中频 （IF）信号；</li>
+</ul>
+<h3 id="混频器">混频器</h3>
+<p>混频器是一个电子组件，将两个信号合并到一起生成一个具有新频率的信号。 对于两个正弦输入 <span class="math display">\[x_{1}\]</span> 和 <span class="math display">\[x_{2}\]</span>： <span class="math display">\[\begin{equation}
+x_1= sin(w_1*t+ {\phi}_1)
+\end{equation}\]</span> <span class="math display">\[\begin{equation}
+x_2= sin(w_2*t+ {\phi}_2)
+\end{equation}\]</span> 瞬时输出如下： <span class="math display">\[\begin{equation}
+x_{out} = sin[(w_1-w_2)*t + (\phi_{1} - \phi_{2})]
+\end{equation}\]</span></p>
+<h2 id="测距原理">测距原理</h2>
+<h3 id="单目标测距">单目标测距</h3>
+<p>如下图所示，雷达通过TX天线发射的线性调节脉冲信号，经过时间 <span class="math inline">\(t\)</span> 之后，接收天线RX收到目标反射回来的信号，两个信号的频率差为 <span class="math inline">\(S_{\tau}\)</span>： <img data-src="https://i.imgur.com/aysTMZR.png" alt="单目标" /> 由公式(6)可知，混频器的输出信号频率是TX和RX信号频率之差，从上图可知，两条线之间的距离是固定的，故中频信号 (IF信号) 包含一个频率恒定的单音信号。图中显示IF信号的频率为<span class="math inline">\(S_{\tau}\)</span> ，且仅在TX和RX线性调频脉冲重叠的时段有效(图中垂直虚线之间的时间段)。故混频器的输出信号(IF信号)作为时间的幅度函数是一个正弦波。 #### 频率 中频信号的频率<span class="math inline">\(f_0\)</span>可表示为： <span class="math display">\[\begin{equation}
+f_0 = S_\tau = S * \tau
+\end{equation}\]</span> 其中，<span class="math inline">\(S\)</span>为线性调节脉冲信号的斜率，<span class="math inline">\(\tau\)</span>为延时时间。</p>
+<p>由于RX线性调节脉冲是TX线性调节脉冲的延时版本，其中延时可以通过电磁波在发射器与物体之间的传输距离表示如下： <span class="math display">\[
+\begin{equation}
+\tau = \frac{2*d}{c}
+\end{equation}
+\]</span> 其中，<span class="math inline">\(d\)</span>表示毫米波雷达与被检测物体的距离，<span class="math inline">\(c\)</span>表示光速。 结合公式(4)(5)可得中频信号频率与目标距离的关系如下： <span class="math display">\[
+\begin{equation}
+f_0 = S*\tau = \frac{2*S*d}{c}
+\end{equation}
+\]</span> 故得到中频信号的频率即可得到目标与雷达之间的距离： <span class="math display">\[
+\begin{equation}
+d = \frac{f_0*c}{2*S}
+\end{equation}
+\]</span> #### 相位 中频信号IF的初始相位<span class="math inline">\(\Phi_{0}\)</span>是IF信号起始点对应时间点的Tx信号与Rx信号的相位差。假设Tx信号的初始相位为0，经过<span class="math inline">\(\tau\)</span>时间后Rx信号的相位也是0，那么IF信号的初始相位为 <span class="math display">\[
+\begin{equation}
+\phi_0=2{\pi}f_c\tau
+\end{equation}
+\]</span> 结合公式(8)，以及频率与波长得关系<span class="math inline">\(\frac{c}{f}=\lambda\)</span>得 <span class="math display">\[
+\begin{equation}
+\phi_0=\frac{4{\pi}d}{\lambda}
+\end{equation}
+\]</span> 故与雷达相距距离<span class="math inline">\(d\)</span>的物体，IF信号将是一个正弦波，表示如下： <span class="math display">\[
+\begin{equation}
+A*sin(2{\pi}f_0*t + \phi_0)
+\end{equation}
+\]</span> 其中<span class="math inline">\(f_0=\frac{2Sd}{c}\)</span>，<span class="math inline">\(\phi_0=\frac{4{\pi}d}{\lambda}\)</span>。 &gt; 等式(9)是一个近似等式，仅在斜率和距离足够小时才有效；但相位和距离的变化率呈线性关系是正确的，即<span class="math inline">\(\Delta{\phi}=\frac{4\pi{\Delta{d}}}{\lambda}\)</span> <img data-src="https://i.imgur.com/g8bqCZ1.png" /> ### 多目标测距 #### FFT 对于单目标的IF信号，可以通过傅里叶变化(FFT)，将时域信号转为频域信号，时域中的正弦波在频域中产生一个峰值，横坐标对应IF信号的频率。 <img data-src="https://i.imgur.com/uLZ5mEJ.png" /> #### Range-FFT 雷达通过接收不同物体的发射信号，并转为IF信号，利用傅里叶变换将产生一个具有不同的分离峰值的频谱，每个峰值表示在特定距离处存在物体。 <img data-src="https://i.imgur.com/MDH6x2l.png" /> ### 多目标的分辨率 距离分辨率是辨别两个或更多物体的能力。当两个物体靠近到某个位置时，雷达系统将不能将二者区分开。 由傅里叶变换理论可知：观测窗口<span class="math inline">\(T\)</span>可以分辨时间间隔超过<span class="math inline">\(\frac{1}{T}\)</span>Hz的频率分量。这意味着IF信号的频率差值满足公式(14)中关系，就可以分辨两个IF单音信号。 <span class="math display">\[
+\begin{equation}
+\Delta{f} &gt; \frac{1}{T_{c}}
+\end{equation}
+\]</span> 其中，<span class="math inline">\(T_{c}\)</span>是观测时间长度，<span class="math inline">\(\Delta{f}\)</span>表示两个IF信号之间得频率差值。 由公式(9)得 <span class="math display">\[
+\begin{equation}
+\Delta{f} = \frac{2*S*\Delta{d}}{c}
+\end{equation}
+\]</span> 结合公式(14)和(15)得 <span class="math display">\[
+\begin{equation}
+\Delta{d} &gt; \frac{c}{2*S*T_c} = \frac{c}{2*B}
+\end{equation}
+\]</span> 故距离分辨率<span class="math inline">\(d_{res}\)</span>取决于线性调节脉冲扫频得带宽 <span class="math display">\[
+\begin{equation}
+d_{res}  = \frac{c}{2*B}
+\end{equation}
+\]</span> 根据公式(17)可知，线性调频脉冲带宽为数<code>GHz</code>的<code>FMCW</code>雷达，将有约数厘米的距离分辨率。 &gt; 距离分辨率由线性调频脉冲带宽决定。 例如，带宽为4GHz的线性调频脉冲可转化为 3.75 cm的距离分辨率。 下图所示，当线性调频脉冲的带宽由<span class="math inline">\(B_1\)</span>提升至<span class="math inline">\(B_2\)</span>后，提高了两个目标的分辨率。<br />
+<img data-src="https://i.imgur.com/18Ly6Mk.png" /> ### 最远探测距离 一般IF信号经过数字化处理(LPF+ADC)，才在DSP上进行进一步处理，因此，中频信号的完整性，很大程度上取决于ADC的采样频率<span class="math inline">\(F_s\)</span>。 <img data-src="https://i.imgur.com/kKCU5ny.png" /> 根据采样定理知， <span class="math display">\[
+\begin{equation}
+F_s &gt; 2* f_{IF_{max}} = \frac{2*S*d_{max}}{c}
+\end{equation}
+\]</span> 故最大距离表示为 <span class="math display">\[
+\begin{equation}
+d_{max} = \frac{F_{s}*c}{2*S}
+\end{equation}
+\]</span> ADC的采样频率限制了雷达的最远探测距离。</p>
+<h2 id="测速原理">测速原理</h2>
+<p>测速的基本原理是基于多普勒效应：</p>
+<blockquote>
+<p>当移动台以恒定的速率沿某一方向移动时，由于传播路程差的原因，会造成相位和频率的变化，通常将这种变化称为多普勒频移。它揭示了波的属性在运动中发生变化的规律。</p>
+</blockquote>
+<h3 id="速度估算原理">速度估算原理</h3>
+<h4 id="相位变化">相位变化</h4>
+<p>当物体静止时，输出IF信号如下： <img data-src="https://i.imgur.com/VZJBBXI.png" alt="静止物体" /> 当物体运动时，接收信号发生了延时，IF信号的相位也发生了改变。 <img data-src="https://i.imgur.com/dabZ5Q8.png" alt="运动物体" /> 则在<span class="math inline">\(\Delta{\tau}\)</span>时间内，相位的变化量为 <span class="math display">\[
+\begin{equation}
+\Delta{\phi}=2\pi{f_c}{\Delta}\tau=\frac{4\pi{\Delta}d}{\lambda}
+\end{equation}
+\]</span> #### 相位求解 具有相同频率、不同初始相位的正弦信号经过FFT变换，在相同横坐标位置处（频率相等）产生峰值，但峰值信号的相位不同，峰值的相位等于正弦波的初始相位。 <img data-src="https://i.imgur.com/2OeIDlr.png" /> #### 估算原理 FMCW雷达发送间隔为<span class="math inline">\(T_c\)</span>的两个线性调频脉冲信号，每个反射的调频脉冲信号通过Range-FFT进行处理，对应每个调频脉冲信号的Range-FFT，将在同一位置出现峰值，但相位不同。该相位差与物体移动的位移有关。 <img data-src="https://i.imgur.com/nn6SvoL.png" alt="估算原理" /> 根据物体相对雷达的速度在<span class="math inline">\(T_C\)</span>时间内的位移(<span class="math inline">\(\Delta{d}=v*{T}_c\)</span>)，代入公式(20)得 <span class="math display">\[
+\begin{equation}
+v=\frac{\lambda{\Delta}\phi}{4\pi{T_c}}
+\end{equation}
+\]</span> ### 最大速度 由于速度测量基于相位差，因而会存在模糊性。仅当<span class="math inline">\(\Delta{\phi}&lt;\pi\)</span>时，具有非模糊性，故结合公式(20)可得 <span class="math display">\[
+\begin{equation}
+v_{max}=\frac{\lambda}{4\pi{T_c}}
+\end{equation}
+\]</span> 因而，想要测量更高的速度需要两个线性调频脉冲之间更短的传输时间。 ### 同一距离处多物体速度估算 如果速度不同的多个移动物体在测量时与雷达的距离相同，则双线性调频脉冲速度测量方法将不起作用，由于物体与雷达的距离相同，因而生成的IF信号频率将相同，经过距离FFT会产生单个峰值，该峰值表示距离相同物体的合并信号。 为测量速度，必须发射<strong>两个以上</strong>的线性调频脉冲信号。对同一距离处多个物体的速度估算，需要发射一组N个等间隔的线性调频脉冲，这组线性调频脉冲称为 <code>线性调频脉冲帧</code>(Frame)。 对于等距不同速的两个物体，在同一帧内，通过Range FFT 后在峰值处提取各相位，并做Doppler FFT，会产生两个具有不同的峰值，其对应的横坐标为各物体的相位差。 <img data-src="https://i.imgur.com/DCkSbzg.png" /> 其中，<span class="math inline">\(\omega_1\)</span>和<span class="math inline">\(\omega_2\)</span>对应各个连续线性调频脉冲之间的相位差。 根据公式(21)得 <span class="math display">\[
+\begin{equation}
+v_1=\frac{\lambda{\omega}_1}{4\pi{T_c}}
+\end{equation}
+\]</span> <span class="math display">\[
+\begin{equation}
+v_2=\frac{\lambda{\omega}_2}{4\pi{T_c}}
+\end{equation}
+\]</span> #### 速度分辨率 根据离散傅里叶变换理论，两个离散频率<span class="math inline">\(\omega_1\)</span>和<span class="math inline">\(\omega_2\)</span>，仅在<span class="math inline">\(\Delta{\omega}&gt;\frac{2\pi}{N}\)</span>时，可以分辨。 <img data-src="https://i.imgur.com/YQd1qZB.png" /> 由上图可知，帧周期<span class="math inline">\(T_f=NT_c\)</span>。故根据公式(20)得 <span class="math display">\[
+\begin{equation}
+\Delta{\phi}=\frac{4\pi{\Delta}d}{\lambda}=\frac{4\pi{v}T_c}{\lambda}&gt;\frac{2\pi}{N}
+\end{equation}
+\]</span> 从而得到速度分辨率为 <span class="math display">\[\begin{equation}
+v&gt;v_{res}=\frac{\lambda}{2T_cN}=\frac{\lambda}{2T_f}
+\end{equation}
+\]</span> 因此，速度分辨率取决于帧的时间(<span class="math inline">\(T_f\)</span>)。</p>
+<h2 id="角度检测原理">角度检测原理</h2>
+<p>FMCW雷达系统使用水平面估算反射信号的角度，该角度称为到达角（AoA）。 <img data-src="https://i.imgur.com/EBX8dDj.png" alt="到达角" /></p>
+<h3 id="角度估算原理">角度估算原理</h3>
+<p>当目标距离发生很小的变化时，就会会导致Range-FFT或Doppler-FFT得峰值处相位发生较大的变化，因此可利用物体与两个天线的距离差<span class="math inline">\(\Delta{d}\)</span>引起的相位变化估算到达角（Angle of Arrival ）。</p>
+<h4 id="波形往返">波形往返</h4>
+<p>如下图所示，根据测速原理知，目标移动<span class="math inline">\(\Delta{d}\)</span>位置，毫米波传播路径往返多走了<span class="math inline">\(2\Delta{d}\)</span>位移，则与相位关系为 <span class="math display">\[
+\begin{equation}
+\Delta{\phi}=\frac{4\pi{\Delta}d}{\lambda}
+\end{equation}
+\]</span> <img data-src="https://i.imgur.com/dylOKL8.png" alt="波形往返" /></p>
+<h4 id="波形单程">波形单程</h4>
+<p>如下图所示，两个接收天线间隔距离为<span class="math inline">\(l\)</span>，毫米波传播路径单程多走了<span class="math inline">\(\Delta{d}\)</span>，故结合公式(27)得 <span class="math display">\[
+\begin{equation}
+\Delta{\phi}=\frac{2\pi{\Delta}d}{\lambda}
+\end{equation}
+\]</span> <img data-src="https://i.imgur.com/R3RziuG.png" alt="波形单程" /></p>
+<h4 id="到达角估算">到达角估算</h4>
+<p>如下图所示，考虑接收天线与目标物体之间得几何关系得 <span class="math display">\[
+\begin{equation}
+\Delta{d}=l*sin(\theta)
+\end{equation}
+\]</span> 代入公式(28)得 <span class="math display">\[
+\begin{equation}
+\theta=sin^{-1}(\frac{\lambda{\Delta}\phi}{2\pi{l}})
+\end{equation}
+\]</span></p>
+<figure>
+<img data-src="https://i.imgur.com/KiSSOwS.png" alt="到达角估算" /><figcaption aria-hidden="true">到达角估算</figcaption>
+</figure>
+<h4 id="估算准确度">估算准确度</h4>
+<p>由于<span class="math inline">\(\Delta{\phi}\)</span>取决于<span class="math inline">\(sin(\theta)\)</span>，是一种非线性的依赖关系，只有当<span class="math inline">\(\theta\)</span>很小时，<span class="math inline">\(sin(\theta)\)</span>才是线性函数的近似值。因此当<span class="math inline">\(\theta\)</span>接近0°时，角度的估算精度较高，<span class="math inline">\(\theta\)</span>接近90°时，估算精度降低。 <img data-src="https://i.imgur.com/Qf5dgUC.png" alt="估算精度" /></p>
+<h3 id="同距同速角度估算">同距同速角度估算</h3>
+<p>假设存在N个接收天线，每个天线计算出的距离和速度信息都相等，可以通过Angle-FFT分离出每组接收天线的相位差。</p>
+<p><img data-src="https://i.imgur.com/pkWIbtZ.png" /></p>
+<p>结合公式(30)知 <span class="math display">\[
+\begin{equation}
+\theta_1=sin^{-1}(\frac{\lambda{\omega}_1}{2\pi{l}})
+\end{equation}
+\]</span> <span class="math display">\[
+\begin{equation}
+\theta_2=sin^{-1}(\frac{\lambda{\omega}_2}{2\pi{l}})
+\end{equation}
+\]</span></p>
+<h3 id="最大角视场">最大角视场</h3>
+<p>雷达的最大角视场由雷达可以估算的最大 AoA 来界定。 当<span class="math inline">\(\Delta{\phi}&gt;\pi\)</span>时，就会产生角度模糊，如下图所示： <img data-src="https://i.imgur.com/JvEornm.png" /> 结合公式(28)(29)得： <span class="math display">\[
+\begin{equation}
+\Delta{\phi}=\frac{2{\pi}lsin(\theta)}{\lambda}&lt;\pi \Longrightarrow \theta_{max}=sin^{-1}（\frac{\lambda}{2l}）
+\end{equation}
+\]</span> 故，当接收天线间隔<span class="math inline">\(l=\frac{\lambda}{2}\)</span>时，会导致<span class="math inline">\(\pm{90}^{\circ}\)</span>的最大角视场。</p>
+<h3 id="角度分辨率">角度分辨率</h3>
+<ul>
+<li>随着到达角（AoA）的增加，角度分辨率逐渐降低。</li>
+</ul>
+<p><img data-src="https://i.imgur.com/T3dWSHV.png" /></p>
+<p>结合公式(28)(29)得 <span class="math display">\[
+\begin{equation}
+\omega=\frac{2{\pi}lsin(\theta)}{\lambda}
+\end{equation}
+\]</span> 则相位差为 <span class="math display">\[
+\begin{aligned}
+{\Delta}\omega&amp; =\omega_2-\omega_1\\
+&amp; =\frac{2{\pi}lsin(\theta+\Delta{\theta})}{\lambda}-\frac{2{\pi}lsin(\theta)}{\lambda}\\
+&amp; =\frac{2{\pi}l}{\lambda} * [sin(\theta+\Delta{\theta})-sin(\theta)] \\
+&amp; = \frac{2{\pi}l}{\lambda} * [sin(\theta)cos(\Delta{\theta})+cos(\theta)sin(\Delta{\theta})-sin(\theta)] \\
+\end{aligned}
+\]</span></p>
+<p>其中，将设<span class="math inline">\(\Delta{\theta}\)</span>趋近于0，则<span class="math inline">\(cos(\Delta{\theta}) \to 1\)</span>，<span class="math inline">\(sin(\Delta{\theta}) \to 0\)</span>，故上述公式可近似为 <span class="math display">\[
+\begin{equation}
+{\Delta}\omega \approx\frac{2{\pi}l}{\lambda}cos(\theta)\Delta{\theta}
+\end{equation}
+\]</span></p>
+<p>根据离散傅里叶变换理论，两个离散频率<span class="math inline">\(\omega_1\)</span>和<span class="math inline">\(\omega_2\)</span>，仅在<span class="math inline">\(\Delta{\omega}&gt;\frac{2\pi}{N}\)</span>时，可以分辨。 <span class="math display">\[
+\begin{equation}
+{\Delta}\omega &gt; \frac{2\pi}{N} \Rightarrow \frac{2{\pi}l}{\lambda}cos(\theta)\Delta{\theta} &gt; \frac{2\pi}{N} \Rightarrow \Delta{\theta}&gt;\frac{\lambda}{Nlcos(\theta)}
+\end{equation}
+\]</span></p>
+<p>因此，角分辨率为 <span class="math display">\[
+\begin{equation}
+\theta{res}=\frac{\lambda}{Nlcos(\theta)}
+\end{equation}
+\]</span> 通常假设<span class="math inline">\(d=\frac{\lambda}{2}\)</span>，<span class="math inline">\(\theta=0\)</span>,得 <span class="math display">\[
+\begin{equation}
+\theta{res}=\frac{2}{N}
+\end{equation}
+\]</span></p>
+<h2 id="总结">总结</h2>
+<ul>
+<li>角度 <span class="math display">\[
+\begin{equation}
+\theta=sin^{-1}(\frac{\lambda{\Delta}\phi}{2\pi{l}})
+\end{equation}
+\]</span></li>
+<li>最大角度 <span class="math display">\[
+\begin{equation}
+\theta_{max}=sin^{-1}（\frac{\lambda}{2l}）
+\end{equation}
+\]</span></li>
+<li>角度分辨率 <span class="math display">\[
+\begin{equation}
+\theta{res}=\frac{2}{N}
+\end{equation}
+\]</span></li>
+</ul>
+<blockquote>
+<p>因此，设计天线的个数以及间距对角度估算起决定性作用。</p>
+</blockquote>
+<h2 id="参考">参考</h2>
+<ol type="1">
+<li><a href="https://blog.csdn.net/qq_39764867/article/details/108987851?spm=1001.2014.3001.5502">汽车FMCW毫米波雷达信号处理流程</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>perception</category>
+        <category>millimeter-wave radar</category>
+      </categories>
+      <tags>
+        <tag>perception</tag>
+        <tag>millimeter-wave radar</tag>
       </tags>
   </entry>
 </search>
