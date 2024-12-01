@@ -1,1 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" id="NexT" width="512" height="512" x="0" y="0" enable-background="new 0 0 512 512" version="1.1" viewBox="0 0 512 512" xml:space="preserve"><metadata id="metadata3390"/><path style="fill:#fff;fill-opacity:1" d="M 256.4,25.8 56.4,141.3 56,371.5 255.6,486.2 455.6,370.7 456,140.5 Z"/><path style="fill:#222;fill-opacity:1" id="path3384" d="M 256.4,25.8 56.4,141.3 56,371.5 255.6,486.2 455.6,370.7 456,140.5 Z m 92.6,328.8 -18.4,10.7 -18.6,-11 0,0 -112,-142.3 0,142.6 -18.4,10.7 -18.6,-11 0,-197 18.5,-10.6 18.5,10.8 0,0 112,144.5 0,-144.6 18.5,-10.6 18.5,10.8 z"/></svg>
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg" version="1.1" enable-background="new 0 0 512 512" xml:space="preserve">
+ <metadata id="metadata3390">image/svg+xml</metadata>
+
+ <g>
+  <title>Layer 1</title>
+  <path transform="rotate(89.8643 256 256)" fill="#222222" d="m256.4,25.8l-200,115.5l-0.4,230.2l199.6,114.7l200,-115.5l0.4,-230.2l-199.6,-114.7zm92.6,328.8l-18.4,10.7l-18.6,-11l0,0l-112,-142.3l0,142.6l-18.4,10.7l-18.6,-11l0,-197l18.5,-10.6l18.5,10.8l0,0l112,144.5l0,-144.6l18.5,-10.6l18.5,10.8l0,197z" id="path3384"/>
+  <path d="m-137,44c137,-44 137,-44 137,-44l-137,44l0,0l0,0" id="svg_2" fill="none"/>
+ </g>
+</svg>

@@ -76,50 +76,6 @@ smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
       </tags>
   </entry>
   <entry>
-    <title>3D Object Detector IPOD</title>
-    <url>/2024/08/15/3D-ObjectDetector-IPOD/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<figure>
-<img data-src="https://i.imgur.com/50FMneL.png" alt="网络框图" /><figcaption aria-hidden="true">网络框图</figcaption>
-</figure>
-<ol type="1">
-<li>第一个子采样网络用于过滤掉大多数的背景点；</li>
-<li>第二阶段是基于点基础的候选框生成；</li>
-<li>第三个组成部分是网络架构，由主干网络、proposal特征生成模块和边界框预测网络组成，它对生成的候选框进行分类和回归；</li>
-</ol>
-<span id="more"></span>
-<h2 id="proposal特征生成模块">proposal特征生成模块</h2>
-<p>通过结合位置信息和上下文特征来生成从内部点的质心到目标实例对象中心的偏移量。将预测的残差添加回位置信息，以使特征几何变换更加鲁棒。</p>
-<figure>
-<img data-src="https://i.imgur.com/NCBqQfR.png" alt="proposal" /><figcaption aria-hidden="true">proposal</figcaption>
-</figure>
-<h2 id="backbone和bbox回归">Backbone和bbox回归</h2>
-<figure>
-<img data-src="https://i.imgur.com/R80Gskn.png" alt="Backbone" /><figcaption aria-hidden="true">Backbone</figcaption>
-</figure>
-<h3 id="backbone">Backbone</h3>
-<p>主干网络以原始点云数据<span class="math inline">\((x,y,z,r)\)</span>作为输入，通过堆叠SA层和FP层模块来提取每个点的局部和全局特征。</p>
-<h3 id="bounding-box预测网络">Bounding-box预测网络</h3>
-<p>它将proposal特征生成模块中的特征作为输入。产生分类和回归预测。</p>
-<h2 id="实验数据">实验数据</h2>
-<figure>
-<img data-src="https://i.imgur.com/icjWCAD.png" alt="实验数据" /><figcaption aria-hidden="true">实验数据</figcaption>
-</figure>
-<h2 id="参考">参考</h2>
-<ol type="1">
-<li><span class="exturl" data-url="aHR0cHM6Ly9hcnhpdi5vcmcvcGRmLzE4MTIuMDUyNzY=">IPOD: Intensive Point-based Object Detector for Point Cloud<i class="fa fa-external-link-alt"></i></span></li>
-</ol>
-]]></content>
-      <categories>
-        <category>3D Object Detector</category>
-        <category>IPOD</category>
-      </categories>
-      <tags>
-        <tag>3D Object Detector</tag>
-        <tag>LiDAR</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>3D Object Detector-表示方法</title>
     <url>/2024/08/10/3D-ObjectDetector-Express/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -176,69 +132,43 @@ smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
       </tags>
   </entry>
   <entry>
-    <title>3D Object Detector PointNet</title>
-    <url>/2024/08/12/3D-ObjectDetector-PointNet/</url>
-    <content><![CDATA[<figure>
-<img data-src="https://s2.loli.net/2024/08/14/u6cbaUOS5k29lpN.png" alt="斯坦福" /><figcaption aria-hidden="true">斯坦福</figcaption>
-</figure>
+    <title>3D Object Detector IPOD</title>
+    <url>/2024/08/15/3D-ObjectDetector-IPOD/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
 <figure>
-<img data-src="https://s2.loli.net/2024/08/14/PEtF4XDLnedfIry.png" alt="应用领域" /><figcaption aria-hidden="true">应用领域</figcaption>
+<img data-src="https://i.imgur.com/50FMneL.png" alt="网络框图" /><figcaption aria-hidden="true">网络框图</figcaption>
 </figure>
+<ol type="1">
+<li>第一个子采样网络用于过滤掉大多数的背景点；</li>
+<li>第二阶段是基于点基础的候选框生成；</li>
+<li>第三个组成部分是网络架构，由主干网络、proposal特征生成模块和边界框预测网络组成，它对生成的候选框进行分类和回归；</li>
+</ol>
 <span id="more"></span>
-<h2 id="理论分析">理论分析</h2>
-<h3 id="点云存在两个问题">点云存在两个问题</h3>
-<h4 id="无序性">无序性</h4>
-<p>点云是一组无序的向量，其中点的不同排序，结果应该一致。 <img data-src="https://s2.loli.net/2024/08/14/m6ROVc2pqUlag8Q.png" alt="无序性" /></p>
-<p>如何解决？</p>
-<ul>
-<li>方式一：按照一定规则对点集进行排序;</li>
-<li>方式二：将点集的所有排列作为增强数据，训练一个循环网络;</li>
-<li>方式三：利用一个对称函数将所有信息进行聚合; 其中， 方式一看似简单，但是在高维空间中，实际上不存在一个在一般意义上相对于点扰动稳定的排序方式。 方式二被证明对于长度小的序列(几十个)有较好的鲁棒性，但对于动不动上千的点云数据不太合适。 因此，PointNet采用方式三，具体三种方式的精度对比如下：</li>
-</ul>
+<h2 id="proposal特征生成模块">proposal特征生成模块</h2>
+<p>通过结合位置信息和上下文特征来生成从内部点的质心到目标实例对象中心的偏移量。将预测的残差添加回位置信息，以使特征几何变换更加鲁棒。</p>
 <figure>
-<img data-src="https://s2.loli.net/2024/08/14/kofRgVOS2Pptzjd.png" alt="实现顺序不变性的三种方法" /><figcaption aria-hidden="true">实现顺序不变性的三种方法</figcaption>
+<img data-src="https://i.imgur.com/NCBqQfR.png" alt="proposal" /><figcaption aria-hidden="true">proposal</figcaption>
 </figure>
-<p>文章的主要思想是对集合中的变换元素应用对称函数来近似定义在点集上的通用函数： <span class="math display">\[f({x_1,...,x_n})\approx g(h(x_1),...,h(x_n))\]</span> 其中，<span class="math inline">\(h\)</span>函数使用 MLP 网络近似，<span class="math inline">\(g\)</span>函数使用 单变量函数与 MaxPool 函数的组合。</p>
-<p>常见的对称函数有:</p>
-<ul>
-<li>求和函数 <span class="math display">\[g(x_1,x_2,...,x_n) = x_1 + x_2 + ... + x_n\]</span></li>
-<li>求最大值函数 <span class="math display">\[g(x_1,x_2,...,x_n) = \max \{ x_1,x_2,...,x_n \}\]</span> 通过一系列的<span class="math inline">\(h\)</span>函数可以捕获点集合的不同属性(3D结构特征等) 故 PointNet 选择采用多层感知机(MLP)和最大池化(MaxPool)算子构建网络框架。</li>
-</ul>
+<h2 id="backbone和bbox回归">Backbone和bbox回归</h2>
 <figure>
-<img data-src="https://s2.loli.net/2024/08/14/QFgs96A1okcEDwR.png" alt="MLP" /><figcaption aria-hidden="true">MLP</figcaption>
+<img data-src="https://i.imgur.com/R80Gskn.png" alt="Backbone" /><figcaption aria-hidden="true">Backbone</figcaption>
 </figure>
-<h4 id="旋转变换后分类结果一致">旋转变换后分类结果一致</h4>
-<p>要做到旋转的一致性，PointNet引入T-Net得到一个旋转矩阵，对输入特征进行自动对齐。将正则化项添加到我们的softmax训练损失中，即将特征变换矩阵约束为接近正交矩阵（正交变换不会丢失输入中的信息）。</p>
-<p><img data-src="https://s2.loli.net/2024/08/14/pFd8gTPwhsOr3vL.png" /> <img data-src="https://s2.loli.net/2024/08/14/TJIg8oe5U3Ayvsx.png" /></p>
-<p>实验发现，通过添加正则化项，优化变得更加稳定，并且模型也获得了更好的性能。</p>
-<p><img data-src="https://s2.loli.net/2024/08/14/Tk5Pb6eltBfqEnv.png" /></p>
-<p>使用输入变换精度可以提升0.8%，而增加正则损失对高维度的变换是有效的。</p>
-<h2 id="鲁棒性好">鲁棒性好</h2>
-<p><img data-src="https://s2.loli.net/2024/08/14/37IcEnkjMt9YSa2.png" /></p>
-<h2 id="实验结果">实验结果</h2>
+<h3 id="backbone">Backbone</h3>
+<p>主干网络以原始点云数据<span class="math inline">\((x,y,z,r)\)</span>作为输入，通过堆叠SA层和FP层模块来提取每个点的局部和全局特征。</p>
+<h3 id="bounding-box预测网络">Bounding-box预测网络</h3>
+<p>它将proposal特征生成模块中的特征作为输入。产生分类和回归预测。</p>
+<h2 id="实验数据">实验数据</h2>
 <figure>
-<img data-src="https://s2.loli.net/2024/08/14/mvyhd4YpqS92WGH.png" alt="分类结果" /><figcaption aria-hidden="true">分类结果</figcaption>
+<img data-src="https://i.imgur.com/icjWCAD.png" alt="实验数据" /><figcaption aria-hidden="true">实验数据</figcaption>
 </figure>
-<figure>
-<img data-src="https://s2.loli.net/2024/08/14/irh4pde5QSWl6v2.png" alt="分割结果" /><figcaption aria-hidden="true">分割结果</figcaption>
-</figure>
-<h2 id="网络结构">网络结构</h2>
-<p><img data-src="https://s2.loli.net/2024/08/14/d2aDmFjMe6Z3Qc1.png" /></p>
-<ul>
-<li>分类网路只使用global特征进行预测；</li>
-<li>语义分割网络使用local和global特征进行预测；</li>
-</ul>
-<h3 id="share-mlp">Share MLP</h3>
-<p>PointNet使用二维卷积网络来实现Shared MLP。</p>
-<p><img data-src="https://s2.loli.net/2024/08/14/qFk36xvbHUaRdjp.png" /></p>
-<h2 id="网络代码">网络代码</h2>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_model</span>(<span class="params">point_cloud, is_training, bn_decay=<span class="literal">None</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; Classification PointNet, input is BxNx3, output Bx40 &quot;&quot;&quot;</span></span><br><span class="line">    batch_size = point_cloud.get_shape()[<span class="number">0</span>].value</span><br><span class="line">    num_point = point_cloud.get_shape()[<span class="number">1</span>].value</span><br><span class="line">    end_points = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> tf.variable_scope(<span class="string">&#x27;transform_net1&#x27;</span>) <span class="keyword">as</span> sc:</span><br><span class="line">        transform = input_transform_net(point_cloud, is_training, bn_decay, K=<span class="number">3</span>)</span><br><span class="line">    point_cloud_transformed = tf.matmul(point_cloud, transform)</span><br><span class="line">    input_image = tf.expand_dims(point_cloud_transformed, -<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    net = tf_util.conv2d(input_image, <span class="number">64</span>, [<span class="number">1</span>,<span class="number">3</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv1&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">64</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv2&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> tf.variable_scope(<span class="string">&#x27;transform_net2&#x27;</span>) <span class="keyword">as</span> sc:</span><br><span class="line">        transform = feature_transform_net(net, is_training, bn_decay, K=<span class="number">64</span>)</span><br><span class="line">    end_points[<span class="string">&#x27;transform&#x27;</span>] = transform</span><br><span class="line">    net_transformed = tf.matmul(tf.squeeze(net, axis=[<span class="number">2</span>]), transform)</span><br><span class="line">    net_transformed = tf.expand_dims(net_transformed, [<span class="number">2</span>])</span><br><span class="line"></span><br><span class="line">    net = tf_util.conv2d(net_transformed, <span class="number">64</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv3&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">128</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv4&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">1024</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv5&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Symmetric function: max pooling</span></span><br><span class="line">    net = tf_util.max_pool2d(net, [num_point,<span class="number">1</span>],</span><br><span class="line">                             padding=<span class="string">&#x27;VALID&#x27;</span>, scope=<span class="string">&#x27;maxpool&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    net = tf.reshape(net, [batch_size, -<span class="number">1</span>])</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">512</span>, bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                                  scope=<span class="string">&#x27;fc1&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.dropout(net, keep_prob=<span class="number">0.7</span>, is_training=is_training,</span><br><span class="line">                          scope=<span class="string">&#x27;dp1&#x27;</span>)</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">256</span>, bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                                  scope=<span class="string">&#x27;fc2&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.dropout(net, keep_prob=<span class="number">0.7</span>, is_training=is_training,</span><br><span class="line">                          scope=<span class="string">&#x27;dp2&#x27;</span>)</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">40</span>, activation_fn=<span class="literal">None</span>, scope=<span class="string">&#x27;fc3&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> net, end_points</span><br></pre></td></tr></table></figure>
-<h3 id="t-net">T-Net</h3>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">input_transform_net</span>(<span class="params">point_cloud, is_training, bn_decay=<span class="literal">None</span>, K=<span class="number">3</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; Input (XYZ) Transform Net, input is BxNx3 gray image</span></span><br><span class="line"><span class="string">        Return:</span></span><br><span class="line"><span class="string">            Transformation matrix of size 3xK &quot;&quot;&quot;</span></span><br><span class="line">    batch_size = point_cloud.get_shape()[<span class="number">0</span>].value</span><br><span class="line">    num_point = point_cloud.get_shape()[<span class="number">1</span>].value</span><br><span class="line"></span><br><span class="line">    input_image = tf.expand_dims(point_cloud, -<span class="number">1</span>)</span><br><span class="line">    net = tf_util.conv2d(input_image, <span class="number">64</span>, [<span class="number">1</span>,<span class="number">3</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;tconv1&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">128</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;tconv2&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">1024</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;tconv3&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.max_pool2d(net, [num_point,<span class="number">1</span>],</span><br><span class="line">                             padding=<span class="string">&#x27;VALID&#x27;</span>, scope=<span class="string">&#x27;tmaxpool&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    net = tf.reshape(net, [batch_size, -<span class="number">1</span>])</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">512</span>, bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                                  scope=<span class="string">&#x27;tfc1&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">256</span>, bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                                  scope=<span class="string">&#x27;tfc2&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> tf.variable_scope(<span class="string">&#x27;transform_XYZ&#x27;</span>) <span class="keyword">as</span> sc:</span><br><span class="line">        <span class="keyword">assert</span>(K==<span class="number">3</span>)</span><br><span class="line">        weights = tf.get_variable(<span class="string">&#x27;weights&#x27;</span>, [<span class="number">256</span>, <span class="number">3</span>*K],</span><br><span class="line">                                  initializer=tf.constant_initializer(<span class="number">0.0</span>),</span><br><span class="line">                                  dtype=tf.float32)</span><br><span class="line">        biases = tf.get_variable(<span class="string">&#x27;biases&#x27;</span>, [<span class="number">3</span>*K],</span><br><span class="line">                                 initializer=tf.constant_initializer(<span class="number">0.0</span>),</span><br><span class="line">                                 dtype=tf.float32)</span><br><span class="line">        biases += tf.constant([<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>], dtype=tf.float32)</span><br><span class="line">        transform = tf.matmul(net, weights)</span><br><span class="line">        transform = tf.nn.bias_add(transform, biases)</span><br><span class="line"></span><br><span class="line">    transform = tf.reshape(transform, [batch_size, <span class="number">3</span>, K])</span><br><span class="line">    <span class="keyword">return</span> transform</span><br></pre></td></tr></table></figure>
+<h2 id="参考">参考</h2>
+<ol type="1">
+<li><span class="exturl" data-url="aHR0cHM6Ly9hcnhpdi5vcmcvcGRmLzE4MTIuMDUyNzY=">IPOD: Intensive Point-based Object Detector for Point Cloud<i class="fa fa-external-link-alt"></i></span></li>
+</ol>
 ]]></content>
       <categories>
         <category>3D Object Detector</category>
-        <category>PointNet</category>
+        <category>IPOD</category>
       </categories>
       <tags>
         <tag>3D Object Detector</tag>
@@ -505,6 +435,76 @@ smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
       <categories>
         <category>3D Object Detector</category>
         <category>PointNet++</category>
+      </categories>
+      <tags>
+        <tag>3D Object Detector</tag>
+        <tag>LiDAR</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>3D Object Detector PointNet</title>
+    <url>/2024/08/12/3D-ObjectDetector-PointNet/</url>
+    <content><![CDATA[<figure>
+<img data-src="https://s2.loli.net/2024/08/14/u6cbaUOS5k29lpN.png" alt="斯坦福" /><figcaption aria-hidden="true">斯坦福</figcaption>
+</figure>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/14/PEtF4XDLnedfIry.png" alt="应用领域" /><figcaption aria-hidden="true">应用领域</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="理论分析">理论分析</h2>
+<h3 id="点云存在两个问题">点云存在两个问题</h3>
+<h4 id="无序性">无序性</h4>
+<p>点云是一组无序的向量，其中点的不同排序，结果应该一致。 <img data-src="https://s2.loli.net/2024/08/14/m6ROVc2pqUlag8Q.png" alt="无序性" /></p>
+<p>如何解决？</p>
+<ul>
+<li>方式一：按照一定规则对点集进行排序;</li>
+<li>方式二：将点集的所有排列作为增强数据，训练一个循环网络;</li>
+<li>方式三：利用一个对称函数将所有信息进行聚合; 其中， 方式一看似简单，但是在高维空间中，实际上不存在一个在一般意义上相对于点扰动稳定的排序方式。 方式二被证明对于长度小的序列(几十个)有较好的鲁棒性，但对于动不动上千的点云数据不太合适。 因此，PointNet采用方式三，具体三种方式的精度对比如下：</li>
+</ul>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/14/kofRgVOS2Pptzjd.png" alt="实现顺序不变性的三种方法" /><figcaption aria-hidden="true">实现顺序不变性的三种方法</figcaption>
+</figure>
+<p>文章的主要思想是对集合中的变换元素应用对称函数来近似定义在点集上的通用函数： <span class="math display">\[f({x_1,...,x_n})\approx g(h(x_1),...,h(x_n))\]</span> 其中，<span class="math inline">\(h\)</span>函数使用 MLP 网络近似，<span class="math inline">\(g\)</span>函数使用 单变量函数与 MaxPool 函数的组合。</p>
+<p>常见的对称函数有:</p>
+<ul>
+<li>求和函数 <span class="math display">\[g(x_1,x_2,...,x_n) = x_1 + x_2 + ... + x_n\]</span></li>
+<li>求最大值函数 <span class="math display">\[g(x_1,x_2,...,x_n) = \max \{ x_1,x_2,...,x_n \}\]</span> 通过一系列的<span class="math inline">\(h\)</span>函数可以捕获点集合的不同属性(3D结构特征等) 故 PointNet 选择采用多层感知机(MLP)和最大池化(MaxPool)算子构建网络框架。</li>
+</ul>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/14/QFgs96A1okcEDwR.png" alt="MLP" /><figcaption aria-hidden="true">MLP</figcaption>
+</figure>
+<h4 id="旋转变换后分类结果一致">旋转变换后分类结果一致</h4>
+<p>要做到旋转的一致性，PointNet引入T-Net得到一个旋转矩阵，对输入特征进行自动对齐。将正则化项添加到我们的softmax训练损失中，即将特征变换矩阵约束为接近正交矩阵（正交变换不会丢失输入中的信息）。</p>
+<p><img data-src="https://s2.loli.net/2024/08/14/pFd8gTPwhsOr3vL.png" /> <img data-src="https://s2.loli.net/2024/08/14/TJIg8oe5U3Ayvsx.png" /></p>
+<p>实验发现，通过添加正则化项，优化变得更加稳定，并且模型也获得了更好的性能。</p>
+<p><img data-src="https://s2.loli.net/2024/08/14/Tk5Pb6eltBfqEnv.png" /></p>
+<p>使用输入变换精度可以提升0.8%，而增加正则损失对高维度的变换是有效的。</p>
+<h2 id="鲁棒性好">鲁棒性好</h2>
+<p><img data-src="https://s2.loli.net/2024/08/14/37IcEnkjMt9YSa2.png" /></p>
+<h2 id="实验结果">实验结果</h2>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/14/mvyhd4YpqS92WGH.png" alt="分类结果" /><figcaption aria-hidden="true">分类结果</figcaption>
+</figure>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/14/irh4pde5QSWl6v2.png" alt="分割结果" /><figcaption aria-hidden="true">分割结果</figcaption>
+</figure>
+<h2 id="网络结构">网络结构</h2>
+<p><img data-src="https://s2.loli.net/2024/08/14/d2aDmFjMe6Z3Qc1.png" /></p>
+<ul>
+<li>分类网路只使用global特征进行预测；</li>
+<li>语义分割网络使用local和global特征进行预测；</li>
+</ul>
+<h3 id="share-mlp">Share MLP</h3>
+<p>PointNet使用二维卷积网络来实现Shared MLP。</p>
+<p><img data-src="https://s2.loli.net/2024/08/14/qFk36xvbHUaRdjp.png" /></p>
+<h2 id="网络代码">网络代码</h2>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_model</span>(<span class="params">point_cloud, is_training, bn_decay=<span class="literal">None</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; Classification PointNet, input is BxNx3, output Bx40 &quot;&quot;&quot;</span></span><br><span class="line">    batch_size = point_cloud.get_shape()[<span class="number">0</span>].value</span><br><span class="line">    num_point = point_cloud.get_shape()[<span class="number">1</span>].value</span><br><span class="line">    end_points = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> tf.variable_scope(<span class="string">&#x27;transform_net1&#x27;</span>) <span class="keyword">as</span> sc:</span><br><span class="line">        transform = input_transform_net(point_cloud, is_training, bn_decay, K=<span class="number">3</span>)</span><br><span class="line">    point_cloud_transformed = tf.matmul(point_cloud, transform)</span><br><span class="line">    input_image = tf.expand_dims(point_cloud_transformed, -<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    net = tf_util.conv2d(input_image, <span class="number">64</span>, [<span class="number">1</span>,<span class="number">3</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv1&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">64</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv2&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> tf.variable_scope(<span class="string">&#x27;transform_net2&#x27;</span>) <span class="keyword">as</span> sc:</span><br><span class="line">        transform = feature_transform_net(net, is_training, bn_decay, K=<span class="number">64</span>)</span><br><span class="line">    end_points[<span class="string">&#x27;transform&#x27;</span>] = transform</span><br><span class="line">    net_transformed = tf.matmul(tf.squeeze(net, axis=[<span class="number">2</span>]), transform)</span><br><span class="line">    net_transformed = tf.expand_dims(net_transformed, [<span class="number">2</span>])</span><br><span class="line"></span><br><span class="line">    net = tf_util.conv2d(net_transformed, <span class="number">64</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv3&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">128</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv4&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">1024</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;conv5&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Symmetric function: max pooling</span></span><br><span class="line">    net = tf_util.max_pool2d(net, [num_point,<span class="number">1</span>],</span><br><span class="line">                             padding=<span class="string">&#x27;VALID&#x27;</span>, scope=<span class="string">&#x27;maxpool&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    net = tf.reshape(net, [batch_size, -<span class="number">1</span>])</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">512</span>, bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                                  scope=<span class="string">&#x27;fc1&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.dropout(net, keep_prob=<span class="number">0.7</span>, is_training=is_training,</span><br><span class="line">                          scope=<span class="string">&#x27;dp1&#x27;</span>)</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">256</span>, bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                                  scope=<span class="string">&#x27;fc2&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.dropout(net, keep_prob=<span class="number">0.7</span>, is_training=is_training,</span><br><span class="line">                          scope=<span class="string">&#x27;dp2&#x27;</span>)</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">40</span>, activation_fn=<span class="literal">None</span>, scope=<span class="string">&#x27;fc3&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> net, end_points</span><br></pre></td></tr></table></figure>
+<h3 id="t-net">T-Net</h3>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">input_transform_net</span>(<span class="params">point_cloud, is_training, bn_decay=<span class="literal">None</span>, K=<span class="number">3</span></span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; Input (XYZ) Transform Net, input is BxNx3 gray image</span></span><br><span class="line"><span class="string">        Return:</span></span><br><span class="line"><span class="string">            Transformation matrix of size 3xK &quot;&quot;&quot;</span></span><br><span class="line">    batch_size = point_cloud.get_shape()[<span class="number">0</span>].value</span><br><span class="line">    num_point = point_cloud.get_shape()[<span class="number">1</span>].value</span><br><span class="line"></span><br><span class="line">    input_image = tf.expand_dims(point_cloud, -<span class="number">1</span>)</span><br><span class="line">    net = tf_util.conv2d(input_image, <span class="number">64</span>, [<span class="number">1</span>,<span class="number">3</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;tconv1&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">128</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;tconv2&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.conv2d(net, <span class="number">1024</span>, [<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         padding=<span class="string">&#x27;VALID&#x27;</span>, stride=[<span class="number">1</span>,<span class="number">1</span>],</span><br><span class="line">                         bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                         scope=<span class="string">&#x27;tconv3&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.max_pool2d(net, [num_point,<span class="number">1</span>],</span><br><span class="line">                             padding=<span class="string">&#x27;VALID&#x27;</span>, scope=<span class="string">&#x27;tmaxpool&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    net = tf.reshape(net, [batch_size, -<span class="number">1</span>])</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">512</span>, bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                                  scope=<span class="string">&#x27;tfc1&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line">    net = tf_util.fully_connected(net, <span class="number">256</span>, bn=<span class="literal">True</span>, is_training=is_training,</span><br><span class="line">                                  scope=<span class="string">&#x27;tfc2&#x27;</span>, bn_decay=bn_decay)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> tf.variable_scope(<span class="string">&#x27;transform_XYZ&#x27;</span>) <span class="keyword">as</span> sc:</span><br><span class="line">        <span class="keyword">assert</span>(K==<span class="number">3</span>)</span><br><span class="line">        weights = tf.get_variable(<span class="string">&#x27;weights&#x27;</span>, [<span class="number">256</span>, <span class="number">3</span>*K],</span><br><span class="line">                                  initializer=tf.constant_initializer(<span class="number">0.0</span>),</span><br><span class="line">                                  dtype=tf.float32)</span><br><span class="line">        biases = tf.get_variable(<span class="string">&#x27;biases&#x27;</span>, [<span class="number">3</span>*K],</span><br><span class="line">                                 initializer=tf.constant_initializer(<span class="number">0.0</span>),</span><br><span class="line">                                 dtype=tf.float32)</span><br><span class="line">        biases += tf.constant([<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">1</span>], dtype=tf.float32)</span><br><span class="line">        transform = tf.matmul(net, weights)</span><br><span class="line">        transform = tf.nn.bias_add(transform, biases)</span><br><span class="line"></span><br><span class="line">    transform = tf.reshape(transform, [batch_size, <span class="number">3</span>, K])</span><br><span class="line">    <span class="keyword">return</span> transform</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>3D Object Detector</category>
+        <category>PointNet</category>
       </categories>
       <tags>
         <tag>3D Object Detector</tag>
@@ -925,142 +925,6 @@ P = \begin{pmatrix}
       </tags>
   </entry>
   <entry>
-    <title>感知-3D或4D毫米波</title>
-    <url>/2024/08/11/PerceptionMillimeterWaveRadar-3D-4D/</url>
-    <content><![CDATA[<h2 id="d毫米波雷达">4D毫米波雷达</h2>
-<p>如下图所示，TI给出的4D毫米波方案示例。</p>
-<figure>
-<img data-src="https://i.imgur.com/Xnc6kF7.png" alt="毫米波指标" /><figcaption aria-hidden="true">毫米波指标</figcaption>
-</figure>
-<span id="more"></span>
-<figure>
-<img data-src="https://i.imgur.com/CADixJ2.png" alt="毫米波硬件电路" /><figcaption aria-hidden="true">毫米波硬件电路</figcaption>
-</figure>
-<figure>
-<img data-src="https://i.imgur.com/rhLCILo.png" alt="PCB" /><figcaption aria-hidden="true">PCB</figcaption>
-</figure>
-<figure>
-<img data-src="https://i.imgur.com/TfD7cjH.png" alt="TX和RX通道间距" /><figcaption aria-hidden="true">TX和RX通道间距</figcaption>
-</figure>
-<p>该双芯片级联方案包含6个TX通道和8个RX通道，在MIMO虚拟阵列中提供48个虚拟通道，其中MIMO阵列在方向角上提供约3度的孔径受限角分辨率。</p>
-<figure>
-<img data-src="https://i.imgur.com/qCQfDhe.png" alt="MINO虚拟阵列" /><figcaption aria-hidden="true">MINO虚拟阵列</figcaption>
-</figure>
-<p>如下图所示，两个角反射器放置在距离雷达约9.5m的径向距离处的同一距离单元中。</p>
-<p><img data-src="https://i.imgur.com/wYIhmd5.png" alt="角反射器" /> <img data-src="https://i.imgur.com/D35cdhl.png" alt="角度分辨率测量" /></p>
-<h2 id="d与4d毫米波对比">3D与4D毫米波对比</h2>
-<h3 id="地面井盖">地面井盖</h3>
-<figure>
-<img data-src="https://i.imgur.com/ZReja0C.png" alt="3D Radar" /><figcaption aria-hidden="true">3D Radar</figcaption>
-</figure>
-<figure>
-<img data-src="https://i.imgur.com/L9jPrtb.png" alt="4D Radar" /><figcaption aria-hidden="true">4D Radar</figcaption>
-</figure>
-<figure>
-<img data-src="https://i.imgur.com/5cqH0Qe.png" alt="4D Radar" /><figcaption aria-hidden="true">4D Radar</figcaption>
-</figure>
-<h3 id="指示牌和交通杆">指示牌和交通杆</h3>
-<figure>
-<img data-src="https://i.imgur.com/Ajh8La9.png" alt="4D Radar" /><figcaption aria-hidden="true">4D Radar</figcaption>
-</figure>
-<h3 id="低速物体">低速物体</h3>
-<figure>
-<img data-src="https://i.imgur.com/KA0mYhx.png" alt="4D Radar 横向车辆" /><figcaption aria-hidden="true">4D Radar 横向车辆</figcaption>
-</figure>
-<figure>
-<img data-src="https://i.imgur.com/3IeUGpk.png" alt="4D Radar 横向行人" /><figcaption aria-hidden="true">4D Radar 横向行人</figcaption>
-</figure>
-<h2 id="d与激光雷达对比">4D与激光雷达对比</h2>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">技术参数</th>
-<th>激光雷达</th>
-<th>4D毫米波</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;">最大点云数</td>
-<td>70000</td>
-<td>3072</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">最远距离</td>
-<td>180m</td>
-<td>300m</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">工作周期</td>
-<td>100ms</td>
-<td>60ms</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">朝向估计误差</td>
-<td>1°</td>
-<td>2.5°</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">尺寸估计误差</td>
-<td>0.2m</td>
-<td>0.5m</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">俯仰角分辨率</td>
-<td>0.2°</td>
-<td>2.3°</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">方位角分辨率</td>
-<td>0.2°</td>
-<td>1.2°</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">距离分辨率</td>
-<td>0.05m</td>
-<td>0.4m</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">速度分辨率</td>
-<td></td>
-<td>0.1m/s</td>
-</tr>
-</tbody>
-</table>
-<h3 id="距离与朝向">距离与朝向</h3>
-<figure>
-<img data-src="https://i.imgur.com/u477tic.png" alt="激光雷达" /><figcaption aria-hidden="true">激光雷达</figcaption>
-</figure>
-<h3 id="近处小目标">近处小目标</h3>
-<figure>
-<img data-src="https://i.imgur.com/6jQbwF3.png" alt="激光雷达" /><figcaption aria-hidden="true">激光雷达</figcaption>
-</figure>
-<h3 id="d毫米波的优势">4D毫米波的优势</h3>
-<h4 id="可穿透性">可穿透性</h4>
-<figure>
-<img data-src="https://i.imgur.com/00jyGW5.png" alt="可穿透" /><figcaption aria-hidden="true">可穿透</figcaption>
-</figure>
-<h4 id="波的衍射折射">波的衍射折射</h4>
-<figure>
-<img data-src="https://i.imgur.com/sdc0scr.png" alt="衍射折射" /><figcaption aria-hidden="true">衍射折射</figcaption>
-</figure>
-<h3 id="激光雷达">激光雷达</h3>
-<figure>
-<img data-src="https://i.imgur.com/Pg9d8QJ.png" alt="激光雷达结构" /><figcaption aria-hidden="true">激光雷达结构</figcaption>
-</figure>
-]]></content>
-      <categories>
-        <category>perception</category>
-        <category>millimeter-wave radar 3D 4D</category>
-      </categories>
-      <tags>
-        <tag>perception</tag>
-        <tag>millimeter-wave radar</tag>
-        <tag>3D millimeter-wave radar</tag>
-        <tag>4D millimeter-wave radar</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Home Assistant(Supervisor)安装</title>
     <url>/2022/12/26/Home-Assistant-Supervised-install/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -1304,6 +1168,142 @@ P = \begin{pmatrix}
         <tag>PVE</tag>
         <tag>LXC</tag>
         <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>感知-3D或4D毫米波</title>
+    <url>/2024/08/11/PerceptionMillimeterWaveRadar-3D-4D/</url>
+    <content><![CDATA[<h2 id="d毫米波雷达">4D毫米波雷达</h2>
+<p>如下图所示，TI给出的4D毫米波方案示例。</p>
+<figure>
+<img data-src="https://i.imgur.com/Xnc6kF7.png" alt="毫米波指标" /><figcaption aria-hidden="true">毫米波指标</figcaption>
+</figure>
+<span id="more"></span>
+<figure>
+<img data-src="https://i.imgur.com/CADixJ2.png" alt="毫米波硬件电路" /><figcaption aria-hidden="true">毫米波硬件电路</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/rhLCILo.png" alt="PCB" /><figcaption aria-hidden="true">PCB</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/TfD7cjH.png" alt="TX和RX通道间距" /><figcaption aria-hidden="true">TX和RX通道间距</figcaption>
+</figure>
+<p>该双芯片级联方案包含6个TX通道和8个RX通道，在MIMO虚拟阵列中提供48个虚拟通道，其中MIMO阵列在方向角上提供约3度的孔径受限角分辨率。</p>
+<figure>
+<img data-src="https://i.imgur.com/qCQfDhe.png" alt="MINO虚拟阵列" /><figcaption aria-hidden="true">MINO虚拟阵列</figcaption>
+</figure>
+<p>如下图所示，两个角反射器放置在距离雷达约9.5m的径向距离处的同一距离单元中。</p>
+<p><img data-src="https://i.imgur.com/wYIhmd5.png" alt="角反射器" /> <img data-src="https://i.imgur.com/D35cdhl.png" alt="角度分辨率测量" /></p>
+<h2 id="d与4d毫米波对比">3D与4D毫米波对比</h2>
+<h3 id="地面井盖">地面井盖</h3>
+<figure>
+<img data-src="https://i.imgur.com/ZReja0C.png" alt="3D Radar" /><figcaption aria-hidden="true">3D Radar</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/L9jPrtb.png" alt="4D Radar" /><figcaption aria-hidden="true">4D Radar</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/5cqH0Qe.png" alt="4D Radar" /><figcaption aria-hidden="true">4D Radar</figcaption>
+</figure>
+<h3 id="指示牌和交通杆">指示牌和交通杆</h3>
+<figure>
+<img data-src="https://i.imgur.com/Ajh8La9.png" alt="4D Radar" /><figcaption aria-hidden="true">4D Radar</figcaption>
+</figure>
+<h3 id="低速物体">低速物体</h3>
+<figure>
+<img data-src="https://i.imgur.com/KA0mYhx.png" alt="4D Radar 横向车辆" /><figcaption aria-hidden="true">4D Radar 横向车辆</figcaption>
+</figure>
+<figure>
+<img data-src="https://i.imgur.com/3IeUGpk.png" alt="4D Radar 横向行人" /><figcaption aria-hidden="true">4D Radar 横向行人</figcaption>
+</figure>
+<h2 id="d与激光雷达对比">4D与激光雷达对比</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">技术参数</th>
+<th>激光雷达</th>
+<th>4D毫米波</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">最大点云数</td>
+<td>70000</td>
+<td>3072</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">最远距离</td>
+<td>180m</td>
+<td>300m</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">工作周期</td>
+<td>100ms</td>
+<td>60ms</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">朝向估计误差</td>
+<td>1°</td>
+<td>2.5°</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">尺寸估计误差</td>
+<td>0.2m</td>
+<td>0.5m</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">俯仰角分辨率</td>
+<td>0.2°</td>
+<td>2.3°</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">方位角分辨率</td>
+<td>0.2°</td>
+<td>1.2°</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">距离分辨率</td>
+<td>0.05m</td>
+<td>0.4m</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">速度分辨率</td>
+<td></td>
+<td>0.1m/s</td>
+</tr>
+</tbody>
+</table>
+<h3 id="距离与朝向">距离与朝向</h3>
+<figure>
+<img data-src="https://i.imgur.com/u477tic.png" alt="激光雷达" /><figcaption aria-hidden="true">激光雷达</figcaption>
+</figure>
+<h3 id="近处小目标">近处小目标</h3>
+<figure>
+<img data-src="https://i.imgur.com/6jQbwF3.png" alt="激光雷达" /><figcaption aria-hidden="true">激光雷达</figcaption>
+</figure>
+<h3 id="d毫米波的优势">4D毫米波的优势</h3>
+<h4 id="可穿透性">可穿透性</h4>
+<figure>
+<img data-src="https://i.imgur.com/00jyGW5.png" alt="可穿透" /><figcaption aria-hidden="true">可穿透</figcaption>
+</figure>
+<h4 id="波的衍射折射">波的衍射折射</h4>
+<figure>
+<img data-src="https://i.imgur.com/sdc0scr.png" alt="衍射折射" /><figcaption aria-hidden="true">衍射折射</figcaption>
+</figure>
+<h3 id="激光雷达">激光雷达</h3>
+<figure>
+<img data-src="https://i.imgur.com/Pg9d8QJ.png" alt="激光雷达结构" /><figcaption aria-hidden="true">激光雷达结构</figcaption>
+</figure>
+]]></content>
+      <categories>
+        <category>perception</category>
+        <category>millimeter-wave radar 3D 4D</category>
+      </categories>
+      <tags>
+        <tag>perception</tag>
+        <tag>millimeter-wave radar</tag>
+        <tag>3D millimeter-wave radar</tag>
+        <tag>4D millimeter-wave radar</tag>
       </tags>
   </entry>
   <entry>
@@ -4327,54 +4327,6 @@ D = \frac{\hat{b}}{mg} \tag{17}
       </tags>
   </entry>
   <entry>
-    <title>双线性插值</title>
-    <url>/2019/10/19/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>线性差值在实际应用非常广泛，比如航空航天行业中广泛用到气动数据的插值，经常会用到三线性到四线性的插值，在汽车行业很多标定数据而需要使用双线性插值，本篇文章主要讲述双线性插值的实现方式。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/yLw1Imexs68bTHc.jpg" alt="重庆博物馆" /><figcaption aria-hidden="true">重庆博物馆</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="应用场景">应用场景</h2>
-<p>本文基于车辆扭矩标定的应用场景来说明2维线性插值的具体应用，根据车辆的控制原理可知，车辆的目标加速度与当前车速和发动机输出扭矩有关，因此对车辆扭矩进行标定后，我们就可以得到一个根据当前目标加速度和车速，获得车辆输出扭矩的关系表。 如下表所示，只选取了目标加速度为正的部分标定数据，其中横向表示速度(m/s)，纵向表示加速度(m/s2)，表中的数据代表汽车扭矩输出(Nm)。由于速度只采样了[0.1,0.2,0.3,0.4,0.5,0.6,0.7]这几个数值点的数据，加速度也只采样了[0.06,0.09,0.1,0.12,0.13,0.15,0.2,0.21,0.24,0.26]这几组数据点的数据，如果想得到中间任意数值的数值，就需要使用双线性插值算法来获得。</p>
-<figure>
-<img data-src="https://img-blog.csdnimg.cn/20190727155601290.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
-</figure>
-<p>如下表所示，如果当前需求的目标加速度为0.094m/s2，当前车速为0.36m/s，想得到当前输出扭矩值，按照表格所圈出的扭矩值，进行多次线性插值，求得理想的输出扭矩。</p>
-<figure>
-<img data-src="https://img-blog.csdnimg.cn/20190727155822629.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
-</figure>
-<h3 id="双线性插值原理">双线性插值原理</h3>
-<p>双线性插值算法，是在线性插值的基础上进行多次插值的结果。 如下图所示，假设插值点<span class="math inline">\({(x_i,y_i)}\)</span>的坐标点<span class="math inline">\(x_i\)</span>和<span class="math inline">\(y_i\)</span>范围满足，<span class="math inline">\(x_1\le x_i \le x_2\)</span>，<span class="math inline">\(y_1\le y_i \le y_2\)</span>，其中<span class="math inline">\((x_1,y_1)\)</span>对应数值为<span class="math inline">\(z_1\)</span>，<span class="math inline">\((x_2,y_1)\)</span>对应数值为<span class="math inline">\(z_2\)</span>，<span class="math inline">\((x_2,y_2)\)</span>对应数值为<span class="math inline">\(z_3\)</span>，<span class="math inline">\((x_1,y_2)\)</span>对应数值为<span class="math inline">\(z_4\)</span>。</p>
-<p><img data-src="https://img-blog.csdnimg.cn/20190729105119489.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
-<p>第一步，进行x轴方向的线性插值。当y取值<span class="math inline">\(y_1\)</span>时，进行点<span class="math inline">\((x_1,z_1)\)</span>和点<span class="math inline">\((x_2,z_2)\)</span>之间的插值，得到插值点<span class="math inline">\((x_i,z5)\)</span>；同理y取值<span class="math inline">\(y_2\)</span>时，进行点<span class="math inline">\((x_1,z_4)\)</span>和点<span class="math inline">\((x_2,z_3)\)</span>之间的插值，可得第二个插值点<span class="math inline">\((x_i,z_6)\)</span>。</p>
-<p><img data-src="https://img-blog.csdnimg.cn/20190727171729916.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
-<p>第二步，进行y轴方向的插值。依据新的插值点<span class="math inline">\((y_1,z5)\)</span>和<span class="math inline">\((y_2,z_6)\)</span>，进行线性插值，得到插值点<span class="math inline">\((x_i,y_i,z_7)\)</span>。此时的点<span class="math inline">\((x_i,y_i,z_7)\)</span>就是双线性插值的最终结果。</p>
-<p><img data-src="https://img-blog.csdnimg.cn/20190727171818236.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
-<h2 id="软件实现">软件实现</h2>
-<p>本文基于c语言去实现插值算法，数据结构采用简单的数组结构，不使用C++的关联容器属性去实现数据表的存储。</p>
-<h3 id="数据表的存储结构">数据表的存储结构</h3>
-<p>数据结构使用三个数组进行数组的存储，其中两个数组分别存储横向的速度值和纵向的加速度值，另一个数组存储对应的扭矩值。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> ACC_ARRAY_NUM       ( 10 )</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> VELOCITY_ARRAY_NUM  (  7 )</span></span><br><span class="line"><span class="type">const</span> <span class="type">float</span> acc_table[ACC_ARRAY_NUM]           = &#123;<span class="number">0.06f</span>,<span class="number">0.09f</span>,<span class="number">0.1f</span>,<span class="number">0.12f</span>,<span class="number">0.13f</span>,<span class="number">0.15f</span>,<span class="number">0.2f</span>,<span class="number">0.21f</span>,<span class="number">0.24f</span>,<span class="number">0.26f</span>&#125;;</span><br><span class="line"><span class="type">const</span> <span class="type">float</span> velocity_table[VELOCITY_ARRAY_NUM] = &#123;<span class="number">0.1f</span>,<span class="number">0.2f</span>,<span class="number">0.3f</span>,<span class="number">0.4f</span>,<span class="number">0.5f</span>,<span class="number">0.6f</span>,<span class="number">0.7f</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">float</span> torque_table[ACC_ARRAY_NUM][VELOCITY_ARRAY_NUM]=</span><br><span class="line">&#123;</span><br><span class="line">        &#123;<span class="number">60</span>,<span class="number">60</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">80</span>,<span class="number">60</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">80</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">100</span>,<span class="number">80</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">100</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h3 id="索引id查找函数">索引ID查找函数</h3>
-<p>输入参数 <strong><em>array</em></strong> ：需进行数值匹配查找的数组 输入参数 <strong><em>num</em></strong> ：数组的长度 输入参数 <strong><em>input</em></strong> ：需要匹配的值 输出参数 <strong><em>before</em></strong> ：匹配值的前数组边界ID 输出参数 <strong><em>before</em></strong> ：匹配值的后数组边界ID</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">ArrayIndexFind</span><span class="params">(<span class="type">float</span> *<span class="built_in">array</span>,<span class="type">uint16_t</span> num,<span class="type">float</span> input,<span class="type">uint16_t</span> *before,<span class="type">uint16_t</span> *after)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">uint16_t</span> min_index,max_index;</span><br><span class="line">    <span class="type">uint16_t</span> middle_index;</span><br><span class="line">    min_index = <span class="number">0</span>;</span><br><span class="line">    max_index = num - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>( (max_index - min_index) &gt; <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        middle_index = (min_index + max_index) / <span class="number">2</span> ;</span><br><span class="line">        <span class="keyword">if</span>(input &lt; <span class="built_in">array</span>[middle_index])</span><br><span class="line">        &#123;</span><br><span class="line">            max_index = middle_index;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            min_index = middle_index;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    *before = min_index;</span><br><span class="line">    *after  = max_index;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="数据插值函数">数据插值函数</h3>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">float</span> <span class="title function_">InterpolateValue</span><span class="params">(<span class="type">float</span> x,<span class="type">float</span> x0,<span class="type">float</span> y0,<span class="type">float</span> x1,<span class="type">float</span> y1)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">fabs</span>(x - x0) &lt; kDoubleEpsilon)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> y0;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(<span class="built_in">fabs</span>(x - x1) &lt; kDoubleEpsilon)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> y1;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> y0 + (y1 - y0)*(x - x0)/ (x1 - x0);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="线性差值函数">线性差值函数</h3>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">float</span> <span class="title function_">Interpolation::InterpolationYZ</span><span class="params">(<span class="type">float</span> y,<span class="type">float</span> *y_tb,<span class="type">uint16_t</span> y_num,<span class="type">float</span> *z_tb)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">float</span> max_y = y_tb[y_num - <span class="number">1</span>];</span><br><span class="line">    <span class="type">float</span> min_y = y_tb[<span class="number">0</span>];</span><br><span class="line">    <span class="type">uint16_t</span> y_before,y_after;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(y &gt;= (max_y - kDoubleEpsilon))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> z_tb[y_num - <span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(y &lt;= (min_y + kDoubleEpsilon))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> z_tb[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ArrayIndexFind(y_tb,y_num,y,&amp;y_before,&amp;y_after);</span><br><span class="line">    <span class="keyword">return</span> InterpolateValue(y,y_tb[y_before],z_tb[y_before],y_tb[y_after],z_tb[y_after]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="双线性插值函数">双线性插值函数</h3>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">float</span> <span class="title function_">Interpolation2D</span><span class="params">(<span class="type">float</span> x,<span class="type">float</span> y,<span class="type">float</span> *x_tb,<span class="type">uint16_t</span> x_num,<span class="type">float</span> *y_tb,<span class="type">uint16_t</span> y_num,<span class="type">float</span> *z_tb)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">float</span> max_x = x_tb[x_num - <span class="number">1</span>];</span><br><span class="line">    <span class="type">float</span> min_x = x_tb[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">    <span class="type">uint16_t</span> x_before,x_after;</span><br><span class="line">    <span class="type">uint16_t</span> z_before_value,z_after_value;</span><br><span class="line">    <span class="keyword">if</span>(x &gt; (max_x - kDoubleEpsilon))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> InterpolationYZ(y,y_tb,y_num, (z_tb + (x_num - <span class="number">1</span>)*y_num));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(x &lt; (min_x + kDoubleEpsilon))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> InterpolationYZ(y,y_tb,y_num, z_tb);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ArrayIndexFind(x_tb,x_num,x,&amp;x_before,&amp;x_after);</span><br><span class="line"></span><br><span class="line">    z_before_value = InterpolationYZ(y,y_tb,y_num, (z_tb + x_before * y_num));</span><br><span class="line">    z_after_value  = InterpolationYZ(y,y_tb,y_num, (z_tb + x_after  * y_num));</span><br><span class="line">    <span class="keyword">return</span> InterpolateValue(x,x_tb[x_before],z_before_value,x_tb[x_after],z_after_value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>基础算法</category>
-      </categories>
-      <tags>
-        <tag>线性插值</tag>
-        <tag>算法</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>基础算法-LQR-离散时间有限边界</title>
     <url>/2020/02/20/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-LQR-%E7%A6%BB%E6%95%A3%E6%97%B6%E9%97%B4%E6%9C%89%E9%99%90%E8%BE%B9%E7%95%8C/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -4615,6 +4567,212 @@ P_{t-1} = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A
       </tags>
   </entry>
   <entry>
+    <title>双线性插值</title>
+    <url>/2019/10/19/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E5%8F%8C%E7%BA%BF%E6%80%A7%E6%8F%92%E5%80%BC/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>线性差值在实际应用非常广泛，比如航空航天行业中广泛用到气动数据的插值，经常会用到三线性到四线性的插值，在汽车行业很多标定数据而需要使用双线性插值，本篇文章主要讲述双线性插值的实现方式。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/yLw1Imexs68bTHc.jpg" alt="重庆博物馆" /><figcaption aria-hidden="true">重庆博物馆</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="应用场景">应用场景</h2>
+<p>本文基于车辆扭矩标定的应用场景来说明2维线性插值的具体应用，根据车辆的控制原理可知，车辆的目标加速度与当前车速和发动机输出扭矩有关，因此对车辆扭矩进行标定后，我们就可以得到一个根据当前目标加速度和车速，获得车辆输出扭矩的关系表。 如下表所示，只选取了目标加速度为正的部分标定数据，其中横向表示速度(m/s)，纵向表示加速度(m/s2)，表中的数据代表汽车扭矩输出(Nm)。由于速度只采样了[0.1,0.2,0.3,0.4,0.5,0.6,0.7]这几个数值点的数据，加速度也只采样了[0.06,0.09,0.1,0.12,0.13,0.15,0.2,0.21,0.24,0.26]这几组数据点的数据，如果想得到中间任意数值的数值，就需要使用双线性插值算法来获得。</p>
+<figure>
+<img data-src="https://img-blog.csdnimg.cn/20190727155601290.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
+</figure>
+<p>如下表所示，如果当前需求的目标加速度为0.094m/s2，当前车速为0.36m/s，想得到当前输出扭矩值，按照表格所圈出的扭矩值，进行多次线性插值，求得理想的输出扭矩。</p>
+<figure>
+<img data-src="https://img-blog.csdnimg.cn/20190727155822629.PNG?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /><figcaption aria-hidden="true">在这里插入图片描述</figcaption>
+</figure>
+<h3 id="双线性插值原理">双线性插值原理</h3>
+<p>双线性插值算法，是在线性插值的基础上进行多次插值的结果。 如下图所示，假设插值点<span class="math inline">\({(x_i,y_i)}\)</span>的坐标点<span class="math inline">\(x_i\)</span>和<span class="math inline">\(y_i\)</span>范围满足，<span class="math inline">\(x_1\le x_i \le x_2\)</span>，<span class="math inline">\(y_1\le y_i \le y_2\)</span>，其中<span class="math inline">\((x_1,y_1)\)</span>对应数值为<span class="math inline">\(z_1\)</span>，<span class="math inline">\((x_2,y_1)\)</span>对应数值为<span class="math inline">\(z_2\)</span>，<span class="math inline">\((x_2,y_2)\)</span>对应数值为<span class="math inline">\(z_3\)</span>，<span class="math inline">\((x_1,y_2)\)</span>对应数值为<span class="math inline">\(z_4\)</span>。</p>
+<p><img data-src="https://img-blog.csdnimg.cn/20190729105119489.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
+<p>第一步，进行x轴方向的线性插值。当y取值<span class="math inline">\(y_1\)</span>时，进行点<span class="math inline">\((x_1,z_1)\)</span>和点<span class="math inline">\((x_2,z_2)\)</span>之间的插值，得到插值点<span class="math inline">\((x_i,z5)\)</span>；同理y取值<span class="math inline">\(y_2\)</span>时，进行点<span class="math inline">\((x_1,z_4)\)</span>和点<span class="math inline">\((x_2,z_3)\)</span>之间的插值，可得第二个插值点<span class="math inline">\((x_i,z_6)\)</span>。</p>
+<p><img data-src="https://img-blog.csdnimg.cn/20190727171729916.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
+<p>第二步，进行y轴方向的插值。依据新的插值点<span class="math inline">\((y_1,z5)\)</span>和<span class="math inline">\((y_2,z_6)\)</span>，进行线性插值，得到插值点<span class="math inline">\((x_i,y_i,z_7)\)</span>。此时的点<span class="math inline">\((x_i,y_i,z_7)\)</span>就是双线性插值的最终结果。</p>
+<p><img data-src="https://img-blog.csdnimg.cn/20190727171818236.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
+<h2 id="软件实现">软件实现</h2>
+<p>本文基于c语言去实现插值算法，数据结构采用简单的数组结构，不使用C++的关联容器属性去实现数据表的存储。</p>
+<h3 id="数据表的存储结构">数据表的存储结构</h3>
+<p>数据结构使用三个数组进行数组的存储，其中两个数组分别存储横向的速度值和纵向的加速度值，另一个数组存储对应的扭矩值。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> ACC_ARRAY_NUM       ( 10 )</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> VELOCITY_ARRAY_NUM  (  7 )</span></span><br><span class="line"><span class="type">const</span> <span class="type">float</span> acc_table[ACC_ARRAY_NUM]           = &#123;<span class="number">0.06f</span>,<span class="number">0.09f</span>,<span class="number">0.1f</span>,<span class="number">0.12f</span>,<span class="number">0.13f</span>,<span class="number">0.15f</span>,<span class="number">0.2f</span>,<span class="number">0.21f</span>,<span class="number">0.24f</span>,<span class="number">0.26f</span>&#125;;</span><br><span class="line"><span class="type">const</span> <span class="type">float</span> velocity_table[VELOCITY_ARRAY_NUM] = &#123;<span class="number">0.1f</span>,<span class="number">0.2f</span>,<span class="number">0.3f</span>,<span class="number">0.4f</span>,<span class="number">0.5f</span>,<span class="number">0.6f</span>,<span class="number">0.7f</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">float</span> torque_table[ACC_ARRAY_NUM][VELOCITY_ARRAY_NUM]=</span><br><span class="line">&#123;</span><br><span class="line">        &#123;<span class="number">60</span>,<span class="number">60</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">50</span>,<span class="number">50</span>,<span class="number">50</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">80</span>,<span class="number">60</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">80</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">100</span>,<span class="number">60</span>,<span class="number">60</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">100</span>,<span class="number">80</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>,<span class="number">100</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">120</span>&#125;,</span><br><span class="line">        &#123;<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>,<span class="number">140</span>&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="索引id查找函数">索引ID查找函数</h3>
+<p>输入参数 <strong><em>array</em></strong> ：需进行数值匹配查找的数组 输入参数 <strong><em>num</em></strong> ：数组的长度 输入参数 <strong><em>input</em></strong> ：需要匹配的值 输出参数 <strong><em>before</em></strong> ：匹配值的前数组边界ID 输出参数 <strong><em>before</em></strong> ：匹配值的后数组边界ID</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">ArrayIndexFind</span><span class="params">(<span class="type">float</span> *<span class="built_in">array</span>,<span class="type">uint16_t</span> num,<span class="type">float</span> input,<span class="type">uint16_t</span> *before,<span class="type">uint16_t</span> *after)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">uint16_t</span> min_index,max_index;</span><br><span class="line">    <span class="type">uint16_t</span> middle_index;</span><br><span class="line">    min_index = <span class="number">0</span>;</span><br><span class="line">    max_index = num - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>( (max_index - min_index) &gt; <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        middle_index = (min_index + max_index) / <span class="number">2</span> ;</span><br><span class="line">        <span class="keyword">if</span>(input &lt; <span class="built_in">array</span>[middle_index])</span><br><span class="line">        &#123;</span><br><span class="line">            max_index = middle_index;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            min_index = middle_index;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    *before = min_index;</span><br><span class="line">    *after  = max_index;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="数据插值函数">数据插值函数</h3>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">float</span> <span class="title function_">InterpolateValue</span><span class="params">(<span class="type">float</span> x,<span class="type">float</span> x0,<span class="type">float</span> y0,<span class="type">float</span> x1,<span class="type">float</span> y1)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">fabs</span>(x - x0) &lt; kDoubleEpsilon)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> y0;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span>(<span class="built_in">fabs</span>(x - x1) &lt; kDoubleEpsilon)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> y1;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> y0 + (y1 - y0)*(x - x0)/ (x1 - x0);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="线性差值函数">线性差值函数</h3>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">float</span> <span class="title function_">Interpolation::InterpolationYZ</span><span class="params">(<span class="type">float</span> y,<span class="type">float</span> *y_tb,<span class="type">uint16_t</span> y_num,<span class="type">float</span> *z_tb)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">float</span> max_y = y_tb[y_num - <span class="number">1</span>];</span><br><span class="line">    <span class="type">float</span> min_y = y_tb[<span class="number">0</span>];</span><br><span class="line">    <span class="type">uint16_t</span> y_before,y_after;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(y &gt;= (max_y - kDoubleEpsilon))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> z_tb[y_num - <span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(y &lt;= (min_y + kDoubleEpsilon))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> z_tb[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ArrayIndexFind(y_tb,y_num,y,&amp;y_before,&amp;y_after);</span><br><span class="line">    <span class="keyword">return</span> InterpolateValue(y,y_tb[y_before],z_tb[y_before],y_tb[y_after],z_tb[y_after]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="双线性插值函数">双线性插值函数</h3>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">float</span> <span class="title function_">Interpolation2D</span><span class="params">(<span class="type">float</span> x,<span class="type">float</span> y,<span class="type">float</span> *x_tb,<span class="type">uint16_t</span> x_num,<span class="type">float</span> *y_tb,<span class="type">uint16_t</span> y_num,<span class="type">float</span> *z_tb)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">float</span> max_x = x_tb[x_num - <span class="number">1</span>];</span><br><span class="line">    <span class="type">float</span> min_x = x_tb[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">    <span class="type">uint16_t</span> x_before,x_after;</span><br><span class="line">    <span class="type">uint16_t</span> z_before_value,z_after_value;</span><br><span class="line">    <span class="keyword">if</span>(x &gt; (max_x - kDoubleEpsilon))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> InterpolationYZ(y,y_tb,y_num, (z_tb + (x_num - <span class="number">1</span>)*y_num));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(x &lt; (min_x + kDoubleEpsilon))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> InterpolationYZ(y,y_tb,y_num, z_tb);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ArrayIndexFind(x_tb,x_num,x,&amp;x_before,&amp;x_after);</span><br><span class="line"></span><br><span class="line">    z_before_value = InterpolationYZ(y,y_tb,y_num, (z_tb + x_before * y_num));</span><br><span class="line">    z_after_value  = InterpolationYZ(y,y_tb,y_num, (z_tb + x_after  * y_num));</span><br><span class="line">    <span class="keyword">return</span> InterpolateValue(x,x_tb[x_before],z_before_value,x_tb[x_after],z_after_value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>基础算法</category>
+      </categories>
+      <tags>
+        <tag>线性插值</tag>
+        <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>最小二乘法线性拟合</title>
+    <url>/2019/10/17/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95%E7%9A%84%E7%BA%BF%E6%80%A7%E6%8B%9F%E5%90%88/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>最小二乘法是曲线拟合的常用方法，使用该方法对匹配函数的选取非常重要。 <img data-src="https://i.loli.net/2021/08/30/67NEhYDHezj1PX2.jpg" alt="青岛" /></p>
+<span id="more"></span>
+<h2 id="理论">理论</h2>
+<ol type="1">
+<li>假设拟合的多项式为:</li>
+</ol>
+<p><span class="math display">\[
+y = a_0 + a_1*x +a_2*x^2 + ...+a_m*x^m
+\]</span></p>
+<p>其中，<strong>m</strong>代表多项式的阶数。</p>
+<ol start="2" type="1">
+<li>离散点与该多项式的平方和<span class="math inline">\(F(a_0,a_1,,a_m)\)</span>为，其中<strong>n</strong>代表采样点数：</li>
+</ol>
+<p><span class="math display">\[
+F(a_0,a_1,,a_m) = \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)]^2
+\]</span></p>
+<ol start="3" type="1">
+<li><p>最小二乘法的思想是求平方和函数<span class="math inline">\(F(a_0,a_1,,a_m)\)</span>的最小值，而对于二次方程求最小值的问题，常见的思路就是对方程求导，倒数为零的点，及为方程的极值点。</p></li>
+<li><p>下面对<span class="math inline">\(F(a_0,a_1,,a_m)\)</span>分别求<span class="math inline">\(a_i\)</span>偏导数，得：</p></li>
+</ol>
+<p><span class="math display">\[
+-2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] = 0 \\
+-2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] x_i= 0\\
+-2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] x_i^2= 0\\
+\ldots\\
+-2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] x_i^m= 0
+\]</span></p>
+<ol start="5" type="1">
+<li>整理得</li>
+</ol>
+<p><span class="math display">\[
+a_0\sum_{i=0}^{n}+a_1\sum_{i=0}^{n} x_i+ a_2\sum_{i=0}^{n} x_i^2+...+a_m\sum_{i=0}^{n}x_i^m = \sum_{i=0}^{n}y_i\\
+a_0\sum_{i=0}^{n} x_i+a_1\sum_{i=0}^{n} x_i^2+ a_2\sum_{i=0}^{n} x_i^3+...+a_m\sum_{i=0}^{n}x_i^{m+1}  = \sum_{i=0}^{n}y_ix_i\\
+\ldots\\
+a_0\sum_{i=0}^{n} x_i^m+a_1\sum_{i=0}^{n} x_i^{m+1}+ a_2\sum_{i=0}^{n} x_i^{m+2}+...+a_m\sum_{i=0}^{n}x_i^{2m}  = \sum_{i=0}^{n}y_ix_i^m
+\]</span></p>
+<ol start="6" type="1">
+<li>使用矩阵形式表示为：</li>
+</ol>
+<p><span class="math display">\[
+\left[
+\begin{matrix}
+\sum_{i=0}^{n} &amp; \sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}x_i^2&amp;\ldots&amp;\sum_{i=0}^{n}x_i^m\\
+\sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}x_i^2&amp;\sum_{i=0}^{n}x_i^3&amp;\ldots&amp;\sum_{i=0}^{n}x_i^{m+1}\\
+\sum_{i=0}^{n}x_i^2&amp;\sum_{i=0}^{n}x_i^3&amp;\sum_{i=0}^{n}x_i^4&amp;\ldots&amp;\sum_{i=0}^{n}x_i^{m+2}\\
+\ldots&amp;\ldots&amp;\ldots&amp;\ldots&amp;\ldots\\
+\sum_{i=0}^{n}x_i^{m}&amp;\sum_{i=0}^{n}x_i^{m+1}&amp;\sum_{i=0}^{n}x_i^{m+2}&amp;\ldots&amp;\sum_{i=0}^{n}x_i^{2m}
+\end{matrix}
+\right] 
+\left[
+\begin{matrix}
+a_0\\
+a_1\\
+a_2\\
+\ldots\\
+a_m
+\end{matrix}
+\right]=\\
+\left[
+\begin{matrix}
+\sum_{i=0}^{n}y_i\\
+\sum_{i=0}^{n}y_ix_i\\
+\sum_{i=0}^{n}y_ix_i^2\\
+\ldots\\
+\sum_{i=0}^{n}y_ix_i^m\\
+\end{matrix}
+\right]
+\]</span></p>
+<ol start="7" type="1">
+<li>下面就是求解一次线性方程，常用的方法是使用高斯消元法，也可以使用求矩阵的秩或者求解逆矩阵等方式求解。</li>
+</ol>
+<h2 id="高斯消元法求解线性方程">高斯消元法求解线性方程</h2>
+<h3 id="原则">原则</h3>
+<ul>
+<li>两个方程互换解不变</li>
+<li>一个方程乘以非零K,解不变</li>
+<li>一个方程乘以非零K,加上另一个方程解不变</li>
+</ul>
+<h3 id="一阶线性函数">一阶线性函数</h3>
+<p>假设多项式得阶数<strong>m</strong>为2，则上述矩阵方程为：</p>
+<p><span class="math display">\[
+\left[
+\begin{matrix}
+\sum_{i=0}^{n} &amp; \sum_{i=0}^{n}x_i\\
+\sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}x_i^2&amp;
+\end{matrix}
+\right] 
+\left[
+\begin{matrix}
+a_0\\
+a_1
+\end{matrix}
+\right]=\\
+\left[
+\begin{matrix}
+\sum_{i=0}^{n}y_i\\
+\sum_{i=0}^{n}y_ix_i
+\end{matrix}
+\right]
+\]</span></p>
+<p>写成行列式的形式为：</p>
+<p><span class="math display">\[
+\begin{vmatrix}
+\sum_{i=0}^{n} &amp; \sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}y_i\\
+\sum_{i=0}^{n}x_i &amp; \sum_{i=0}^{n}x_i^2&amp;\sum_{i=0}^{n}y_ix_i\\
+\end{vmatrix}
+\]</span></p>
+<p>第一行乘以系数<span class="math inline">\(\sum_{i=0}^{n}\)</span>，第二行乘以系数<span class="math inline">\(\sum_{i=0}^{n}x_i\)</span></p>
+<p><span class="math display">\[
+\begin{vmatrix}
+1 &amp; \frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}} &amp; \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}\\
+1 &amp; \frac{\sum_{i=0}^{n}x_i^2}{\sum_{i=0}^{n}x_i} &amp; \frac{\sum_{i=0}^{n}y_ix_i}{\sum_{i=0}^{n}x_i}
+\end{vmatrix}
+\]</span></p>
+<p>第二行减去第一行得</p>
+<p><span class="math display">\[
+\begin{vmatrix}
+1 &amp; \frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}} &amp; \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}\\
+0 &amp; \frac{\sum_{i=0}^{n}x_i^2}{\sum_{i=0}^{n}x_i} -\frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}} &amp; \frac{\sum_{i=0}^{n}y_ix_i}{\sum_{i=0}^{n}x_i} - \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}
+\end{vmatrix}
+\]</span></p>
+<p>通过上式可得<span class="math inline">\(a_1\)</span>为</p>
+<p><span class="math display">\[
+a_1 
+= \frac{\frac{\sum_{i=0}^{n}y_ix_i}{\sum_{i=0}^{n}x_i} - \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}}{\frac{\sum_{i=0}^{n}x_i^2}{\sum_{i=0}^{n}x_i} -\frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}}}
+=\frac{\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
+\]</span></p>
+<p>同理将<span class="math inline">\(a_1\)</span>回代入得：</p>
+<p><span class="math display">\[
+a_0 
+= \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}} - \frac{(\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}x_i}{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}}\\
+=\frac{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}y_i -(\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}x_i}{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}}\\
+=\frac{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n}\sum_{i=0}^{n}y_i -\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}\sum_{i=0}^{n}x_i}{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}}\\
+=\frac{\sum_{i=0}^{n}x_i^2\sum_{i=0}^{n}y_i -\sum_{i=0}^{n}y_ix_i\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
+\]</span></p>
+<p>故最终可得</p>
+<p><span class="math display">\[
+a_0
+=\frac{\sum_{i=0}^{n}x_i^2\sum_{i=0}^{n}y_i -\sum_{i=0}^{n}y_ix_i\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
+\]</span></p>
+<p><span class="math display">\[
+a_1 
+=\frac{\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
+\]</span></p>
+]]></content>
+      <categories>
+        <category>基础算法</category>
+        <category>最优算法</category>
+      </categories>
+      <tags>
+        <tag>最小二乘法</tag>
+        <tag>C++/C</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>超声波障碍物定位_库位中心</title>
     <url>/2019/11/12/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E4%B8%AD%E5%BF%83/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -4676,6 +4834,281 @@ P_{t-1} = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A
         <tag>感知算法</tag>
         <tag>障碍物定位</tag>
         <tag>库位中心</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>超声波障碍物定位-库位角点</title>
+    <url>/2019/11/11/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E8%A7%92%E7%82%B9/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>基于纯超声的垂直车位检测存在一些技术瓶颈，比如超声波的更新频率较低、探测开角较大等，都是影响检测精度的关键因素。另外对于垂直车位，车辆头部情况复杂、存在各种结构的进气栅格、引擎盖的高度不一等，增大了超声检测的难度。基于上述传感器本身性能限制和探测环境的复杂性，一次性精确检测很难实现，目前常规算法检测精度大概在30cm左右。为了进一步提升超声波检测的精度，利用车辆泊车过程中的检测的超声数据，重新进行库位的定位。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/eSXfcn2BYoTNR4K.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="超声重定位">超声重定位</h2>
+<p>首先车辆先通过超声波传感器确定车位的大概位置，然后规划车辆进行倒车入库，在入库的过程中，进行前车车头边沿的重新检测，并通过尾部超声波进行后车的检测，当车辆离后车距离达到30~40cm时，车辆停止。通过后置的短距超声波，使用三角定位算法实现，进行后车边沿数据的采集。等待数据量足够时，一般可以设定50个数据点左右。停止超声数据的推送，开始进行边沿算法的计算，从而实现垂直车位的二次定位。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/mC9TIKJhZdqGfMB.png" /></p>
+<h3 id="数据滤波">数据滤波</h3>
+<h4 id="状态滤波">状态滤波</h4>
+<p>传感器本身会输出一些状态信号，如噪声干扰、硬件故障、盲区、振玲故障、通信故障和正常等状态。可以通过传感器输出的这些状态信号进行数据的一级滤波，只保留状态输出为正常的信号。</p>
+<h4 id="幅值滤波">幅值滤波</h4>
+<p>超声波的<strong>Level</strong>值反应了声波的回波强度，因此可以使用回波强度的大小，去滤除一部分无效信号，比如回波为0值数据。这些数据反应了未探测到障碍物，或者是障碍物的特殊结构反射了声波，特殊的材料吸收了声波。 比如某些车型的车头设计有很大的进气栅格，这种结构就会减少反射声波的强度，从而导致强度降低。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/OVlckaCFD34UqPY.png" alt="幅值滤波" style="zoom: 80%;" /></p>
+<p>当超声波探测到车辆边沿时，此时由于很多回波反射方向变化，所以传感器接收到的强度变低。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/M9wzFi37mrlEYku.png" style="zoom:80%;" /></p>
+<p>通过一系列的滤波操作，可以得出以下图形。其中蓝色是滤波前的原始数据，黄色是滤波后的数据。可以从下图看出，通过滤波操作可以滤除一些无效信号点。 <img data-src="https://img-blog.csdnimg.cn/20190513171545723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt=""  /></p>
+<hr />
+<h3 id="边沿检测">边沿检测</h3>
+<p>对原始数据进行处理后，可以得到一组有效的超声信号，基于这组数据，可以进行车辆边沿的检测。</p>
+<h4 id="距离疏密程度">距离疏密程度</h4>
+<p>由于所有的坐标点都已经转化到了地面坐标系下，所以只需要进行x方向的疏密度分析。从下图可知，在车辆边沿处，点比较稀疏，有的地方存在很长一段距离无数据点。这种情况一般是车头处存在镂空的结构，或者声波发生了散射，导致声波强度减小。所以在确定车辆边沿点时，需设置一个疏密距离阀值，当距离值大于阀值时，才认为该点是边界的跳变点。 <img data-src="https://img-blog.csdnimg.cn/20190513192450664.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
+<h3 id="数据分布">数据分布</h3>
+<p>对于后车的边沿定位，使用的是车辆后方的短距传感器，该传感器使用三角定位原理，确定后车边沿的坐标值。可以从图中看出，图片左侧数据点描绘的是后车的边沿，可以通过数据的分布情况，及集中程度，确定最有可能车辆边沿的值。 <img data-src="https://img-blog.csdnimg.cn/20190513194816201.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /> 如下图所示，是对上图x轴做了数值分布分析，可以看出，大部分点的x轴坐标都分布于区域5中，所以最后取区域5中的点作为可信的坐标点。 <img data-src="https://img-blog.csdnimg.cn/20190513201643149.PNG#pic_center" /></p>
+<h2 id="结论">结论</h2>
+<p>库位角点定位算法适合泊车过程中的库位坐标重定位，方便在泊车过程中更新库位坐标。</p>
+]]></content>
+      <categories>
+        <category>感知算法</category>
+        <category>超声波</category>
+      </categories>
+      <tags>
+        <tag>超声波</tag>
+        <tag>感知算法</tag>
+        <tag>障碍物定位</tag>
+        <tag>库位角点</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>霍夫变换-OpenCV源码分析</title>
+    <url>/2019/10/20/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E9%9C%8D%E5%A4%AB%E5%8F%98%E6%8D%A2(Hough)-OpenCV%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>霍夫变换算法主要用于图像中的特征匹配，常见的应用场景是进行图像中的直线或者圆形的识别。该算法的原理就是实现笛卡尔空间到霍夫空间的转换，将在笛卡尔空间下难以判定的特性，转到霍夫空间，从而将问题简化。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/hyaDQrwBu37YFfJ.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="分析">分析</h2>
+<h3 id="建立三角函数查找表">建立三角函数查找表</h3>
+<p>为了避免三角函数的反复计算，根据离散后的角度信息，提前计算出所需的三角函数值。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span></span></span><br><span class="line"><span class="function"><span class="title">createTrigTable</span><span class="params">( <span class="type">int</span> numangle, <span class="type">double</span> min_theta, <span class="type">double</span> theta_step,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="type">float</span> irho, <span class="type">float</span> *tabSin, <span class="type">float</span> *tabCos )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">float</span> ang = <span class="built_in">static_cast</span>&lt;<span class="type">float</span>&gt;(min_theta);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> n = <span class="number">0</span>; n &lt; numangle; ang += (<span class="type">float</span>)theta_step, n++ )</span><br><span class="line">    &#123;</span><br><span class="line">        tabSin[n] = (<span class="type">float</span>)(<span class="built_in">sin</span>((<span class="type">double</span>)ang) * irho);</span><br><span class="line">        tabCos[n] = (<span class="type">float</span>)(<span class="built_in">cos</span>((<span class="type">double</span>)ang) * irho);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="计算离散点数">计算离散点数</h3>
+<p>根据极经和极角的步长，极经和极角的范围，计算离散点数。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> numangle = <span class="built_in">cvRound</span>((max_theta - min_theta) / theta);</span><br><span class="line"><span class="type">int</span> numrho = <span class="built_in">cvRound</span>(((max_rho - min_rho) + <span class="number">1</span>) / rho);</span><br></pre></td></tr></table></figure>
+<h3 id="填充累加器">填充累加器</h3>
+<p>计算图像中每个像素点的霍夫变换，其中极角<span class="math inline">\(\theta\)</span>按照离散化的点采样，计算极经值<code>rho</code>，并更新对应的累加器<code>accum</code>的值。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// stage 1. fill accumulator</span></span><br><span class="line"><span class="keyword">for</span>( i = <span class="number">0</span>; i &lt; height; i++ )</span><br><span class="line">    <span class="keyword">for</span>( j = <span class="number">0</span>; j &lt; width; j++ )</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>( image[i * step + j] != <span class="number">0</span> )</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> n = <span class="number">0</span>; n &lt; numangle; n++ )</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="type">int</span> r = <span class="built_in">cvRound</span>( j * tabCos[n] + i * tabSin[n] );</span><br><span class="line">                r += (numrho - <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">                accum[(n+<span class="number">1</span>) * (numrho+<span class="number">2</span>) + r+<span class="number">1</span>]++;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="查找局部极大值">查找局部极大值</h3>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span></span></span><br><span class="line"><span class="function"><span class="title">findLocalMaximums</span><span class="params">( <span class="type">int</span> numrho, <span class="type">int</span> numangle, <span class="type">int</span> threshold,</span></span></span><br><span class="line"><span class="params"><span class="function">                   <span class="type">const</span> <span class="type">int</span> *accum, std::vector&lt;<span class="type">int</span>&gt;&amp; sort_buf )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> r = <span class="number">0</span>; r &lt; numrho; r++ )</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> n = <span class="number">0</span>; n &lt; numangle; n++ )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> base = (n+<span class="number">1</span>) * (numrho+<span class="number">2</span>) + r+<span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span>( accum[base] &gt; threshold &amp;&amp;</span><br><span class="line">                accum[base] &gt; accum[base - <span class="number">1</span>] &amp;&amp; accum[base] &gt;= accum[base + <span class="number">1</span>] &amp;&amp;</span><br><span class="line">                accum[base] &gt; accum[base - numrho - <span class="number">2</span>] &amp;&amp; accum[base] &gt;= accum[base + numrho + <span class="number">2</span>] )</span><br><span class="line">                sort_buf.<span class="built_in">push_back</span>(base);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="排序">排序</h3>
+<p>对累加器内部的数据进行排序，由大到小进行排序。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// stage 3. sort the detected lines by accumulator value</span></span><br><span class="line">std::<span class="built_in">sort</span>(_sort_buf.<span class="built_in">begin</span>(), _sort_buf.<span class="built_in">end</span>(), <span class="built_in">hough_cmp_gt</span>(accum));</span><br></pre></td></tr></table></figure>
+<h3 id="输出直线">输出直线</h3>
+<p>根据设定的最小直线数量和实际缓存的直线数量，求取最小的直线数。根据直线数从排过序的缓存中取最大的几组数据，并将这些数据转换成直线参数存储。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// stage 4. store the first min(total,linesMax) lines to the output buffer</span></span><br><span class="line">linesMax = std::<span class="built_in">min</span>(linesMax, (<span class="type">int</span>)_sort_buf.<span class="built_in">size</span>());</span><br><span class="line"><span class="type">double</span> scale = <span class="number">1.</span>/(numrho+<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">lines.<span class="built_in">create</span>(linesMax, <span class="number">1</span>, type);</span><br><span class="line">Mat _lines = lines.<span class="built_in">getMat</span>();</span><br><span class="line"><span class="keyword">for</span>( i = <span class="number">0</span>; i &lt; linesMax; i++ )</span><br><span class="line">&#123;</span><br><span class="line">    LinePolar line;</span><br><span class="line">    <span class="type">int</span> idx = _sort_buf[i];</span><br><span class="line">    <span class="type">int</span> n = <span class="built_in">cvFloor</span>(idx*scale) - <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> r = idx - (n+<span class="number">1</span>)*(numrho+<span class="number">2</span>) - <span class="number">1</span>;</span><br><span class="line">    line.rho = (r - (numrho - <span class="number">1</span>)*<span class="number">0.5f</span>) * rho;</span><br><span class="line">    line.angle = <span class="built_in">static_cast</span>&lt;<span class="type">float</span>&gt;(min_theta) + n * theta;</span><br><span class="line">    <span class="keyword">if</span> (type == CV_32FC2)</span><br><span class="line">    &#123;</span><br><span class="line">        _lines.<span class="built_in">at</span>&lt;Vec2f&gt;(i) = <span class="built_in">Vec2f</span>(line.rho, line.angle);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">CV_DbgAssert</span>(type == CV_32FC3);</span><br><span class="line">        _lines.<span class="built_in">at</span>&lt;Vec3f&gt;(i) = <span class="built_in">Vec3f</span>(line.rho, line.angle, (<span class="type">float</span>)accum[idx]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考">参考</h2>
+<ol type="1">
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW5jdi9vcGVuY3YvYmxvYi80LjEuMS9tb2R1bGVzL2ltZ3Byb2Mvc3JjL2hvdWdoLmNwcA==">GitHub源码<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9wZW5jdi5vcmcvNC4xLjEvZGQvZDFhL2dyb3VwX19pbWdwcm9jX19mZWF0dXJlLmh0bWwjZ2E0NmI0ZTU4ODkzNGY2YzhkZmQ1MDljYzZlMGU0NTQ1YQ==">文档说明<i class="fa fa-external-link-alt"></i></span></li>
+</ol>
+]]></content>
+      <categories>
+        <category>感知算法</category>
+      </categories>
+      <tags>
+        <tag>OpenCV</tag>
+        <tag>霍夫变换</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>控制算法-Stanley法</title>
+    <url>/2020/02/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-Stanley%E6%B3%95/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>本文主要介绍Stanley方法的推导，该方法也称为前轮位置反馈。该方法基于车辆几何关系，算法简单，适合低速下的车辆路劲跟踪。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/hk7PBu8asVmbpox.jpg" alt="扬州廋西湖" /><figcaption aria-hidden="true">扬州廋西湖</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="stanley方法">Stanley方法</h2>
+<p><img data-src="https://i.loli.net/2021/08/30/kVdqQai6KhGrelT.png" style="zoom:80%;" /></p>
+<p>Stanley方法是一种基于航迹误差<span class="math inline">\(e_{f}\)</span>的非线性反馈函数,该航向误差是车辆前轴中心点与目标路径最近点<span class="math inline">\((c_x,c_y)\)</span>的距离。由上图几何关系得</p>
+<p><span class="math display">\[
+\psi_e = \psi - \psi_{t} \tag{1}
+\]</span></p>
+<p>其中，<span class="math inline">\(\psi\)</span>表示车辆横向角，<span class="math inline">\(\psi_{t}\)</span>表示离车辆前轴中心最近目标路径点处的航向角。</p>
+<p>前轮速度轴与目标路径航向之间的夹角<span class="math inline">\(\beta\)</span>为</p>
+<p><span class="math display">\[
+\beta = \arcsin(\frac{k\cdot e_{f}}{v_x}) \tag{2}
+\]</span></p>
+<p>但是在论文中都是使用反正切函数求<span class="math inline">\(\beta\)</span>角，可能原因是系数<span class="math inline">\(k\)</span>可以任意选择，选择可是的系数<span class="math inline">\(k\)</span>，确实可以转化为</p>
+<p><span class="math display">\[
+\beta = \arctan(\frac{k\cdot e_{f}}{v_x}) \tag{3}
+\]</span></p>
+<p>结合等式(1)和(3)得</p>
+<p><span class="math display">\[
+\begin{array}{cl}
+\delta &amp;= \psi_e + \beta \\
+&amp;= \psi - \psi_{t} +  \arctan(\dfrac{k\cdot e_{f}}{v_x})
+\end{array}\tag{4}
+\]</span></p>
+]]></content>
+      <categories>
+        <category>控制算法</category>
+        <category>路径跟踪</category>
+      </categories>
+      <tags>
+        <tag>前轴反馈</tag>
+        <tag>路径跟踪</tag>
+        <tag>控制算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>控制算法-动力学模型</title>
+    <url>/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>当车辆速度很高时，单车模型中前后轮的速度矢量不再与轮子方向一致。此时运动学模型就不能准确地描述车辆的运动状态，这就需要使用动力学模型对车辆进行建模。车辆单车模型中需要考虑两个维度的信息，这两个维度分别指代表车辆横向位置信息的<span class="math inline">\(y\)</span>和表示车辆偏航角信息的<span class="math inline">\(\psi\)</span>。下面分析过程中，先不考虑路堤角度的影响。 <img data-src="https://i.loli.net/2021/08/30/fQ7RUE9SO6ADnXN.jpg" alt="菊花展" /></p>
+<span id="more"></span>
+<h2 id="受力分析">受力分析</h2>
+<h3 id="平动">平动</h3>
+<p>首先假设车辆为一个质点，对该质点进行受力分析，并根据牛顿第二定律得</p>
+<p><span class="math display">\[
+ma_y = F_{yf}+F_{yr} \tag{1}
+\]</span></p>
+<p>其中，<span class="math inline">\(a_y\)</span>为车辆重心处<span class="math inline">\(y\)</span>轴方向的惯性加速度，<span class="math inline">\(F_{yf}\)</span>和<span class="math inline">\(F_{yr}\)</span>为前后轮横向受到的力。平动过程中，有两种力共同作用于加速度<span class="math inline">\(a_y\)</span>：车辆延<span class="math inline">\(y\)</span>轴产生的惯性加速度<span class="math inline">\(\ddot{y}\)</span>和车辆绕旋转中心<span class="math inline">\(O\)</span>旋转产生的向心加速度<span class="math inline">\(a_c=V_x\dot{\psi}\)</span>。</p>
+<p><span class="math display">\[
+a_y = \ddot{y} + V_x\dot{\psi} \tag{2}
+\]</span></p>
+<p>将公式(2)带入公式(1)得</p>
+<p><span class="math display">\[
+m(\ddot{y} + V_x\dot{\psi}) = F_{yf}+F_{yr} \tag{3}
+\]</span></p>
+<h3 id="转动">转动</h3>
+<p>假设车辆为刚体，刚体绕重心转动，该运动过程使用力矩和转动惯量进行描述。 车辆绕z轴旋转产生的力矩平衡，对应的偏航动力学方程为</p>
+<p><span class="math display">\[
+I_z\ddot{\psi} = l_fF_{yf} - l_rF_{yr} \tag{4}
+\]</span></p>
+<p>其中，<span class="math inline">\(l_f\)</span>和<span class="math inline">\(l_r\)</span>代表前后轮胎到重心的距离。</p>
+<h3 id="受力计算">受力计算</h3>
+<p>上述等式(3)和(4)中都用到了轮胎横向受力情况<span class="math inline">\(F_{yf}\)</span>和<span class="math inline">\(F_{yr}\)</span>，根据实验结果知，轮胎的横向力与小的滑移角存在正比例的关系,滑移角是轮胎方向与车轮速度矢量之间的夹角。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/zaCvGEqUsRDNJ8X.png" style="zoom: 67%;" /></p>
+<p>根据上图可知 <span class="math display">\[
+\alpha_f = \delta - \theta_{Vf} \tag{5}
+\]</span></p>
+<p>其中，<span class="math inline">\(\theta_{Vf}\)</span>代表速度矢量与车辆纵轴的夹角，<span class="math inline">\(\delta\)</span>代表前轮转向角。 同理，由于后轮转向角<span class="math inline">\(\delta\)</span>为0，故后轮滑移角为</p>
+<p><span class="math display">\[
+\alpha_r = -\theta_{Vr} \tag{6}
+\]</span></p>
+<p>车辆前轮的横向力可以表示为</p>
+<p><span class="math display">\[
+F_{yf} = 2C_{\alpha f}(\delta - \theta_{Vf} ) \tag{7}
+\]</span></p>
+<p>其中，比例常数<span class="math inline">\(C_{\alpha f}\)</span>代表每个前轮的侧偏刚度。</p>
+<p>同理后轮的横向力可以写为</p>
+<p><span class="math display">\[
+F_{yr} = 2C_{\alpha r}(-\theta_{Vr}) \tag{8}
+\]</span></p>
+<p>其中，比例常数<span class="math inline">\(C_{\alpha r}\)</span>代表每个后轮的侧偏刚度。</p>
+<h3 id="速度方向">速度方向</h3>
+<p><img data-src="https://i.loli.net/2021/08/30/qBMO6K81ZVT2QNt.png" /></p>
+<p>车辆平动产生的速度分量<span class="math inline">\(V_x\)</span>和<span class="math inline">\(V_y\)</span>，以及绕点<span class="math inline">\(C\)</span>转动产生的线速度<span class="math inline">\(l_f\dot{\psi}\)</span>和<span class="math inline">\(l_r\dot{\psi}\)</span>组成。根据上图得</p>
+<p><span class="math display">\[
+\tan(\theta_{Vf})=\frac{V_y + l_f\dot{\psi}}{V_x} \tag{9}
+\]</span></p>
+<p><span class="math display">\[
+\tan(\theta_{Vr})=\frac{V_y - l_r\dot{\psi}}{V_x} \tag{10}
+\]</span></p>
+<p>由于通常情况下速度矢量的夹角很小，可以使用小角度近似原理得 <span class="math display">\[
+\theta_{Vf}=\frac{\dot{y} + l_f\dot{\psi}}{V_x} \tag{11}
+\]</span></p>
+<p><span class="math display">\[
+\theta_{Vr}=\frac{\dot{y} - l_r\dot{\psi}}{V_x} \tag{12}
+\]</span></p>
+<h2 id="微分方程">微分方程</h2>
+<p>将等式(7)、(8)、(9)和(10)代入等式(3)中得</p>
+<p><span class="math display">\[
+m(\ddot{y} + V_x\dot{\psi}) = 2C_{\alpha f}(\delta - \frac{\dot{y} + l_f\dot{\psi}}{V_x} ) +2C_{\alpha r}(-\frac{\dot{y} - l_r\dot{\psi}}{V_x}) \tag{13}
+\]</span></p>
+<p>等式(13)左右两边同时除以<span class="math inline">\(m\)</span>，分别提取 <span class="math inline">\(\ddot{y}\)</span>、<span class="math inline">\(\dot{y}\)</span>、<span class="math inline">\(\dot{\psi}\)</span>和<span class="math inline">\(\delta\)</span>项得</p>
+<p><span class="math display">\[
+\ddot{y} = -\frac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x}\dot{y}   - ( V_x +  \frac{2C_{\alpha f}l_f- 2C_{\alpha r}l_r}{mV_x})\dot{\psi}  + \frac{2C_{\alpha f}}{m} \delta \tag{14}
+\]</span></p>
+<p>转化为矩阵形式如下</p>
+<p><span class="math display">\[
+\frac{\mathrm{d}}{\mathrm{d}t} \dot{y} =
+\begin{bmatrix}
+0 &amp; -\dfrac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x} &amp; 0 &amp; - ( V_x +  \dfrac{2C_{\alpha f}l_f- 2C_{\alpha r}l_r}{mV_x})
+\end{bmatrix}
+ \begin{bmatrix}
+y\\
+\dot{y}\\
+\psi\\
+\dot{\psi}
+\end{bmatrix} + \frac{2C_{\alpha f}}{m}\delta \tag{15}
+\]</span></p>
+<p>同理，将等式(7)、(8)、(9)和(10)代入等式(4)中得</p>
+<p><span class="math display">\[
+I_z\ddot{\psi} = 2l_fC_{\alpha f}(\delta - \frac{\dot{y} + l_f\dot{\psi}}{V_x} )  - 2l_rC_{\alpha r}(-\frac{\dot{y} - l_r\dot{\psi}}{V_x}) \tag{16}
+\]</span></p>
+<p>等式(13)左右两边同时除以<span class="math inline">\(I_z\)</span>，分别提取<span class="math inline">\(\dot{y}\)</span>、 <span class="math inline">\(\ddot{\psi}\)</span>、<span class="math inline">\(\dot{\psi}\)</span>和<span class="math inline">\(\delta\)</span>项得</p>
+<p><span class="math display">\[
+\ddot{\psi} = - \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x}\dot{y}  - \frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi} + \frac{2l_fC_{\alpha f}}{I_z}\delta\tag{17}
+\]</span></p>
+<p>等效的矩阵形式为</p>
+<p><span class="math display">\[
+\frac{\mathrm{d}}{\mathrm{d}t} \dot{\psi} = 
+\begin{bmatrix}
+0 &amp; - \dfrac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x} &amp; 0 &amp; -\dfrac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}
+\end{bmatrix}
+ \begin{bmatrix}
+y\\
+\dot{y}\\
+\psi\\
+\dot{\psi}
+\end{bmatrix} + \frac{2l_fC_{\alpha f}}{I_z}\delta \tag{18}
+\]</span></p>
+<p>根据等式(15)和(18)得</p>
+<p><span class="math display">\[
+\frac{\mathrm{d}}{\mathrm{d}t}\left \{ \begin{array}{cccc}
+y\\
+\dot{y}\\
+\psi\\
+\dot{\psi}
+\end{array} \right\} =  
+\begin{bmatrix}
+0 &amp; 1 &amp; 0 &amp; 0\\
+0 &amp; -\dfrac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x} &amp; 0 &amp; - ( V_x +  \dfrac{2C_{\alpha f}l_f- 2C_{\alpha r}l_r}{mV_x})\\
+0 &amp; 0 &amp; 0 &amp; 1\\
+0 &amp; - \dfrac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x} &amp; 0 &amp; -\dfrac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}
+\end{bmatrix}
+\begin{bmatrix}
+y\\
+\dot{y}\\
+\psi\\
+\dot{\psi}
+\end{bmatrix}\\+
+\begin{bmatrix}
+0\\
+\dfrac{2C_{\alpha f}}{m}\\
+0\\
+ \dfrac{2l_fC_{\alpha f}}{I_z}
+\end{bmatrix}\delta \tag{19}
+\]</span></p>
+<ul>
+<li>注意：上述动力学方程的推导建立在车辆滑移角很小的情况下，这时的轮胎作用力与滑移角可以近似为线性关系。当滑移角很大时，轮胎作用力与滑移角就不再是线性关系。</li>
+</ul>
+<h2 id="参考">参考</h2>
+<ol type="1">
+<li>“vehicle dynamics and control”</li>
+</ol>
+]]></content>
+      <categories>
+        <category>控制算法</category>
+        <category>车辆模型</category>
+      </categories>
+      <tags>
+        <tag>动力学</tag>
+        <tag>车辆模型</tag>
+        <tag>dynamics model</tag>
+        <tag>车辆控制</tag>
       </tags>
   </entry>
   <entry>
@@ -4880,439 +5313,6 @@ V_{yy} = \sum_{i=0}^{k}(y_i - V_y)^2 \tag{25}
       </tags>
   </entry>
   <entry>
-    <title>最小二乘法线性拟合</title>
-    <url>/2019/10/17/%E5%9F%BA%E7%A1%80%E7%AE%97%E6%B3%95-%E6%9C%80%E5%B0%8F%E4%BA%8C%E4%B9%98%E6%B3%95%E7%9A%84%E7%BA%BF%E6%80%A7%E6%8B%9F%E5%90%88/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>最小二乘法是曲线拟合的常用方法，使用该方法对匹配函数的选取非常重要。 <img data-src="https://i.loli.net/2021/08/30/67NEhYDHezj1PX2.jpg" alt="青岛" /></p>
-<span id="more"></span>
-<h2 id="理论">理论</h2>
-<ol type="1">
-<li>假设拟合的多项式为:</li>
-</ol>
-<p><span class="math display">\[
-y = a_0 + a_1*x +a_2*x^2 + ...+a_m*x^m
-\]</span></p>
-<p>其中，<strong>m</strong>代表多项式的阶数。</p>
-<ol start="2" type="1">
-<li>离散点与该多项式的平方和<span class="math inline">\(F(a_0,a_1,,a_m)\)</span>为，其中<strong>n</strong>代表采样点数：</li>
-</ol>
-<p><span class="math display">\[
-F(a_0,a_1,,a_m) = \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)]^2
-\]</span></p>
-<ol start="3" type="1">
-<li><p>最小二乘法的思想是求平方和函数<span class="math inline">\(F(a_0,a_1,,a_m)\)</span>的最小值，而对于二次方程求最小值的问题，常见的思路就是对方程求导，倒数为零的点，及为方程的极值点。</p></li>
-<li><p>下面对<span class="math inline">\(F(a_0,a_1,,a_m)\)</span>分别求<span class="math inline">\(a_i\)</span>偏导数，得：</p></li>
-</ol>
-<p><span class="math display">\[
--2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] = 0 \\
--2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] x_i= 0\\
--2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] x_i^2= 0\\
-\ldots\\
--2 \sum_{i=0}^n[y_i - (a_0 + a_1*x_i +a_2*x_i^2 + ...+a_m*x_i^m)] x_i^m= 0
-\]</span></p>
-<ol start="5" type="1">
-<li>整理得</li>
-</ol>
-<p><span class="math display">\[
-a_0\sum_{i=0}^{n}+a_1\sum_{i=0}^{n} x_i+ a_2\sum_{i=0}^{n} x_i^2+...+a_m\sum_{i=0}^{n}x_i^m = \sum_{i=0}^{n}y_i\\
-a_0\sum_{i=0}^{n} x_i+a_1\sum_{i=0}^{n} x_i^2+ a_2\sum_{i=0}^{n} x_i^3+...+a_m\sum_{i=0}^{n}x_i^{m+1}  = \sum_{i=0}^{n}y_ix_i\\
-\ldots\\
-a_0\sum_{i=0}^{n} x_i^m+a_1\sum_{i=0}^{n} x_i^{m+1}+ a_2\sum_{i=0}^{n} x_i^{m+2}+...+a_m\sum_{i=0}^{n}x_i^{2m}  = \sum_{i=0}^{n}y_ix_i^m
-\]</span></p>
-<ol start="6" type="1">
-<li>使用矩阵形式表示为：</li>
-</ol>
-<p><span class="math display">\[
-\left[
-\begin{matrix}
-\sum_{i=0}^{n} &amp; \sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}x_i^2&amp;\ldots&amp;\sum_{i=0}^{n}x_i^m\\
-\sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}x_i^2&amp;\sum_{i=0}^{n}x_i^3&amp;\ldots&amp;\sum_{i=0}^{n}x_i^{m+1}\\
-\sum_{i=0}^{n}x_i^2&amp;\sum_{i=0}^{n}x_i^3&amp;\sum_{i=0}^{n}x_i^4&amp;\ldots&amp;\sum_{i=0}^{n}x_i^{m+2}\\
-\ldots&amp;\ldots&amp;\ldots&amp;\ldots&amp;\ldots\\
-\sum_{i=0}^{n}x_i^{m}&amp;\sum_{i=0}^{n}x_i^{m+1}&amp;\sum_{i=0}^{n}x_i^{m+2}&amp;\ldots&amp;\sum_{i=0}^{n}x_i^{2m}
-\end{matrix}
-\right] 
-\left[
-\begin{matrix}
-a_0\\
-a_1\\
-a_2\\
-\ldots\\
-a_m
-\end{matrix}
-\right]=\\
-\left[
-\begin{matrix}
-\sum_{i=0}^{n}y_i\\
-\sum_{i=0}^{n}y_ix_i\\
-\sum_{i=0}^{n}y_ix_i^2\\
-\ldots\\
-\sum_{i=0}^{n}y_ix_i^m\\
-\end{matrix}
-\right]
-\]</span></p>
-<ol start="7" type="1">
-<li>下面就是求解一次线性方程，常用的方法是使用高斯消元法，也可以使用求矩阵的秩或者求解逆矩阵等方式求解。</li>
-</ol>
-<h2 id="高斯消元法求解线性方程">高斯消元法求解线性方程</h2>
-<h3 id="原则">原则</h3>
-<ul>
-<li>两个方程互换解不变</li>
-<li>一个方程乘以非零K,解不变</li>
-<li>一个方程乘以非零K,加上另一个方程解不变</li>
-</ul>
-<h3 id="一阶线性函数">一阶线性函数</h3>
-<p>假设多项式得阶数<strong>m</strong>为2，则上述矩阵方程为：</p>
-<p><span class="math display">\[
-\left[
-\begin{matrix}
-\sum_{i=0}^{n} &amp; \sum_{i=0}^{n}x_i\\
-\sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}x_i^2&amp;
-\end{matrix}
-\right] 
-\left[
-\begin{matrix}
-a_0\\
-a_1
-\end{matrix}
-\right]=\\
-\left[
-\begin{matrix}
-\sum_{i=0}^{n}y_i\\
-\sum_{i=0}^{n}y_ix_i
-\end{matrix}
-\right]
-\]</span></p>
-<p>写成行列式的形式为：</p>
-<p><span class="math display">\[
-\begin{vmatrix}
-\sum_{i=0}^{n} &amp; \sum_{i=0}^{n}x_i&amp;\sum_{i=0}^{n}y_i\\
-\sum_{i=0}^{n}x_i &amp; \sum_{i=0}^{n}x_i^2&amp;\sum_{i=0}^{n}y_ix_i\\
-\end{vmatrix}
-\]</span></p>
-<p>第一行乘以系数<span class="math inline">\(\sum_{i=0}^{n}\)</span>，第二行乘以系数<span class="math inline">\(\sum_{i=0}^{n}x_i\)</span></p>
-<p><span class="math display">\[
-\begin{vmatrix}
-1 &amp; \frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}} &amp; \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}\\
-1 &amp; \frac{\sum_{i=0}^{n}x_i^2}{\sum_{i=0}^{n}x_i} &amp; \frac{\sum_{i=0}^{n}y_ix_i}{\sum_{i=0}^{n}x_i}
-\end{vmatrix}
-\]</span></p>
-<p>第二行减去第一行得</p>
-<p><span class="math display">\[
-\begin{vmatrix}
-1 &amp; \frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}} &amp; \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}\\
-0 &amp; \frac{\sum_{i=0}^{n}x_i^2}{\sum_{i=0}^{n}x_i} -\frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}} &amp; \frac{\sum_{i=0}^{n}y_ix_i}{\sum_{i=0}^{n}x_i} - \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}
-\end{vmatrix}
-\]</span></p>
-<p>通过上式可得<span class="math inline">\(a_1\)</span>为</p>
-<p><span class="math display">\[
-a_1 
-= \frac{\frac{\sum_{i=0}^{n}y_ix_i}{\sum_{i=0}^{n}x_i} - \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}}}{\frac{\sum_{i=0}^{n}x_i^2}{\sum_{i=0}^{n}x_i} -\frac{\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}}}
-=\frac{\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
-\]</span></p>
-<p>同理将<span class="math inline">\(a_1\)</span>回代入得：</p>
-<p><span class="math display">\[
-a_0 
-= \frac{\sum_{i=0}^{n}y_i}{\sum_{i=0}^{n}} - \frac{(\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}x_i}{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}}\\
-=\frac{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}y_i -(\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}x_i}{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}}\\
-=\frac{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n}\sum_{i=0}^{n}y_i -\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}\sum_{i=0}^{n}x_i}{(\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i)*\sum_{i=0}^{n}}\\
-=\frac{\sum_{i=0}^{n}x_i^2\sum_{i=0}^{n}y_i -\sum_{i=0}^{n}y_ix_i\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
-\]</span></p>
-<p>故最终可得</p>
-<p><span class="math display">\[
-a_0
-=\frac{\sum_{i=0}^{n}x_i^2\sum_{i=0}^{n}y_i -\sum_{i=0}^{n}y_ix_i\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
-\]</span></p>
-<p><span class="math display">\[
-a_1 
-=\frac{\sum_{i=0}^{n}y_ix_i*\sum_{i=0}^{n}-\sum_{i=0}^{n}y_i*\sum_{i=0}^{n}x_i}{\sum_{i=0}^{n}x_i^2*\sum_{i=0}^{n} - \sum_{i=0}^{n}x_i*\sum_{i=0}^{n}x_i}
-\]</span></p>
-]]></content>
-      <categories>
-        <category>基础算法</category>
-        <category>最优算法</category>
-      </categories>
-      <tags>
-        <tag>最小二乘法</tag>
-        <tag>C++/C</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>超声波障碍物定位-库位角点</title>
-    <url>/2019/11/11/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E8%B6%85%E5%A3%B0%E6%B3%A2%E9%9A%9C%E7%A2%8D%E7%89%A9%E5%AE%9A%E4%BD%8D-%E5%BA%93%E4%BD%8D%E8%A7%92%E7%82%B9/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>基于纯超声的垂直车位检测存在一些技术瓶颈，比如超声波的更新频率较低、探测开角较大等，都是影响检测精度的关键因素。另外对于垂直车位，车辆头部情况复杂、存在各种结构的进气栅格、引擎盖的高度不一等，增大了超声检测的难度。基于上述传感器本身性能限制和探测环境的复杂性，一次性精确检测很难实现，目前常规算法检测精度大概在30cm左右。为了进一步提升超声波检测的精度，利用车辆泊车过程中的检测的超声数据，重新进行库位的定位。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/eSXfcn2BYoTNR4K.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="超声重定位">超声重定位</h2>
-<p>首先车辆先通过超声波传感器确定车位的大概位置，然后规划车辆进行倒车入库，在入库的过程中，进行前车车头边沿的重新检测，并通过尾部超声波进行后车的检测，当车辆离后车距离达到30~40cm时，车辆停止。通过后置的短距超声波，使用三角定位算法实现，进行后车边沿数据的采集。等待数据量足够时，一般可以设定50个数据点左右。停止超声数据的推送，开始进行边沿算法的计算，从而实现垂直车位的二次定位。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/mC9TIKJhZdqGfMB.png" /></p>
-<h3 id="数据滤波">数据滤波</h3>
-<h4 id="状态滤波">状态滤波</h4>
-<p>传感器本身会输出一些状态信号，如噪声干扰、硬件故障、盲区、振玲故障、通信故障和正常等状态。可以通过传感器输出的这些状态信号进行数据的一级滤波，只保留状态输出为正常的信号。</p>
-<h4 id="幅值滤波">幅值滤波</h4>
-<p>超声波的<strong>Level</strong>值反应了声波的回波强度，因此可以使用回波强度的大小，去滤除一部分无效信号，比如回波为0值数据。这些数据反应了未探测到障碍物，或者是障碍物的特殊结构反射了声波，特殊的材料吸收了声波。 比如某些车型的车头设计有很大的进气栅格，这种结构就会减少反射声波的强度，从而导致强度降低。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/OVlckaCFD34UqPY.png" alt="幅值滤波" style="zoom: 80%;" /></p>
-<p>当超声波探测到车辆边沿时，此时由于很多回波反射方向变化，所以传感器接收到的强度变低。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/M9wzFi37mrlEYku.png" style="zoom:80%;" /></p>
-<p>通过一系列的滤波操作，可以得出以下图形。其中蓝色是滤波前的原始数据，黄色是滤波后的数据。可以从下图看出，通过滤波操作可以滤除一些无效信号点。 <img data-src="https://img-blog.csdnimg.cn/20190513171545723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" alt=""  /></p>
-<hr />
-<h3 id="边沿检测">边沿检测</h3>
-<p>对原始数据进行处理后，可以得到一组有效的超声信号，基于这组数据，可以进行车辆边沿的检测。</p>
-<h4 id="距离疏密程度">距离疏密程度</h4>
-<p>由于所有的坐标点都已经转化到了地面坐标系下，所以只需要进行x方向的疏密度分析。从下图可知，在车辆边沿处，点比较稀疏，有的地方存在很长一段距离无数据点。这种情况一般是车头处存在镂空的结构，或者声波发生了散射，导致声波强度减小。所以在确定车辆边沿点时，需设置一个疏密距离阀值，当距离值大于阀值时，才认为该点是边界的跳变点。 <img data-src="https://img-blog.csdnimg.cn/20190513192450664.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /></p>
-<h3 id="数据分布">数据分布</h3>
-<p>对于后车的边沿定位，使用的是车辆后方的短距传感器，该传感器使用三角定位原理，确定后车边沿的坐标值。可以从图中看出，图片左侧数据点描绘的是后车的边沿，可以通过数据的分布情况，及集中程度，确定最有可能车辆边沿的值。 <img data-src="https://img-blog.csdnimg.cn/20190513194816201.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=,size_16,color_FFFFFF,t_70" /> 如下图所示，是对上图x轴做了数值分布分析，可以看出，大部分点的x轴坐标都分布于区域5中，所以最后取区域5中的点作为可信的坐标点。 <img data-src="https://img-blog.csdnimg.cn/20190513201643149.PNG#pic_center" /></p>
-<h2 id="结论">结论</h2>
-<p>库位角点定位算法适合泊车过程中的库位坐标重定位，方便在泊车过程中更新库位坐标。</p>
-]]></content>
-      <categories>
-        <category>感知算法</category>
-        <category>超声波</category>
-      </categories>
-      <tags>
-        <tag>超声波</tag>
-        <tag>感知算法</tag>
-        <tag>障碍物定位</tag>
-        <tag>库位角点</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>霍夫变换-OpenCV源码分析</title>
-    <url>/2019/10/20/%E6%84%9F%E7%9F%A5%E7%AE%97%E6%B3%95-%E9%9C%8D%E5%A4%AB%E5%8F%98%E6%8D%A2(Hough)-OpenCV%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>霍夫变换算法主要用于图像中的特征匹配，常见的应用场景是进行图像中的直线或者圆形的识别。该算法的原理就是实现笛卡尔空间到霍夫空间的转换，将在笛卡尔空间下难以判定的特性，转到霍夫空间，从而将问题简化。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/hyaDQrwBu37YFfJ.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="分析">分析</h2>
-<h3 id="建立三角函数查找表">建立三角函数查找表</h3>
-<p>为了避免三角函数的反复计算，根据离散后的角度信息，提前计算出所需的三角函数值。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span></span></span><br><span class="line"><span class="function"><span class="title">createTrigTable</span><span class="params">( <span class="type">int</span> numangle, <span class="type">double</span> min_theta, <span class="type">double</span> theta_step,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="type">float</span> irho, <span class="type">float</span> *tabSin, <span class="type">float</span> *tabCos )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">float</span> ang = <span class="built_in">static_cast</span>&lt;<span class="type">float</span>&gt;(min_theta);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> n = <span class="number">0</span>; n &lt; numangle; ang += (<span class="type">float</span>)theta_step, n++ )</span><br><span class="line">    &#123;</span><br><span class="line">        tabSin[n] = (<span class="type">float</span>)(<span class="built_in">sin</span>((<span class="type">double</span>)ang) * irho);</span><br><span class="line">        tabCos[n] = (<span class="type">float</span>)(<span class="built_in">cos</span>((<span class="type">double</span>)ang) * irho);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="计算离散点数">计算离散点数</h3>
-<p>根据极经和极角的步长，极经和极角的范围，计算离散点数。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> numangle = <span class="built_in">cvRound</span>((max_theta - min_theta) / theta);</span><br><span class="line"><span class="type">int</span> numrho = <span class="built_in">cvRound</span>(((max_rho - min_rho) + <span class="number">1</span>) / rho);</span><br></pre></td></tr></table></figure>
-<h3 id="填充累加器">填充累加器</h3>
-<p>计算图像中每个像素点的霍夫变换，其中极角<span class="math inline">\(\theta\)</span>按照离散化的点采样，计算极经值<code>rho</code>，并更新对应的累加器<code>accum</code>的值。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// stage 1. fill accumulator</span></span><br><span class="line"><span class="keyword">for</span>( i = <span class="number">0</span>; i &lt; height; i++ )</span><br><span class="line">    <span class="keyword">for</span>( j = <span class="number">0</span>; j &lt; width; j++ )</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>( image[i * step + j] != <span class="number">0</span> )</span><br><span class="line">            <span class="keyword">for</span>(<span class="type">int</span> n = <span class="number">0</span>; n &lt; numangle; n++ )</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="type">int</span> r = <span class="built_in">cvRound</span>( j * tabCos[n] + i * tabSin[n] );</span><br><span class="line">                r += (numrho - <span class="number">1</span>) / <span class="number">2</span>;</span><br><span class="line">                accum[(n+<span class="number">1</span>) * (numrho+<span class="number">2</span>) + r+<span class="number">1</span>]++;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h3 id="查找局部极大值">查找局部极大值</h3>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">void</span></span></span><br><span class="line"><span class="function"><span class="title">findLocalMaximums</span><span class="params">( <span class="type">int</span> numrho, <span class="type">int</span> numangle, <span class="type">int</span> threshold,</span></span></span><br><span class="line"><span class="params"><span class="function">                   <span class="type">const</span> <span class="type">int</span> *accum, std::vector&lt;<span class="type">int</span>&gt;&amp; sort_buf )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> r = <span class="number">0</span>; r &lt; numrho; r++ )</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> n = <span class="number">0</span>; n &lt; numangle; n++ )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> base = (n+<span class="number">1</span>) * (numrho+<span class="number">2</span>) + r+<span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span>( accum[base] &gt; threshold &amp;&amp;</span><br><span class="line">                accum[base] &gt; accum[base - <span class="number">1</span>] &amp;&amp; accum[base] &gt;= accum[base + <span class="number">1</span>] &amp;&amp;</span><br><span class="line">                accum[base] &gt; accum[base - numrho - <span class="number">2</span>] &amp;&amp; accum[base] &gt;= accum[base + numrho + <span class="number">2</span>] )</span><br><span class="line">                sort_buf.<span class="built_in">push_back</span>(base);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="排序">排序</h3>
-<p>对累加器内部的数据进行排序，由大到小进行排序。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// stage 3. sort the detected lines by accumulator value</span></span><br><span class="line">std::<span class="built_in">sort</span>(_sort_buf.<span class="built_in">begin</span>(), _sort_buf.<span class="built_in">end</span>(), <span class="built_in">hough_cmp_gt</span>(accum));</span><br></pre></td></tr></table></figure>
-<h3 id="输出直线">输出直线</h3>
-<p>根据设定的最小直线数量和实际缓存的直线数量，求取最小的直线数。根据直线数从排过序的缓存中取最大的几组数据，并将这些数据转换成直线参数存储。</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// stage 4. store the first min(total,linesMax) lines to the output buffer</span></span><br><span class="line">linesMax = std::<span class="built_in">min</span>(linesMax, (<span class="type">int</span>)_sort_buf.<span class="built_in">size</span>());</span><br><span class="line"><span class="type">double</span> scale = <span class="number">1.</span>/(numrho+<span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">lines.<span class="built_in">create</span>(linesMax, <span class="number">1</span>, type);</span><br><span class="line">Mat _lines = lines.<span class="built_in">getMat</span>();</span><br><span class="line"><span class="keyword">for</span>( i = <span class="number">0</span>; i &lt; linesMax; i++ )</span><br><span class="line">&#123;</span><br><span class="line">    LinePolar line;</span><br><span class="line">    <span class="type">int</span> idx = _sort_buf[i];</span><br><span class="line">    <span class="type">int</span> n = <span class="built_in">cvFloor</span>(idx*scale) - <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> r = idx - (n+<span class="number">1</span>)*(numrho+<span class="number">2</span>) - <span class="number">1</span>;</span><br><span class="line">    line.rho = (r - (numrho - <span class="number">1</span>)*<span class="number">0.5f</span>) * rho;</span><br><span class="line">    line.angle = <span class="built_in">static_cast</span>&lt;<span class="type">float</span>&gt;(min_theta) + n * theta;</span><br><span class="line">    <span class="keyword">if</span> (type == CV_32FC2)</span><br><span class="line">    &#123;</span><br><span class="line">        _lines.<span class="built_in">at</span>&lt;Vec2f&gt;(i) = <span class="built_in">Vec2f</span>(line.rho, line.angle);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">CV_DbgAssert</span>(type == CV_32FC3);</span><br><span class="line">        _lines.<span class="built_in">at</span>&lt;Vec3f&gt;(i) = <span class="built_in">Vec3f</span>(line.rho, line.angle, (<span class="type">float</span>)accum[idx]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="参考">参考</h2>
-<ol type="1">
-<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW5jdi9vcGVuY3YvYmxvYi80LjEuMS9tb2R1bGVzL2ltZ3Byb2Mvc3JjL2hvdWdoLmNwcA==">GitHub源码<i class="fa fa-external-link-alt"></i></span></li>
-<li><span class="exturl" data-url="aHR0cHM6Ly9kb2NzLm9wZW5jdi5vcmcvNC4xLjEvZGQvZDFhL2dyb3VwX19pbWdwcm9jX19mZWF0dXJlLmh0bWwjZ2E0NmI0ZTU4ODkzNGY2YzhkZmQ1MDljYzZlMGU0NTQ1YQ==">文档说明<i class="fa fa-external-link-alt"></i></span></li>
-</ol>
-]]></content>
-      <categories>
-        <category>感知算法</category>
-      </categories>
-      <tags>
-        <tag>OpenCV</tag>
-        <tag>霍夫变换</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>控制算法-动力学模型</title>
-    <url>/2019/12/02/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%8A%A8%E5%8A%9B%E5%AD%A6%E6%A8%A1%E5%9E%8B/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>当车辆速度很高时，单车模型中前后轮的速度矢量不再与轮子方向一致。此时运动学模型就不能准确地描述车辆的运动状态，这就需要使用动力学模型对车辆进行建模。车辆单车模型中需要考虑两个维度的信息，这两个维度分别指代表车辆横向位置信息的<span class="math inline">\(y\)</span>和表示车辆偏航角信息的<span class="math inline">\(\psi\)</span>。下面分析过程中，先不考虑路堤角度的影响。 <img data-src="https://i.loli.net/2021/08/30/fQ7RUE9SO6ADnXN.jpg" alt="菊花展" /></p>
-<span id="more"></span>
-<h2 id="受力分析">受力分析</h2>
-<h3 id="平动">平动</h3>
-<p>首先假设车辆为一个质点，对该质点进行受力分析，并根据牛顿第二定律得</p>
-<p><span class="math display">\[
-ma_y = F_{yf}+F_{yr} \tag{1}
-\]</span></p>
-<p>其中，<span class="math inline">\(a_y\)</span>为车辆重心处<span class="math inline">\(y\)</span>轴方向的惯性加速度，<span class="math inline">\(F_{yf}\)</span>和<span class="math inline">\(F_{yr}\)</span>为前后轮横向受到的力。平动过程中，有两种力共同作用于加速度<span class="math inline">\(a_y\)</span>：车辆延<span class="math inline">\(y\)</span>轴产生的惯性加速度<span class="math inline">\(\ddot{y}\)</span>和车辆绕旋转中心<span class="math inline">\(O\)</span>旋转产生的向心加速度<span class="math inline">\(a_c=V_x\dot{\psi}\)</span>。</p>
-<p><span class="math display">\[
-a_y = \ddot{y} + V_x\dot{\psi} \tag{2}
-\]</span></p>
-<p>将公式(2)带入公式(1)得</p>
-<p><span class="math display">\[
-m(\ddot{y} + V_x\dot{\psi}) = F_{yf}+F_{yr} \tag{3}
-\]</span></p>
-<h3 id="转动">转动</h3>
-<p>假设车辆为刚体，刚体绕重心转动，该运动过程使用力矩和转动惯量进行描述。 车辆绕z轴旋转产生的力矩平衡，对应的偏航动力学方程为</p>
-<p><span class="math display">\[
-I_z\ddot{\psi} = l_fF_{yf} - l_rF_{yr} \tag{4}
-\]</span></p>
-<p>其中，<span class="math inline">\(l_f\)</span>和<span class="math inline">\(l_r\)</span>代表前后轮胎到重心的距离。</p>
-<h3 id="受力计算">受力计算</h3>
-<p>上述等式(3)和(4)中都用到了轮胎横向受力情况<span class="math inline">\(F_{yf}\)</span>和<span class="math inline">\(F_{yr}\)</span>，根据实验结果知，轮胎的横向力与小的滑移角存在正比例的关系,滑移角是轮胎方向与车轮速度矢量之间的夹角。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/zaCvGEqUsRDNJ8X.png" style="zoom: 67%;" /></p>
-<p>根据上图可知 <span class="math display">\[
-\alpha_f = \delta - \theta_{Vf} \tag{5}
-\]</span></p>
-<p>其中，<span class="math inline">\(\theta_{Vf}\)</span>代表速度矢量与车辆纵轴的夹角，<span class="math inline">\(\delta\)</span>代表前轮转向角。 同理，由于后轮转向角<span class="math inline">\(\delta\)</span>为0，故后轮滑移角为</p>
-<p><span class="math display">\[
-\alpha_r = -\theta_{Vr} \tag{6}
-\]</span></p>
-<p>车辆前轮的横向力可以表示为</p>
-<p><span class="math display">\[
-F_{yf} = 2C_{\alpha f}(\delta - \theta_{Vf} ) \tag{7}
-\]</span></p>
-<p>其中，比例常数<span class="math inline">\(C_{\alpha f}\)</span>代表每个前轮的侧偏刚度。</p>
-<p>同理后轮的横向力可以写为</p>
-<p><span class="math display">\[
-F_{yr} = 2C_{\alpha r}(-\theta_{Vr}) \tag{8}
-\]</span></p>
-<p>其中，比例常数<span class="math inline">\(C_{\alpha r}\)</span>代表每个后轮的侧偏刚度。</p>
-<h3 id="速度方向">速度方向</h3>
-<p><img data-src="https://i.loli.net/2021/08/30/qBMO6K81ZVT2QNt.png" /></p>
-<p>车辆平动产生的速度分量<span class="math inline">\(V_x\)</span>和<span class="math inline">\(V_y\)</span>，以及绕点<span class="math inline">\(C\)</span>转动产生的线速度<span class="math inline">\(l_f\dot{\psi}\)</span>和<span class="math inline">\(l_r\dot{\psi}\)</span>组成。根据上图得</p>
-<p><span class="math display">\[
-\tan(\theta_{Vf})=\frac{V_y + l_f\dot{\psi}}{V_x} \tag{9}
-\]</span></p>
-<p><span class="math display">\[
-\tan(\theta_{Vr})=\frac{V_y - l_r\dot{\psi}}{V_x} \tag{10}
-\]</span></p>
-<p>由于通常情况下速度矢量的夹角很小，可以使用小角度近似原理得 <span class="math display">\[
-\theta_{Vf}=\frac{\dot{y} + l_f\dot{\psi}}{V_x} \tag{11}
-\]</span></p>
-<p><span class="math display">\[
-\theta_{Vr}=\frac{\dot{y} - l_r\dot{\psi}}{V_x} \tag{12}
-\]</span></p>
-<h2 id="微分方程">微分方程</h2>
-<p>将等式(7)、(8)、(9)和(10)代入等式(3)中得</p>
-<p><span class="math display">\[
-m(\ddot{y} + V_x\dot{\psi}) = 2C_{\alpha f}(\delta - \frac{\dot{y} + l_f\dot{\psi}}{V_x} ) +2C_{\alpha r}(-\frac{\dot{y} - l_r\dot{\psi}}{V_x}) \tag{13}
-\]</span></p>
-<p>等式(13)左右两边同时除以<span class="math inline">\(m\)</span>，分别提取 <span class="math inline">\(\ddot{y}\)</span>、<span class="math inline">\(\dot{y}\)</span>、<span class="math inline">\(\dot{\psi}\)</span>和<span class="math inline">\(\delta\)</span>项得</p>
-<p><span class="math display">\[
-\ddot{y} = -\frac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x}\dot{y}   - ( V_x +  \frac{2C_{\alpha f}l_f- 2C_{\alpha r}l_r}{mV_x})\dot{\psi}  + \frac{2C_{\alpha f}}{m} \delta \tag{14}
-\]</span></p>
-<p>转化为矩阵形式如下</p>
-<p><span class="math display">\[
-\frac{\mathrm{d}}{\mathrm{d}t} \dot{y} =
-\begin{bmatrix}
-0 &amp; -\dfrac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x} &amp; 0 &amp; - ( V_x +  \dfrac{2C_{\alpha f}l_f- 2C_{\alpha r}l_r}{mV_x})
-\end{bmatrix}
- \begin{bmatrix}
-y\\
-\dot{y}\\
-\psi\\
-\dot{\psi}
-\end{bmatrix} + \frac{2C_{\alpha f}}{m}\delta \tag{15}
-\]</span></p>
-<p>同理，将等式(7)、(8)、(9)和(10)代入等式(4)中得</p>
-<p><span class="math display">\[
-I_z\ddot{\psi} = 2l_fC_{\alpha f}(\delta - \frac{\dot{y} + l_f\dot{\psi}}{V_x} )  - 2l_rC_{\alpha r}(-\frac{\dot{y} - l_r\dot{\psi}}{V_x}) \tag{16}
-\]</span></p>
-<p>等式(13)左右两边同时除以<span class="math inline">\(I_z\)</span>，分别提取<span class="math inline">\(\dot{y}\)</span>、 <span class="math inline">\(\ddot{\psi}\)</span>、<span class="math inline">\(\dot{\psi}\)</span>和<span class="math inline">\(\delta\)</span>项得</p>
-<p><span class="math display">\[
-\ddot{\psi} = - \frac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x}\dot{y}  - \frac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}\dot{\psi} + \frac{2l_fC_{\alpha f}}{I_z}\delta\tag{17}
-\]</span></p>
-<p>等效的矩阵形式为</p>
-<p><span class="math display">\[
-\frac{\mathrm{d}}{\mathrm{d}t} \dot{\psi} = 
-\begin{bmatrix}
-0 &amp; - \dfrac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x} &amp; 0 &amp; -\dfrac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}
-\end{bmatrix}
- \begin{bmatrix}
-y\\
-\dot{y}\\
-\psi\\
-\dot{\psi}
-\end{bmatrix} + \frac{2l_fC_{\alpha f}}{I_z}\delta \tag{18}
-\]</span></p>
-<p>根据等式(15)和(18)得</p>
-<p><span class="math display">\[
-\frac{\mathrm{d}}{\mathrm{d}t}\left \{ \begin{array}{cccc}
-y\\
-\dot{y}\\
-\psi\\
-\dot{\psi}
-\end{array} \right\} =  
-\begin{bmatrix}
-0 &amp; 1 &amp; 0 &amp; 0\\
-0 &amp; -\dfrac{2C_{\alpha f } + 2C_{\alpha r}}{mV_x} &amp; 0 &amp; - ( V_x +  \dfrac{2C_{\alpha f}l_f- 2C_{\alpha r}l_r}{mV_x})\\
-0 &amp; 0 &amp; 0 &amp; 1\\
-0 &amp; - \dfrac{2l_fC_{\alpha f} - 2l_rC_{\alpha r}}{I_zV_x} &amp; 0 &amp; -\dfrac{2{l_f}^2C_{\alpha f} + 2{l_r}^2C_{\alpha r}}{I_zV_x}
-\end{bmatrix}
-\begin{bmatrix}
-y\\
-\dot{y}\\
-\psi\\
-\dot{\psi}
-\end{bmatrix}\\+
-\begin{bmatrix}
-0\\
-\dfrac{2C_{\alpha f}}{m}\\
-0\\
- \dfrac{2l_fC_{\alpha f}}{I_z}
-\end{bmatrix}\delta \tag{19}
-\]</span></p>
-<ul>
-<li>注意：上述动力学方程的推导建立在车辆滑移角很小的情况下，这时的轮胎作用力与滑移角可以近似为线性关系。当滑移角很大时，轮胎作用力与滑移角就不再是线性关系。</li>
-</ul>
-<h2 id="参考">参考</h2>
-<ol type="1">
-<li>“vehicle dynamics and control”</li>
-</ol>
-]]></content>
-      <categories>
-        <category>控制算法</category>
-        <category>车辆模型</category>
-      </categories>
-      <tags>
-        <tag>动力学</tag>
-        <tag>车辆模型</tag>
-        <tag>dynamics model</tag>
-        <tag>车辆控制</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>控制算法-Stanley法</title>
-    <url>/2020/02/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-Stanley%E6%B3%95/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>本文主要介绍Stanley方法的推导，该方法也称为前轮位置反馈。该方法基于车辆几何关系，算法简单，适合低速下的车辆路劲跟踪。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/hk7PBu8asVmbpox.jpg" alt="扬州廋西湖" /><figcaption aria-hidden="true">扬州廋西湖</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="stanley方法">Stanley方法</h2>
-<p><img data-src="https://i.loli.net/2021/08/30/kVdqQai6KhGrelT.png" style="zoom:80%;" /></p>
-<p>Stanley方法是一种基于航迹误差<span class="math inline">\(e_{f}\)</span>的非线性反馈函数,该航向误差是车辆前轴中心点与目标路径最近点<span class="math inline">\((c_x,c_y)\)</span>的距离。由上图几何关系得</p>
-<p><span class="math display">\[
-\psi_e = \psi - \psi_{t} \tag{1}
-\]</span></p>
-<p>其中，<span class="math inline">\(\psi\)</span>表示车辆横向角，<span class="math inline">\(\psi_{t}\)</span>表示离车辆前轴中心最近目标路径点处的航向角。</p>
-<p>前轮速度轴与目标路径航向之间的夹角<span class="math inline">\(\beta\)</span>为</p>
-<p><span class="math display">\[
-\beta = \arcsin(\frac{k\cdot e_{f}}{v_x}) \tag{2}
-\]</span></p>
-<p>但是在论文中都是使用反正切函数求<span class="math inline">\(\beta\)</span>角，可能原因是系数<span class="math inline">\(k\)</span>可以任意选择，选择可是的系数<span class="math inline">\(k\)</span>，确实可以转化为</p>
-<p><span class="math display">\[
-\beta = \arctan(\frac{k\cdot e_{f}}{v_x}) \tag{3}
-\]</span></p>
-<p>结合等式(1)和(3)得</p>
-<p><span class="math display">\[
-\begin{array}{cl}
-\delta &amp;= \psi_e + \beta \\
-&amp;= \psi - \psi_{t} +  \arctan(\dfrac{k\cdot e_{f}}{v_x})
-\end{array}\tag{4}
-\]</span></p>
-]]></content>
-      <categories>
-        <category>控制算法</category>
-        <category>路径跟踪</category>
-      </categories>
-      <tags>
-        <tag>前轴反馈</tag>
-        <tag>路径跟踪</tag>
-        <tag>控制算法</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>控制算法-后轮位置反馈</title>
     <url>/2020/02/26/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E5%90%8E%E8%BD%AE%E4%BD%8D%E7%BD%AE%E5%8F%8D%E9%A6%88/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -5497,200 +5497,6 @@ k_2 v_r \dfrac{\sin(\psi_e)}{\psi_e}e + \dot{\psi} - \dfrac{v_{r}\cdot\cos(\psi_
       <tags>
         <tag>Rear Wheel Position Base Feedback</tag>
         <tag>后轮位置反馈</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>控制算法-滑模控制介绍</title>
-    <url>/2019/12/21/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E4%BB%8B%E7%BB%8D/</url>
-    <content><![CDATA[<h2 id="一维运动模型">一维运动模型</h2>
-<p>考虑简单的单位质量块的一维运动模型，使用位移和速度状态变量进行描述。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/5gi8qy1jdHrvePa.png" /></p>
-<p>定义位移变量<span class="math inline">\(x_1 = x\)</span>和速度变量<span class="math inline">\(x_2 = \dot{x_1} = v\)</span>，运动模型的微分形式使用<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>表示如下：</p>
-<p><span class="math display">\[
-\left\{
-\begin{array}{rl}
-&amp;\dot{x_1} = x_2&amp; x_1(0)=x_{10}\\
-&amp;\dot{x_2} = u + f(x_1,x_2,t) &amp;x_2(0)=x_{20}
-\end{array} \right.\tag{1}
-\]</span></p>
-<span id="more"></span>
-<p>其中,<span class="math inline">\(u\)</span>代表控制力，干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>包括干粘摩檫力的影响和一些未知的阻力，并假定有界。</p>
-<p><span class="math display">\[
-\rvert f(x_1,x_2,t)\rvert \leqslant L \gt 0 \tag{2}
-\]</span></p>
-<p>问题关键在于设计一个反馈控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>，驱动质量块渐进到达原点。换句话说，控制变量<span class="math inline">\(u=f(x_1,x_2)\)</span>应该驱使状态变量趋近于0：<span class="math inline">\(\lim_{t \to \infty}{x_1,x_2} = 0\)</span>。</p>
-<p>这个问题看似简单，但对于存在未知的边界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，使系统渐进收敛仍然存在着挑战。</p>
-<h3 id="状态反馈控制">状态反馈控制</h3>
-<p>例如，通过一个线性状态反馈控制率</p>
-<p><span class="math display">\[
-\begin{matrix}
-u = -k_1x_1 - k_2x_2, &amp;\text{其中}(k_1&gt;0,&amp;k_2&gt;0)
-\end{matrix}\tag{3}
-\]</span></p>
-<p>在外界干扰项<span class="math inline">\(f(x_1,x_2,t)\equiv 0\)</span>，即不存在外界干扰时，系统可以实现渐进收敛。</p>
-<h3 id="仿真结果">仿真结果</h3>
-<ul>
-<li>初始条件<span class="math inline">\(x_{10}=1\)</span>、<span class="math inline">\(x_{20} = -2\)</span>、控制率参数<span class="math inline">\(k_1=3\)</span>、<span class="math inline">\(k_2=4\)</span>。</li>
-</ul>
-<p>如下图所示，是无外界干扰项时的渐近收敛效果图，图中蓝色线代表距离<span class="math inline">\(x\)</span>，橘黄色线代表速度<span class="math inline">\(v\)</span>，可以看出在反馈控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>的作用下，距离和速度值都趋近于0。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/ezqd9oHvbYJwhCB.png" /></p>
-<p>加入外部干扰<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>，响应波形如下：</p>
-<p><img data-src="https://i.loli.net/2021/08/30/heN7REVItMlwbqf.png" /></p>
-<p>对于干扰项<span class="math inline">\(\rvert f(x_1,x_2,t)\rvert \leq L &gt; 0\)</span>,产生的状态边界范围为<span class="math inline">\(\Omega=(k_1,k_2,L)\)</span> 。</p>
-<p>现在问题在于，仅使用未知扰动范围的知识是否可以解决规定的控制问题。</p>
-<h2 id="滑模控制的主要特性">滑模控制的主要特性</h2>
-<p>介绍对于等式(1)系统，所需的补偿动力。一个较好的替代这些动力学特性的是齐次线性时不变微分方程：</p>
-<p><span class="math display">\[
-\begin{array}{rl}
-\dot{x}_1 + c \cdot x_1 = 0 ,&amp; c &gt; 0 \tag{4}
-\end{array}
-\]</span></p>
-<p>因为 <span class="math inline">\(x_2(t) = \dot{x}_1(t)\)</span>,等式(4)的通用解和它的微分形式如下：</p>
-<p><span class="math display">\[
-\begin{array}{}
-&amp;x_1(t) = x_1(0)\exp(-ct)\\
-&amp;x_2(t) = \dot{x_1}(t)=-c \cdot x_1(0)\exp(-ct)
-\end{array}\tag{5}
-\]</span></p>
-<p>从等式(5)可以看出，<span class="math inline">\(x_1(t)\)</span>和<span class="math inline">\(x_2(t)\)</span>都是逐渐趋近于0。注意，无干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的状态补偿动力学是很明显的。如何获得这些补偿动力。</p>
-<h3 id="滑模变量">滑模变量</h3>
-<p>首先介绍一个等式(1)系统的状态空间的新变量(<strong><em>滑模变量</em></strong>)：</p>
-<p><span class="math display">\[
-\sigma = \sigma(x_1,x_2) = x_2 + c \cdot x_1 \tag{6}
-\]</span></p>
-<p>在给定等式(5)收敛率且存在有界干扰<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，为了使状态变量<span class="math inline">\(x_1\)</span>，<span class="math inline">\(x_2\)</span>逐渐收敛于0，即<span class="math inline">\(\lim_{t \to \infty} x_1,x_2 = 0\)</span>，不得不通过控制率<span class="math inline">\(u\)</span>使得等式(6)的变量<span class="math inline">\(\sigma\)</span>在有限的时间内趋于0。</p>
-<p>为了完成这个任务利用李亚普洛夫函数技术，结合等式(1)和(6)推动出关于滑模变量<span class="math inline">\(\sigma\)</span>的动力学方程如下：</p>
-<p><span class="math display">\[
-\begin{array}{rl}
-\dot{\sigma} = c \cdot x_2 + f(x_1,x_2,t) + u ,&amp;\sigma(0) = \sigma_0
-\end{array} \tag{7}
-\]</span></p>
-<h3 id="稳定判据">稳定判据</h3>
-<p>李亚普洛夫函数(Lyapunov)形式如下：</p>
-<p><span class="math display">\[
-V = \frac{1}{2}\sigma^2 \tag{8}
-\]</span></p>
-<p>为了使等式(6)在平衡点<span class="math inline">\(\sigma = 0\)</span>处渐进稳定，根据李亚普洛夫稳定判据，必须满足下面两个条件：</p>
-<ol type="1">
-<li><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(\sigma \neq 0)\end{array}\)</span></li>
-<li><span class="math inline">\(\lim_{\rvert \sigma \rvert \to \infty}V = \infty\)</span></li>
-</ol>
-<p>由等式(8)知，条件2明显满足。为了满足有限时间内渐进稳定，条件(1)可以修改为：</p>
-<p><span class="math display">\[
-\dot{V} \leq -\alpha {V}^{\frac{1}{2}} ,\qquad \alpha &gt; 0 \tag{9}
-\]</span></p>
-<p>在时间间隔<span class="math inline">\(0 \leq \tau \leq t\)</span>内，对等式(9)所示的微分方程进行变量分离求积分得</p>
-<p><span class="math display">\[
-\begin{array}{rl}
-\int_{0}^{t} V(\tau)^{-\frac{1}{2}}dV(\tau) &amp;\leq -\alpha*\int_{0}^{t}1 d\tau\\
-2*V(\tau)^{\frac{1}{2}}|_0^t &amp;\leq -\alpha*\tau|_0^t\\
-2*[V(t)^{\frac{1}{2}} - V(0)^{\frac{1}{2}}] &amp;\leq -\alpha*t\\
-V(t)^{\frac{1}{2}} &amp;\leq -\dfrac{1}{2}\alpha*t + V(0)^{\frac{1}{2}}
-\end{array}\tag{10}
-\]</span></p>
-<p>故<span class="math inline">\(V(t)\)</span>在有限时间<span class="math inline">\(t_r\)</span>达到0时的边界，根据等式(26)得</p>
-<p><span class="math display">\[
-t_r \leq \frac{2V(0)^{\frac{1}{2}}}{\alpha} \tag{11}
-\]</span></p>
-<p>因此，设计一个控制器<span class="math inline">\(u\)</span>满足等式(9)，使得变量<span class="math inline">\(s\)</span>在有限的时间内趋近于0并在之后一直保持。</p>
-<p><span class="math inline">\(V\)</span>的微分计算如下：</p>
-<p><span class="math display">\[
-\dot{V} = \sigma\dot{\sigma}=\sigma(c \cdot x_2 + f(x_1,x_2,t) + u) \tag{12}
-\]</span> 假设 <span class="math inline">\(u = -c \cdot x_2 + v\)</span>，并将其带入等式(12)得 <span class="math display">\[
-\dot{V} 
-= \sigma\bigl( f(x_1,x_2,t) + v \bigr) 
-= \sigma \cdot f(x_1,x_2,t) + \sigma v
-\leq   \rvert \sigma \rvert L + \sigma v \tag{13}
-\]</span></p>
-<p>此处选择<span class="math inline">\(v = -\rho sign(\sigma)\)</span>，该函数表示为</p>
-<p><span class="math display">\[
-sign(x) =
-\left \{
-\begin{array}{rl}
-&amp; 1 &amp; x &gt; 0\\
-&amp; &amp; &amp;\\
-&amp;-1 &amp; x &lt; 0
-\end{array}
-\right. \tag{14}
-\]</span> 并且</p>
-<p><span class="math display">\[
-sign(0) \in [-1,1] \tag{15}
-\]</span></p>
-<p>由于<span class="math inline">\(\rho &gt; 0\)</span>，将其带入等式(13)得</p>
-<p><span class="math display">\[
-\dot{V} \leq \rvert \sigma  \rvert L - \rvert \sigma \rvert \rho 
-= \rvert \sigma \rvert(L - \rho) \tag{16}
-\]</span></p>
-<p>考虑到等式(8)的形式，等式(9)可以表示为</p>
-<p><span class="math display">\[
-\dot{V} \leq -\alpha {V}^{\frac{1}{2}} = -\frac{\alpha}{\sqrt{2}}\rvert \sigma \rvert,\qquad \alpha &gt; 0 \tag{17}
-\]</span></p>
-<p>结合等式(16)和等式(17)得</p>
-<p><span class="math display">\[
-\dot{V} \leq \rvert \sigma \rvert(L - \rho)
-=-\frac{\alpha}{\sqrt{2}}\rvert \sigma \rvert \tag{18}
-\]</span></p>
-<p>最终控制增益可以表示为</p>
-<p><span class="math display">\[
-\rho = L + \frac{\alpha}{\sqrt{2}} \tag{19}
-\]</span></p>
-<p>所以最终使滑模变量<span class="math inline">\(\sigma\)</span>在有限时间内趋近于0的控制率<span class="math inline">\(u\)</span>为</p>
-<p><span class="math display">\[
-u = -c \cdot x_2 - \rho \cdot sign(\sigma) \tag{20}
-\]</span></p>
-<blockquote>
-<ol type="1">
-<li>显然，为了成功地设计出等式(20)中的控制器，<span class="math inline">\(\dot{\sigma}\)</span>必须是控制率<span class="math inline">\(u\)</span>的函数。当设计像等式(6)中的滑模变量时，这个特性必须考虑其中。</li>
-<li>等式(19)中控制增益<span class="math inline">\(\rho\)</span>的第一项被设计用来补偿有界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>，同时第二项<span class="math inline">\(\frac{\alpha}{\sqrt{2}}\)</span>负责确定滑模面的到达时间。<span class="math inline">\(\alpha\)</span>的数值越大，到达时间就越短。</li>
-</ol>
-</blockquote>
-<h3 id="基本定义">基本定义</h3>
-<ul>
-<li><strong>滑模变量</strong></li>
-</ul>
-<p>等式(6)中定义的变量<span class="math inline">\(\sigma\)</span>叫做 <strong>滑模变量</strong>(<code>sliding variable</code>)</p>
-<ul>
-<li><strong>滑模面</strong></li>
-</ul>
-<p>结合等式(4)和(5)，可以重新写成如下形式： <span class="math display">\[
-\sigma = x_2 + c \cdot x_1 = 0, c &gt; 0 \tag{21}
-\]</span> 相当于在系统(1)状态空间内的一条直线，这条直线被称为 <strong>滑模面</strong>(<code>sliding surface</code>)。</p>
-<p>考虑到等式(9)可以等效于</p>
-<p><span class="math display">\[
-\sigma\dot{\sigma} \leq - \frac{\sigma}{\sqrt{2}} \rvert \sigma\rvert \tag{22}
-\]</span></p>
-<p>等式(22)经常被称为 <strong>到达条件</strong>(<code>reachability condition</code>)。满足<strong>到达条件</strong>意味着等式(1)系统的轨迹趋向于<strong>滑模面</strong>，并在此后一直保持。</p>
-<ul>
-<li><strong>滑模控制</strong></li>
-</ul>
-<p>等式(20)所对应的控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>驱使状态变量<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>在有限时间<span class="math inline">\(t_r\)</span>内趋近于<strong>滑模面</strong>，并在存在有界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下保持在该平面上，这个控制率<span class="math inline">\(u\)</span>就叫做 <strong>滑模控制</strong>。并且对于所有的<span class="math inline">\(t &gt; t_r\)</span>，系统都将产生一个<strong>理想滑动模态</strong>。</p>
-<h3 id="仿真结果-1">仿真结果</h3>
-<p>初始条件为<span class="math inline">\(x_1(0) = 1，x_2(0) = -2\)</span>，控制增益为<span class="math inline">\(\sigma = 2\)</span>，滑模参数为<span class="math inline">\(c = 1.5\)</span>同时干扰项为<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>。 使用等式(20)的滑模控制率的仿真结果如下：</p>
-<p>下图表明，在有限的时间内，滑模变量趋近于0。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/LCQw2J7rU9axcKq.png" /></p>
-<p>在干扰项作用的情况下，状态变量<span class="math inline">\(x\)</span>和<span class="math inline">\(v\)</span>逐渐收敛到0。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/jk5MfqmpabEFnAO.png" /></p>
-<p>相图如下，展示了到达相位和滑移相位。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/k3HSfaLoPvgQ9C4.png" /></p>
-<p>对上面的相图进行局部放大发现，在滑模状态下，状态变量存在小幅度且高频率的蜿蜒运动。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/7jGmgk14ruHwSOM.png" /></p>
-<p>理想的滑模切换频率应该接近于无限并且蜿蜒运动的振幅接近于0。从下图可知，符号函数<span class="math inline">\(sign\)</span>不完美表现为在滑动模态中产生了有限幅度和频率的之字形运动，原因在于计算机仿真的离散特性，这样的影响叫做 <strong>抖振</strong>(<em>chattering</em>)。</p>
-<p><img data-src="https://i.loli.net/2021/08/30/xme942slagIdZNK.png" /></p>
-<p><img data-src="https://i.loli.net/2021/08/30/qvr8kst615cLNM4.png" /></p>
-]]></content>
-      <categories>
-        <category>控制算法</category>
-        <category>滑模控制</category>
-      </categories>
-      <tags>
-        <tag>滑模控制</tag>
-        <tag>滑模面</tag>
-        <tag>滑模变量</tag>
-        <tag>抖振</tag>
-        <tag>sliding mode controller</tag>
-        <tag>sliding mode variable</tag>
-        <tag>sliding mode surface</tag>
-        <tag>chattering</tag>
       </tags>
   </entry>
   <entry>
@@ -5961,6 +5767,200 @@ P_{t-1} = Q + A^TP_{t+1}A - A^TP_{t+1}B(R + B^TP_{t+1}B)^{-1}B^TP_{t+1}A
         <tag>控制算法</tag>
         <tag>Path Tracking</tag>
         <tag>运动模型</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>控制算法-滑模控制介绍</title>
+    <url>/2019/12/21/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E6%BB%91%E6%A8%A1%E6%8E%A7%E5%88%B6%E4%BB%8B%E7%BB%8D/</url>
+    <content><![CDATA[<h2 id="一维运动模型">一维运动模型</h2>
+<p>考虑简单的单位质量块的一维运动模型，使用位移和速度状态变量进行描述。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/5gi8qy1jdHrvePa.png" /></p>
+<p>定义位移变量<span class="math inline">\(x_1 = x\)</span>和速度变量<span class="math inline">\(x_2 = \dot{x_1} = v\)</span>，运动模型的微分形式使用<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>表示如下：</p>
+<p><span class="math display">\[
+\left\{
+\begin{array}{rl}
+&amp;\dot{x_1} = x_2&amp; x_1(0)=x_{10}\\
+&amp;\dot{x_2} = u + f(x_1,x_2,t) &amp;x_2(0)=x_{20}
+\end{array} \right.\tag{1}
+\]</span></p>
+<span id="more"></span>
+<p>其中,<span class="math inline">\(u\)</span>代表控制力，干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>包括干粘摩檫力的影响和一些未知的阻力，并假定有界。</p>
+<p><span class="math display">\[
+\rvert f(x_1,x_2,t)\rvert \leqslant L \gt 0 \tag{2}
+\]</span></p>
+<p>问题关键在于设计一个反馈控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>，驱动质量块渐进到达原点。换句话说，控制变量<span class="math inline">\(u=f(x_1,x_2)\)</span>应该驱使状态变量趋近于0：<span class="math inline">\(\lim_{t \to \infty}{x_1,x_2} = 0\)</span>。</p>
+<p>这个问题看似简单，但对于存在未知的边界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，使系统渐进收敛仍然存在着挑战。</p>
+<h3 id="状态反馈控制">状态反馈控制</h3>
+<p>例如，通过一个线性状态反馈控制率</p>
+<p><span class="math display">\[
+\begin{matrix}
+u = -k_1x_1 - k_2x_2, &amp;\text{其中}(k_1&gt;0,&amp;k_2&gt;0)
+\end{matrix}\tag{3}
+\]</span></p>
+<p>在外界干扰项<span class="math inline">\(f(x_1,x_2,t)\equiv 0\)</span>，即不存在外界干扰时，系统可以实现渐进收敛。</p>
+<h3 id="仿真结果">仿真结果</h3>
+<ul>
+<li>初始条件<span class="math inline">\(x_{10}=1\)</span>、<span class="math inline">\(x_{20} = -2\)</span>、控制率参数<span class="math inline">\(k_1=3\)</span>、<span class="math inline">\(k_2=4\)</span>。</li>
+</ul>
+<p>如下图所示，是无外界干扰项时的渐近收敛效果图，图中蓝色线代表距离<span class="math inline">\(x\)</span>，橘黄色线代表速度<span class="math inline">\(v\)</span>，可以看出在反馈控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>的作用下，距离和速度值都趋近于0。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/ezqd9oHvbYJwhCB.png" /></p>
+<p>加入外部干扰<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>，响应波形如下：</p>
+<p><img data-src="https://i.loli.net/2021/08/30/heN7REVItMlwbqf.png" /></p>
+<p>对于干扰项<span class="math inline">\(\rvert f(x_1,x_2,t)\rvert \leq L &gt; 0\)</span>,产生的状态边界范围为<span class="math inline">\(\Omega=(k_1,k_2,L)\)</span> 。</p>
+<p>现在问题在于，仅使用未知扰动范围的知识是否可以解决规定的控制问题。</p>
+<h2 id="滑模控制的主要特性">滑模控制的主要特性</h2>
+<p>介绍对于等式(1)系统，所需的补偿动力。一个较好的替代这些动力学特性的是齐次线性时不变微分方程：</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\dot{x}_1 + c \cdot x_1 = 0 ,&amp; c &gt; 0 \tag{4}
+\end{array}
+\]</span></p>
+<p>因为 <span class="math inline">\(x_2(t) = \dot{x}_1(t)\)</span>,等式(4)的通用解和它的微分形式如下：</p>
+<p><span class="math display">\[
+\begin{array}{}
+&amp;x_1(t) = x_1(0)\exp(-ct)\\
+&amp;x_2(t) = \dot{x_1}(t)=-c \cdot x_1(0)\exp(-ct)
+\end{array}\tag{5}
+\]</span></p>
+<p>从等式(5)可以看出，<span class="math inline">\(x_1(t)\)</span>和<span class="math inline">\(x_2(t)\)</span>都是逐渐趋近于0。注意，无干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的状态补偿动力学是很明显的。如何获得这些补偿动力。</p>
+<h3 id="滑模变量">滑模变量</h3>
+<p>首先介绍一个等式(1)系统的状态空间的新变量(<strong><em>滑模变量</em></strong>)：</p>
+<p><span class="math display">\[
+\sigma = \sigma(x_1,x_2) = x_2 + c \cdot x_1 \tag{6}
+\]</span></p>
+<p>在给定等式(5)收敛率且存在有界干扰<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下，为了使状态变量<span class="math inline">\(x_1\)</span>，<span class="math inline">\(x_2\)</span>逐渐收敛于0，即<span class="math inline">\(\lim_{t \to \infty} x_1,x_2 = 0\)</span>，不得不通过控制率<span class="math inline">\(u\)</span>使得等式(6)的变量<span class="math inline">\(\sigma\)</span>在有限的时间内趋于0。</p>
+<p>为了完成这个任务利用李亚普洛夫函数技术，结合等式(1)和(6)推动出关于滑模变量<span class="math inline">\(\sigma\)</span>的动力学方程如下：</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\dot{\sigma} = c \cdot x_2 + f(x_1,x_2,t) + u ,&amp;\sigma(0) = \sigma_0
+\end{array} \tag{7}
+\]</span></p>
+<h3 id="稳定判据">稳定判据</h3>
+<p>李亚普洛夫函数(Lyapunov)形式如下：</p>
+<p><span class="math display">\[
+V = \frac{1}{2}\sigma^2 \tag{8}
+\]</span></p>
+<p>为了使等式(6)在平衡点<span class="math inline">\(\sigma = 0\)</span>处渐进稳定，根据李亚普洛夫稳定判据，必须满足下面两个条件：</p>
+<ol type="1">
+<li><span class="math inline">\(\begin{array}{rl}\dot{V} &lt; 0 &amp;(\sigma \neq 0)\end{array}\)</span></li>
+<li><span class="math inline">\(\lim_{\rvert \sigma \rvert \to \infty}V = \infty\)</span></li>
+</ol>
+<p>由等式(8)知，条件2明显满足。为了满足有限时间内渐进稳定，条件(1)可以修改为：</p>
+<p><span class="math display">\[
+\dot{V} \leq -\alpha {V}^{\frac{1}{2}} ,\qquad \alpha &gt; 0 \tag{9}
+\]</span></p>
+<p>在时间间隔<span class="math inline">\(0 \leq \tau \leq t\)</span>内，对等式(9)所示的微分方程进行变量分离求积分得</p>
+<p><span class="math display">\[
+\begin{array}{rl}
+\int_{0}^{t} V(\tau)^{-\frac{1}{2}}dV(\tau) &amp;\leq -\alpha*\int_{0}^{t}1 d\tau\\
+2*V(\tau)^{\frac{1}{2}}|_0^t &amp;\leq -\alpha*\tau|_0^t\\
+2*[V(t)^{\frac{1}{2}} - V(0)^{\frac{1}{2}}] &amp;\leq -\alpha*t\\
+V(t)^{\frac{1}{2}} &amp;\leq -\dfrac{1}{2}\alpha*t + V(0)^{\frac{1}{2}}
+\end{array}\tag{10}
+\]</span></p>
+<p>故<span class="math inline">\(V(t)\)</span>在有限时间<span class="math inline">\(t_r\)</span>达到0时的边界，根据等式(26)得</p>
+<p><span class="math display">\[
+t_r \leq \frac{2V(0)^{\frac{1}{2}}}{\alpha} \tag{11}
+\]</span></p>
+<p>因此，设计一个控制器<span class="math inline">\(u\)</span>满足等式(9)，使得变量<span class="math inline">\(s\)</span>在有限的时间内趋近于0并在之后一直保持。</p>
+<p><span class="math inline">\(V\)</span>的微分计算如下：</p>
+<p><span class="math display">\[
+\dot{V} = \sigma\dot{\sigma}=\sigma(c \cdot x_2 + f(x_1,x_2,t) + u) \tag{12}
+\]</span> 假设 <span class="math inline">\(u = -c \cdot x_2 + v\)</span>，并将其带入等式(12)得 <span class="math display">\[
+\dot{V} 
+= \sigma\bigl( f(x_1,x_2,t) + v \bigr) 
+= \sigma \cdot f(x_1,x_2,t) + \sigma v
+\leq   \rvert \sigma \rvert L + \sigma v \tag{13}
+\]</span></p>
+<p>此处选择<span class="math inline">\(v = -\rho sign(\sigma)\)</span>，该函数表示为</p>
+<p><span class="math display">\[
+sign(x) =
+\left \{
+\begin{array}{rl}
+&amp; 1 &amp; x &gt; 0\\
+&amp; &amp; &amp;\\
+&amp;-1 &amp; x &lt; 0
+\end{array}
+\right. \tag{14}
+\]</span> 并且</p>
+<p><span class="math display">\[
+sign(0) \in [-1,1] \tag{15}
+\]</span></p>
+<p>由于<span class="math inline">\(\rho &gt; 0\)</span>，将其带入等式(13)得</p>
+<p><span class="math display">\[
+\dot{V} \leq \rvert \sigma  \rvert L - \rvert \sigma \rvert \rho 
+= \rvert \sigma \rvert(L - \rho) \tag{16}
+\]</span></p>
+<p>考虑到等式(8)的形式，等式(9)可以表示为</p>
+<p><span class="math display">\[
+\dot{V} \leq -\alpha {V}^{\frac{1}{2}} = -\frac{\alpha}{\sqrt{2}}\rvert \sigma \rvert,\qquad \alpha &gt; 0 \tag{17}
+\]</span></p>
+<p>结合等式(16)和等式(17)得</p>
+<p><span class="math display">\[
+\dot{V} \leq \rvert \sigma \rvert(L - \rho)
+=-\frac{\alpha}{\sqrt{2}}\rvert \sigma \rvert \tag{18}
+\]</span></p>
+<p>最终控制增益可以表示为</p>
+<p><span class="math display">\[
+\rho = L + \frac{\alpha}{\sqrt{2}} \tag{19}
+\]</span></p>
+<p>所以最终使滑模变量<span class="math inline">\(\sigma\)</span>在有限时间内趋近于0的控制率<span class="math inline">\(u\)</span>为</p>
+<p><span class="math display">\[
+u = -c \cdot x_2 - \rho \cdot sign(\sigma) \tag{20}
+\]</span></p>
+<blockquote>
+<ol type="1">
+<li>显然，为了成功地设计出等式(20)中的控制器，<span class="math inline">\(\dot{\sigma}\)</span>必须是控制率<span class="math inline">\(u\)</span>的函数。当设计像等式(6)中的滑模变量时，这个特性必须考虑其中。</li>
+<li>等式(19)中控制增益<span class="math inline">\(\rho\)</span>的第一项被设计用来补偿有界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>，同时第二项<span class="math inline">\(\frac{\alpha}{\sqrt{2}}\)</span>负责确定滑模面的到达时间。<span class="math inline">\(\alpha\)</span>的数值越大，到达时间就越短。</li>
+</ol>
+</blockquote>
+<h3 id="基本定义">基本定义</h3>
+<ul>
+<li><strong>滑模变量</strong></li>
+</ul>
+<p>等式(6)中定义的变量<span class="math inline">\(\sigma\)</span>叫做 <strong>滑模变量</strong>(<code>sliding variable</code>)</p>
+<ul>
+<li><strong>滑模面</strong></li>
+</ul>
+<p>结合等式(4)和(5)，可以重新写成如下形式： <span class="math display">\[
+\sigma = x_2 + c \cdot x_1 = 0, c &gt; 0 \tag{21}
+\]</span> 相当于在系统(1)状态空间内的一条直线，这条直线被称为 <strong>滑模面</strong>(<code>sliding surface</code>)。</p>
+<p>考虑到等式(9)可以等效于</p>
+<p><span class="math display">\[
+\sigma\dot{\sigma} \leq - \frac{\sigma}{\sqrt{2}} \rvert \sigma\rvert \tag{22}
+\]</span></p>
+<p>等式(22)经常被称为 <strong>到达条件</strong>(<code>reachability condition</code>)。满足<strong>到达条件</strong>意味着等式(1)系统的轨迹趋向于<strong>滑模面</strong>，并在此后一直保持。</p>
+<ul>
+<li><strong>滑模控制</strong></li>
+</ul>
+<p>等式(20)所对应的控制率<span class="math inline">\(u = u(x_1,x_2)\)</span>驱使状态变量<span class="math inline">\(x_1\)</span>、<span class="math inline">\(x_2\)</span>在有限时间<span class="math inline">\(t_r\)</span>内趋近于<strong>滑模面</strong>，并在存在有界干扰项<span class="math inline">\(f(x_1,x_2,t)\)</span>的情况下保持在该平面上，这个控制率<span class="math inline">\(u\)</span>就叫做 <strong>滑模控制</strong>。并且对于所有的<span class="math inline">\(t &gt; t_r\)</span>，系统都将产生一个<strong>理想滑动模态</strong>。</p>
+<h3 id="仿真结果-1">仿真结果</h3>
+<p>初始条件为<span class="math inline">\(x_1(0) = 1，x_2(0) = -2\)</span>，控制增益为<span class="math inline">\(\sigma = 2\)</span>，滑模参数为<span class="math inline">\(c = 1.5\)</span>同时干扰项为<span class="math inline">\(f(x_1,x_2,t) = \sin(2t)\)</span>。 使用等式(20)的滑模控制率的仿真结果如下：</p>
+<p>下图表明，在有限的时间内，滑模变量趋近于0。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/LCQw2J7rU9axcKq.png" /></p>
+<p>在干扰项作用的情况下，状态变量<span class="math inline">\(x\)</span>和<span class="math inline">\(v\)</span>逐渐收敛到0。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/jk5MfqmpabEFnAO.png" /></p>
+<p>相图如下，展示了到达相位和滑移相位。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/k3HSfaLoPvgQ9C4.png" /></p>
+<p>对上面的相图进行局部放大发现，在滑模状态下，状态变量存在小幅度且高频率的蜿蜒运动。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/7jGmgk14ruHwSOM.png" /></p>
+<p>理想的滑模切换频率应该接近于无限并且蜿蜒运动的振幅接近于0。从下图可知，符号函数<span class="math inline">\(sign\)</span>不完美表现为在滑动模态中产生了有限幅度和频率的之字形运动，原因在于计算机仿真的离散特性，这样的影响叫做 <strong>抖振</strong>(<em>chattering</em>)。</p>
+<p><img data-src="https://i.loli.net/2021/08/30/xme942slagIdZNK.png" /></p>
+<p><img data-src="https://i.loli.net/2021/08/30/qvr8kst615cLNM4.png" /></p>
+]]></content>
+      <categories>
+        <category>控制算法</category>
+        <category>滑模控制</category>
+      </categories>
+      <tags>
+        <tag>滑模控制</tag>
+        <tag>滑模面</tag>
+        <tag>滑模变量</tag>
+        <tag>抖振</tag>
+        <tag>sliding mode controller</tag>
+        <tag>sliding mode variable</tag>
+        <tag>sliding mode surface</tag>
+        <tag>chattering</tag>
       </tags>
   </entry>
   <entry>
@@ -6338,124 +6338,6 @@ e_{\psi}\\
       </tags>
   </entry>
   <entry>
-    <title>车辆停车优化</title>
-    <url>/2019/11/11/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BD%A6%E8%BE%86%E5%81%9C%E8%BD%A6%E4%BC%98%E5%8C%96/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>车辆控制中，如何舒适平衡的停车也是一个比较讲究的事。日常生活中，对于一个刚接触车的新手，控车时可能会猛踩刹车，给人一种很冲的感觉。但是对于老司机，每次踩刹车都是先轻踩，然后逐渐增大踩刹车的力度，这样对于乘客来说就会感觉很舒适。</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/T3i8DBrFA7zSRPv.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="模型">模型</h2>
-<p>为了模拟出舒适的停车体验，使用变减速度的速度模型进行车辆停车控制。假设<strong>加速度的变化率</strong>为<span class="math inline">\(\dot{a}\)</span>，则<strong>加速度</strong>与<strong>加速度变化率</strong>的关系为</p>
-<p><span class="math display">\[
-\dot{a} * t = a \tag{1}
-\]</span></p>
-<p>对应的减速度曲线如下图所示：</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/exlCYdmJbpOk1IA.png" alt="减速度曲线" /><figcaption aria-hidden="true">减速度曲线</figcaption>
-</figure>
-<p>对等式(1)求导得<strong>速度</strong>与<strong>加速度的变化率</strong>的关系为 <span class="math display">\[
-v_0 - \int_0^{t}a*dt = v \Longrightarrow v_0 - \frac{1}{2}\dot{a}*t^2 = v \tag{2}
-\]</span></p>
-<p>由于减速度一直变化，对应的速度曲线如下图所示：</p>
-<figure>
-<img data-src="https://i.loli.net/2021/08/30/peAHWyGjz6cCm8L.png" alt="速度曲线" /><figcaption aria-hidden="true">速度曲线</figcaption>
-</figure>
-<p>图中速度曲线下方的面积<span class="math inline">\(S\)</span>为行驶的位移，根据上述速度曲线，车辆运动模型如下：</p>
-<p><span class="math display">\[
-\int_0^{t}vdt = S \Longrightarrow v_0*t - \frac{1}{6}\dot{a}t^3 = S
-\]</span></p>
-<p>当速度从<span class="math inline">\(v_0\)</span>下降到0的过程中，时间<span class="math inline">\(t_0\)</span>为：</p>
-<p><span class="math display">\[
-v_0 - \frac{1}{2}\dot{a}*t^2 = 0 \Longrightarrow t_0 = {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}
-\]</span></p>
-<p>将时间<span class="math inline">\(t_0\)</span>代入得：</p>
-<p><span class="math display">\[
-t_0*(v_0 - \frac{1}{6}\dot{a}{t_0}^2) = S \Longrightarrow {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}} * (v_0 - \frac{1}{6}\dot{a}\frac{2*v_0}{\dot{a}}) = S\\
-{(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}*\frac{2*v_0}{3} = S
-\]</span></p>
-<p>计算<span class="math inline">\(\dot{a}\)</span>得：</p>
-<p><span class="math display">\[
-\dot{a} = \frac{8 {v_0}^3}{9S^2}
-\]</span></p>
-<p>所以当控制车辆减速时，根据当前车辆速度<span class="math inline">\(v_0\)</span>和距离停车点的位移<span class="math inline">\(S\)</span>，计算出减速度的增量<span class="math inline">\(\dot{a}\)</span>，控制输出的减速度<span class="math inline">\(a = a - \dot{a}*dt\)</span>。</p>
-]]></content>
-      <categories>
-        <category>控制算法</category>
-      </categories>
-      <tags>
-        <tag>速度曲线</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>树莓派系统安装</title>
-    <url>/2022/12/26/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>本文讲述了树莓派系统的安装过程，并描述系统环境的配置，让其可以满足基本开发需求。</p>
-<figure>
-<img data-src="https://s3.bmp.ovh/imgs/2023/01/01/48c15813d627dec0.jpg" alt="高达模型" /><figcaption aria-hidden="true">高达模型</figcaption>
-</figure>
-<span id="more"></span>
-<h2 id="硬件环境准备">硬件环境准备</h2>
-<h3 id="卡片计算机">卡片计算机</h3>
-<p>本文演示所用的计算机是 Raspberry Pi 3 Model B，其参数如下：</p>
-<ul>
-<li>Quad Core 1.2GHz Broadcom BCM2837 64bit CPU</li>
-<li>1GB RAM</li>
-<li>BCM43438 wireless LAN and Bluetooth Low Energy (BLE) on board</li>
-<li>100 Base Ethernet</li>
-<li>40-pin extended GPIO</li>
-<li>4 USB 2 ports</li>
-<li>4 Pole stereo output and composite video port</li>
-<li>Full size HDMI</li>
-<li>CSI camera port for connecting a Raspberry Pi camera</li>
-<li>DSI display port for connecting a Raspberry Pi touchscreen display</li>
-<li>Micro SD port for loading your operating system and storing data</li>
-<li>Upgraded switched Micro USB power source up to 2.5A</li>
-</ul>
-<h3 id="电源适配器">电源适配器</h3>
-<p>根据官方推荐参数，请选用输出电流可达2.5A的电源适配器，如果电源适配的输出功率不够，可能会导致系统不稳定的情况。例如在使用ssh连接卡片计算机时，如果计算机负载过高，会出现ssh连接断开的的情况。</p>
-<h3 id="sd卡">SD卡</h3>
-<p>推荐选用SD卡的容量至少32GB，该容量可以满足大部分场景需求。</p>
-<h2 id="软件环境准备">软件环境准备</h2>
-<h3 id="系统下载">系统下载</h3>
-<p>首先从 <span class="exturl" data-url="aHR0cHM6Ly93d3cucmFzcGJlcnJ5cGkuY29tL3NvZnR3YXJlL29wZXJhdGluZy1zeXN0ZW1zLw==">树莓派官网<i class="fa fa-external-link-alt"></i></span> 下载最新的系统镜像，本文演示的系统镜像信息如下：</p>
-<ul>
-<li><p>Raspberry Pi OS Lite</p></li>
-<li><p>Release date: September 22nd 2022</p></li>
-<li><p>System: 64-bit</p></li>
-<li><p>Kernel version: 5.15</p></li>
-<li><p>Debian version: 11 (bullseye)</p></li>
-<li><p>Size: 289MB：72c773781a0a57160eb3fa8bb2a927642fe60c3af62bc980827057bcecb7b98b</p></li>
-</ul>
-<h3 id="镜像烧录工具下载">镜像烧录工具下载</h3>
-<p>从树莓派官网下载 <span class="exturl" data-url="aHR0cHM6Ly93d3cucmFzcGJlcnJ5cGkuY29tL3NvZnR3YXJlLw==">Raspberry Pi Imager<i class="fa fa-external-link-alt"></i></span> 工具，进行系统镜像的烧录。</p>
-<p><img data-src="https://s3.bmp.ovh/imgs/2022/12/26/a6df9e3221c7bd5d.png" /></p>
-<p>点击右下角的设置按钮，开启SSH功能并创建用户名和密码，如果希望通过wifi连接，可以配置wifi热点名和密码。</p>
-<h2 id="系统准备">系统准备</h2>
-<h3 id="更新镜像源">更新镜像源</h3>
-<p>参考 <span class="exturl" data-url="aHR0cHM6Ly9taXJyb3JzLnR1bmEudHNpbmdodWEuZWR1LmNuL2hlbHAvcmFzcGJpYW4v">清华树莓派镜像站<i class="fa fa-external-link-alt"></i></span> 配置系统镜像源。</p>
-<p>备份镜像源文件，通过如下命令：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cp /etc/apt/sources.list /tmp/sources.list.backup</span><br></pre></td></tr></table></figure>
-<p>通过下面的指令替换原文件的内容并更新到系统镜像源。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo sed -e &#x27;s/http:\/\/deb.debian.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/;s/http:\/\/security.debian.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/&#x27; /tmp/sources.list.backup &gt; /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
-<p>同理，执行下述命令，替换为清华镜像源:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cp /etc/apt/sources.list.d/raspi.list /tmp/raspi.list.backup</span><br></pre></td></tr></table></figure>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo sed -e &#x27;s/http:\/\/archive.raspberrypi.org\/debian/https:\/\/mirrors.tuna.tsinghua.edu.cn\/raspberrypi/&#x27; /tmp/raspi.list.backup &gt; /etc/apt/sources.list.d/raspi.list</span><br></pre></td></tr></table></figure>
-<p>执行下述命令，更新系统镜像源:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt-get update --fix-missing</span><br><span class="line">sudo apt-get upgrade -y</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>Raspberry Pi</category>
-      </categories>
-      <tags>
-        <tag>安装教程</tag>
-        <tag>Raspberry Pi</tag>
-        <tag>树莓派</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>控制算法-路径跟踪</title>
     <url>/2020/02/23/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%B7%AF%E5%BE%84%E8%B7%9F%E8%B8%AA%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -6545,6 +6427,57 @@ t_0*(v_0 - \frac{1}{6}\dot{a}{t_0}^2) = S \Longrightarrow {(\frac{2*v_0}{\dot{a}
         <tag>Stanley法</tag>
         <tag>运动学模型</tag>
         <tag>转向控制</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>车辆停车优化</title>
+    <url>/2019/11/11/%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95-%E8%BD%A6%E8%BE%86%E5%81%9C%E8%BD%A6%E4%BC%98%E5%8C%96/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>车辆控制中，如何舒适平衡的停车也是一个比较讲究的事。日常生活中，对于一个刚接触车的新手，控车时可能会猛踩刹车，给人一种很冲的感觉。但是对于老司机，每次踩刹车都是先轻踩，然后逐渐增大踩刹车的力度，这样对于乘客来说就会感觉很舒适。</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/T3i8DBrFA7zSRPv.jpg" alt="世纪公园" /><figcaption aria-hidden="true">世纪公园</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="模型">模型</h2>
+<p>为了模拟出舒适的停车体验，使用变减速度的速度模型进行车辆停车控制。假设<strong>加速度的变化率</strong>为<span class="math inline">\(\dot{a}\)</span>，则<strong>加速度</strong>与<strong>加速度变化率</strong>的关系为</p>
+<p><span class="math display">\[
+\dot{a} * t = a \tag{1}
+\]</span></p>
+<p>对应的减速度曲线如下图所示：</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/exlCYdmJbpOk1IA.png" alt="减速度曲线" /><figcaption aria-hidden="true">减速度曲线</figcaption>
+</figure>
+<p>对等式(1)求导得<strong>速度</strong>与<strong>加速度的变化率</strong>的关系为 <span class="math display">\[
+v_0 - \int_0^{t}a*dt = v \Longrightarrow v_0 - \frac{1}{2}\dot{a}*t^2 = v \tag{2}
+\]</span></p>
+<p>由于减速度一直变化，对应的速度曲线如下图所示：</p>
+<figure>
+<img data-src="https://i.loli.net/2021/08/30/peAHWyGjz6cCm8L.png" alt="速度曲线" /><figcaption aria-hidden="true">速度曲线</figcaption>
+</figure>
+<p>图中速度曲线下方的面积<span class="math inline">\(S\)</span>为行驶的位移，根据上述速度曲线，车辆运动模型如下：</p>
+<p><span class="math display">\[
+\int_0^{t}vdt = S \Longrightarrow v_0*t - \frac{1}{6}\dot{a}t^3 = S
+\]</span></p>
+<p>当速度从<span class="math inline">\(v_0\)</span>下降到0的过程中，时间<span class="math inline">\(t_0\)</span>为：</p>
+<p><span class="math display">\[
+v_0 - \frac{1}{2}\dot{a}*t^2 = 0 \Longrightarrow t_0 = {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}
+\]</span></p>
+<p>将时间<span class="math inline">\(t_0\)</span>代入得：</p>
+<p><span class="math display">\[
+t_0*(v_0 - \frac{1}{6}\dot{a}{t_0}^2) = S \Longrightarrow {(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}} * (v_0 - \frac{1}{6}\dot{a}\frac{2*v_0}{\dot{a}}) = S\\
+{(\frac{2*v_0}{\dot{a}})}^{\frac{1}{2}}*\frac{2*v_0}{3} = S
+\]</span></p>
+<p>计算<span class="math inline">\(\dot{a}\)</span>得：</p>
+<p><span class="math display">\[
+\dot{a} = \frac{8 {v_0}^3}{9S^2}
+\]</span></p>
+<p>所以当控制车辆减速时，根据当前车辆速度<span class="math inline">\(v_0\)</span>和距离停车点的位移<span class="math inline">\(S\)</span>，计算出减速度的增量<span class="math inline">\(\dot{a}\)</span>，控制输出的减速度<span class="math inline">\(a = a - \dot{a}*dt\)</span>。</p>
+]]></content>
+      <categories>
+        <category>控制算法</category>
+      </categories>
+      <tags>
+        <tag>速度曲线</tag>
       </tags>
   </entry>
   <entry>
@@ -7019,6 +6952,73 @@ Sat(\frac{x}{\Delta}) =
       </tags>
   </entry>
   <entry>
+    <title>树莓派系统安装</title>
+    <url>/2022/12/26/%E6%A0%91%E8%8E%93%E6%B4%BE%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>本文讲述了树莓派系统的安装过程，并描述系统环境的配置，让其可以满足基本开发需求。</p>
+<figure>
+<img data-src="https://s3.bmp.ovh/imgs/2023/01/01/48c15813d627dec0.jpg" alt="高达模型" /><figcaption aria-hidden="true">高达模型</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="硬件环境准备">硬件环境准备</h2>
+<h3 id="卡片计算机">卡片计算机</h3>
+<p>本文演示所用的计算机是 Raspberry Pi 3 Model B，其参数如下：</p>
+<ul>
+<li>Quad Core 1.2GHz Broadcom BCM2837 64bit CPU</li>
+<li>1GB RAM</li>
+<li>BCM43438 wireless LAN and Bluetooth Low Energy (BLE) on board</li>
+<li>100 Base Ethernet</li>
+<li>40-pin extended GPIO</li>
+<li>4 USB 2 ports</li>
+<li>4 Pole stereo output and composite video port</li>
+<li>Full size HDMI</li>
+<li>CSI camera port for connecting a Raspberry Pi camera</li>
+<li>DSI display port for connecting a Raspberry Pi touchscreen display</li>
+<li>Micro SD port for loading your operating system and storing data</li>
+<li>Upgraded switched Micro USB power source up to 2.5A</li>
+</ul>
+<h3 id="电源适配器">电源适配器</h3>
+<p>根据官方推荐参数，请选用输出电流可达2.5A的电源适配器，如果电源适配的输出功率不够，可能会导致系统不稳定的情况。例如在使用ssh连接卡片计算机时，如果计算机负载过高，会出现ssh连接断开的的情况。</p>
+<h3 id="sd卡">SD卡</h3>
+<p>推荐选用SD卡的容量至少32GB，该容量可以满足大部分场景需求。</p>
+<h2 id="软件环境准备">软件环境准备</h2>
+<h3 id="系统下载">系统下载</h3>
+<p>首先从 <span class="exturl" data-url="aHR0cHM6Ly93d3cucmFzcGJlcnJ5cGkuY29tL3NvZnR3YXJlL29wZXJhdGluZy1zeXN0ZW1zLw==">树莓派官网<i class="fa fa-external-link-alt"></i></span> 下载最新的系统镜像，本文演示的系统镜像信息如下：</p>
+<ul>
+<li><p>Raspberry Pi OS Lite</p></li>
+<li><p>Release date: September 22nd 2022</p></li>
+<li><p>System: 64-bit</p></li>
+<li><p>Kernel version: 5.15</p></li>
+<li><p>Debian version: 11 (bullseye)</p></li>
+<li><p>Size: 289MB：72c773781a0a57160eb3fa8bb2a927642fe60c3af62bc980827057bcecb7b98b</p></li>
+</ul>
+<h3 id="镜像烧录工具下载">镜像烧录工具下载</h3>
+<p>从树莓派官网下载 <span class="exturl" data-url="aHR0cHM6Ly93d3cucmFzcGJlcnJ5cGkuY29tL3NvZnR3YXJlLw==">Raspberry Pi Imager<i class="fa fa-external-link-alt"></i></span> 工具，进行系统镜像的烧录。</p>
+<p><img data-src="https://s3.bmp.ovh/imgs/2022/12/26/a6df9e3221c7bd5d.png" /></p>
+<p>点击右下角的设置按钮，开启SSH功能并创建用户名和密码，如果希望通过wifi连接，可以配置wifi热点名和密码。</p>
+<h2 id="系统准备">系统准备</h2>
+<h3 id="更新镜像源">更新镜像源</h3>
+<p>参考 <span class="exturl" data-url="aHR0cHM6Ly9taXJyb3JzLnR1bmEudHNpbmdodWEuZWR1LmNuL2hlbHAvcmFzcGJpYW4v">清华树莓派镜像站<i class="fa fa-external-link-alt"></i></span> 配置系统镜像源。</p>
+<p>备份镜像源文件，通过如下命令：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cp /etc/apt/sources.list /tmp/sources.list.backup</span><br></pre></td></tr></table></figure>
+<p>通过下面的指令替换原文件的内容并更新到系统镜像源。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo sed -e &#x27;s/http:\/\/deb.debian.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/;s/http:\/\/security.debian.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/&#x27; /tmp/sources.list.backup &gt; /etc/apt/sources.list</span><br></pre></td></tr></table></figure>
+<p>同理，执行下述命令，替换为清华镜像源:</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cp /etc/apt/sources.list.d/raspi.list /tmp/raspi.list.backup</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo sed -e &#x27;s/http:\/\/archive.raspberrypi.org\/debian/https:\/\/mirrors.tuna.tsinghua.edu.cn\/raspberrypi/&#x27; /tmp/raspi.list.backup &gt; /etc/apt/sources.list.d/raspi.list</span><br></pre></td></tr></table></figure>
+<p>执行下述命令，更新系统镜像源:</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo apt-get update --fix-missing</span><br><span class="line">sudo apt-get upgrade -y</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Raspberry Pi</category>
+      </categories>
+      <tags>
+        <tag>安装教程</tag>
+        <tag>Raspberry Pi</tag>
+        <tag>树莓派</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>碰撞检测-apollo</title>
     <url>/2020/11/04/%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B-apollo/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
@@ -7344,273 +7344,6 @@ g_x=\begin{cases}
         <tag>图像算法加速</tag>
         <tag>NEON</tag>
         <tag>联咏</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>车辆术语缩写</title>
-    <url>/2020/01/07/%E8%BD%A6%E8%BE%86%E6%9C%AF%E8%AF%AD%E7%BC%A9%E5%86%99/</url>
-    <content><![CDATA[<h2 id="概述">概述</h2>
-<p>本文总结了汽车领域常用汽车术语的缩写，后续会继续补偿完善。</p>
-<h2 id="泊车辅助系统">泊车辅助系统</h2>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">缩写</th>
-<th>英文名称</th>
-<th>中文名称</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;"><strong>APA</strong></td>
-<td>Auto Parking Assistant</td>
-<td>自动泊车辅助系统</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>RPA</strong></td>
-<td>Remote Parking Assist</td>
-<td>遥控泊车辅助</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>HPA</strong></td>
-<td>Home zone Parking Assist</td>
-<td>家庭区域泊车辅助</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>PIC</strong></td>
-<td>Parking In Control</td>
-<td>泊入控制</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>POC</strong></td>
-<td>Pull Out Control</td>
-<td>泊出控制</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>L-ASP</strong></td>
-<td>Low Speed Autonomous Searching Parking slot</td>
-<td>低速自动寻找车位</td>
-</tr>
-</tbody>
-</table>
-<span id="more"></span>
-<h2 id="纵向辅助系统">纵向辅助系统</h2>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">缩写</th>
-<th>英文名称</th>
-<th>中文名称</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;"><strong>L-AEB</strong></td>
-<td>Low speed Automatic Emergency Brake</td>
-<td>低速自动紧急制动</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>L-ACC</strong></td>
-<td>Low speed Adaptive Cruise Control</td>
-<td>低速自适应巡航</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>ACC</strong></td>
-<td>Adaptive Cruise Control</td>
-<td>自适应巡航控制</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>LSC</strong></td>
-<td>Longitudinal speed control</td>
-<td>纵向速度控制</td>
-</tr>
-</tbody>
-</table>
-<h2 id="感知系统">感知系统</h2>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">缩写</th>
-<th>英文名称</th>
-<th style="text-align: left;">中文名称</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;"><strong>RRS</strong></td>
-<td>Reversing Radar System</td>
-<td style="text-align: left;">倒车雷达系统</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>SDW</strong></td>
-<td>Side Distance Warning</td>
-<td style="text-align: left;">侧边距离报警</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>SVA</strong></td>
-<td>Side View Assist</td>
-<td style="text-align: left;">侧视辅助</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>CTA</strong></td>
-<td>Cross Traffic Assist</td>
-<td style="text-align: left;">倒车横向告警</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>BSD</strong></td>
-<td>Blind spot Detection</td>
-<td style="text-align: left;">盲区监测系统</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>HD-AVM</strong></td>
-<td>High Definition Around view Monitor</td>
-<td style="text-align: left;">高画质环视监控</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>LDW</strong></td>
-<td>Lane Departure Warning</td>
-<td style="text-align: left;">低速车道偏离报警</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>DVR</strong></td>
-<td>Driving Video Record</td>
-<td style="text-align: left;">行车记录仪</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>RM</strong></td>
-<td>Remote Monitoring</td>
-<td style="text-align: left;">远程监控</td>
-</tr>
-</tbody>
-</table>
-<h2 id="检测系统">检测系统</h2>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">缩写</th>
-<th>英文名称</th>
-<th>中文名称</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;"><strong>MOD</strong></td>
-<td>Moving Object Detection</td>
-<td>移动目标检测</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>PD</strong></td>
-<td>Pedestrian Detection</td>
-<td>行人检测</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>3-DOD</strong></td>
-<td>3D Object Detection</td>
-<td>3D 目标检测</td>
-</tr>
-</tbody>
-</table>
-<h2 id="执行器">执行器</h2>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">缩写</th>
-<th>英文名称</th>
-<th>中文名称</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;"><strong>ACM</strong></td>
-<td>Actuator Control Module</td>
-<td>执行器控制系统</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>EPS</strong></td>
-<td>Electronic Power Steering</td>
-<td>电子助力转向系统</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>TCU</strong></td>
-<td>Transmission Control Unit</td>
-<td>变速器控制单元</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>EMS</strong></td>
-<td>Engine Management System</td>
-<td>发动机管理系统</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>SAS</strong></td>
-<td>Steering Angle Sensor</td>
-<td>转角传感器</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>BCM</strong></td>
-<td>Body Control Module</td>
-<td>车身控制器</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>ESC</strong></td>
-<td>Electronic Stability Control</td>
-<td>电子稳定控制</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>VCU</strong></td>
-<td>Vehicle Control Unit</td>
-<td>车辆控制单元</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>EPB</strong></td>
-<td>Electronic Parking Brake</td>
-<td>电子驻车</td>
-</tr>
-</tbody>
-</table>
-<h2 id="其它">其它</h2>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: center;">缩写</th>
-<th style="text-align: left;">英文名称</th>
-<th style="text-align: left;">中文名称</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: center;"><strong>SEA</strong></td>
-<td style="text-align: left;">Side Exit Alert</td>
-<td style="text-align: left;">开门告警</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>HMI</strong></td>
-<td style="text-align: left;">Human-Machine Interface</td>
-<td style="text-align: left;">人机交互接口</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>IP</strong></td>
-<td style="text-align: left;">Instrument Panel</td>
-<td style="text-align: left;">仪表</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;"><strong>HU</strong></td>
-<td style="text-align: left;">Head Unit</td>
-<td style="text-align: left;">主机</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;"><strong>AC</strong></td>
-<td style="text-align: left;">Air Condition</td>
-<td style="text-align: left;">空调</td>
-</tr>
-</tbody>
-</table>
-]]></content>
-      <categories>
-        <category>车辆基础</category>
-      </categories>
-      <tags>
-        <tag>车辆术语</tag>
-        <tag>名称缩写</tag>
       </tags>
   </entry>
   <entry>
@@ -8276,6 +8009,273 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
         <tag>ReedsSheep</tag>
         <tag>RS曲线</tag>
         <tag>Dubins曲线</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>车辆术语缩写</title>
+    <url>/2020/01/07/%E8%BD%A6%E8%BE%86%E6%9C%AF%E8%AF%AD%E7%BC%A9%E5%86%99/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>本文总结了汽车领域常用汽车术语的缩写，后续会继续补偿完善。</p>
+<h2 id="泊车辅助系统">泊车辅助系统</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">缩写</th>
+<th>英文名称</th>
+<th>中文名称</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>APA</strong></td>
+<td>Auto Parking Assistant</td>
+<td>自动泊车辅助系统</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>RPA</strong></td>
+<td>Remote Parking Assist</td>
+<td>遥控泊车辅助</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>HPA</strong></td>
+<td>Home zone Parking Assist</td>
+<td>家庭区域泊车辅助</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>PIC</strong></td>
+<td>Parking In Control</td>
+<td>泊入控制</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>POC</strong></td>
+<td>Pull Out Control</td>
+<td>泊出控制</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>L-ASP</strong></td>
+<td>Low Speed Autonomous Searching Parking slot</td>
+<td>低速自动寻找车位</td>
+</tr>
+</tbody>
+</table>
+<span id="more"></span>
+<h2 id="纵向辅助系统">纵向辅助系统</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">缩写</th>
+<th>英文名称</th>
+<th>中文名称</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>L-AEB</strong></td>
+<td>Low speed Automatic Emergency Brake</td>
+<td>低速自动紧急制动</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>L-ACC</strong></td>
+<td>Low speed Adaptive Cruise Control</td>
+<td>低速自适应巡航</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>ACC</strong></td>
+<td>Adaptive Cruise Control</td>
+<td>自适应巡航控制</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>LSC</strong></td>
+<td>Longitudinal speed control</td>
+<td>纵向速度控制</td>
+</tr>
+</tbody>
+</table>
+<h2 id="感知系统">感知系统</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">缩写</th>
+<th>英文名称</th>
+<th style="text-align: left;">中文名称</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>RRS</strong></td>
+<td>Reversing Radar System</td>
+<td style="text-align: left;">倒车雷达系统</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>SDW</strong></td>
+<td>Side Distance Warning</td>
+<td style="text-align: left;">侧边距离报警</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>SVA</strong></td>
+<td>Side View Assist</td>
+<td style="text-align: left;">侧视辅助</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>CTA</strong></td>
+<td>Cross Traffic Assist</td>
+<td style="text-align: left;">倒车横向告警</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>BSD</strong></td>
+<td>Blind spot Detection</td>
+<td style="text-align: left;">盲区监测系统</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>HD-AVM</strong></td>
+<td>High Definition Around view Monitor</td>
+<td style="text-align: left;">高画质环视监控</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>LDW</strong></td>
+<td>Lane Departure Warning</td>
+<td style="text-align: left;">低速车道偏离报警</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>DVR</strong></td>
+<td>Driving Video Record</td>
+<td style="text-align: left;">行车记录仪</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>RM</strong></td>
+<td>Remote Monitoring</td>
+<td style="text-align: left;">远程监控</td>
+</tr>
+</tbody>
+</table>
+<h2 id="检测系统">检测系统</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">缩写</th>
+<th>英文名称</th>
+<th>中文名称</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>MOD</strong></td>
+<td>Moving Object Detection</td>
+<td>移动目标检测</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>PD</strong></td>
+<td>Pedestrian Detection</td>
+<td>行人检测</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>3-DOD</strong></td>
+<td>3D Object Detection</td>
+<td>3D 目标检测</td>
+</tr>
+</tbody>
+</table>
+<h2 id="执行器">执行器</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">缩写</th>
+<th>英文名称</th>
+<th>中文名称</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>ACM</strong></td>
+<td>Actuator Control Module</td>
+<td>执行器控制系统</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>EPS</strong></td>
+<td>Electronic Power Steering</td>
+<td>电子助力转向系统</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>TCU</strong></td>
+<td>Transmission Control Unit</td>
+<td>变速器控制单元</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>EMS</strong></td>
+<td>Engine Management System</td>
+<td>发动机管理系统</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>SAS</strong></td>
+<td>Steering Angle Sensor</td>
+<td>转角传感器</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>BCM</strong></td>
+<td>Body Control Module</td>
+<td>车身控制器</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>ESC</strong></td>
+<td>Electronic Stability Control</td>
+<td>电子稳定控制</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>VCU</strong></td>
+<td>Vehicle Control Unit</td>
+<td>车辆控制单元</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>EPB</strong></td>
+<td>Electronic Parking Brake</td>
+<td>电子驻车</td>
+</tr>
+</tbody>
+</table>
+<h2 id="其它">其它</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">缩写</th>
+<th style="text-align: left;">英文名称</th>
+<th style="text-align: left;">中文名称</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>SEA</strong></td>
+<td style="text-align: left;">Side Exit Alert</td>
+<td style="text-align: left;">开门告警</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>HMI</strong></td>
+<td style="text-align: left;">Human-Machine Interface</td>
+<td style="text-align: left;">人机交互接口</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>IP</strong></td>
+<td style="text-align: left;">Instrument Panel</td>
+<td style="text-align: left;">仪表</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>HU</strong></td>
+<td style="text-align: left;">Head Unit</td>
+<td style="text-align: left;">主机</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>AC</strong></td>
+<td style="text-align: left;">Air Condition</td>
+<td style="text-align: left;">空调</td>
+</tr>
+</tbody>
+</table>
+]]></content>
+      <categories>
+        <category>车辆基础</category>
+      </categories>
+      <tags>
+        <tag>车辆术语</tag>
+        <tag>名称缩写</tag>
       </tags>
   </entry>
 </search>
