@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="1AYoSrGqW5qB6rPYnoXq_tIpkaudIK3MXrpUhL_69NI">
+  <meta name="msvalidate.01" content="DF49D5E49BAD0CB8947DDD3824A370B1">
+  <meta name="baidu-site-verification" content="code-EEmJnUEq0A">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":true,"nav":null,"activeClass":"changyan"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false,"trigger":"auto"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="概述 在语音活动检测(VAD)中，有多种模型可供选择，每种模型都有其独特的特点和应用场景。 Webrtc-VAD 是一种广泛应用的语音活动检测模型，它基于语音信号的能量和过零率等特征进行检测。SileroVAD 则采用了深度学习技术，通过对大量语音数据的学习，能够更准确地检测语音活动。FSMN-VAD 结合了前馈序列记忆网络，在处理长语音序列时表现出色。 这些模型在不同的环境和应用中都发挥着">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Voice Activity Detector(VAD)">
+<meta property="og:url" content="https://zgh551.github.io/2024/12/01/audio-VAD/index.html">
+<meta property="og:site_name" content="Henry-Z">
+<meta property="og:description" content="概述 在语音活动检测(VAD)中，有多种模型可供选择，每种模型都有其独特的特点和应用场景。 Webrtc-VAD 是一种广泛应用的语音活动检测模型，它基于语音信号的能量和过零率等特征进行检测。SileroVAD 则采用了深度学习技术，通过对大量语音数据的学习，能够更准确地检测语音活动。FSMN-VAD 结合了前馈序列记忆网络，在处理长语音序列时表现出色。 这些模型在不同的环境和应用中都发挥着">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/12/01/D7ewHvjdX4Z5sbM.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/01/fCxnUGr2RY4TqLu.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/01/5IhRLydzT1qEmls.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/01/1iSNQkOxVWTrvJ7.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/01/1iSNQkOxVWTrvJ7.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/01/pZmy6ex1JQqIWjD.png">
+<meta property="article:published_time" content="2024-12-01T07:24:56.000Z">
+<meta property="article:modified_time" content="2024-12-01T13:34:12.234Z">
+<meta property="article:author" content="Henry">
+<meta property="article:tag" content="VAD">
+<meta property="article:tag" content="Audio Active Detecter">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2024/12/01/D7ewHvjdX4Z5sbM.png">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2024/12/01/audio-VAD/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/12/01/audio-VAD/","path":"2024/12/01/audio-VAD/","title":"Voice Activity Detector(VAD)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Voice Activity Detector(VAD) | Henry-Z</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ML9CRPRYFK"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ML9CRPRYFK","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?c8e65d830c8cd51e920dc7e7c0be8744"></script>
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Henry-Z</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">109</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">46</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">50</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#webrtc-vad"><span class="nav-number">2.</span> <span class="nav-text">Webrtc-VAD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#silero-vad"><span class="nav-number">3.</span> <span class="nav-text">Silero-VAD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">3.1.</span> <span class="nav-text">参考链接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fsmn-vad"><span class="nav-number">4.</span> <span class="nav-text">FSMN-VAD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84"><span class="nav-number">4.1.</span> <span class="nav-text">模型结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%93%E9%AA%8C%E7%BD%91%E5%9D%80"><span class="nav-number">4.2.</span> <span class="nav-text">体验网址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Efsmn%E7%BB%93%E6%9E%84%E7%9A%84%E5%8F%91%E5%B1%95"><span class="nav-number">4.3.</span> <span class="nav-text">关于FSMN结构的发展</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#fsmn%E4%B8%AD%E7%A7%91%E5%A4%A7-%E8%AE%AF%E9%A3%9E2015"><span class="nav-number">4.3.1.</span> <span class="nav-text">FSMN(中科大-讯飞[2015])</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A0%87%E9%87%8F%E5%92%8C%E7%9F%A2%E9%87%8Ffsmn"><span class="nav-number">4.3.1.1.</span> <span class="nav-text">标量和矢量FSMN</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8D%95%E5%90%91%E5%92%8C%E5%8F%8C%E5%90%91fsmn"><span class="nav-number">4.3.1.2.</span> <span class="nav-text">单向和双向FSMN</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cfsmn%E4%B8%AD%E7%A7%91%E5%A4%A7-%E8%AE%AF%E9%A3%9E2016"><span class="nav-number">4.3.2.</span> <span class="nav-text">cFSMN(中科大-讯飞[2016])</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#deep-fsmn%E9%98%BF%E9%87%8C2018"><span class="nav-number">4.3.3.</span> <span class="nav-text">Deep-FSMN(阿里[2018])</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Henry"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Henry</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">50</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">109</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3pnaDU1MQ==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmhlbnJ5emh1NTUxQGdtYWlsLmNvbQ==" title="E-Mail → mailto:henryzhu551@gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever"><i class="fa-solid fa-c fa-fw"></i>CSDN</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly93d3cubGlua2VkaW4uY29tL2luL3pnaDU1MS8=" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;"><i class="fab fa-linkedin fa-fw"></i>Linkindin</span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+        <div class="pjax">
+        </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/12/01/audio-VAD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Voice Activity Detector(VAD) | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Voice Activity Detector(VAD)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-12-01 15:24:56 / 修改时间：21:34:12" itemprop="dateCreated datePublished" datetime="2024-12-01T15:24:56+08:00">2024-12-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Audio/" itemprop="url" rel="index"><span itemprop="name">Audio</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Audio/Introduce/" itemprop="url" rel="index"><span itemprop="name">Introduce</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2024/12/01/audio-VAD/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2024/12/01/audio-VAD/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    <a title="Voice Activity Detector(VAD)" href="/2024/12/01/audio-VAD/#SOHUCS" itemprop="discussionUrl">
+      <span id="sourceId::74b049919ece8d682353ffdf04e42f3a" class="cy_cmt_count" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="概述">概述</h2>
+<p>在语音活动检测(<strong>VAD</strong>)中，有多种模型可供选择，每种模型都有其独特的特点和应用场景。</p>
+<p><code>Webrtc-VAD</code> 是一种广泛应用的语音活动检测模型，它基于语音信号的能量和过零率等特征进行检测。<code>SileroVAD</code> 则采用了深度学习技术，通过对大量语音数据的学习，能够更准确地检测语音活动。<code>FSMN-VAD</code> 结合了前馈序列记忆网络，在处理长语音序列时表现出色。</p>
+<p>这些模型在不同的环境和应用中都发挥着重要作用。例如，在电话会议中，<strong>Webrtc-VAD</strong> 可以有效地过滤背景噪声，提高语音质量；在智能语音助手等场景中，<strong>SileroVAD</strong> 和 <strong>FSMN-VAD</strong> 能够更准确地识别用户的语音指令。</p>
+<p>未来，随着技术的不断发展，语音活动检测模型将不断改进和创新，为语音通信和交互提供更好的支持。</p>
+<span id="more"></span>
+<h2 id="webrtc-vad">Webrtc-VAD</h2>
+<p>该模型使用非机器学习方法，是Google为WebRTC项目开发的快速、且免费的VAD模块。它基于语音信号的能量和过零率等特征进行检测。Webrtc-VAD 主要包括以下几个步骤：</p>
+<ol type="1">
+<li>音频预处理：对输入的音频信号进行预处理，包括滤波、降噪等操作，以提高后续检测的准确性。</li>
+<li>特征提取：提取音频信号的能量、过零率等特征。</li>
+<li>阈值判断：根据预设的阈值，判断音频信号是否包含语音活动。</li>
+<li>后处理：对检测结果进行后处理，如平滑处理等，以提高检测结果的稳定性。</li>
+</ol>
+<p>Webrtc-VAD 具有计算量小、速度快的优点，适用于实时性要求较高的语音通信场景。</p>
+<h2 id="silero-vad">Silero-VAD</h2>
+<p>SileroVAD 是一种基于深度学习技术的轻量级语音活动检测模型。文件大小仅有 2.2MB ，支持任意采样率的 PCM 格式输入数据，其主要由卷积和 LSTM 等结构组成。通过对大量语音数据的学习，能够更准确地检测语音活动。SileroVAD 主要包括以下几个步骤：</p>
+<ol type="1">
+<li>音频预处理：对输入的音频信号进行预处理，包括滤波、降噪等操作，以提高后续检测的准确性。</li>
+<li>特征提取：使用深度学习模型自动提取音频信号的特征。</li>
+<li>模型训练：使用大量的语音数据对深度学习模型进行训练，以提高模型的准确性。</li>
+<li>阈值判断：根据预设的阈值，判断音频信号是否包含语音活动。</li>
+<li>后处理：对检测结果进行后处理，如平滑处理等，以提高检测结果的稳定性。</li>
+</ol>
+<p>SileroVAD 具有检测准确率高、适应性强的优点，适用于各种复杂的语音环境。</p>
+<p>如下图所示，是该模型的输入和输出结构图：</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/01/D7ewHvjdX4Z5sbM.png" alt="Silero VAD" /><figcaption aria-hidden="true">Silero VAD</figcaption>
+</figure>
+<p>精度数据如下图：</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/01/fCxnUGr2RY4TqLu.png" alt="精度数据对比" /><figcaption aria-hidden="true">精度数据对比</figcaption>
+</figure>
+<h3 id="参考链接">参考链接</h3>
+<ul>
+<li><p><span class="exturl" data-url="aHR0cHM6Ly93d3cudmFkLnJpY2t5MDEyMy5jb20v">voice activity detector for the browser<i class="fa fa-external-link-alt"></i></span></p></li>
+<li><p><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3NuYWtlcnM0L3NpbGVyby12YWQ=">Silero VAD - pre-trained enterprise-grade Voice Activity Detector<i class="fa fa-external-link-alt"></i></span></p></li>
+</ul>
+<h2 id="fsmn-vad">FSMN-VAD</h2>
+<p>FSMN-VAD 结合了前馈序列记忆网络，在处理长语音序列时表现出色。它的主要特点包括：</p>
+<ol type="1">
+<li>能够处理长语音序列：FSMN-VAD 可以有效地处理长语音序列，避免了传统模型在处理长序列时的性能下降问题。</li>
+<li>适应性强：FSMN-VAD 可以适应不同的语音环境和应用场景，具有较强的泛化能力。</li>
+<li>检测准确率高：FSMN-VAD 能够更准确地检测语音活动，提高了语音通信和交互的质量。</li>
+</ol>
+<h3 id="模型结构">模型结构</h3>
+<p>模型的关键结构是引入了FSMN模块，用于解决长序列相关性问题。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/01/5IhRLydzT1qEmls.png" alt="模型结构" /><figcaption aria-hidden="true">模型结构</figcaption>
+</figure>
+<h3 id="体验网址">体验网址</h3>
+<p><span class="exturl" data-url="aHR0cHM6Ly93d3cubW9kZWxzY29wZS5jbi9tb2RlbHMvaWljL3NwZWVjaF9mc21uX3ZhZF96aC1jbi0xNmstY29tbW9uLXB5dG9yY2gvc3VtbWFyeQ==">FSMN-Monophone VAD 模型介绍<i class="fa fa-external-link-alt"></i></span></p>
+<h3 id="关于fsmn结构的发展">关于FSMN结构的发展</h3>
+<blockquote>
+<p>张仕良，博士，毕业于中国科学技术大学语音及语言信息处理国家工程实验室。 研究领域主要包括语音识别，机器&gt; 学习算法等，提出了FSMN、HOPE、FOFE等模型。博士毕业以后加入阿里巴巴智能语音交互团队，目前主要负责语音&gt; 识别，特别是声学建模相关算法的研究。</p>
+</blockquote>
+<h4 id="fsmn中科大-讯飞2015">FSMN(中科大-讯飞[2015])</h4>
+<p>前馈序列记忆网络(feedforward sequential memory networks-FSMN)，是一种专门为序列建模设计的神经网络结构。它旨在解决传统 RNN 在处理长序列时遇到的梯度消失和计算效率低下的问题。</p>
+<p>FSMN受到了数字信号处理中滤波器设计知识的启发，任何无限脉冲响应(IIR)滤波器都可以用高阶有限脉冲响应(FIR)滤波器很好地逼近，由于RNN中的循环层在概念上可以看作一阶IIR滤波器，因此它应该能够被高阶FIR滤波器精确逼近。因此，我们通过在隐藏层中加入一些采用类似于FIR滤波器的抽头延迟线结构的记忆块来扩展标准的前馈全连接神经网络。 FSMN中可学习的FIR类记忆块可以将长上下文信息编码成固定大小的表示，这有助于模型捕获长期依赖。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/01/1iSNQkOxVWTrvJ7.png" alt="FSMN" /><figcaption aria-hidden="true">FSMN</figcaption>
+</figure>
+<h5 id="标量和矢量fsmn">标量和矢量FSMN</h5>
+<ul>
+<li>标量FSMN(sFSMN):</li>
+</ul>
+<p><span class="math display">\[\large \tilde{h}_{t}^{l}=\sum_{i=0}^{N}a_{i}^{l}\cdot h_{t-i}^l\]</span></p>
+<p>其中， <span class="math inline">\(a^l = \{a_0^l,a_1^l,...,a_N^l\}\)</span> 表示所有 N+1 个时不变系数。</p>
+<ul>
+<li>矢量FSMN(vFSMN)</li>
+</ul>
+<p><span class="math display">\[\large \tilde{h}_{t}^{l}=\sum_{i=0}^{N}\mathtt{a}_{i}^{l}\odot h_{t-i}^l\]</span></p>
+<p>其中 <span class="math inline">\(\odot\)</span> 表示两个大小相同的向量的逐元素相乘，所有系数向量均记作 <span class="math inline">\(A^l = \{\mathtt{a}_0^l,\mathtt{a}_1^l,...,\mathtt{a}_N^l,\}\)</span>。</p>
+<h5 id="单向和双向fsmn">单向和双向FSMN</h5>
+<ul>
+<li>单向FSMN</li>
+</ul>
+<p>上述只考虑过去信息的称为单向FSMN，这些单向FSMN适用于仅可获得过去信息的某些应用，例如语言建模。</p>
+<ul>
+<li>双向FSMN</li>
+</ul>
+<p>双向</p>
+<p><span class="math display">\[\large \tilde{h}_{t}^{l}=\sum_{i=0}^{N_1}a_{i}^{l}\cdot h_{t-i}^l + \sum_{j=1}^{N_2}c_j^l \cdot h_{t+j}^l\]</span></p>
+<p><span class="math display">\[\large \tilde{h}_{t}^{l}=\sum_{i=0}^{N_1}\mathtt{a}_{i}^{l}\cdot h_{t-i}^l + \sum_{j=1}^{N_2}\mathtt{c}_j^l \cdot h_{t+j}^l\]</span></p>
+<p>则下一层隐藏层的输出表示为</p>
+<p><span class="math display">\[h_t^{l+1}=f(W^lh_t^l+\tilde{W}^l\tilde{h}^l+b^l)\]</span></p>
+<h4 id="cfsmn中科大-讯飞2016">cFSMN(中科大-讯飞[2016])</h4>
+<p>鉴于内存块引入的额外参数，提出了一种改进的FSMN架构，即紧凑型FSMN (compact feedforward sequential memory networks-cFSMN)，以简化FSMN架构并加快学习速度。</p>
+<p>cFSMN层由三部分组成：</p>
+<ol type="1">
+<li>线性投影层;</li>
+<li>记忆块;</li>
+<li>从记忆块到下一隐藏层的权重连接。 与FSMN相比，cFSMN可以看作是在非线性隐层之后插入一个更小的线性投影层，并将记忆块添加到线性投影层而不是隐藏层。</li>
+</ol>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/01/1iSNQkOxVWTrvJ7.png" alt="cFSMN" /><figcaption aria-hidden="true">cFSMN</figcaption>
+</figure>
+<ul>
+<li>单向<strong>cFSMN</strong></li>
+</ul>
+<p><span class="math display">\[\large \tilde{\mathtt{p}}_t^l=\mathtt{p}_t^l + \sum_{i=0}^{N}\mathtt{a}_i^l \odot \mathtt{p}_{t-i}^l\]</span></p>
+<ul>
+<li>双向<strong>cFSMN</strong></li>
+</ul>
+<p><span class="math display">\[\large \tilde{\mathtt{p}}_t^l=\mathtt{p}_t^l + \sum_{i=0}^{N_1}\mathtt{a}_i^l \odot \mathtt{p}_{t-i}^l + \sum_{j=1}^{N_2}\mathtt{c}_i^l \odot \mathtt{p}_{t+j}^l\]</span></p>
+<p>其中， <span class="math inline">\(\mathtt{p}_t^l=\mathtt{V}^lh_t^l+b^l\)</span> 表示第 <span class="math inline">\(l\)</span> 个线性投影层的线性输出。则下一层隐藏层的输出表示为</p>
+<p><span class="math display">\[\large h_t^{l+1}=f(U^{l}\tilde{\mathtt{p}}_t^l +b^{l+1})\]</span></p>
+<h4 id="deep-fsmn阿里2018">Deep-FSMN(阿里[2018])</h4>
+<p>如果我们想通过直接增加更多cFSMN层来训练更深的cFSMN，则会遭受梯度消失问题。受近期关于使用跳跃连接训练非常深的神经网络架构（例如残差网络或高速网络）工作的启发，提出了一种改进的FSMN架构，即深度FSMN（DFSMN）。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/01/pZmy6ex1JQqIWjD.png" alt="Deep FSMN" /><figcaption aria-hidden="true">Deep FSMN</figcaption>
+</figure>
+<p>如上图所示，在标准cFSMN的存储块之间添加了一些跳跃连接(skip connections)，其中下层存储块的输出可以定向流向高层存储块。在反向传播过程中，高层的梯度也可以直接赋予低层，这有助于克服梯度消失问题。</p>
+<p><span class="math display">\[\large \tilde{\mathtt{p}}_t^l=\mathcal{H}(\tilde{\mathtt{p}}_t^{l-1}) + p_t^l+ \sum_{i=0}^{N_1^l}\mathtt{a}_i^l \odot \mathtt{p}_{t-s_1*i}^l + \sum_{j=1}^{N_2^l}\mathtt{c}_i^l \odot \mathtt{p}_{t+s_2*j}^l\]</span></p>
+<p>其中，</p>
+<ul>
+<li><span class="math inline">\(\mathtt{p}_t^l=V^lh_t^l+b^l\)</span> 表示第 <span class="math inline">\(l\)</span> 个线性投影层的线性输出；</li>
+<li><span class="math inline">\(\tilde{\mathtt{p}}_t^l\)</span> 表示第 <span class="math inline">\(l\)</span> 个内存块的输出；</li>
+<li><span class="math inline">\(N_1^l\)</span>$和 <span class="math display">\[N_2^l$ 分别表示第 \]</span>l$$ 个内存块的回溯阶数和前瞻阶数;</li>
+<li><span class="math inline">\(\mathcal{H}(\cdot)\)</span> 表示内存块内的跳跃连接，可以是任何线性或非线性变换。例如，如果内存块的维度相同，我们可以使用如下所示的恒等映射： <span class="math inline">\(\tilde{\mathtt{p}}_t^{l-1}=\mathcal{H}(\tilde{\mathtt{p}}_t^{l-1})\)</span>。</li>
+<li><span class="math inline">\(s_1\)</span> 和 <span class="math inline">\(s_2\)</span> 分别表示回溯和前瞻滤波器的步长；</li>
+</ul>
+<p>对于语音信号，由于帧与帧之间存在重叠，相邻帧的信息具有很强的冗余性。类似于WaveNet [26]中的扩张卷积层，我们在内存块中加入步长因子以去除这种冗余性。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Henry 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Henry 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/VAD/" rel="tag"># VAD</a>
+              <a href="/tags/Audio-Active-Detecter/" rel="tag"># Audio Active Detecter</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/18/GraphNeuralNetwork/" rel="prev" title="Graph Nueral Network">
+                  <i class="fa fa-angle-left"></i> Graph Nueral Network
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-gitalk">gitalk</a></li>
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+            <li class="tab"><a href="#comment-changyan">changyan</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane gitalk" id="comment-gitalk">
+              <div class="comments gitalk-container"></div>
+            </div>
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+            </div>
+            <div class="tab-pane changyan" id="comment-changyan">
+              <div class="comments" id="SOHUCS" sid="74b049919ece8d682353ffdf04e42f3a"></div>
+            </div>
+        </div>
+      </div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2020 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Henry</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3pnaDU1MQ==" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js","integrity":"sha256-G8ouPAnw4zzMbnAenHnVz6h9XpKbNdOkrqTh7AadyHs="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js" integrity="sha256-yvJQOINiH9fWemHn0vCA5lsHWJaHs6/ZmO+1Ft04SvM=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2024/12/01/audio-VAD/"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"74b049919ece8d682353ffdf04e42f3a"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"https-zgh551-github-io","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+<script class="next-config" data-name="changyan" type="application/json">{"enable":true,"appid":"cyxCTcyif","appkey":"79391f9a8a4f1f9ddf64d58d44069762","count":true}</script>
+<script src="/js/third-party/comments/changyan.js"></script>
+
+</body>
+</html>
