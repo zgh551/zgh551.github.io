@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false,"trigger":"auto"}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":"disqus | gitalk | changyan","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false,"trigger":"auto"}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="概述 ReedsShepp算法简称RS，由 J.AReeds和L.A.Sheep于1990年发表的论文(optimal path for a car that goes both forward and backwards)。该方法基于Dubins算法进行改进，将反向运动加入到规划中，这就使得在某些情况下可以得出比Dubins曲线更优的解。  青岛">
 <meta property="og:type" content="article">
@@ -293,6 +293,20 @@
     
     <a title="路径规划-ReedsShepp曲线" href="/2020/04/15/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92-ReedsShepp%E6%9B%B2%E7%BA%BF/#SOHUCS" itemprop="discussionUrl">
       <span id="sourceId::9c6fff1e2a0bfec13ffe7b5f2093ce84" class="cy_cmt_count" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2020/04/15/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92-ReedsShepp%E6%9B%B2%E7%BA%BF/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/04/15/路径规划-ReedsShepp曲线/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -1014,16 +1028,16 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
       <div class="tabs tabs-comment">
         <ul class="nav-tabs">
             <li class="tab"><a href="#comment-changyan">changyan</a></li>
-            <li class="tab"><a href="#comment-disqusjs">disqusjs</a></li>
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
             <li class="tab"><a href="#comment-gitalk">gitalk</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane changyan" id="comment-changyan">
               <div class="comments" id="SOHUCS" sid="9c6fff1e2a0bfec13ffe7b5f2093ce84"></div>
             </div>
-            <div class="tab-pane disqusjs" id="comment-disqusjs">
+            <div class="tab-pane disqus" id="comment-disqus">
               
-  <div class="comments disqusjs-container">
+  <div class="comments" id="disqus_thread">
     <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
   </div>
   
@@ -1128,10 +1142,8 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
   <script src="/js/third-party/quicklink.js"></script>
 <script class="next-config" data-name="changyan" type="application/json">{"enable":true,"appid":"cyxCTcyif","appkey":"79391f9a8a4f1f9ddf64d58d44069762","count":true}</script>
 <script src="/js/third-party/comments/changyan.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/disqusjs/3.0.2/styles/disqusjs.css" integrity="sha256-71XarXwNr1Td27HmZI9zjY+rMzRdush6/glo6VFXp7o=" crossorigin="anonymous">
-
-<script class="next-config" data-name="disqusjs" type="application/json">{"enable":true,"api":null,"apikey":"vWvGCqg3oGgg81IZvCUOkQ1h3hMe1vBaRUijhtBeZkoG7kWL6gk0Jm18yis3aDG0","shortname":"Henry Blog","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/disqusjs/3.0.2/disqusjs.es2015.umd.min.js","integrity":"sha256-okP99ZQKVpIy7+NogAMpGlIQzJa9XKXhIJcFgdju5bU="}}</script>
-<script src="/js/third-party/comments/disqusjs.js"></script>
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"https-zgh551-github-io","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
 
 <script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"9c6fff1e2a0bfec13ffe7b5f2093ce84"}</script>
