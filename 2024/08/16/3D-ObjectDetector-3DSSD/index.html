@@ -23,37 +23,36 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":true,"nav":null,"activeClass":"changyan"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false,"trigger":"auto"}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="概述  表示方法">
+    <meta name="description" content="概述 3DSSD是基于点的单阶段3D目标检测网络，该模型的提出背景是在3D单阶段目标检测器大都是基于体素，其在转换过程中会丢失信息，而基于点的检测器大都是两阶段网络，精度虽然高，但是推理性能差。而此时，基于点的单阶段网络还未充分探索。作者基于点基础，提出了一个轻量级且高效的单阶段网络(3DSSD)，可以很好地在精度和效率之间保持平衡。  作者通过分析两阶段网络各个部分耗时情况，发现SA层对于提取">
 <meta property="og:type" content="article">
-<meta property="og:title" content="3D Object Detector-表示方法">
-<meta property="og:url" content="https://zgh551.github.io/2024/08/10/3D-ObjectDetector-Express/index.html">
+<meta property="og:title" content="3D Object Detector 3DSSD">
+<meta property="og:url" content="https://zgh551.github.io/2024/08/16/3D-ObjectDetector-3DSSD/index.html">
 <meta property="og:site_name" content="Henry-Z">
-<meta property="og:description" content="概述  表示方法">
+<meta property="og:description" content="概述 3DSSD是基于点的单阶段3D目标检测网络，该模型的提出背景是在3D单阶段目标检测器大都是基于体素，其在转换过程中会丢失信息，而基于点的检测器大都是两阶段网络，精度虽然高，但是推理性能差。而此时，基于点的单阶段网络还未充分探索。作者基于点基础，提出了一个轻量级且高效的单阶段网络(3DSSD)，可以很好地在精度和效率之间保持平衡。  作者通过分析两阶段网络各个部分耗时情况，发现SA层对于提取">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://i.imgur.com/0RO0rIZ.png">
-<meta property="og:image" content="https://s2.loli.net/2024/08/12/nlCgoYaUVJ9QAiw.png">
-<meta property="og:image" content="https://s2.loli.net/2024/08/12/DMpI5oeVECnZhf7.png">
-<meta property="og:image" content="https://s2.loli.net/2024/08/12/DnYgbPRq24OpVwm.png">
-<meta property="og:image" content="https://s2.loli.net/2024/08/12/l9QjnTJ5Sz6PdOK.png">
-<meta property="og:image" content="https://s2.loli.net/2024/08/12/DWXyNkgAIbrJlGF.png">
-<meta property="og:image" content="https://s2.loli.net/2024/08/13/rwVIU8D16GJyfOX.png">
-<meta property="og:image" content="https://s2.loli.net/2024/08/13/7NHAUsY5vSE1mpQ.png">
-<meta property="article:published_time" content="2024-08-10T08:28:16.000Z">
-<meta property="article:modified_time" content="2024-08-15T14:33:06.651Z">
+<meta property="og:image" content="https://i.imgur.com/6IPCPg1.png">
+<meta property="og:image" content="https://i.imgur.com/FVDI9t1.png">
+<meta property="og:image" content="https://i.imgur.com/gL42xwh.png">
+<meta property="og:image" content="https://i.imgur.com/8zQAWXX.png">
+<meta property="og:image" content="https://i.imgur.com/MwXEirt.png">
+<meta property="og:image" content="https://i.imgur.com/iIQxk38.png">
+<meta property="og:image" content="https://i.imgur.com/wkBf9kh.png">
+<meta property="article:published_time" content="2024-08-16T08:18:16.000Z">
+<meta property="article:modified_time" content="2024-12-01T07:07:04.154Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="3D Object Detector">
 <meta property="article:tag" content="LiDAR">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://i.imgur.com/0RO0rIZ.png">
+<meta name="twitter:image" content="https://i.imgur.com/6IPCPg1.png">
 
 
-<link rel="canonical" href="https://zgh551.github.io/2024/08/10/3D-ObjectDetector-Express/">
+<link rel="canonical" href="https://zgh551.github.io/2024/08/16/3D-ObjectDetector-3DSSD/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/08/10/3D-ObjectDetector-Express/","path":"2024/08/10/3D-ObjectDetector-Express/","title":"3D Object Detector-表示方法"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/08/16/3D-ObjectDetector-3DSSD/","path":"2024/08/16/3D-ObjectDetector-3DSSD/","title":"3D Object Detector 3DSSD"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>3D Object Detector-表示方法 | Henry-Z</title>
+<title>3D Object Detector 3DSSD | Henry-Z</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ML9CRPRYFK"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ML9CRPRYFK","only_pageview":false,"measure_protocol_api_secret":null}</script>
@@ -107,7 +106,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">107</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">44</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">48</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">107</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">44</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">49</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -158,7 +157,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%BE%E6%80%A7%E8%A1%A8%E7%A4%BA"><span class="nav-number">2.</span> <span class="nav-text">显性表示</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%93%E7%B4%A0"><span class="nav-number">2.1.</span> <span class="nav-text">体素</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%82%B9%E4%BA%91"><span class="nav-number">2.2.</span> <span class="nav-text">点云</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E8%BE%B9%E5%BD%A2%E7%BD%91%E6%A0%BCpolygon-mesh"><span class="nav-number">2.3.</span> <span class="nav-text">多边形网格(Polygon Mesh)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%90%E5%BC%8F%E8%A1%A8%E7%A4%BA"><span class="nav-number">3.</span> <span class="nav-text">隐式表示</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%A0%E7%94%A8%E5%87%BD%E6%95%B0occupancy-function"><span class="nav-number">3.1.</span> <span class="nav-text">占用函数(Occupancy Function)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%A6%E5%8F%B7%E8%B7%9D%E7%A6%BB%E5%87%BD%E6%95%B0singned-distance-function"><span class="nav-number">3.2.</span> <span class="nav-text">符号距离函数(Singned Distance Function)</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#backbone"><span class="nav-number">2.</span> <span class="nav-text">Backbone</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%9E%8D%E5%90%88%E9%87%87%E6%A0%B7"><span class="nav-number">3.</span> <span class="nav-text">融合采样</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cg%E5%B1%82"><span class="nav-number">4.</span> <span class="nav-text">CG层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#anchor-free%E5%9B%9E%E5%BD%92"><span class="nav-number">5.</span> <span class="nav-text">Anchor Free回归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#d%E4%B8%AD%E5%BF%83%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5"><span class="nav-number">6.</span> <span class="nav-text">3D中心分配策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E5%88%B03%E7%BB%B4%E8%A1%A8%E7%A4%BA"><span class="nav-number">6.1.</span> <span class="nav-text">扩展到3维表示</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="nav-number">7.</span> <span class="nav-text">损失函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E5%BD%92%E6%8D%9F%E5%A4%B1"><span class="nav-number">7.1.</span> <span class="nav-text">回归损失</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#smooth_l1"><span class="nav-number">7.1.1.</span> <span class="nav-text">smooth_L1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Ebin"><span class="nav-number">7.1.2.</span> <span class="nav-text">基于bin</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%92%E7%82%B9%E6%8D%9F%E5%A4%B1"><span class="nav-number">7.1.3.</span> <span class="nav-text">角点损失</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%8F%E7%A7%BB%E6%8D%9F%E5%A4%B1"><span class="nav-number">7.2.</span> <span class="nav-text">偏移损失</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%95%B0%E6%8D%AE"><span class="nav-number">8.</span> <span class="nav-text">实验数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E6%95%B0%E6%8D%AE"><span class="nav-number">8.1.</span> <span class="nav-text">性能数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B2%BE%E5%BA%A6%E6%95%B0%E6%8D%AE"><span class="nav-number">8.2.</span> <span class="nav-text">精度数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -173,7 +172,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-count">49</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -227,7 +226,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/08/10/3D-ObjectDetector-Express/">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/08/16/3D-ObjectDetector-3DSSD/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -240,12 +239,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="3D Object Detector-表示方法 | Henry-Z">
+      <meta itemprop="name" content="3D Object Detector 3DSSD | Henry-Z">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          3D Object Detector-表示方法
+          3D Object Detector 3DSSD
         </h1>
 
         <div class="post-meta-container">
@@ -256,14 +255,14 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2024-08-10 16:28:16" itemprop="dateCreated datePublished" datetime="2024-08-10T16:28:16+08:00">2024-08-10</time>
+      <time title="创建时间：2024-08-16 16:18:16" itemprop="dateCreated datePublished" datetime="2024-08-16T16:18:16+08:00">2024-08-16</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-08-15 22:33:06" itemprop="dateModified" datetime="2024-08-15T22:33:06+08:00">2024-08-15</time>
+      <time title="修改时间：2024-12-01 15:07:04" itemprop="dateModified" datetime="2024-12-01T15:07:04+08:00">2024-12-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -275,7 +274,7 @@
         </span>
           ，
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/3D-Object-Detector/%E5%AF%B9%E8%B1%A1%E8%A1%A8%E7%A4%BA/" itemprop="url" rel="index"><span itemprop="name">对象表示</span></a>
+          <a href="/categories/3D-Object-Detector/3DSSD/" itemprop="url" rel="index"><span itemprop="name">3DSSD</span></a>
         </span>
     </span>
 
@@ -295,8 +294,8 @@
       </span>
       <span class="post-meta-item-text">Changyan：</span>
     
-    <a title="3D Object Detector-表示方法" href="/2024/08/10/3D-ObjectDetector-Express/#SOHUCS" itemprop="discussionUrl">
-      <span id="sourceId::7cdb4494768d229560cb8e79e98d6345" class="cy_cmt_count" itemprop="commentCount"></span>
+    <a title="3D Object Detector 3DSSD" href="/2024/08/16/3D-ObjectDetector-3DSSD/#SOHUCS" itemprop="discussionUrl">
+      <span id="sourceId::80f87c06861723861dde6da003309a32" class="cy_cmt_count" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -309,8 +308,8 @@
       </span>
       <span class="post-meta-item-text">Disqus：</span>
     
-    <a title="disqus" href="/2024/08/10/3D-ObjectDetector-Express/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2024/08/10/3D-ObjectDetector-Express/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2024/08/16/3D-ObjectDetector-3DSSD/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2024/08/16/3D-ObjectDetector-3DSSD/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -324,48 +323,67 @@
     
     
     <div class="post-body" itemprop="articleBody"><h2 id="概述">概述</h2>
-<figure>
-<img data-src="https://i.imgur.com/0RO0rIZ.png" alt="表示方法" /><figcaption aria-hidden="true">表示方法</figcaption>
-</figure>
+<p>3DSSD是基于点的单阶段3D目标检测网络，该模型的提出背景是在3D单阶段目标检测器大都是基于体素，其在转换过程中会丢失信息，而基于点的检测器大都是两阶段网络，精度虽然高，但是推理性能差。而此时，基于点的单阶段网络还未充分探索。作者基于点基础，提出了一个轻量级且高效的单阶段网络(3DSSD)，可以很好地在精度和效率之间保持平衡。 <img data-src="https://i.imgur.com/6IPCPg1.png" alt="网络框图" /> 作者通过分析两阶段网络各个部分耗时情况，发现SA层对于提取点得特征是必要的，但FP和细化模块确实限制了基于点的方法的效率。 <img data-src="https://i.imgur.com/FVDI9t1.png" alt="各阶段时间" /></p>
 <span id="more"></span>
-<h2 id="显性表示">显性表示</h2>
-<h3 id="体素">体素</h3>
+<h2 id="backbone">Backbone</h2>
 <figure>
-<img data-src="https://s2.loli.net/2024/08/12/nlCgoYaUVJ9QAiw.png" alt="体素" /><figcaption aria-hidden="true">体素</figcaption>
+<img data-src="https://i.imgur.com/gL42xwh.png" alt="Backbone: (左)KITTI (右)nuScenes" /><figcaption aria-hidden="true">Backbone: (左)KITTI (右)nuScenes</figcaption>
 </figure>
-<p>相对于2D对象表示使用像素，对应的3D表示可以使用体素表示，由若干个规则的立方体在三维空间中放置。为了表示三维物体的形状，体素中可以存储几何占有率、体积、密度和符号距离等信息，便于渲染。体素本身不包含位置信息，可以通过体素间的相对位置推导位置信息。</p>
-<figure>
-<img data-src="https://s2.loli.net/2024/08/12/DMpI5oeVECnZhf7.png" alt="像素与体素" /><figcaption aria-hidden="true">像素与体素</figcaption>
-</figure>
-<p>由于体素表示的规则性，可以配合标准的卷积神经网络。将三维几何物体表示为体素上二元变量的概率分布。 尽管体素网格非常适合3D卷积网络，但其通常内存效率低下，内存随着分辨率呈立方增加。</p>
-<h3 id="点云">点云</h3>
-<figure>
-<img data-src="https://s2.loli.net/2024/08/12/DnYgbPRq24OpVwm.png" alt="点云" /><figcaption aria-hidden="true">点云</figcaption>
-</figure>
-<h3 id="多边形网格polygon-mesh">多边形网格(Polygon Mesh)</h3>
-<figure>
-<img data-src="https://s2.loli.net/2024/08/12/l9QjnTJ5Sz6PdOK.png" alt="多边形" /><figcaption aria-hidden="true">多边形</figcaption>
-</figure>
-<figure>
-<img data-src="https://s2.loli.net/2024/08/12/DWXyNkgAIbrJlGF.png" alt="多边形表示" /><figcaption aria-hidden="true">多边形表示</figcaption>
-</figure>
-<h2 id="隐式表示">隐式表示</h2>
-<p>隐式表示是一种对各种信号进行参数化的新方法，传统的信号表示通常是离散的，而隐式表示将信号参数化为一个连续函数，将信号的域映射到该坐标上的属性的值，并且该函数通常不是可解析性的，即不可能学下将自然图像参数化为数学公式的函数。隐式表示通过神经网络来近似信号函数。</p>
+<h2 id="融合采样">融合采样</h2>
+<p>F-FPS采样可以保留大都数前景点，但由于采样点数量的限制，很多背景点都被过滤掉（背景点语义特征与前景点语义特征相隔较大），这虽然对回归检测框有好处，但是背景点太少的话对分类任务不太友好（样本不均衡）。基于这一点考虑，作者将D-FPS和F-FPS进行融合，以保证有足够的前景点用于回归，以及足够的背景点用于分类，最终的采样点由D-FPS和F-FPS组成。</p>
+<h2 id="cg层">CG层</h2>
+<p>为了降低计算成本，并发挥融合采样的优势，作者提出在预测头之前加一个候选生成层，该层是SA层的变体。 因为D-FPS中的点大都是负样本点，对于边界框框回归是无用的。因此只使用F-FPS中的点作为初始中心点，这些初始中心点在其相对位置的监督下偏移到相应示例，如下图所示： <img data-src="https://i.imgur.com/8zQAWXX.png" /> 将这些平移操作后的新点称为候选点，将这些候选点作为CG层的中心点，而为何使用候选点而不是原始点作为中心点是从性能角度考虑的。 接下来，从来自D-FPS和F-FPS的<code>整个点集</code>中找到每个<code>候选点</code>在预定义阈值范围内的<code>周围点</code>。将他们的标准化位置和语义特征连接作为输入，并应用MLP层提取特征。这些特征将会被送到预测头用于回归和分类。</p>
+<h2 id="anchor-free回归">Anchor Free回归</h2>
+<p>对于回归分支需要回归的主要有中心点坐标、大小以及偏转角。</p>
 <ul>
-<li><p>不与空间分辨率相耦合 例如，图像与像素数量相耦合的方式。隐式神经表示是连续函数，因此参数化信号所需的内存与空间分辨率无关，只与底层信号的复杂性相关。另一个推论是，隐式表示具有“无限分辨率”——它们可以在任意空间分辨率下进行采样。所以隐式表示解决了在显示表示中显存的限制，使得超分辨率成为可能；</p></li>
-<li><p>表征能力更强 跨神经隐式表示的泛化等同于学习函数空间上的先验，通过学习神经网络权重上的先验实现。学习后的隐式表示可以通过不同的坐标输入映射到任意属性值。</p></li>
-<li><p>泛化性高 神经隐式表示学习函数空间上的先验，然后根据提取的先验以及输入的特征，可以得到不同的目标信号。</p></li>
-<li><p>易于学习 基于神经网络的隐式神经表示易于与各种网络结构结合，能够快速的学习先验，拟合学习对象。与传统的表示形式(如网格、点云或体素)相比，神经隐式表征可以灵活地融合到可微分的基于学习的管道中。</p></li>
+<li>中心点 候选点到标注中心的距离<span class="math inline">\((d_x,d_y,d_z)\)</span></li>
+<li>大小 候选点预测到的框大小与对应的Gt bbox的大小偏差<span class="math inline">\((d_l,d_w,d_h)\)</span></li>
+<li>偏转角 每个候选点预测的角度与实例Gt bbox的转角的偏移，这里引入了bin+res的形式进行回归（这个可参考<a href="https://zgh551.github.io/2024/08/14/3D-ObjectDetector-PointRCNN/">PointRCNN</a>，就是把角度划分成不同的区域(12)，然后引入分类和回归损失）。</li>
 </ul>
-<h3 id="占用函数occupancy-function">占用函数(Occupancy Function)</h3>
+<h2 id="d中心分配策略">3D中心分配策略</h2>
+<p>在训练过程中，需要给每一个候选点分配一个标签，在2D检测器中通常采用IOU，设定一个阈值，超过某个阈值的作为正样本，或者是采样掩膜的方式来给每个像素分配一个标签。这里借鉴<span class="exturl" data-url="aHR0cHM6Ly9hcnhpdi5vcmcvcGRmLzE5MDQuMDEzNTUucGRm">FCOS<i class="fa fa-external-link-alt"></i></span>中心域的思想来给每个候选点分配一个标签，其可以产生连续的中心域标签，可以更好的进行框回归。 <img data-src="https://i.imgur.com/MwXEirt.png" alt="红色到蓝色表示1到0" /></p>
+<p>如上图所示，离中心点越近其值接近于1，越远则接近于0. <span class="math display">\[centerness^* = \sqrt{\frac{\min(l*,r*)}{\max(l*,r*)}\times\frac{\min(t*,b*)}{\max(t*,b*)}}\]</span></p>
+<h3 id="扩展到3维表示">扩展到3维表示</h3>
+<p><span class="math display">\[l_{ctrness} = \sqrt[3]{\frac{\min(f,b)}{\max(f,b)}\times\frac{\min(l,r)}{\max(l,r)}\times\frac{\min(t,d)}{\max(t,d)}}\]</span></p>
+<p>其中，$(f, b, l, r, t, d) <span class="math inline">\(表示中心点到前后左右上下表面的距离。 首先判断候选点在哪个真实框里面，得到\)</span>_{mask}$，其值非0即1。最后的分类标签是两者的乘积。 <span class="math display">\[u = \mathcal{l}_{ctrness}*\mathcal{l}_{mask}\]</span></p>
+<h2 id="损失函数">损失函数</h2>
+<p>损失函数主要包含分类、回归和偏移损失三部分。 <span class="math display">\[
+L=\frac{1}{N_c}\sum_i{L_c(s_i,u_i)} + \lambda_1\frac{1}{N_p}\sum_i{[u_i&gt;0]L_r} + \lambda_2\frac{1}{N_p^*}L_s
+\]</span></p>
+<ol type="1">
+<li><span class="math inline">\(N_c\)</span>：表示总的候选点数量；</li>
+<li><span class="math inline">\(N_p\)</span>：表示正候选点数量，正候选点是位于前景实例中的候选点；</li>
+</ol>
+<h3 id="回归损失">回归损失</h3>
+<p>回归损失包含 中心点距离损失(<span class="math inline">\(L_{dist}\)</span>)、候选框大小损失(<span class="math inline">\(L_{size}\)</span>)、角度损失(<span class="math inline">\(L_{angle}\)</span>)和角点位置损失(<span class="math inline">\(L_{corner}\)</span>)四部分。</p>
+<h4 id="smooth_l1">smooth_L1</h4>
+<p>中心点距离损失(<span class="math inline">\(L_{dist}\)</span>)和候选框大小损失(<span class="math inline">\(L_{size}\)</span>)采用smooth_L1损失 <span class="math display">\[
+smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
+\lvert x \rvert - 0.5 &amp;\text{otherwise} \end{cases}
+\]</span></p>
+<h4 id="基于bin">基于bin</h4>
+<p>角度损失(<span class="math inline">\(L_{angle}\)</span>)采用bin + res 策略，损失表示如下： <span class="math display">\[L_{angle}=L_c(d^a_c,t^a_{c})+ D(d_r^a,t_r^a)\]</span></p>
+<h4 id="角点损失">角点损失</h4>
+<p>计算预测框的8个角点与真实角点之间的距离损失。 <span class="math display">\[L_{corner}=\sum_{m=1}^{8}\|P_m-G_m\|\]</span></p>
+<h3 id="偏移损失">偏移损失</h3>
+<p>偏移损失应用在候选点生成（CG层中）的监督任务中，作者利用了smooth-l1损失函数来计算，用于度量预测的偏移值与候选点到真实中心点实际距离的差异。</p>
+<h2 id="实验数据">实验数据</h2>
+<h3 id="性能数据">性能数据</h3>
 <figure>
-<img data-src="https://s2.loli.net/2024/08/13/rwVIU8D16GJyfOX.png" alt="占用函数" /><figcaption aria-hidden="true">占用函数</figcaption>
+<img data-src="https://i.imgur.com/iIQxk38.png" alt="性能" /><figcaption aria-hidden="true">性能</figcaption>
 </figure>
-<h3 id="符号距离函数singned-distance-function">符号距离函数(Singned Distance Function)</h3>
+<h3 id="精度数据">精度数据</h3>
 <figure>
-<img data-src="https://s2.loli.net/2024/08/13/7NHAUsY5vSE1mpQ.png" alt="符号距离函数" /><figcaption aria-hidden="true">符号距离函数</figcaption>
+<img data-src="https://i.imgur.com/wkBf9kh.png" alt="精度" /><figcaption aria-hidden="true">精度</figcaption>
 </figure>
-<p>如果大家对隐式表示感兴趣，后续会做详细的论文解读。</p>
+<ul>
+<li>L：表示激光雷达</li>
+<li>R：表示RGB图像</li>
+</ul>
+<h2 id="参考">参考</h2>
+<ol type="1">
+<li><span class="exturl" data-url="aHR0cHM6Ly9hcnhpdi5vcmcvcGRmLzIwMDIuMTAxODc=">3DSSD: Point-based 3D Single Stage Object Detector<i class="fa fa-external-link-alt"></i></span></li>
+</ol>
 
     </div>
 
@@ -401,13 +419,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2024/08/09/3D-ObjectDetector/" rel="prev" title="3D Object Detector Introduce">
-                  <i class="fa fa-angle-left"></i> 3D Object Detector Introduce
+                <a href="/2024/08/15/3D-ObjectDetector-IPOD/" rel="prev" title="3D Object Detector IPOD">
+                  <i class="fa fa-angle-left"></i> 3D Object Detector IPOD
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2024/08/11/PerceptionUltrasonicRadar/" rel="next" title="感知-超声波">
-                  感知-超声波 <i class="fa fa-angle-right"></i>
+                <a href="/2024/08/17/3D-ObjectDetector-Point-GNN/" rel="next" title="3D Object Detector Point-GNN">
+                  3D Object Detector Point-GNN <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
@@ -423,15 +441,12 @@
       <div class="tabs tabs-comment">
         <ul class="nav-tabs">
             <li class="tab"><a href="#comment-changyan">changyan</a></li>
-            <li class="tab"><a href="#comment-gitalk">gitalk</a></li>
             <li class="tab"><a href="#comment-disqus">disqus</a></li>
+            <li class="tab"><a href="#comment-gitalk">gitalk</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane changyan" id="comment-changyan">
-              <div class="comments" id="SOHUCS" sid="7cdb4494768d229560cb8e79e98d6345"></div>
-            </div>
-            <div class="tab-pane gitalk" id="comment-gitalk">
-              <div class="comments gitalk-container"></div>
+              <div class="comments" id="SOHUCS" sid="80f87c06861723861dde6da003309a32"></div>
             </div>
             <div class="tab-pane disqus" id="comment-disqus">
               
@@ -439,6 +454,9 @@
     <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
   </div>
   
+            </div>
+            <div class="tab-pane gitalk" id="comment-gitalk">
+              <div class="comments gitalk-container"></div>
             </div>
         </div>
       </div>
@@ -533,16 +551,16 @@
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js" integrity="sha256-yvJQOINiH9fWemHn0vCA5lsHWJaHs6/ZmO+1Ft04SvM=" crossorigin="anonymous"></script>
-  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2024/08/10/3D-ObjectDetector-Express/"}</script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2024/08/16/3D-ObjectDetector-3DSSD/"}</script>
   <script src="/js/third-party/quicklink.js"></script>
 <script class="next-config" data-name="changyan" type="application/json">{"enable":true,"appid":"cyxCTcyif","appkey":"79391f9a8a4f1f9ddf64d58d44069762","count":true}</script>
 <script src="/js/third-party/comments/changyan.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
-
-<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"7cdb4494768d229560cb8e79e98d6345"}</script>
-<script src="/js/third-party/comments/gitalk.js"></script>
 <script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"https-zgh551-github-io","count":true,"i18n":{"disqus":"disqus"}}</script>
 <script src="/js/third-party/comments/disqus.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"80f87c06861723861dde6da003309a32"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
 
 </body>
 </html>

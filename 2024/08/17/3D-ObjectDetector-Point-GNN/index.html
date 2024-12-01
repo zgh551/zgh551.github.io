@@ -26,7 +26,7 @@
     <meta name="description" content="概述 如下是三种常见的点云表示和处理方法:  如下图所示，网络架构主要由三部分组成：图构建、T次迭代GNN和边界框合并和评分。  网络架构">
 <meta property="og:type" content="article">
 <meta property="og:title" content="3D Object Detector Point-GNN">
-<meta property="og:url" content="https://zgh551.github.io/2024/08/15/3D-ObjectDetector-Point-GNN/index.html">
+<meta property="og:url" content="https://zgh551.github.io/2024/08/17/3D-ObjectDetector-Point-GNN/index.html">
 <meta property="og:site_name" content="Henry-Z">
 <meta property="og:description" content="概述 如下是三种常见的点云表示和处理方法:  如下图所示，网络架构主要由三部分组成：图构建、T次迭代GNN和边界框合并和评分。  网络架构">
 <meta property="og:locale" content="zh_CN">
@@ -38,8 +38,8 @@
 <meta property="og:image" content="https://i.imgur.com/IkZCpG4.png">
 <meta property="og:image" content="https://i.imgur.com/HHn7hDY.png">
 <meta property="og:image" content="https://i.imgur.com/twDelef.png">
-<meta property="article:published_time" content="2024-08-15T09:10:16.000Z">
-<meta property="article:modified_time" content="2024-08-15T14:08:36.304Z">
+<meta property="article:published_time" content="2024-08-17T09:10:16.000Z">
+<meta property="article:modified_time" content="2024-12-01T07:07:16.503Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="3D Object Detector">
 <meta property="article:tag" content="LiDAR">
@@ -49,10 +49,10 @@
 <meta name="twitter:image" content="https://i.imgur.com/sI3M4V6.png">
 
 
-<link rel="canonical" href="https://zgh551.github.io/2024/08/15/3D-ObjectDetector-Point-GNN/">
+<link rel="canonical" href="https://zgh551.github.io/2024/08/17/3D-ObjectDetector-Point-GNN/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/08/15/3D-ObjectDetector-Point-GNN/","path":"2024/08/15/3D-ObjectDetector-Point-GNN/","title":"3D Object Detector Point-GNN"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/08/17/3D-ObjectDetector-Point-GNN/","path":"2024/08/17/3D-ObjectDetector-Point-GNN/","title":"3D Object Detector Point-GNN"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>3D Object Detector Point-GNN | Henry-Z</title>
@@ -109,7 +109,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">107</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">44</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">48</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">107</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">44</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">49</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -175,7 +175,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-count">49</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -229,7 +229,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/08/15/3D-ObjectDetector-Point-GNN/">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/08/17/3D-ObjectDetector-Point-GNN/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -257,9 +257,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2024-08-15 17:10:16 / 修改时间：22:08:36" itemprop="dateCreated datePublished" datetime="2024-08-15T17:10:16+08:00">2024-08-15</time>
+      <time title="创建时间：2024-08-17 17:10:16" itemprop="dateCreated datePublished" datetime="2024-08-17T17:10:16+08:00">2024-08-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-12-01 15:07:16" itemprop="dateModified" datetime="2024-12-01T15:07:16+08:00">2024-12-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -291,8 +297,8 @@
       </span>
       <span class="post-meta-item-text">Changyan：</span>
     
-    <a title="3D Object Detector Point-GNN" href="/2024/08/15/3D-ObjectDetector-Point-GNN/#SOHUCS" itemprop="discussionUrl">
-      <span id="sourceId::ce9d126cfdd9599ebb237fce50667c84" class="cy_cmt_count" itemprop="commentCount"></span>
+    <a title="3D Object Detector Point-GNN" href="/2024/08/17/3D-ObjectDetector-Point-GNN/#SOHUCS" itemprop="discussionUrl">
+      <span id="sourceId::56d51bd22415348eaf240c7ed7ec1a11" class="cy_cmt_count" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -305,8 +311,8 @@
       </span>
       <span class="post-meta-item-text">Disqus：</span>
     
-    <a title="disqus" href="/2024/08/15/3D-ObjectDetector-Point-GNN/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2024/08/15/3D-ObjectDetector-Point-GNN/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2024/08/17/3D-ObjectDetector-Point-GNN/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2024/08/17/3D-ObjectDetector-Point-GNN/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -441,12 +447,12 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2024/08/15/3D-ObjectDetector-3DSSD/" rel="prev" title="3D Object Detector 3DSSD">
+                <a href="/2024/08/16/3D-ObjectDetector-3DSSD/" rel="prev" title="3D Object Detector 3DSSD">
                   <i class="fa fa-angle-left"></i> 3D Object Detector 3DSSD
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2024/08/15/GraphNeuralNetwork/" rel="next" title="Graph Nueral Network">
+                <a href="/2024/08/18/GraphNeuralNetwork/" rel="next" title="Graph Nueral Network">
                   Graph Nueral Network <i class="fa fa-angle-right"></i>
                 </a>
             </div>
@@ -463,15 +469,12 @@
       <div class="tabs tabs-comment">
         <ul class="nav-tabs">
             <li class="tab"><a href="#comment-changyan">changyan</a></li>
-            <li class="tab"><a href="#comment-gitalk">gitalk</a></li>
             <li class="tab"><a href="#comment-disqus">disqus</a></li>
+            <li class="tab"><a href="#comment-gitalk">gitalk</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane changyan" id="comment-changyan">
-              <div class="comments" id="SOHUCS" sid="ce9d126cfdd9599ebb237fce50667c84"></div>
-            </div>
-            <div class="tab-pane gitalk" id="comment-gitalk">
-              <div class="comments gitalk-container"></div>
+              <div class="comments" id="SOHUCS" sid="56d51bd22415348eaf240c7ed7ec1a11"></div>
             </div>
             <div class="tab-pane disqus" id="comment-disqus">
               
@@ -479,6 +482,9 @@
     <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
   </div>
   
+            </div>
+            <div class="tab-pane gitalk" id="comment-gitalk">
+              <div class="comments gitalk-container"></div>
             </div>
         </div>
       </div>
@@ -573,16 +579,16 @@
 
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js" integrity="sha256-yvJQOINiH9fWemHn0vCA5lsHWJaHs6/ZmO+1Ft04SvM=" crossorigin="anonymous"></script>
-  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2024/08/15/3D-ObjectDetector-Point-GNN/"}</script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2024/08/17/3D-ObjectDetector-Point-GNN/"}</script>
   <script src="/js/third-party/quicklink.js"></script>
 <script class="next-config" data-name="changyan" type="application/json">{"enable":true,"appid":"cyxCTcyif","appkey":"79391f9a8a4f1f9ddf64d58d44069762","count":true}</script>
 <script src="/js/third-party/comments/changyan.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
-
-<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"ce9d126cfdd9599ebb237fce50667c84"}</script>
-<script src="/js/third-party/comments/gitalk.js"></script>
 <script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"https-zgh551-github-io","count":true,"i18n":{"disqus":"disqus"}}</script>
 <script src="/js/third-party/comments/disqus.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"56d51bd22415348eaf240c7ed7ec1a11"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
 
 </body>
 </html>

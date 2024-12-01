@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>3D Object Detector 3DSSD</title>
-    <url>/2024/08/15/3D-ObjectDetector-3DSSD/</url>
+    <url>/2024/08/16/3D-ObjectDetector-3DSSD/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>3DSSD是基于点的单阶段3D目标检测网络，该模型的提出背景是在3D单阶段目标检测器大都是基于体素，其在转换过程中会丢失信息，而基于点的检测器大都是两阶段网络，精度虽然高，但是推理性能差。而此时，基于点的单阶段网络还未充分探索。作者基于点基础，提出了一个轻量级且高效的单阶段网络(3DSSD)，可以很好地在精度和效率之间保持平衡。 <img data-src="https://i.imgur.com/6IPCPg1.png" alt="网络框图" /> 作者通过分析两阶段网络各个部分耗时情况，发现SA层对于提取点得特征是必要的，但FP和细化模块确实限制了基于点的方法的效率。 <img data-src="https://i.imgur.com/FVDI9t1.png" alt="各阶段时间" /></p>
 <span id="more"></span>
@@ -77,7 +77,7 @@ smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
   </entry>
   <entry>
     <title>3D Object Detector-表示方法</title>
-    <url>/2024/08/10/3D-ObjectDetector-Express/</url>
+    <url>/2024/08/07/3D-ObjectDetector-Express/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <figure>
 <img data-src="https://i.imgur.com/0RO0rIZ.png" alt="表示方法" /><figcaption aria-hidden="true">表示方法</figcaption>
@@ -277,7 +277,7 @@ smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
   </entry>
   <entry>
     <title>3D Object Detector Point-GNN</title>
-    <url>/2024/08/15/3D-ObjectDetector-Point-GNN/</url>
+    <url>/2024/08/17/3D-ObjectDetector-Point-GNN/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>如下是三种常见的点云表示和处理方法: <img data-src="https://i.imgur.com/sI3M4V6.png" alt="点云数据表示" /></p>
 <p>如下图所示，网络架构主要由三部分组成：图构建、T次迭代GNN和边界框合并和评分。</p>
@@ -671,7 +671,7 @@ res_{\theta}^{(p)}=\theta^p-\theta^{(p)}+\mathcal{S}-bin_{\theta}^{(p)}*\delta 
   </entry>
   <entry>
     <title>3D Object Detector Introduce</title>
-    <url>/2024/08/09/3D-ObjectDetector/</url>
+    <url>/2024/08/06/3D-ObjectDetector/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>在自动驾驶领域，感知系统是必不可少的模块，通常使用多模态数据(激光雷达的点云、摄像头的图片、高清地图等)作为输入，预测道路上关键元素的几何形状和语义信息，为目标跟踪、轨迹预测和路径规划模块提供可靠的观察结果。 为了全面了解行驶环境，涉及许多视觉任务，包括：对象检测、跟踪、车道线检测、语义分割和实例分割。其中，3D对象检测是自动驾驶感知系统最不可或缺的任务。 3D对象检测的目标：</p>
 <ol type="1">
@@ -808,7 +808,7 @@ res_{\theta}^{(p)}=\theta^p-\theta^{(p)}+\mathcal{S}-bin_{\theta}^{(p)}*\delta 
   </entry>
   <entry>
     <title>Graph Nueral Network</title>
-    <url>/2024/08/15/GraphNeuralNetwork/</url>
+    <url>/2024/08/18/GraphNeuralNetwork/</url>
     <content><![CDATA[<h2 id="应用领域">应用领域</h2>
 <p><img data-src="https://i.imgur.com/yhg8Q4N.png" alt="图(a)道路网络 ；图(b)分子结构；图(c)电路图" /> <img data-src="https://i.imgur.com/TtTcROe.png" alt="图(d)飞机点云图" /> <img data-src="https://i.imgur.com/EpXSl6d.png" alt="图(a)社交网络-无向；图(b)论文引用网络-有向；图(c)知识图谱-有向-异构" /></p>
 <span id="more"></span>
@@ -1172,7 +1172,7 @@ P = \begin{pmatrix}
   </entry>
   <entry>
     <title>感知-3D或4D毫米波</title>
-    <url>/2024/08/11/PerceptionMillimeterWaveRadar-3D-4D/</url>
+    <url>/2024/08/10/PerceptionMillimeterWaveRadar-3D-4D/</url>
     <content><![CDATA[<h2 id="d毫米波雷达">4D毫米波雷达</h2>
 <p>如下图所示，TI给出的4D毫米波方案示例。</p>
 <figure>
@@ -1308,7 +1308,7 @@ P = \begin{pmatrix}
   </entry>
   <entry>
     <title>感知-毫米波介绍</title>
-    <url>/2024/08/11/PerceptionMillimeterWaveRadar/</url>
+    <url>/2024/08/09/PerceptionMillimeterWaveRadar/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>毫米波(mmWave)是一类使用短波长 电磁波的特殊雷达技术。雷达系统发射的电磁波信号被其发射路径上的物体阻挡继而会发生反射。通过捕捉反射信号，雷达系统可以确定物体的距离、速度和角度。</p>
 <p>毫米波雷达可发射波长为毫米量级的信号，在电磁频谱中，这种波长被视为短波长，这也是该技术的优势之一，即处理毫米波所需的系统组件(如 天线)尺寸可以做得很小；短波长的另一个优势是高准确度，工作频率为 76~81 GHz(对应波长约为 4mm)的毫米波系统将能够检测到小至零点几毫米的移动。</p>
@@ -8276,6 +8276,60 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
       <tags>
         <tag>车辆术语</tag>
         <tag>名称缩写</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Perception Ultrasonic(超声波感知)</title>
+    <url>/2024/08/08/Perception-Ultrasonic/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>在自动驾驶使用场景中，一般会使用各类传感器(摄像头、激光雷达、毫米波雷达和超声波雷达等)来感知周围环境信息，传感器收集的大量信息，通过各类算法最终融合到一个真实的语义地图上，下游模块通过该语义地图做相应的规划和决策。</p>
+<h2 id="超声波">超声波</h2>
+<p>超声波雷达是一种利用声波反射原理进行测距的传感器，主要用于短距离测量，一般测量范围在0.1m-5m之间，具有体积小、成本低、安装方便等特点。</p>
+<h3 id="测距原理">测距原理</h3>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/Fhpx4VjbDR1MkWd.jpg" alt="测距原理" /><figcaption aria-hidden="true">测距原理</figcaption>
+</figure>
+<p><span class="math display">\[
+D = T_{f} * V_{s} * k
+\]</span></p>
+<p>其中，<span class="math display">\[T_f\]</span>表示超声波的飞行时间，及超声波走完距离<span class="math display">\[D\]</span>所需的时间，<span class="math display">\[V_s\]</span>表示声音在空气中的速度，<span class="math display">\[k\]</span>表示一个接近0.5的常数，一般由传感器的结构决定(收发压电换能器的位置)。</p>
+<h3 id="声速">声速</h3>
+<p>声波在空气的速度与温度的关系近似如下： <span class="math display">\[V_s\approx20.055*\sqrt{T}\]</span> 其中，<span class="math display">\[T\]</span>表示绝对温度，单位<span class="math display">\[K\]</span>。 当温度在 <span class="math display">\[0-40℃\]</span>范围变化是，声速在<span class="math display">\[330-360 m/s\]</span>范围内变化，因此温度应作为距离的测量的关键因素考虑，故一般要求安装温度传感器获取环境温度。</p>
+<h3 id="声波特性">声波特性</h3>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/MRvDS2jpEZy8q1x.png" alt="声波特性" /><figcaption aria-hidden="true">声波特性</figcaption>
+</figure>
+<ul>
+<li><strong>频率</strong>：声波的频率是指每秒钟内声波完成的全振动次数，单位为赫兹（Hz）。人耳能听到的声音频率范围大约在20 Hz到20,000 Hz之间。超声波传感器通常工作在更高的频率，如几十kHz甚至几百kHz。</li>
+<li><strong>周期</strong>：声波的周期是指完成一次全振动所需要的时间，单位为秒（s）。频率和周期的关系是互为倒数，即 <span class="math display">\[f = \frac{1}{T}\]</span>，其中<span class="math display">\[f\]</span>表示频率，<span class="math display">\[T\]</span>表示周期。</li>
+<li><strong>波长</strong>：声波的波长是指在空气中传播时，两个相邻的同相位点之间的距离，单位为米（m）。波长和频率、声速的关系是 <span class="math display">\[λ = \frac{v}{f}\]</span>，其中<span class="math display">\[λ\]</span>表示波长，<span class="math display">\[v\]</span>表示声速，<span class="math display">\[f\]</span>表示频率。</li>
+<li><strong>声速</strong>：声速是指声波在介质中传播的速度，单位为米每秒（m/s）。不同介质的声速不同，例如在空气中，声速约为340 m/s；在水中，声速约为1,500 m/s；在钢铁中，声速则高达5,000 m/s以上。</li>
+<li><strong>振幅</strong>：声波的振幅是指声波的最大位移，单位为帕斯卡（Pa）或牛顿每平方米（N/m²）。振幅越大，声音的响度越高；振幅越小，声音的响度越低。</li>
+</ul>
+<p>超声波在不同介质下的传播特性如下：</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/i9kVoaOK6sARbtl.png" alt="声波的反射与折射" /><figcaption aria-hidden="true">声波的反射与折射</figcaption>
+</figure>
+<h4 id="反射特性">反射特性</h4>
+<p>如下图所示，超声波反射一般会遇到如下场景：</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/Fzo6H3rvbSL4wPA.jpg" alt="反射场景" /><figcaption aria-hidden="true">反射场景</figcaption>
+</figure>
+<h5 id="墙面反射">墙面反射</h5>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/QRHbErZ64dnyAha.png" alt="墙面反射" /><figcaption aria-hidden="true">墙面反射</figcaption>
+</figure>
+<figure>
+<img data-src="https://s2.loli.net/2024/08/11/JW8rVtfmTI7NdX1.jpg" alt="反射原理" /><figcaption aria-hidden="true">反射原理</figcaption>
+</figure>
+]]></content>
+      <categories>
+        <category>perception</category>
+        <category>ultrasonic</category>
+      </categories>
+      <tags>
+        <tag>perception</tag>
+        <tag>ultrasonic</tag>
       </tags>
   </entry>
 </search>
