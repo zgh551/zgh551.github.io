@@ -8447,13 +8447,13 @@ D = T_{f} * V_{s} * k
 <figure>
 <img data-src="https://s2.loli.net/2024/12/01/pZmy6ex1JQqIWjD.png" alt="Deep FSMN" /><figcaption aria-hidden="true">Deep FSMN</figcaption>
 </figure>
-<p>如上图所示，在标准cFSMN的存储块之间添加了一些跳跃连接(skip connections)，其中下层存储块的输出可以定向流向高层存储块。在反向传播过程中，高层的梯度也可以直接赋予低层，这有助于克服梯度消失问题。</p>
+<p>如上图所示，在标准cFSMN的存储块之间添加了一些<strong>跳跃连接(skip connections)</strong>，其中下层存储块的输出可以定向流向高层存储块。在反向传播过程中，高层的梯度也可以直接赋予低层，这有助于克服梯度消失问题。</p>
 <p><span class="math display">\[\large \tilde{\mathtt{p}}_t^l=\mathcal{H}(\tilde{\mathtt{p}}_t^{l-1}) + p_t^l+ \sum_{i=0}^{N_1^l}\mathtt{a}_i^l \odot \mathtt{p}_{t-s_1*i}^l + \sum_{j=1}^{N_2^l}\mathtt{c}_i^l \odot \mathtt{p}_{t+s_2*j}^l\]</span></p>
 <p>其中，</p>
 <ul>
 <li><span class="math inline">\(\mathtt{p}_t^l=V^lh_t^l+b^l\)</span> 表示第 <span class="math inline">\(l\)</span> 个线性投影层的线性输出；</li>
 <li><span class="math inline">\(\tilde{\mathtt{p}}_t^l\)</span> 表示第 <span class="math inline">\(l\)</span> 个内存块的输出；</li>
-<li><span class="math inline">\(N_1^l\)</span>$和 <span class="math display">\[N_2^l$ 分别表示第 \]</span>l$$ 个内存块的回溯阶数和前瞻阶数;</li>
+<li><span class="math inline">\(N_1^l\)</span> 和 <span class="math inline">\(N_2^l\)</span> 分别表示第 <span class="math inline">\(l\)</span> 个内存块的回溯阶数和前瞻阶数;</li>
 <li><span class="math inline">\(\mathcal{H}(\cdot)\)</span> 表示内存块内的跳跃连接，可以是任何线性或非线性变换。例如，如果内存块的维度相同，我们可以使用如下所示的恒等映射： <span class="math inline">\(\tilde{\mathtt{p}}_t^{l-1}=\mathcal{H}(\tilde{\mathtt{p}}_t^{l-1})\)</span>。</li>
 <li><span class="math inline">\(s_1\)</span> 和 <span class="math inline">\(s_2\)</span> 分别表示回溯和前瞻滤波器的步长；</li>
 </ul>
@@ -8461,11 +8461,99 @@ D = T_{f} * V_{s} * k
 ]]></content>
       <categories>
         <category>Audio</category>
-        <category>Introduce</category>
       </categories>
       <tags>
         <tag>VAD</tag>
         <tag>Audio Active Detecter</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>音频处理</title>
+    <url>/2024/12/02/audio-process/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>语音模型常用的语音特征类型如下：</p>
+<ul>
+<li>梅尔滤波器组系数（Mel Filter Bank, FBank, 又称 Log-Mel）；</li>
+<li>梅尔频率倒谱系数（Mel-Frequency Cepstral Coefficients，MFCC）； 如下图所示，是提取上述特征的流程：</li>
+</ul>
+<p><img data-src="https://s2.loli.net/2024/12/02/pnsc3rvuaq2FMw4.png" alt="audio-pre-process" /> <span id="more"></span></p>
+<h2 id="预加重pre-emphasis">预加重(Pre-Emphasis)</h2>
+<p>预加重通常是数字语音信号处理的第一步，这是因为语音信号往往存在频谱倾斜（Spectral Tilt）现象。其主要原因在于，高频信号在空气中传播时衰减更为明显，致使高频部分的幅度要比低频部分小。在此，预加重扮演着平衡频谱的角色，用于增大高频部分的幅度。它通过如下的一阶滤波器来达成：</p>
+<p><span class="math display">\[y(t)=x(t)-\alpha * x(t-1), 0.95&lt;\alpha&lt;0.99\]</span></p>
+<p>上述等式通过Z变换，等效信号通过了一个高通滤波器：</p>
+<p><span class="math display">\[H(z)=1-\alpha z^{-1}\]</span></p>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/04/13drtKq9pviDAwj.png" alt="原始信号" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/04/6jReNbZgItDadiV.png" alt="原始信号频谱" /></div></div><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/04/rhAKYcBQ6OlR73T.png" alt="预加重后信号" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/04/VuM63vwLfPhzc7D.png" alt="预加重后频谱" /></div></div></div>
+<h2 id="分帧framing">分帧(Framing)</h2>
+<p>我们已经知道采集到音频数据，是时间轴上的数据序列，声波随着之间变化在整个时间轴上是 非周期性 的，这导致计算机很难处理。 但在一个很短的时间切片内（10ms-50ms），声波是可以近似看为周期性的。所以我们可以把长序列数据切片，每片称为一帧。 对于ASR应用而言，通常取帧长为25ms，步长为10ms。</p>
+<h2 id="加窗window">加窗(Window)</h2>
+<p>即使是周期信号，如果截断的时间长度不是周期的整数倍（周期截断），那么，截取后的信号将会存在泄漏。加窗主要是为了使时域信号似乎更好地满足FFT处理的周期性要求，减少泄漏。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/04/ebvW5UkDp4Mljuy.png" alt="信号泄露" /><figcaption aria-hidden="true">信号泄露</figcaption>
+</figure>
+<p>在分帧之后，通常需要对每帧的信号进行加窗处理。目的是让帧两端平滑地衰减，这样可以降低后续傅里叶变换后旁瓣的强度，取得更高质量的频谱。常用的窗有：矩形窗、汉明（Hamming）窗、汉宁窗（Hanning）。 锥形窗函数可表示为</p>
+<p><span class="math display">\[w(n)=(1-\alpha)-\alpha \cos(\frac{2\pi n}{N-1})\]</span></p>
+<p>其中， <span class="math inline">\(N\)</span>表示窗的宽度， <span class="math inline">\(0 \le n \le N-1\)</span>。</p>
+<ul>
+<li>汉明窗： <span class="math inline">\(\alpha=0.46164\)</span></li>
+<li>汉宁窗： <span class="math inline">\(\alpha=0.5\)</span> 下图是经过汉明窗处理后的信号：</li>
+</ul>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/04/6RHsyWoE5aOxV8S.png" alt="汉明窗" /></div></div><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/04/GPFWUhu8ZaznmsE.png" alt="加窗后信号" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/04/sqLOaXyTtfcNbiR.png" alt="加窗后频谱" /></div></div></div>
+<h2 id="快速傅里叶变换fft">快速傅里叶变换(FFT)</h2>
+<p>对于每一帧的加窗信号，进行<strong>N</strong>点FFT变换，也称短时傅里叶变换（<strong>STFT</strong>），N通常取256或512，然后用如下的公式计算能量谱： <span class="math display">\[P=\frac{|FFT(x_i)|^2}{N}\]</span> 其中， <span class="math inline">\(x_i\)</span> 表示信号 <span class="math inline">\(x\)</span> 的第 <span class="math inline">\(i\)</span> 帧。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/04/QY8tazGTcfmpN5u.png" alt="FFT" /><figcaption aria-hidden="true">FFT</figcaption>
+</figure>
+<h2 id="fbank特征filter-banks">FBank特征(Filter Banks)</h2>
+<p>经过上面的步骤之后，在能量谱上应用Mel滤波器组，就能提取到FBank特征。在介绍Mel滤波器组之前，先介绍一下<strong>Mel刻度</strong>，这是一个能模拟人耳接收声音规律的刻度，人耳在接收声音时呈现非线性状态，对高频的更不敏感，因此Mel刻度在低频区分辨度较高，在高频区分辨度较低，与频率之间的换算关系为：</p>
+<p><span class="math display">\[m=2595\log_{10}(1+\frac{f}{700})\]</span> <span class="math display">\[f=700(10^{m/2595}-1)\]</span></p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/04/L6ioPqkvl5TGSMh.png" alt="Mel刻度与f(Hz)的关系" /><figcaption aria-hidden="true">Mel刻度与f(Hz)的关系</figcaption>
+</figure>
+<p>Mel滤波器组就是一系列的三角形滤波器，通常有40个或80个，在中心频率点响应值为1，在两边的滤波器中心点衰减到0，如下图：</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/04/usHDA4OP3pwxe7h.png" alt="三角形滤波器" /><figcaption aria-hidden="true">三角形滤波器</figcaption>
+</figure>
+<p>具体公式可以写为： <span class="math display">\[\large H_{m}(k)=
+\begin{cases}
+   0 &amp; k&lt;f(m-1) \\
+   \frac{k-f(m-1)}{f(m)-f(m-1)} &amp; f(m-1)\le k &lt; f(m) \\
+1 &amp; k=f(m) \\
+\frac{f(m+1)-k}{f(m+1)-f(m)} &amp; f(m)&lt;k\le f(m+1) \\
+0 &amp; k&gt;f(m+1)
+\end{cases}\]</span> 最后在能量谱上应用Mel滤波器组，其公式为： <span class="math display">\[Y_{t}(m)=\sum_{k=1}^{N}H_m(k)|X_t(k)|^2\]</span> 其中， <span class="math inline">\(k\)</span> 表示FFT变换后的编号， <span class="math inline">\(m\)</span> 表示mel滤波器的编号。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/04/aKOopgdYvQx9iby.png" alt="FBank特征" /><figcaption aria-hidden="true">FBank特征</figcaption>
+</figure>
+<h2 id="mfcc特征mel-frequency-cepstral-coefficients">MFCC特征（Mel-frequency Cepstral Coefficients）</h2>
+<p>前面提取到的FBank特征，往往是高度相关的。因此可以继续用DCT变换，将这些相关的滤波器组系数进行压缩。对于ASR来说，通常取2~13维，扔掉的信息里面包含滤波器组系数快速变化部分，这些细节信息在ASR任务上可能没有帮助。 DCT变换其实是逆傅里叶变换的等价替代： <span class="math display">\[y_t(n)=\sum_{m=0}^{M-1}\log(Y_t(m))\cos(n(m+0.5)\frac{\pi}{M}), n=0,...,J\]</span> 所以MFCC名字里面有倒谱（Cepstral）。 <img data-src="https://s2.loli.net/2024/12/04/wOZAzGfhm1a6rJB.png" alt="MFCC特征" /></p>
+<h3 id="fbank和mfcc比较">FBank和MFCC比较</h3>
+<p>FBank特征的提取更多的是希望符合声音信号的本质，拟合人耳接收的特性。而MFCC特征多的那一步则是受限于一些机器学习算法。很早之前MFCC特征和GMMs-HMMs等机器学习方法结合是ASR的主流。而当一些深度学习方法出来之后，MFCC则不一定是最优选择，因为神经网络对高度相关的信息不敏感，而且DCT变换是线性的，会丢失语音信号中原本的一些非线性成分。 还有一些说法是在质疑傅里叶变换的使用，因为傅里叶变换也是线性的。因此也有很多方法，设计模型直接从原始的音频信号中提取特征，但这种方法会增加模型的复杂度，而且本身傅里叶变换不太容易拟合。同时傅里叶变换是在短时上应用的，可以建设信号在这个短的时间内是静止的，因此傅里叶变换的线性也不会造成很严重的问题。 结论就是：在模型对高相关的信号不敏感时（比如神经网络），可以用FBank特征；在模型对高相关的信号敏感时（比如GMMs-HMMs），需要用MFCC特征。从目前的趋势来看，因为神经网络的逐步发展，FBank特征越来越流行。</p>
+<h2 id="标准化">标准化</h2>
+<ol type="1">
+<li>去均值 (CMN)</li>
+</ol>
+<p>为了均衡频谱，提升信噪比，可以做一个去均值的操作。</p>
+<ol start="2" type="1">
+<li>方差归一 (CVN)</li>
+</ol>
+<p>除以标准差，从而使得方差为1。</p>
+<ol start="3" type="1">
+<li>标准化 (CMVN)</li>
+</ol>
+<p><span class="math display">\[\tilde{y}_t = \frac{y_t-\mu(y)}{\sigma(y)}\]</span></p>
+<h2 id="lfr">LFR</h2>
+<p>LFR（低帧率）是语音识别声学建模中使用的一种技术，用于降低训练和解码的计算成本和内存占用。它通过将多个连续的特征帧堆叠在一起作为输入，去预测这些语音帧的目标输出得到的一个平均输出目标。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/04/CTdiQYRajUfAb3L.png" alt="LFR" /><figcaption aria-hidden="true">LFR</figcaption>
+</figure>
+]]></content>
+      <categories>
+        <category>Audio</category>
+      </categories>
+      <tags>
+        <tag>audio</tag>
+        <tag>pre-process</tag>
+        <tag>音频处理</tag>
       </tags>
   </entry>
 </search>

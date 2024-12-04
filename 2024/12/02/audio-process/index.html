@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="1AYoSrGqW5qB6rPYnoXq_tIpkaudIK3MXrpUhL_69NI">
+  <meta name="msvalidate.01" content="DF49D5E49BAD0CB8947DDD3824A370B1">
+  <meta name="baidu-site-verification" content="code-EEmJnUEq0A">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":true,"nav":null,"activeClass":"changyan"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false,"trigger":"auto"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="概述 语音模型常用的语音特征类型如下：  梅尔滤波器组系数（Mel Filter Bank, FBank, 又称 Log-Mel）； 梅尔频率倒谱系数（Mel-Frequency Cepstral Coefficients，MFCC）； 如下图所示，是提取上述特征的流程：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="音频处理">
+<meta property="og:url" content="https://zgh551.github.io/2024/12/02/audio-process/index.html">
+<meta property="og:site_name" content="Henry-Z">
+<meta property="og:description" content="概述 语音模型常用的语音特征类型如下：  梅尔滤波器组系数（Mel Filter Bank, FBank, 又称 Log-Mel）； 梅尔频率倒谱系数（Mel-Frequency Cepstral Coefficients，MFCC）； 如下图所示，是提取上述特征的流程：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/12/02/pnsc3rvuaq2FMw4.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/04/13drtKq9pviDAwj.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/04/6jReNbZgItDadiV.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/04/rhAKYcBQ6OlR73T.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/04/VuM63vwLfPhzc7D.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/04/ebvW5UkDp4Mljuy.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/04/6RHsyWoE5aOxV8S.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/04/GPFWUhu8ZaznmsE.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/04/sqLOaXyTtfcNbiR.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/04/QY8tazGTcfmpN5u.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/04/L6ioPqkvl5TGSMh.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/04/usHDA4OP3pwxe7h.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/04/aKOopgdYvQx9iby.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/04/wOZAzGfhm1a6rJB.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/04/CTdiQYRajUfAb3L.png">
+<meta property="article:published_time" content="2024-12-02T12:53:50.000Z">
+<meta property="article:modified_time" content="2024-12-04T14:42:21.693Z">
+<meta property="article:author" content="Henry">
+<meta property="article:tag" content="audio">
+<meta property="article:tag" content="pre-process">
+<meta property="article:tag" content="音频处理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2024/12/02/pnsc3rvuaq2FMw4.png">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2024/12/02/audio-process/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/12/02/audio-process/","path":"2024/12/02/audio-process/","title":"音频处理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>音频处理 | Henry-Z</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ML9CRPRYFK"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ML9CRPRYFK","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?c8e65d830c8cd51e920dc7e7c0be8744"></script>
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Henry-Z</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">112</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">45</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">51</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E5%8A%A0%E9%87%8Dpre-emphasis"><span class="nav-number">2.</span> <span class="nav-text">预加重(Pre-Emphasis)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B8%A7framing"><span class="nav-number">3.</span> <span class="nav-text">分帧(Framing)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A0%E7%AA%97window"><span class="nav-number">4.</span> <span class="nav-text">加窗(Window)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2fft"><span class="nav-number">5.</span> <span class="nav-text">快速傅里叶变换(FFT)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fbank%E7%89%B9%E5%BE%81filter-banks"><span class="nav-number">6.</span> <span class="nav-text">FBank特征(Filter Banks)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mfcc%E7%89%B9%E5%BE%81mel-frequency-cepstral-coefficients"><span class="nav-number">7.</span> <span class="nav-text">MFCC特征（Mel-frequency Cepstral Coefficients）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#fbank%E5%92%8Cmfcc%E6%AF%94%E8%BE%83"><span class="nav-number">7.1.</span> <span class="nav-text">FBank和MFCC比较</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%87%E5%87%86%E5%8C%96"><span class="nav-number">8.</span> <span class="nav-text">标准化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lfr"><span class="nav-number">9.</span> <span class="nav-text">LFR</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Henry"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Henry</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">112</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3pnaDU1MQ==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmhlbnJ5emh1NTUxQGdtYWlsLmNvbQ==" title="E-Mail → mailto:henryzhu551@gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever"><i class="fa-solid fa-c fa-fw"></i>CSDN</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly93d3cubGlua2VkaW4uY29tL2luL3pnaDU1MS8=" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;"><i class="fab fa-linkedin fa-fw"></i>Linkindin</span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+        <div class="pjax">
+        </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2024/12/02/audio-process/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="音频处理 | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          音频处理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-12-02 20:53:50" itemprop="dateCreated datePublished" datetime="2024-12-02T20:53:50+08:00">2024-12-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-12-04 22:42:21" itemprop="dateModified" datetime="2024-12-04T22:42:21+08:00">2024-12-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Audio/" itemprop="url" rel="index"><span itemprop="name">Audio</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    <a title="音频处理" href="/2024/12/02/audio-process/#SOHUCS" itemprop="discussionUrl">
+      <span id="sourceId::841331e67f51927154f4fac1dcf6df58" class="cy_cmt_count" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2024/12/02/audio-process/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2024/12/02/audio-process/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="概述">概述</h2>
+<p>语音模型常用的语音特征类型如下：</p>
+<ul>
+<li>梅尔滤波器组系数（Mel Filter Bank, FBank, 又称 Log-Mel）；</li>
+<li>梅尔频率倒谱系数（Mel-Frequency Cepstral Coefficients，MFCC）； 如下图所示，是提取上述特征的流程：</li>
+</ul>
+<p><img data-src="https://s2.loli.net/2024/12/02/pnsc3rvuaq2FMw4.png" alt="audio-pre-process" /> <span id="more"></span></p>
+<h2 id="预加重pre-emphasis">预加重(Pre-Emphasis)</h2>
+<p>预加重通常是数字语音信号处理的第一步，这是因为语音信号往往存在频谱倾斜（Spectral Tilt）现象。其主要原因在于，高频信号在空气中传播时衰减更为明显，致使高频部分的幅度要比低频部分小。在此，预加重扮演着平衡频谱的角色，用于增大高频部分的幅度。它通过如下的一阶滤波器来达成：</p>
+<p><span class="math display">\[y(t)=x(t)-\alpha * x(t-1), 0.95&lt;\alpha&lt;0.99\]</span></p>
+<p>上述等式通过Z变换，等效信号通过了一个高通滤波器：</p>
+<p><span class="math display">\[H(z)=1-\alpha z^{-1}\]</span></p>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/04/13drtKq9pviDAwj.png" alt="原始信号" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/04/6jReNbZgItDadiV.png" alt="原始信号频谱" /></div></div><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/04/rhAKYcBQ6OlR73T.png" alt="预加重后信号" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/04/VuM63vwLfPhzc7D.png" alt="预加重后频谱" /></div></div></div>
+<h2 id="分帧framing">分帧(Framing)</h2>
+<p>我们已经知道采集到音频数据，是时间轴上的数据序列，声波随着之间变化在整个时间轴上是 非周期性 的，这导致计算机很难处理。 但在一个很短的时间切片内（10ms-50ms），声波是可以近似看为周期性的。所以我们可以把长序列数据切片，每片称为一帧。 对于ASR应用而言，通常取帧长为25ms，步长为10ms。</p>
+<h2 id="加窗window">加窗(Window)</h2>
+<p>即使是周期信号，如果截断的时间长度不是周期的整数倍（周期截断），那么，截取后的信号将会存在泄漏。加窗主要是为了使时域信号似乎更好地满足FFT处理的周期性要求，减少泄漏。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/04/ebvW5UkDp4Mljuy.png" alt="信号泄露" /><figcaption aria-hidden="true">信号泄露</figcaption>
+</figure>
+<p>在分帧之后，通常需要对每帧的信号进行加窗处理。目的是让帧两端平滑地衰减，这样可以降低后续傅里叶变换后旁瓣的强度，取得更高质量的频谱。常用的窗有：矩形窗、汉明（Hamming）窗、汉宁窗（Hanning）。 锥形窗函数可表示为</p>
+<p><span class="math display">\[w(n)=(1-\alpha)-\alpha \cos(\frac{2\pi n}{N-1})\]</span></p>
+<p>其中， <span class="math inline">\(N\)</span>表示窗的宽度， <span class="math inline">\(0 \le n \le N-1\)</span>。</p>
+<ul>
+<li>汉明窗： <span class="math inline">\(\alpha=0.46164\)</span></li>
+<li>汉宁窗： <span class="math inline">\(\alpha=0.5\)</span> 下图是经过汉明窗处理后的信号：</li>
+</ul>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/04/6RHsyWoE5aOxV8S.png" alt="汉明窗" /></div></div><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/04/GPFWUhu8ZaznmsE.png" alt="加窗后信号" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/04/sqLOaXyTtfcNbiR.png" alt="加窗后频谱" /></div></div></div>
+<h2 id="快速傅里叶变换fft">快速傅里叶变换(FFT)</h2>
+<p>对于每一帧的加窗信号，进行<strong>N</strong>点FFT变换，也称短时傅里叶变换（<strong>STFT</strong>），N通常取256或512，然后用如下的公式计算能量谱： <span class="math display">\[P=\frac{|FFT(x_i)|^2}{N}\]</span> 其中， <span class="math inline">\(x_i\)</span> 表示信号 <span class="math inline">\(x\)</span> 的第 <span class="math inline">\(i\)</span> 帧。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/04/QY8tazGTcfmpN5u.png" alt="FFT" /><figcaption aria-hidden="true">FFT</figcaption>
+</figure>
+<h2 id="fbank特征filter-banks">FBank特征(Filter Banks)</h2>
+<p>经过上面的步骤之后，在能量谱上应用Mel滤波器组，就能提取到FBank特征。在介绍Mel滤波器组之前，先介绍一下<strong>Mel刻度</strong>，这是一个能模拟人耳接收声音规律的刻度，人耳在接收声音时呈现非线性状态，对高频的更不敏感，因此Mel刻度在低频区分辨度较高，在高频区分辨度较低，与频率之间的换算关系为：</p>
+<p><span class="math display">\[m=2595\log_{10}(1+\frac{f}{700})\]</span> <span class="math display">\[f=700(10^{m/2595}-1)\]</span></p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/04/L6ioPqkvl5TGSMh.png" alt="Mel刻度与f(Hz)的关系" /><figcaption aria-hidden="true">Mel刻度与f(Hz)的关系</figcaption>
+</figure>
+<p>Mel滤波器组就是一系列的三角形滤波器，通常有40个或80个，在中心频率点响应值为1，在两边的滤波器中心点衰减到0，如下图：</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/04/usHDA4OP3pwxe7h.png" alt="三角形滤波器" /><figcaption aria-hidden="true">三角形滤波器</figcaption>
+</figure>
+<p>具体公式可以写为： <span class="math display">\[\large H_{m}(k)=
+\begin{cases}
+   0 &amp; k&lt;f(m-1) \\
+   \frac{k-f(m-1)}{f(m)-f(m-1)} &amp; f(m-1)\le k &lt; f(m) \\
+1 &amp; k=f(m) \\
+\frac{f(m+1)-k}{f(m+1)-f(m)} &amp; f(m)&lt;k\le f(m+1) \\
+0 &amp; k&gt;f(m+1)
+\end{cases}\]</span> 最后在能量谱上应用Mel滤波器组，其公式为： <span class="math display">\[Y_{t}(m)=\sum_{k=1}^{N}H_m(k)|X_t(k)|^2\]</span> 其中， <span class="math inline">\(k\)</span> 表示FFT变换后的编号， <span class="math inline">\(m\)</span> 表示mel滤波器的编号。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/04/aKOopgdYvQx9iby.png" alt="FBank特征" /><figcaption aria-hidden="true">FBank特征</figcaption>
+</figure>
+<h2 id="mfcc特征mel-frequency-cepstral-coefficients">MFCC特征（Mel-frequency Cepstral Coefficients）</h2>
+<p>前面提取到的FBank特征，往往是高度相关的。因此可以继续用DCT变换，将这些相关的滤波器组系数进行压缩。对于ASR来说，通常取2~13维，扔掉的信息里面包含滤波器组系数快速变化部分，这些细节信息在ASR任务上可能没有帮助。 DCT变换其实是逆傅里叶变换的等价替代： <span class="math display">\[y_t(n)=\sum_{m=0}^{M-1}\log(Y_t(m))\cos(n(m+0.5)\frac{\pi}{M}), n=0,...,J\]</span> 所以MFCC名字里面有倒谱（Cepstral）。 <img data-src="https://s2.loli.net/2024/12/04/wOZAzGfhm1a6rJB.png" alt="MFCC特征" /></p>
+<h3 id="fbank和mfcc比较">FBank和MFCC比较</h3>
+<p>FBank特征的提取更多的是希望符合声音信号的本质，拟合人耳接收的特性。而MFCC特征多的那一步则是受限于一些机器学习算法。很早之前MFCC特征和GMMs-HMMs等机器学习方法结合是ASR的主流。而当一些深度学习方法出来之后，MFCC则不一定是最优选择，因为神经网络对高度相关的信息不敏感，而且DCT变换是线性的，会丢失语音信号中原本的一些非线性成分。 还有一些说法是在质疑傅里叶变换的使用，因为傅里叶变换也是线性的。因此也有很多方法，设计模型直接从原始的音频信号中提取特征，但这种方法会增加模型的复杂度，而且本身傅里叶变换不太容易拟合。同时傅里叶变换是在短时上应用的，可以建设信号在这个短的时间内是静止的，因此傅里叶变换的线性也不会造成很严重的问题。 结论就是：在模型对高相关的信号不敏感时（比如神经网络），可以用FBank特征；在模型对高相关的信号敏感时（比如GMMs-HMMs），需要用MFCC特征。从目前的趋势来看，因为神经网络的逐步发展，FBank特征越来越流行。</p>
+<h2 id="标准化">标准化</h2>
+<ol type="1">
+<li>去均值 (CMN)</li>
+</ol>
+<p>为了均衡频谱，提升信噪比，可以做一个去均值的操作。</p>
+<ol start="2" type="1">
+<li>方差归一 (CVN)</li>
+</ol>
+<p>除以标准差，从而使得方差为1。</p>
+<ol start="3" type="1">
+<li>标准化 (CMVN)</li>
+</ol>
+<p><span class="math display">\[\tilde{y}_t = \frac{y_t-\mu(y)}{\sigma(y)}\]</span></p>
+<h2 id="lfr">LFR</h2>
+<p>LFR（低帧率）是语音识别声学建模中使用的一种技术，用于降低训练和解码的计算成本和内存占用。它通过将多个连续的特征帧堆叠在一起作为输入，去预测这些语音帧的目标输出得到的一个平均输出目标。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/04/CTdiQYRajUfAb3L.png" alt="LFR" /><figcaption aria-hidden="true">LFR</figcaption>
+</figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Henry 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Henry 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/audio/" rel="tag"># audio</a>
+              <a href="/tags/pre-process/" rel="tag"># pre-process</a>
+              <a href="/tags/%E9%9F%B3%E9%A2%91%E5%A4%84%E7%90%86/" rel="tag"># 音频处理</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/12/01/audio-VAD/" rel="prev" title="Voice Activity Detector(VAD)">
+                  <i class="fa fa-angle-left"></i> Voice Activity Detector(VAD)
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-changyan">changyan</a></li>
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+            <li class="tab"><a href="#comment-gitalk">gitalk</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane changyan" id="comment-changyan">
+              <div class="comments" id="SOHUCS" sid="841331e67f51927154f4fac1dcf6df58"></div>
+            </div>
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+            </div>
+            <div class="tab-pane gitalk" id="comment-gitalk">
+              <div class="comments gitalk-container"></div>
+            </div>
+        </div>
+      </div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2020 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Henry</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3pnaDU1MQ==" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js","integrity":"sha256-G8ouPAnw4zzMbnAenHnVz6h9XpKbNdOkrqTh7AadyHs="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js" integrity="sha256-yvJQOINiH9fWemHn0vCA5lsHWJaHs6/ZmO+1Ft04SvM=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2024/12/02/audio-process/"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
+<script class="next-config" data-name="changyan" type="application/json">{"enable":true,"appid":"cyxCTcyif","appkey":"79391f9a8a4f1f9ddf64d58d44069762","count":true}</script>
+<script src="/js/third-party/comments/changyan.js"></script>
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"https-zgh551-github-io","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"841331e67f51927154f4fac1dcf6df58"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
