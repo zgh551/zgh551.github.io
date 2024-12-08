@@ -8556,4 +8556,192 @@ D = T_{f} * V_{s} * k
         <tag>音频处理</tag>
       </tags>
   </entry>
+  <entry>
+    <title>SenseVoiceSmall-语音识别模型分析</title>
+    <url>/2024/12/04/SenseVoiceSmall/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>目前板端部署的语音模型是通义千问的SenseVoice Small模型，具有如下优点：</p>
+<ul>
+<li>多语言识别： 采用超过40万小时数据训练，支持超过50种语言，识别效果上优于Whisper模型。</li>
+<li>富文本识别：
+<ul>
+<li>具备优秀的情感识别，能够在测试数据上达到和超过目前最佳情感识别模型的效果。</li>
+<li>支持声音事件检测能力，支持音乐、掌声、笑声、哭声、咳嗽、喷嚏等多种常见人机交互事件进行检测。</li>
+</ul></li>
+<li>高效推理： SenseVoice-Small模型采用非自回归端到端框架，推理延迟极低，10s音频推理仅耗时70ms，15倍优于Whisper-Large。</li>
+<li>微调定制： 具备便捷的微调脚本与策略，方便用户根据业务场景修复长尾样本问题。</li>
+<li>服务部署： 具有完整的服务部署链路，支持多并发请求，支持客户端语言有，python、c++、html、java与c#等。</li>
+</ul>
+<p>在语音特征前添加四个嵌入作为输入传递给编码器：</p>
+<ul>
+<li>LID：用于预测音频语种标签。</li>
+<li>SER：用于预测音频情感标签。</li>
+<li>AED：用于预测音频包含的事件标签。</li>
+<li>ITN：用于指定识别输出文本是否进行逆文本正则化。</li>
+</ul>
+<span id="more"></span>
+<h2 id="模型架构">模型架构</h2>
+<p>模型总体架构如下图所示，主要由 SAN-M Encoder 和 CTC 模块组成。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/04/uK65pbOWQqyklEo.png" alt="SenseVoice Small" /><figcaption aria-hidden="true">SenseVoice Small</figcaption>
+</figure>
+<ul>
+<li>前处理</li>
+</ul>
+<p>给定输入波形，首先计算80维对数梅尔滤波器组(FBank)，然后将连续帧堆叠起来，并对其进行6倍下采样(LFR)。</p>
+<h2 id="san-m-encoder">SAN-M Encoder</h2>
+<p>下图是<strong>SAN-M Encoder</strong>模块内部的结构图，其由多层SAN-M层组成，用于捕获输入序列的特征。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/07/YdsCQBVFn4OzWA5.png" alt="SAN-M Encoder" /><figcaption aria-hidden="true">SAN-M Encoder</figcaption>
+</figure>
+<p>其中，DFSMN模块主要使用<strong>Depthwise 1D Convolution</strong>实现类似<strong>FIR</strong>滤波器结构，展开后结构如下：</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/07/ZsdxSKQ8CoVL9ti.png" alt="Depthwise Conv 1D" /><figcaption aria-hidden="true">Depthwise Conv 1D</figcaption>
+</figure>
+<h3 id="san-m模块">SAN-M模块</h3>
+<p>如下图所示，整体是在多头注意力机制内的 <code>Value</code> 上添加了<strong>DFSMN</strong>滤波器，滤波器的值存储在内存块中。最后将内存块中的内容添加到多头注意力机制的输出中。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/07/TiHSNlXuMaW7BPb.png" alt="SAN-M模块" /><figcaption aria-hidden="true">SAN-M模块</figcaption>
+</figure>
+<p>可以表示为： <span class="math display">\[Y = MultiHead(Q,K,V) + M(V)\]</span> 其中， <span class="math inline">\(Y\)</span>表示SAN-M模块的输出。</p>
+<h3 id="编码阶段encoder">编码阶段(Encoder)</h3>
+<p>如下图a所示，自注意力机制在不同编码器层学习到的依赖上下文的系数具有明显的对角成分，随着层数的增加，这种对角成分变得更加弥散和宽泛。这表明学习到的特征主要是局部依赖的，尽管自注意力有能力对整个序列的长期依赖关系进行建模。</p>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/07/TzOXyQN3MqmECew.png" alt="(a) self-attention" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/07/mUxldBiYZcrWL1J.png" alt="(b) DFSMN Filter" /></div></div></div>
+<p>如上图b所示，DFSMN记忆块在同样的编码器层学习到的不依赖上下文的系数呈现塔状的形状，随着层数的增加，这种塔状形状的宽度也在增加。</p>
+<h3 id="解码阶段decoder">解码阶段(Decoder)</h3>
+<p>从下图 (a) 和 (b) 中可以看出，自注意力在解码器层所学习到的依赖关系比 DFSMN 记忆块所学习到的长期依赖关系更长。 <div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/07/rcJbEDTvOadx25G.png" alt="(a) self-attention" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/07/pfw1UlHbB9h4Odx.png" alt="(b) DFSMN Filter" /></div></div></div></p>
+<h2 id="推理效率">推理效率</h2>
+<p>SenseVoice-Small模型采用非自回归端到端架构，推理延迟极低。在参数量与Whisper-Small模型相当的情况下，比Whisper-Small模型推理速度快7倍，比Whisper-Large模型快17倍。同时SenseVoice-small模型在音频时长增加的情况下，推理耗时也无明显增加。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/08/79eZRacu4HpPbKn.png" alt="推理性能" /><figcaption aria-hidden="true">推理性能</figcaption>
+</figure>
+<h2 id="总结">总结</h2>
+<p>自注意力在编码器中对声学特征进行建模时，往往更多地受到短期依赖的影响，所以可能无法有效地捕捉到长期依赖关系。自注意力机制是具备强大的长期依赖建模和捕捉整个序列的长期依赖关系的能力。但单个 DFSMN 记忆块层主要对局部短期依赖进行建模，需要堆叠多层才能捕捉长期依赖。自注意力机制和 DFSMN 记忆块在一定程度上是互补的。</p>
+<ol type="1">
+<li>自注意力具备学习完整序列内长期依赖关系的能力，不过学习到的特征未必总是长期依赖的，特别是在编码器中；</li>
+<li>DFSMN 记忆块倾向于学习局部依赖关系，而且它们比自注意力的计算效率更高、更灵活；</li>
+<li>自注意力学习着眼于单个特征的长期上下文依赖，而 DFSMN 记忆块则是从整个数据集的统计平均分布中学习局部依赖关系，这或许会让其在实际应用中更为稳健 。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Audio</category>
+      </categories>
+      <tags>
+        <tag>ASR</tag>
+        <tag>语音识别</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CTC_Loss</title>
+    <url>/2024/12/08/CTC-Loss/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p><strong>CTC</strong>，全称是<strong>Connectionist Temporal Classification</strong>，中文译为连接时序分类。特别适用于处理序列数据，例如语音识别、手写识别和机器翻译等任务，其中输入序列和输出序列的长度可能不一致。 更具体地说，CTC 解决了序列标注问题中标签与输入长度不匹配的难题。传统的序列标注方法要求输入序列和输出序列长度一致，而 CTC 允许输出序列比输入序列短，并引入了空白符（blank symbol）来处理重复和不必要的标签。</p>
+<span id="more"></span>
+<h2 id="对齐问题">对齐问题</h2>
+<p>数据集标注时如何实现文本与语音的对齐，如下图所示，假设输入语音序列的长度为6，输出标签序列为 <span class="math inline">\(Y=[c,a,t]\)</span>。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/08/ZJibzFnGryaTpSq.png" alt="直接对齐" /><figcaption aria-hidden="true">直接对齐</figcaption>
+</figure>
+<ol type="1">
+<li>强制每个输入元素与某个输出对齐是没有意义的，例如，语音识别中，输入元素可以是没有相应输出的静音段。</li>
+<li>无法生成连续的多个字符的输出，例如对齐 <span class="math inline">\([h,h,e,l,l,l,o,o]\)</span>，合并重复将产生 helo 而不是 hello。</li>
+</ol>
+<h2 id="ctc对齐">CTC对齐</h2>
+<p>为了解决上述问题，CTC 允许输出集引入一个新的标记，该标记称为 空标记(blank)。如果序列中有两个相同的字符，那么有效的对齐必须在他们之间插入一个 <span class="math inline">\(\epsilon\)</span>，参考下图处理过程。</p>
+<p>假设一个输入序列 <span class="math inline">\(X\)</span> 的长度为 <span class="math inline">\(T\)</span>，定义一个网络具有 <span class="math inline">\(m\)</span> 维输入和 <span class="math inline">\(n\)</span> 维输出，权重向量 <span class="math inline">\(w\)</span> 表示为连续映射 <span class="math inline">\(\mathcal{N}_w:(\Bbb{R} ^m)^T \longmapsto (\Bbb{R} ^n)^T\)</span>。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/08/GfNokel12iaKTqF.png" alt="输入和输出映射关系" /><figcaption aria-hidden="true">输入和输出映射关系</figcaption>
+</figure>
+<ol type="1">
+<li><span class="math inline">\(L\)</span>：序列标注任务中的标签所在字母表(汉字)集合为 <span class="math inline">\(L\)</span>；</li>
+<li><span class="math inline">\(L&#39;^T\)</span>：扩展的字母表集合，相比 <span class="math inline">\(L\)</span> 集合多包含一个标签，记为 blank，即 <span class="math inline">\(L&#39;=L \cup \{blank\}\)</span> 。</li>
+<li><span class="math inline">\(y_k^t\)</span>：使用 <span class="math inline">\(\mathtt{y}=\mathcal{N}_w(\mathtt{x})\)</span> 表示网络输出的序列，其中 <span class="math inline">\(y_k^t\)</span> 表示输出单元 <span class="math inline">\(k\)</span> 在 <span class="math inline">\(t\)</span> 时刻的激活，可以理解为在 <span class="math inline">\(t\)</span> 时预测为 <span class="math inline">\(L&#39;^T\)</span> 中的元素 <span class="math inline">\(k\)</span> 的概率。</li>
+<li><span class="math inline">\(L&#39;^T\)</span>：在集合 <span class="math inline">\(L&#39;^T\)</span> 上所有长度为 <span class="math inline">\(T\)</span> 的序列集合； 假设在每一个时刻的输出与其他时刻的输出是条件独立的（或者说，条件独立于给定的 xx ），那么可以得到在给定输入 <span class="math inline">\(\mathtt{x}\)</span> 后，得到 <span class="math inline">\(L&#39;^T\)</span> 集合中任何一条路径 <span class="math inline">\(\pi\)</span> 的概率分布表示为： <span class="math display">\[\large p(\pi|\mathtt{x})= \prod_{t=1}^{T}y_{\pi_t}^t, \forall \pi \in L&#39;^T.\]</span> 其中， 我们称 <span class="math inline">\(L&#39;^T\)</span> 中元素组成的序列 <span class="math inline">\(\pi\)</span> 为路径(paths)，即网络输出序列中所有可能的标签组合。</li>
+</ol>
+<p>由于在集合 <span class="math inline">\(L&#39;^T\)</span> 中可能存在多条<strong>paths</strong>，最终所映射的都是同一个标签序列，故定义多对一的函数映射 <span class="math inline">\(\mathcal{B}:L&#39;^T \longmapsto L^{\le T}\)</span>，其中 <span class="math inline">\(L^{\le T}\)</span> 表示所有可能标签的集合。 例如： <span class="math display">\[\mathcal{B}(a-ab-)=\mathcal{B}(-aa--abb)=aab\]</span></p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/08/cLMzTuoZ97V4XbH.png" alt="多对一函数映射示例" /><figcaption aria-hidden="true">多对一函数映射示例</figcaption>
+</figure>
+<p>故给定序列 <span class="math inline">\(\mathtt{x}\)</span> ，标签序列 <span class="math inline">\(\mathtt{l} \in L^{\le T}\)</span> 的条件概率 <span class="math inline">\(p(\mathtt{l}|\mathtt{x})\)</span> 表示为所有对应 <span class="math inline">\(\mathtt{l}\)</span> 路径(paths) <span class="math inline">\(\pi\)</span> 的概率之和： <span class="math display">\[\large p(\mathtt{l}|\mathtt{x})=\sum_{\pi \in \mathcal{B}^{-1}(\mathtt{l})}p(\pi | \mathtt{x})\]</span> 即所有可映射为真实标签序列的预测序列(paths)的概率之和。 故 <strong>CTC Loss</strong> 可以表示为 <span class="math display">\[\mathtt{CTC}_{Loss} = -ln(p(\mathtt{l}|\mathtt{x}))\]</span></p>
+<p>假设目标标签序列为 <span class="math inline">\(\mathtt{l}=hello\)</span>，输入序列长度为 <code>12</code>，则存在 <span class="math inline">\(\mathtt{l}^{12}=6^{12}=2176782336\)</span> 个可能的路径，输入序列越长，标签集越大，可能的路径就越多，呈现指数级增长，显然计算所有的路径是不切实际的。</p>
+<p>不过幸运的是，可以使用<strong>动态规划算法</strong>有效得计算出所有可能的真值标签概率。</p>
+<h2 id="动态规划算法">动态规划算法</h2>
+<p>由于路径的数量会随着时间步数的增加呈指数增长，直接计算所有路径概率是不切实际的。CTC Loss 的计算通常采用<strong>动态规划算法(Forward-Backward Algorithm)</strong>来高效地计算目标标签序列的概率。该算法通过递归地计算部分路径概率，避免了重复计算，从而大大降低了计算复杂度。 首先构造一个表，横坐标是时间序列，纵坐标为将真实标签序列两两以符号 <span class="math inline">\(-\)</span> 分隔，并且首尾各加一个 <span class="math inline">\(-\)</span> 。使用 <span class="math inline">\(U&#39;\)</span> 表示经 <span class="math inline">\(-\)</span> 符号扩展后的序列。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/08/6r7P5xZdenD3lR8.png" alt="初始表" /><figcaption aria-hidden="true">初始表</figcaption>
+</figure>
+<p>如下左图表示的映射关系为 <span class="math display">\[\mathcal{B}(hheel-l-lo-)=hello\]</span>，如下右图红色箭头是错误的，因为无法先预测第5个标签，再预测第4个标签，标签需要按顺序依次预测出，所以箭头只能向右或向下。</p>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/08/Wub1nVRf4XCLKhd.png" alt="左图：一种路径示例" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/08/2UW41VmYgwLMAEB.png" alt="右图：错误箭头方向" /></div></div></div>
+<p>如下左图所示，初始 <span class="math inline">\(t_0\)</span> 时刻只能处于 <span class="math inline">\(-\)</span> 或 h 两个位置，经过搜索算法，依次经过 <code>hello</code> 所有的字母，所有可能的路径如下右图所示。</p>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/08/rYsE8Mv5btIAGzB.png" alt="左图：初始状态" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/08/19DMPO2nISpEqhs.png" alt="右图：动态规划后" /></div></div></div>
+<h3 id="前向过程">前向过程</h3>
+<p>定义前向变量为 <span class="math display">\[\Large \alpha_{t}(s) = \sum_{\pi \in N^T:\mathcal{B}(\pi_{1:t})=\mathtt{l}_{1:s}} \prod_{t&#39;=1}^{t} \mathtt{y}_{\pi_{t&#39;}}^{t&#39;}\]</span> 初始状态： <span class="math display">\[\large \alpha_1(1)=y_b^1 \\ \alpha_1(2)=y_{\mathtt{l}_1}^1 \\
+\alpha_1(s)=0, \forall s&gt;2\]</span> 递归公式为 <span class="math display">\[\large \alpha_t(s) = \begin{cases}
+   \Big(\alpha_{t-1}(s)+\alpha_{t-1}(s-1)\Big)y_{\mathtt{l}&#39;_s}^t &amp;\text{if } \mathtt{l&#39;_s=b} \text{ or } \mathtt{l}&#39;_{s-2}=\mathtt{l}&#39;_s\\
+   \Big(\alpha_{t-1}(s)+\alpha_{t-1}(s-1)+\alpha_{t-1}(s-2)\Big)y_{\mathtt{l}&#39;_s}^t &amp;\text{otherwise }
+\end{cases}\]</span></p>
+<h4 id="前向过程示例">前向过程示例</h4>
+<p>例如，当 <span class="math inline">\(t=3\)</span> ， <span class="math inline">\(s=4\)</span> 时，即 <span class="math inline">\(\alpha_{3}(4)\)</span> 表示如下图：</p>
+<p><span class="math display">\[\alpha_{3}(4)=p(\text{“-he”})+p(\text{“hhe”})+p(\text{“h-e”})+p(\text{“hee”})\]</span></p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/08/QmRUi4DH3zIa72q.png" alt="前向变量示例" /><figcaption aria-hidden="true">前向变量示例</figcaption>
+</figure>
+<h3 id="存在三种递归情形">存在三种递归情形</h3>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/08/bqxK9PGlrZwQV7u.png" alt="l=b" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/08/3pcOPfRe8NqLQJS.png" alt="l(s-2)=l(s)" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/08/rXRUZJidBLOvHtm.png" alt="otherwise" /></div></div></div>
+<h3 id="计算ctc-loss">计算CTC Loss</h3>
+<p>通过动态规划算法递归计算，最终可以计算出 <span class="math inline">\(\alpha_{12}(10)\)</span> 和 <span class="math inline">\(\alpha_{12}(11)\)</span> ，故真实标签的概率可以表示为： <span class="math display">\[p(\text{“hello”}) = \alpha_{12}(11) + \alpha_{12}(10)\]</span> 则对任意真值序列 <span class="math inline">\(\mathtt{l}\)</span> 的概率可以表示为 <span class="math inline">\(T\)</span> 时刻有或没有空白情况下 <span class="math inline">\(\mathtt{l}&#39;\)</span> 的总概率和： <span class="math display">\[p(\mathtt{l}|\mathtt{x})=\alpha_{T}(|\mathtt{l}&#39;|) + \alpha_{T}(|\mathtt{}l|&#39;-1)\]</span> 则 <code>CTC loss</code> 可以表示为 <span class="math display">\[\text{CTC Loss} = -\ln(p(\text{“hello”})) = -\ln(\alpha_{12}(10) + \alpha_{12}(11))\]</span></p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/08/AiNfy4nSWr1MKl3.png" alt="CTC Loss" /><figcaption aria-hidden="true">CTC Loss</figcaption>
+</figure>
+<h2 id="后向过程">后向过程</h2>
+<p>同样，后向变量定义为 <span class="math display">\[\Large \beta_{t}(s) = \sum_{\pi \in N^T:\mathcal{B}(\pi_{t:T})=\mathtt{l}_{s:|\mathtt{l}|}} \prod_{t&#39;=t}^{T} \mathtt{y}_{\pi_{t&#39;}}^{t&#39;}\]</span></p>
+<p>初始状态为</p>
+<p><span class="math display">\[\large \beta_T(|\mathtt{l}&#39;|)=y_b^T \\ \beta_T(|\mathtt{l}&#39;|-1)=y_{\mathtt{l}_{|\mathtt{l}|}}^T \\
+\beta_T(s)=0, \forall s&lt;|\mathtt{l}&#39;|-1\]</span></p>
+<p>递归公式为</p>
+<p><span class="math display">\[\large \beta_t(s) = \begin{cases}
+   \Big(\beta_{t+1}(s)+\beta_{t+1}(s+1)\Big)y_{\mathtt{l}&#39;_s}^t &amp;\text{if } \mathtt{l&#39;_s=b} \text{ or } \mathtt{l}&#39;_{s+2}=\mathtt{l}&#39;_s\\
+   \Big(\beta_{t+1}(s)+\beta_{t+1}(s+1)+\beta_{t+1}(s+2)\Big)y_{\mathtt{l}&#39;_s}^t &amp;\text{otherwise }
+\end{cases}\]</span></p>
+<h3 id="后向过程示例">后向过程示例</h3>
+<p>例如，当 $ t=10$ ， <span class="math inline">\(s=8\)</span> 时，即 <span class="math inline">\(\beta_{10}(8)\)</span> 表示如下图：</p>
+<p><span class="math display">\[\beta_{10}(8)=p(\text{“lo”})+p(\text{“l-o”})+p(\text{“loo”})+p(\text{“lo-”})\]</span></p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/08/FwQILnYqvibrj4G.png" alt="后向过程示例" /><figcaption aria-hidden="true">后向过程示例</figcaption>
+</figure>
+<h3 id="前向后向对比">前向后向对比</h3>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/08/xTRPHeVgnB9LYNu.png" alt="forward" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/08/jwUXkaiMJmVg6KI.png" alt="backward" /></div></div></div>
+<h3 id="计算梯度">计算梯度</h3>
+<p>考虑计算前向和后向变量相乘结果如下：</p>
+<p><span class="math display">\[\begin{split}
+\alpha_{6}(6)*\beta_{6}(6)&amp;=\Big(\alpha_{5}(4)+\alpha_{5}(5)+\alpha_{5}(6)\Big)y_{l}^6 * \Big(\beta_{7}(6)+\beta_{7}(7)\Big)y_{l}^6 \\
+&amp;=\Big(\alpha_{5}(4)y_{l}^6\beta_{7}(6)+\alpha_{5}(4)y_{l}^6\beta_{7}(7)+\alpha_{5}(5)y_{l}^6\beta_{7}(6)+\alpha_{5}(5)y_{l}^6\beta_{7}(7)+\alpha_{5}(6)y_{l}^6\beta_{7}(6)+\alpha_{5}(6)y_{l}^6\beta_{7}(7)\Big)y_{l}^6
+\end{split}\]</span> 故 <span class="math display">\[\begin{split}
+\frac{\alpha_{6}(6)*\beta_{6}(6)}{y_{l}^6}=\alpha_{5}(4)y_{l}^6\beta_{7}(6)+\alpha_{5}(4)y_{l}^6\beta_{7}(7)+\alpha_{5}(5)y_{l}^6\beta_{7}(6)+\alpha_{5}(5)y_{l}^6\beta_{7}(7)+\alpha_{5}(6)y_{l}^6\beta_{7}(6)+\alpha_{5}(6)y_{l}^6\beta_{7}(7)
+\end{split}\]</span> 上式可以表示为 <span class="math inline">\(t_{6}\)</span> 时刻经过符号 <span class="math inline">\(l\)</span> 的所有正确预测序列的概率和。 <span class="math display">\[\large \begin{split}
+\frac{\alpha_{6}(6)*\beta_{6}(6)}{y_{l}^6}&amp;=\sum_{\pi \in \mathcal{B}^{-1}(l):\pi_{6}=\text{“l”}}\prod_{t=1}^Ty_{\pi_{t}}^t \\
+&amp;=\sum_{\pi \in \mathcal{B}^{-1}(l):\pi_{6}=\text{“l”}}p(\pi|\mathtt{x})
+\end{split}\]</span></p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/08/Hd5ybVGJlRKxumU.png" alt="前向和后向变量" /><figcaption aria-hidden="true">前向和后向变量</figcaption>
+</figure>
+<p>上述只计算了经过 <span class="math inline">\(l\)</span> 字符的概率，则经过所有路径的总概率可以表示为 <span class="math display">\[\large p(\mathtt{l}|\mathtt{x})=\sum_{s=1}^{10}\frac{\alpha_{6}(s)*\beta_{6}(s)}{y_{\mathtt{l}&#39;_s}^6}\]</span> 那么任意时刻的所有可能路径的概率之和表示为 <span class="math display">\[\large p(\mathtt{l}|\mathtt{x})=\sum_{s=1}^{|\mathtt{l}&#39;|}\frac{\alpha_{t}(s)*\beta_{t}(s)}{y_{\mathtt{l}&#39;_s}^t}\]</span></p>
+<h3 id="反向传播">反向传播</h3>
+<p>学习的目标是最大化 <span class="math inline">\(p(\mathtt{l}|\mathtt{x})\)</span>，等效为最小化 <span class="math inline">\(-\ln(p(\mathtt{l}|\mathtt{x}))\)</span> ，这就是我们的目标函数，在反向传播时，我们需要对神经网络的每一个预测输出 <span class="math inline">\(y_k^t\)</span> 求偏导，故 <span class="math display">\[\frac{\partial \big(-\ln(p(\mathtt{l}|\mathtt{x}))\big)}{\partial y_k^t}=-\frac{1}{p(\mathtt{l}|\mathtt{x})}*\frac{\partial p(\mathtt{l}|\mathtt{x})}{\partial y_k^t}\]</span> 最终转换为如何求解 <span class="math inline">\(\frac{\partial p(\mathtt{l}|\mathtt{x})}{\partial y_k^t}\)</span>。 由于 <span class="math display">\[\large p(\mathtt{l}|\mathtt{x})=\frac{\alpha_{t}(1)*\beta_{t}(1)}{y_{\mathtt{l}&#39;_1}^t} + \frac{\alpha_{t}(2)*\beta_{t}(2)}{y_{\mathtt{l}&#39;_2}^t} + ... +\frac{\alpha_{t}(s)*\beta_{t}(s)}{y_{\mathtt{l}&#39;_s}^t} + ... +\frac{\alpha_{t}(|\mathtt{l}&#39;|)*\beta_{t}(|\mathtt{l}&#39;|)}{y_{|\mathtt{l}&#39;|}^t}\]</span> 若 <span class="math inline">\(t\)</span> 时刻经过 <span class="math inline">\(k\)</span> ，则不会经过其它字符，也就是说其它项可以被视为常数项。当 <span class="math inline">\(\mathtt{l}&#39;_s=k\)</span> 时， <span class="math display">\[\frac{\partial p(\mathtt{l}|\mathtt{x})}{\partial y_6^t} = -\frac{1}{(y_{6}^t)^2}\big(\alpha_{t}(6)*\beta_{t}(6)\big)\]</span> 定义标签为 <span class="math inline">\(k\)</span> 的集合 <span class="math inline">\(\mathtt{lab}(\mathtt{l},k)=\{s:\mathtt{l}&#39;_s=k\}\)</span> ，则 <span class="math display">\[\large \frac{\partial p(\mathtt{l}|\mathtt{x})}{\partial y_k^t} = -\frac{1}{(y_{k}^t)^2}\sum_{s \in lab(\mathtt{l},k)}\alpha_{t}(s)*\beta_{t}(s)\]</span></p>
+<h3 id="三种情形">三种情形</h3>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/08/zcmAriL5nSTHPZt.png" alt="image.png" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/08/cdNCIms2jZS5rTy.png" alt="image.png" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2024/12/08/e1Ewk43MgloIjOY.png" alt="image.png" /></div></div></div>
+<h2 id="总结">总结</h2>
+<ol type="1">
+<li>前向变量 <span class="math inline">\(\alpha_t(s)\)</span> 用于计算损失；</li>
+<li>后向变量 <span class="math inline">\(\beta_t(s)\)</span> 用于方便计算梯度；</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Audio</category>
+        <category>loss</category>
+      </categories>
+      <tags>
+        <tag>CTC</tag>
+      </tags>
+  </entry>
 </search>
