@@ -25,7 +25,7 @@
 
     <meta name="description" content="概述 3DSSD是基于点的单阶段3D目标检测网络，该模型的提出背景是在3D单阶段目标检测器大都是基于体素，其在转换过程中会丢失信息，而基于点的检测器大都是两阶段网络，精度虽然高，但是推理性能差。而此时，基于点的单阶段网络还未充分探索。作者基于点基础，提出了一个轻量级且高效的单阶段网络(3DSSD)，可以很好地在精度和效率之间保持平衡。  作者通过分析两阶段网络各个部分耗时情况，发现SA层对于提取">
 <meta property="og:type" content="article">
-<meta property="og:title" content="3D Object Detector 3DSSD">
+<meta property="og:title" content="3DSSD模型分析(3D对象检测)">
 <meta property="og:url" content="https://zgh551.github.io/2024/08/16/3D-ObjectDetector-3DSSD/index.html">
 <meta property="og:site_name" content="Henry-Z">
 <meta property="og:description" content="概述 3DSSD是基于点的单阶段3D目标检测网络，该模型的提出背景是在3D单阶段目标检测器大都是基于体素，其在转换过程中会丢失信息，而基于点的检测器大都是两阶段网络，精度虽然高，但是推理性能差。而此时，基于点的单阶段网络还未充分探索。作者基于点基础，提出了一个轻量级且高效的单阶段网络(3DSSD)，可以很好地在精度和效率之间保持平衡。  作者通过分析两阶段网络各个部分耗时情况，发现SA层对于提取">
@@ -38,7 +38,7 @@
 <meta property="og:image" content="https://i.imgur.com/iIQxk38.png">
 <meta property="og:image" content="https://i.imgur.com/wkBf9kh.png">
 <meta property="article:published_time" content="2024-08-16T08:18:16.000Z">
-<meta property="article:modified_time" content="2024-12-01T07:07:04.154Z">
+<meta property="article:modified_time" content="2024-12-08T12:56:16.312Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="3D Object Detector">
 <meta property="article:tag" content="LiDAR">
@@ -49,10 +49,10 @@
 <link rel="canonical" href="https://zgh551.github.io/2024/08/16/3D-ObjectDetector-3DSSD/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/08/16/3D-ObjectDetector-3DSSD/","path":"2024/08/16/3D-ObjectDetector-3DSSD/","title":"3D Object Detector 3DSSD"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/08/16/3D-ObjectDetector-3DSSD/","path":"2024/08/16/3D-ObjectDetector-3DSSD/","title":"3DSSD模型分析(3D对象检测)"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>3D Object Detector 3DSSD | Henry-Z</title>
+<title>3DSSD模型分析(3D对象检测) | Henry-Z</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ML9CRPRYFK"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ML9CRPRYFK","only_pageview":false,"measure_protocol_api_secret":null}</script>
@@ -239,12 +239,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="3D Object Detector 3DSSD | Henry-Z">
+      <meta itemprop="name" content="3DSSD模型分析(3D对象检测) | Henry-Z">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          3D Object Detector 3DSSD
+          3DSSD模型分析(3D对象检测)
         </h1>
 
         <div class="post-meta-container">
@@ -262,7 +262,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-12-01 15:07:04" itemprop="dateModified" datetime="2024-12-01T15:07:04+08:00">2024-12-01</time>
+      <time title="修改时间：2024-12-08 20:56:16" itemprop="dateModified" datetime="2024-12-08T20:56:16+08:00">2024-12-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -294,7 +294,7 @@
       </span>
       <span class="post-meta-item-text">Changyan：</span>
     
-    <a title="3D Object Detector 3DSSD" href="/2024/08/16/3D-ObjectDetector-3DSSD/#SOHUCS" itemprop="discussionUrl">
+    <a title="3DSSD模型分析(3D对象检测)" href="/2024/08/16/3D-ObjectDetector-3DSSD/#SOHUCS" itemprop="discussionUrl">
       <span id="sourceId::80f87c06861723861dde6da003309a32" class="cy_cmt_count" itemprop="commentCount"></span>
     </a>
   </span>
@@ -419,13 +419,13 @@ smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2024/08/15/3D-ObjectDetector-IPOD/" rel="prev" title="3D Object Detector IPOD">
-                  <i class="fa fa-angle-left"></i> 3D Object Detector IPOD
+                <a href="/2024/08/15/3D-ObjectDetector-IPOD/" rel="prev" title="IPOD模型分析(3D对象检测)">
+                  <i class="fa fa-angle-left"></i> IPOD模型分析(3D对象检测)
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2024/08/17/3D-ObjectDetector-Point-GNN/" rel="next" title="3D Object Detector Point-GNN">
-                  3D Object Detector Point-GNN <i class="fa fa-angle-right"></i>
+                <a href="/2024/08/17/3D-ObjectDetector-Point-GNN/" rel="next" title="Point-GNN模型分析(3D对象检测)">
+                  Point-GNN模型分析(3D对象检测) <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>

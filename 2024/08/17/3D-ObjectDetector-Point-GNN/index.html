@@ -25,7 +25,7 @@
 
     <meta name="description" content="概述 如下是三种常见的点云表示和处理方法:  如下图所示，网络架构主要由三部分组成：图构建、T次迭代GNN和边界框合并和评分。  网络架构">
 <meta property="og:type" content="article">
-<meta property="og:title" content="3D Object Detector Point-GNN">
+<meta property="og:title" content="Point-GNN模型分析(3D对象检测)">
 <meta property="og:url" content="https://zgh551.github.io/2024/08/17/3D-ObjectDetector-Point-GNN/index.html">
 <meta property="og:site_name" content="Henry-Z">
 <meta property="og:description" content="概述 如下是三种常见的点云表示和处理方法:  如下图所示，网络架构主要由三部分组成：图构建、T次迭代GNN和边界框合并和评分。  网络架构">
@@ -39,7 +39,7 @@
 <meta property="og:image" content="https://i.imgur.com/HHn7hDY.png">
 <meta property="og:image" content="https://i.imgur.com/twDelef.png">
 <meta property="article:published_time" content="2024-08-17T09:10:16.000Z">
-<meta property="article:modified_time" content="2024-12-01T07:07:16.503Z">
+<meta property="article:modified_time" content="2024-12-08T12:58:57.830Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="3D Object Detector">
 <meta property="article:tag" content="LiDAR">
@@ -52,10 +52,10 @@
 <link rel="canonical" href="https://zgh551.github.io/2024/08/17/3D-ObjectDetector-Point-GNN/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/08/17/3D-ObjectDetector-Point-GNN/","path":"2024/08/17/3D-ObjectDetector-Point-GNN/","title":"3D Object Detector Point-GNN"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/08/17/3D-ObjectDetector-Point-GNN/","path":"2024/08/17/3D-ObjectDetector-Point-GNN/","title":"Point-GNN模型分析(3D对象检测)"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>3D Object Detector Point-GNN | Henry-Z</title>
+<title>Point-GNN模型分析(3D对象检测) | Henry-Z</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ML9CRPRYFK"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ML9CRPRYFK","only_pageview":false,"measure_protocol_api_secret":null}</script>
@@ -242,12 +242,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="3D Object Detector Point-GNN | Henry-Z">
+      <meta itemprop="name" content="Point-GNN模型分析(3D对象检测) | Henry-Z">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          3D Object Detector Point-GNN
+          Point-GNN模型分析(3D对象检测)
         </h1>
 
         <div class="post-meta-container">
@@ -265,7 +265,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-12-01 15:07:16" itemprop="dateModified" datetime="2024-12-01T15:07:16+08:00">2024-12-01</time>
+      <time title="修改时间：2024-12-08 20:58:57" itemprop="dateModified" datetime="2024-12-08T20:58:57+08:00">2024-12-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -297,7 +297,7 @@
       </span>
       <span class="post-meta-item-text">Changyan：</span>
     
-    <a title="3D Object Detector Point-GNN" href="/2024/08/17/3D-ObjectDetector-Point-GNN/#SOHUCS" itemprop="discussionUrl">
+    <a title="Point-GNN模型分析(3D对象检测)" href="/2024/08/17/3D-ObjectDetector-Point-GNN/#SOHUCS" itemprop="discussionUrl">
       <span id="sourceId::56d51bd22415348eaf240c7ed7ec1a11" class="cy_cmt_count" itemprop="commentCount"></span>
     </a>
   </span>
@@ -447,8 +447,8 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2024/08/16/3D-ObjectDetector-3DSSD/" rel="prev" title="3D Object Detector 3DSSD">
-                  <i class="fa fa-angle-left"></i> 3D Object Detector 3DSSD
+                <a href="/2024/08/16/3D-ObjectDetector-3DSSD/" rel="prev" title="3DSSD模型分析(3D对象检测)">
+                  <i class="fa fa-angle-left"></i> 3DSSD模型分析(3D对象检测)
                 </a>
             </div>
             <div class="post-nav-item">

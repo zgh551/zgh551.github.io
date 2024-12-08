@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>3D Object Detector 3DSSD</title>
+    <title>3DSSD模型分析(3D对象检测)</title>
     <url>/2024/08/16/3D-ObjectDetector-3DSSD/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>3DSSD是基于点的单阶段3D目标检测网络，该模型的提出背景是在3D单阶段目标检测器大都是基于体素，其在转换过程中会丢失信息，而基于点的检测器大都是两阶段网络，精度虽然高，但是推理性能差。而此时，基于点的单阶段网络还未充分探索。作者基于点基础，提出了一个轻量级且高效的单阶段网络(3DSSD)，可以很好地在精度和效率之间保持平衡。 <img data-src="https://i.imgur.com/6IPCPg1.png" alt="网络框图" /> 作者通过分析两阶段网络各个部分耗时情况，发现SA层对于提取点得特征是必要的，但FP和细化模块确实限制了基于点的方法的效率。 <img data-src="https://i.imgur.com/FVDI9t1.png" alt="各阶段时间" /></p>
@@ -76,7 +76,7 @@ smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
       </tags>
   </entry>
   <entry>
-    <title>3D Object Detector-表示方法</title>
+    <title>3D对象表示方法</title>
     <url>/2024/08/07/3D-ObjectDetector-Express/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <figure>
@@ -132,7 +132,7 @@ smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
       </tags>
   </entry>
   <entry>
-    <title>3D Object Detector IPOD</title>
+    <title>IPOD模型分析(3D对象检测)</title>
     <url>/2024/08/15/3D-ObjectDetector-IPOD/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <figure>
@@ -176,7 +176,7 @@ smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
       </tags>
   </entry>
   <entry>
-    <title>3D Object Detector Base LiDAR</title>
+    <title>基于LiDAR的3D对象检测综述</title>
     <url>/2024/08/11/3D-ObjectDetector-LiDAR/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>先进的3D对象检测方法提出了各种从稀疏的点云数据中学习辨别特征的方法:</p>
@@ -185,7 +185,9 @@ smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
 <li>将点云分组为体素，并使用3D CNN学习体素的特征来生成3D框；</li>
 <li>直接采样点云数据，并使用MLP学习点云特征来生成3D框；</li>
 </ol>
-<p><img data-src="https://i.imgur.com/QYni6kX.jpeg" /></p>
+<figure>
+<img data-src="https://i.imgur.com/QYni6kX.jpeg" alt="车展" /><figcaption aria-hidden="true">车展</figcaption>
+</figure>
 <span id="more"></span>
 <h2 id="存在问题">存在问题</h2>
 <ol type="1">
@@ -276,7 +278,7 @@ smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
       </tags>
   </entry>
   <entry>
-    <title>3D Object Detector Point-GNN</title>
+    <title>Point-GNN模型分析(3D对象检测)</title>
     <url>/2024/08/17/3D-ObjectDetector-Point-GNN/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>如下是三种常见的点云表示和处理方法: <img data-src="https://i.imgur.com/sI3M4V6.png" alt="点云数据表示" /></p>
@@ -376,7 +378,7 @@ smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
       </tags>
   </entry>
   <entry>
-    <title>3D Object Detector PointNet++</title>
+    <title>PointNet++模型分析(3D对象检测)</title>
     <url>/2024/08/13/3D-ObjectDetector-PointNet++/</url>
     <content><![CDATA[<figure>
 <img data-src="https://s2.loli.net/2024/08/14/GICOxSBjTH3MNrf.png" alt="网络框图" /><figcaption aria-hidden="true">网络框图</figcaption>
@@ -442,7 +444,7 @@ smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
       </tags>
   </entry>
   <entry>
-    <title>3D Object Detector PointNet</title>
+    <title>PointNet模型分析(3D对象检测)</title>
     <url>/2024/08/12/3D-ObjectDetector-PointNet/</url>
     <content><![CDATA[<figure>
 <img data-src="https://s2.loli.net/2024/08/14/u6cbaUOS5k29lpN.png" alt="斯坦福" /><figcaption aria-hidden="true">斯坦福</figcaption>
@@ -512,7 +514,7 @@ smooth_{L1}=\begin{cases}0.5x^2 &amp; \text{if} \lvert x \rvert &lt; 1\\
       </tags>
   </entry>
   <entry>
-    <title>3D Object Detector PointRCNN</title>
+    <title>PointRCNN模型分析(3D对象检测)</title>
     <url>/2024/08/14/3D-ObjectDetector-PointRCNN/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>PointRCNN 将目标检测任务分为两个阶段： 第一阶段：借助点云分割为前景点和背景，并以自下而上的方式直接从点云生成少量高质量的目标候选框； 第二阶段：再对候选目标框进行优化调整，细化目标框的边界。</p>
@@ -670,7 +672,7 @@ res_{\theta}^{(p)}=\theta^p-\theta^{(p)}+\mathcal{S}-bin_{\theta}^{(p)}*\delta 
       </tags>
   </entry>
   <entry>
-    <title>3D Object Detector Introduce</title>
+    <title>3D对象检测基础</title>
     <url>/2024/08/06/3D-ObjectDetector/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>在自动驾驶领域，感知系统是必不可少的模块，通常使用多模态数据(激光雷达的点云、摄像头的图片、高清地图等)作为输入，预测道路上关键元素的几何形状和语义信息，为目标跟踪、轨迹预测和路径规划模块提供可靠的观察结果。 为了全面了解行驶环境，涉及许多视觉任务，包括：对象检测、跟踪、车道线检测、语义分割和实例分割。其中，3D对象检测是自动驾驶感知系统最不可或缺的任务。 3D对象检测的目标：</p>
@@ -8333,7 +8335,7 @@ D = T_{f} * V_{s} * k
       </tags>
   </entry>
   <entry>
-    <title>Voice Activity Detector(VAD)</title>
+    <title>语音活动检测(VAD)</title>
     <url>/2024/12/01/audio-VAD/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>在语音活动检测(<strong>VAD</strong>)中，有多种模型可供选择，每种模型都有其独特的特点和应用场景。</p>
@@ -8468,7 +8470,7 @@ D = T_{f} * V_{s} * k
       </tags>
   </entry>
   <entry>
-    <title>音频处理</title>
+    <title>音频处理前处理算法汇总</title>
     <url>/2024/12/02/audio-process/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>语音模型常用的语音特征类型如下：</p>
@@ -8632,7 +8634,7 @@ D = T_{f} * V_{s} * k
       </tags>
   </entry>
   <entry>
-    <title>CTC_Loss</title>
+    <title>CTC Loss介绍</title>
     <url>/2024/12/08/CTC-Loss/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p><strong>CTC</strong>，全称是<strong>Connectionist Temporal Classification</strong>，中文译为连接时序分类。特别适用于处理序列数据，例如语音识别、手写识别和机器翻译等任务，其中输入序列和输出序列的长度可能不一致。 更具体地说，CTC 解决了序列标注问题中标签与输入长度不匹配的难题。传统的序列标注方法要求输入序列和输出序列长度一致，而 CTC 允许输出序列比输入序列短，并引入了空白符（blank symbol）来处理重复和不必要的标签。</p>

@@ -25,7 +25,7 @@
 
     <meta name="description" content="概述 语音模型常用的语音特征类型如下：  梅尔滤波器组系数（Mel Filter Bank, FBank, 又称 Log-Mel）； 梅尔频率倒谱系数（Mel-Frequency Cepstral Coefficients，MFCC）； 如下图所示，是提取上述特征的流程：">
 <meta property="og:type" content="article">
-<meta property="og:title" content="音频处理">
+<meta property="og:title" content="音频处理前处理算法汇总">
 <meta property="og:url" content="https://zgh551.github.io/2024/12/02/audio-process/index.html">
 <meta property="og:site_name" content="Henry-Z">
 <meta property="og:description" content="概述 语音模型常用的语音特征类型如下：  梅尔滤波器组系数（Mel Filter Bank, FBank, 又称 Log-Mel）； 梅尔频率倒谱系数（Mel-Frequency Cepstral Coefficients，MFCC）； 如下图所示，是提取上述特征的流程：">
@@ -46,7 +46,7 @@
 <meta property="og:image" content="https://s2.loli.net/2024/12/04/wOZAzGfhm1a6rJB.png">
 <meta property="og:image" content="https://s2.loli.net/2024/12/04/CTdiQYRajUfAb3L.png">
 <meta property="article:published_time" content="2024-12-02T12:53:50.000Z">
-<meta property="article:modified_time" content="2024-12-04T14:42:21.693Z">
+<meta property="article:modified_time" content="2024-12-08T13:02:39.082Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="audio">
 <meta property="article:tag" content="pre-process">
@@ -58,10 +58,10 @@
 <link rel="canonical" href="https://zgh551.github.io/2024/12/02/audio-process/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/12/02/audio-process/","path":"2024/12/02/audio-process/","title":"音频处理"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/12/02/audio-process/","path":"2024/12/02/audio-process/","title":"音频处理前处理算法汇总"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>音频处理 | Henry-Z</title>
+<title>音频处理前处理算法汇总 | Henry-Z</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ML9CRPRYFK"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ML9CRPRYFK","only_pageview":false,"measure_protocol_api_secret":null}</script>
@@ -248,12 +248,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="音频处理 | Henry-Z">
+      <meta itemprop="name" content="音频处理前处理算法汇总 | Henry-Z">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          音频处理
+          音频处理前处理算法汇总
         </h1>
 
         <div class="post-meta-container">
@@ -271,7 +271,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-12-04 22:42:21" itemprop="dateModified" datetime="2024-12-04T22:42:21+08:00">2024-12-04</time>
+      <time title="修改时间：2024-12-08 21:02:39" itemprop="dateModified" datetime="2024-12-08T21:02:39+08:00">2024-12-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -299,7 +299,7 @@
       </span>
       <span class="post-meta-item-text">Changyan：</span>
     
-    <a title="音频处理" href="/2024/12/02/audio-process/#SOHUCS" itemprop="discussionUrl">
+    <a title="音频处理前处理算法汇总" href="/2024/12/02/audio-process/#SOHUCS" itemprop="discussionUrl">
       <span id="sourceId::841331e67f51927154f4fac1dcf6df58" class="cy_cmt_count" itemprop="commentCount"></span>
     </a>
   </span>
@@ -439,8 +439,8 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2024/12/01/audio-VAD/" rel="prev" title="Voice Activity Detector(VAD)">
-                  <i class="fa fa-angle-left"></i> Voice Activity Detector(VAD)
+                <a href="/2024/12/01/audio-VAD/" rel="prev" title="语音活动检测(VAD)">
+                  <i class="fa fa-angle-left"></i> 语音活动检测(VAD)
                 </a>
             </div>
             <div class="post-nav-item">

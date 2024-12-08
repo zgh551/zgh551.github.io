@@ -25,7 +25,7 @@
 
     <meta name="description" content="概述  网络框图   第一个子采样网络用于过滤掉大多数的背景点； 第二阶段是基于点基础的候选框生成； 第三个组成部分是网络架构，由主干网络、proposal特征生成模块和边界框预测网络组成，它对生成的候选框进行分类和回归；">
 <meta property="og:type" content="article">
-<meta property="og:title" content="3D Object Detector IPOD">
+<meta property="og:title" content="IPOD模型分析(3D对象检测)">
 <meta property="og:url" content="https://zgh551.github.io/2024/08/15/3D-ObjectDetector-IPOD/index.html">
 <meta property="og:site_name" content="Henry-Z">
 <meta property="og:description" content="概述  网络框图   第一个子采样网络用于过滤掉大多数的背景点； 第二阶段是基于点基础的候选框生成； 第三个组成部分是网络架构，由主干网络、proposal特征生成模块和边界框预测网络组成，它对生成的候选框进行分类和回归；">
@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://i.imgur.com/R80Gskn.png">
 <meta property="og:image" content="https://i.imgur.com/icjWCAD.png">
 <meta property="article:published_time" content="2024-08-15T08:18:16.000Z">
-<meta property="article:modified_time" content="2024-08-15T14:08:43.193Z">
+<meta property="article:modified_time" content="2024-12-08T12:56:48.794Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="3D Object Detector">
 <meta property="article:tag" content="LiDAR">
@@ -46,10 +46,10 @@
 <link rel="canonical" href="https://zgh551.github.io/2024/08/15/3D-ObjectDetector-IPOD/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/08/15/3D-ObjectDetector-IPOD/","path":"2024/08/15/3D-ObjectDetector-IPOD/","title":"3D Object Detector IPOD"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/08/15/3D-ObjectDetector-IPOD/","path":"2024/08/15/3D-ObjectDetector-IPOD/","title":"IPOD模型分析(3D对象检测)"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>3D Object Detector IPOD | Henry-Z</title>
+<title>IPOD模型分析(3D对象检测) | Henry-Z</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ML9CRPRYFK"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ML9CRPRYFK","only_pageview":false,"measure_protocol_api_secret":null}</script>
@@ -236,12 +236,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="3D Object Detector IPOD | Henry-Z">
+      <meta itemprop="name" content="IPOD模型分析(3D对象检测) | Henry-Z">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          3D Object Detector IPOD
+          IPOD模型分析(3D对象检测)
         </h1>
 
         <div class="post-meta-container">
@@ -251,9 +251,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2024-08-15 16:18:16 / 修改时间：22:08:43" itemprop="dateCreated datePublished" datetime="2024-08-15T16:18:16+08:00">2024-08-15</time>
+      <time title="创建时间：2024-08-15 16:18:16" itemprop="dateCreated datePublished" datetime="2024-08-15T16:18:16+08:00">2024-08-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-12-08 20:56:48" itemprop="dateModified" datetime="2024-12-08T20:56:48+08:00">2024-12-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -285,7 +291,7 @@
       </span>
       <span class="post-meta-item-text">Changyan：</span>
     
-    <a title="3D Object Detector IPOD" href="/2024/08/15/3D-ObjectDetector-IPOD/#SOHUCS" itemprop="discussionUrl">
+    <a title="IPOD模型分析(3D对象检测)" href="/2024/08/15/3D-ObjectDetector-IPOD/#SOHUCS" itemprop="discussionUrl">
       <span id="sourceId::d2725c2c3b3b8b14a62470e04ca95d24" class="cy_cmt_count" itemprop="commentCount"></span>
     </a>
   </span>
@@ -379,13 +385,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2024/08/14/3D-ObjectDetector-PointRCNN/" rel="prev" title="3D Object Detector PointRCNN">
-                  <i class="fa fa-angle-left"></i> 3D Object Detector PointRCNN
+                <a href="/2024/08/14/3D-ObjectDetector-PointRCNN/" rel="prev" title="PointRCNN模型分析(3D对象检测)">
+                  <i class="fa fa-angle-left"></i> PointRCNN模型分析(3D对象检测)
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2024/08/16/3D-ObjectDetector-3DSSD/" rel="next" title="3D Object Detector 3DSSD">
-                  3D Object Detector 3DSSD <i class="fa fa-angle-right"></i>
+                <a href="/2024/08/16/3D-ObjectDetector-3DSSD/" rel="next" title="3DSSD模型分析(3D对象检测)">
+                  3DSSD模型分析(3D对象检测) <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
