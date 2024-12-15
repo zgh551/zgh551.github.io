@@ -8285,6 +8285,7 @@ P(u,t) = P_1(u_1,t_1) - P_2(2,t-\frac{\pi}{2})
     <url>/2024/08/08/Perception-Ultrasonic/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>在自动驾驶使用场景中，一般会使用各类传感器(摄像头、激光雷达、毫米波雷达和超声波雷达等)来感知周围环境信息，传感器收集的大量信息，通过各类算法最终融合到一个真实的语义地图上，下游模块通过该语义地图做相应的规划和决策。</p>
+<span id="more"></span>
 <h2 id="超声波">超声波</h2>
 <p>超声波雷达是一种利用声波反射原理进行测距的传感器，主要用于短距离测量，一般测量范围在0.1m-5m之间，具有体积小、成本低、安装方便等特点。</p>
 <h3 id="测距原理">测距原理</h3>
@@ -8744,6 +8745,154 @@ D = T_{f} * V_{s} * k
       </categories>
       <tags>
         <tag>CTC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>多模态模型分析-面壁MiniCPMV</title>
+    <url>/2024/12/14/multi-modal-MiniCPMV/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>MiniCPM 是面壁与清华大学自然语言处理实验室共同开源的系列<strong>端侧</strong>大语言模型，主体语言模型 <code>MiniCPM-1B</code> 仅有 12亿（1.2B）的非词嵌入参数量。</p>
+<h2 id="模型框架介绍">模型框架介绍</h2>
+<p>如下图所示，是<strong>MiniCPMV</strong>模型的多模态推理流程图。如果有图片输入，会在文本字段中添加 <code>(&lt;image&gt;./&lt;/image&gt;)</code>占位符号，表示需要基于该图片特征进行内容的生成，当然也可以支持多个图片的输入，简单示例如下：</p>
+<ul>
+<li>单张图片</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">(&lt;image&gt;./&lt;/image&gt;)What is this picture?</span><br></pre></td></tr></table></figure>
+<ul>
+<li>多张图片</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">(&lt;image&gt;./&lt;/image&gt;)(&lt;image&gt;./&lt;/image&gt;)What is those pictures?</span><br></pre></td></tr></table></figure>
+<p>那么从图片的<strong>像素特征空间</strong>转到<strong>语言模型特征空间</strong>后，其等效的文本token长度固定为<code>64</code>，多张图片的token长度则对应为<strong>64</strong>的倍数。</p>
+<p><img data-src="https://s2.loli.net/2024/12/14/jZL4pkVA7Eea9Kg.png" style="zoom: 60%;" title="文本和图片输入示例"/></p>
+<span id="more"></span>
+<p>如果只有文本输入，则流程图如下：</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/2y6Hdhm8bj5c9X4.png" alt="单文本示例" /><figcaption aria-hidden="true">单文本示例</figcaption>
+</figure>
+<p>如下图所示，是Llama3.2的整体结构框图，支持<strong>图片</strong>、<strong>视频</strong>和<strong>语音</strong>等多个模态的输入，<strong>MiniCPMV</strong>一定程度上借鉴了<code>Llama3.2</code>的模型框架，并为了适应端侧部署进行了相关改进。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/vIldMWAYRcoh7O6.png" alt="LLama3" /><figcaption aria-hidden="true">LLama3</figcaption>
+</figure>
+<p><strong>MiniCPMV</strong>模型框架更接近下图所示的模型框架，使用 <code>SigLip</code> 模型实现对图片的编码，其编码后的特征空间等效为某些文本描述的特征空间，最后通过<code>交叉注意力机制</code>对编码器输出的特征空间进行 <strong>Query</strong>，获取与语言模型文本模态输入对齐的特征空间。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/2LlbsDXUSQ4KWE9.png" alt="模型框架示意图" /><figcaption aria-hidden="true">模型框架示意图</figcaption>
+</figure>
+<h2 id="vision-preprocess">Vision Preprocess</h2>
+<p>图片输入尺寸默认为 <code>448x448</code> ，按照patch <code>14x14</code> 对原图片进行切片，一共切<strong>1024</strong>个图像块，并平铺图像块，得到 <span class="math inline">\([3,14,14336]\)</span> 大小的像素矩阵。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/maECiZItyLSkFH6.png" alt="image process" /><figcaption aria-hidden="true">image process</figcaption>
+</figure>
+<h2 id="vision-embedding">Vision Embedding</h2>
+<p>视觉嵌入模块将预处理后的<strong>像素矩阵</strong>转换为嵌入维度为1536，大小为64的<strong>嵌入矩阵</strong>，其主要包含 <strong>Siglip Vision Transformer</strong> 和 <strong>Resampler</strong> 两个模块。</p>
+<ul>
+<li><strong>Siglip Vision Transformer(Image encoder)</strong>：负责从像素空间提取与文本描述等效的特征空间；</li>
+<li><strong>Resampler(Image adapter)</strong>：负责将视觉模态的嵌入序列转换为文本模态的嵌入序列，或者可以理解为构建了视觉特征与语言模型之间的适配器。</li>
+</ul>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/ZCsA61mHNwMRDjB.png" alt="Vision Embedding" /><figcaption aria-hidden="true">Vision Embedding</figcaption>
+</figure>
+<h3 id="siglip-vision-transformer-moduleclip">Siglip Vision Transformer Module(CLIP)</h3>
+<p>该模块由<code>27</code>层<strong>Ecoder模块</strong>组成，进行图片特征的提取，只获取最后一层图片的特征。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/fPd96VBNWEJsaKb.png" alt="Siglip Vision Transformer Module示意图" /><figcaption aria-hidden="true">Siglip Vision Transformer Module示意图</figcaption>
+</figure>
+<h4 id="vit">ViT</h4>
+<p>如下图所示，Siglip模块整体结构类似于ViT。 <img data-src="https://s2.loli.net/2024/12/14/zjmH8bJILUNG5h1.png" alt="ViT" /></p>
+<h4 id="clip">CLIP</h4>
+<p>模型训练采取的是 <strong>Contrastive Language–Image Pre-training(CLIP)</strong> 模型的方式，基于对比学习，通过同时学习图像和文本的表示，使得相似的图像和文本在特征空间中的表示更加接近。具体来说，CLIP模型包含两个主要部分：<strong>Text Encoder</strong>（文本编码器）和 <strong>Image Encoder</strong>（图像编码器）。</p>
+<ol type="1">
+<li><strong>文本编码器</strong>：将输入的文本转换为一系列向量，这些向量捕捉文本的语义信息。</li>
+<li><strong>图像编码器</strong>：将输入的图像转换为一系列向量，这些向量捕捉图像的视觉特征。</li>
+</ol>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/dgWvb9M21n3kxPm.png" alt="CLIP" /><figcaption aria-hidden="true">CLIP</figcaption>
+</figure>
+<p>在训练过程中，CLIP模型通过对比学习来优化文本和图像编码器，使得匹配的文本和图像对在特征空间中的距离更近，而不匹配的文本和图像对距离更远。这种学习方式使得CLIP模型能够有效地理解图像和文本之间的关系。</p>
+<ul>
+<li>CLIP模型具有以下性质：</li>
+</ul>
+<ol type="1">
+<li>多模态理解能力：能够同时理解图像和文本信息，实现跨模态的检索与匹配。</li>
+<li>强大的泛化能力：由于采用了自然语言监督，CLIP模型具有较好的泛化性能，可以处理未见过的类别和场景。</li>
+<li>灵活性：CLIP模型可以轻松地适应不同的任务和数据集，无需进行大量的微调。</li>
+</ol>
+<ul>
+<li>CLIP模型的应用场景主要包括：</li>
+</ul>
+<ol type="1">
+<li>文本到图像的生成：根据用户输入的文本提示生成相应的图像。CLIP模型将文本描述转换为特征向量，指导图像生成模型（如U-Net）生成与文本描述相符的图像。</li>
+<li>图像检索与分类：利用CLIP模型的多模态理解能力，实现基于文本的图像检索和分类任务。例如，在电商平台上，用户可以通过输入文本描述来搜索相关商品图像。</li>
+</ol>
+<h4 id="siglip">Siglip</h4>
+<p><strong>CLIP</strong>中的<strong>infoNCE损失</strong>是一种对比性损失，在SigLIP这个工作中，作者提出采用非对比性的sigmoid损失，能够更高效地进行图文预训练。</p>
+<h5 id="siglip-embedding">Siglip Embedding</h5>
+<p>如下图所示，原始像素组成的矩阵通过<code>卷积</code>和<code>位置编码</code>后生成视觉编码器所需的嵌入向量。其中，卷积的输出通道的大小与编码器所需的嵌入向量维度一致，卷积内核和步长与像素patch的大小保持一致。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/efwxJrMZAL3cT47.png" alt="Siglip Embedding" /><figcaption aria-hidden="true">Siglip Embedding</figcaption>
+</figure>
+<h5 id="siglip-encoder-layer">Siglip Encoder Layer</h5>
+<p>视觉Encoder器的网络结构与ViT的结构类似，如下图所示：</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/DN6ltoYap8BgSMn.png" alt="Siglip Encoder" /><figcaption aria-hidden="true">Siglip Encoder</figcaption>
+</figure>
+<h3 id="resampler">Resampler</h3>
+<p>Resampler模块采用 <strong>Cross-Attention</strong> 机制，及表示Transformer架构中混合<code>两种不同模态的嵌入序列</code>的注意机制。</p>
+<ul>
+<li>两个序列必须具有相同的维度；</li>
+<li>两个序列可以是不同的模态（如：文本、声音、图像）；</li>
+<li>一个序列作为输入的Q，定义了<strong>输出的序列长度</strong>，另一个序列提供输入的 <span class="math inline">\(K\)</span> 和 <span class="math inline">\(V\)</span>； 公式表示如下： <span class="math display">\[CrossAttention = Softmax(\frac{Linear(W_Q,S_2)*Linear(W_K,S_1)^T}{\sqrt{d_k}})Linear(W_V,S_1)\]</span></li>
+</ul>
+<p>如下图所示， <span class="math inline">\(Q_{P}\)</span>表示学习的参数，其定义的输出序列的长度也为64， <span class="math inline">\(CLIP\)</span>表示视觉模态序列，通过交叉注意力机制，最终将视觉模态序列转为文本模态序列。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/u8KrantRxlOeCgf.png" alt="Resampler模块示意图" /><figcaption aria-hidden="true">Resampler模块示意图</figcaption>
+</figure>
+<h2 id="minicpm-llm">MiniCPM LLM</h2>
+<p>下图所示，是LLM的总体架构，一共52层Decoder层，整体结构与Llama3类似。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/vIHWAQhVkoR7mUe.png" alt="MiniCPM LLM" /><figcaption aria-hidden="true">MiniCPM LLM</figcaption>
+</figure>
+<h3 id="minicpm-decoder-layer">MiniCPM Decoder Layer</h3>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/ayLKigevcwkhCJQ.png" alt="Decoder Layer" /><figcaption aria-hidden="true">Decoder Layer</figcaption>
+</figure>
+<h4 id="rmsnorm">RMSNorm</h4>
+<p>设计选择主要基于以下考虑：</p>
+<ul>
+<li>简化: 没有可学习的参数，简化了模型的训练和优化。</li>
+<li>稳定性: 避免了均值中心化，提高了数值稳定性。</li>
+<li>效率: 计算量略小于标准 LayerNorm。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">rms_layernorm</span>(<span class="params">hidden: torch.Tensor, weight: torch.Tensor, eps: <span class="built_in">float</span></span>):</span><br><span class="line">    old_dtype = hidden.dtype</span><br><span class="line">    variance = hidden.to(torch.float32).<span class="built_in">pow</span>(<span class="number">2</span>).mean(dim=-<span class="number">1</span>, keepdim=<span class="literal">True</span>)</span><br><span class="line">    hidden = (hidden * torch.rsqrt(variance + eps)).to(old_dtype)</span><br><span class="line">    <span class="keyword">return</span> hidden * weight</span><br></pre></td></tr></table></figure>
+<h4 id="rotary-position-embedding">Rotary Position Embedding</h4>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/1lOeEcByKM45LrC.png" alt="RoPE" /><figcaption aria-hidden="true">RoPE</figcaption>
+</figure>
+<p>等效如下公式： <span class="math display">\[\begin{bmatrix}
+   cos &amp; -sin \\
+   sin &amp; cos
+\end{bmatrix}\begin{bmatrix}p(2i) \\ p(2i+1)\end{bmatrix}\]</span></p>
+<h4 id="group-query-attention">Group Query Attention</h4>
+<p>Group Query Attention(GQA)示意图如下：</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/Bn4LUkIez5dsNab.png" alt="GQA" /><figcaption aria-hidden="true">GQA</figcaption>
+</figure>
+<p>代码中的<code>repeat KV</code>模块实际上就是将共享的<strong>KV</strong>值重复展开，与Q的维度对齐。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/UX6xqOJQIr92D14.png" alt="repeat KV" /><figcaption aria-hidden="true">repeat KV</figcaption>
+</figure>
+<h4 id="silu">SiLU</h4>
+<p><span class="math display">\[silu(x)=x*\sigma(x)\]</span> 其中， <span class="math inline">\(\sigma(x)\)</span>表示逻辑sigmoid。</p>
+<figure>
+<img data-src="https://s2.loli.net/2024/12/14/vKHGhJuAeRE6QY9.png" alt="SiLU激活函数" /><figcaption aria-hidden="true">SiLU激活函数</figcaption>
+</figure>
+]]></content>
+      <categories>
+        <category>LLM</category>
+      </categories>
+      <tags>
+        <tag>MimiCPMV</tag>
+        <tag>Mutilmodal</tag>
+        <tag>LLM</tag>
       </tags>
   </entry>
 </search>
