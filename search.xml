@@ -9135,11 +9135,11 @@ D = T_{f} * V_{s} * k
 <h3 id="microstat-sampling">Microstat Sampling</h3>
 <p>算法流程如下：</p>
 <figure>
-<img data-src="https://s2.loli.net/2025/02/15/BTqW214pgOYNGsl.png" alt="image.png" /><figcaption aria-hidden="true">image.png</figcaption>
+<img data-src="https://s2.loli.net/2025/02/15/BTqW214pgOYNGsl.png" alt="Microstat Sampling" /><figcaption aria-hidden="true">Microstat Sampling</figcaption>
 </figure>
 <h3 id="microstat-v2-sampling">Microstat V2 Sampling</h3>
-<p><strong>mirostat v2</strong> 算法相对于原始 mirostat 算法更加简洁和直接。它通过直接截断 surprise 值 <span class="math inline">\(I(x_i)\)</span> 大于 <span class="math inline">\(\mu\)</span> 的 token 来控制生成文本的 surprise 值。算法的核心仍然是根据观察到的 surprise 值与目标 surprise 值的误差来更新自适应参数 <span class="math inline">\(\mu\)</span> 。这种方法避免了原始 mirostat 算法中复杂的 k 值计算，可能更易于理解和实现。<strong>mirostat v2</strong> 同样致力于在生成高质量文本的同时，避免生成重复或过于平淡的文本。</p>
-<p>找到第一个 surprise 值大于<span class="math inline">\(\mu\)</span>的 token。</p>
+<p><strong>mirostat v2</strong> 算法相对于原始 mirostat 算法更加简洁和直接。它通过直接截断 <code>surprise</code> 值 <span class="math inline">\(I(x_i)\)</span> 大于 <span class="math inline">\(\mu\)</span> 的 token 来控制生成文本的 <code>surprise</code> 值。算法的核心仍然是根据观察到的 <code>surprise</code> 值与目标 <code>surprise</code> 值的误差来更新自适应参数 <span class="math inline">\(\mu\)</span> 。这种方法避免了原始 <strong>mirostat</strong> 算法中复杂的 <strong>k</strong> 值计算，可能更易于理解和实现。<strong>mirostat v2</strong> 同样致力于在生成高质量文本的同时，避免生成重复或过于平淡的文本。</p>
+<p>找到第一个 <code>surprise</code> 值大于<span class="math inline">\(\mu\)</span>的 token。</p>
 <h2 id="基于语法规则">基于语法规则</h2>
 <h3 id="grammar-sampling">Grammar Sampling</h3>
 <p><strong>Grammar Sampling</strong> 指的是在文本生成过程中，利用语法规则来约束或引导采样过程，从而确保生成的文本在语法结构上是正确的、符合特定规范的。这种方法可以应用于各种文本生成任务，例如代码生成、数据解析、自然语言生成等。</p>
