@@ -8888,6 +8888,7 @@ D = T_{f} * V_{s} * k
 ]]></content>
       <categories>
         <category>LLM</category>
+        <category>Mutilmodal</category>
       </categories>
       <tags>
         <tag>MimiCPMV</tag>
@@ -9275,10 +9276,11 @@ D = T_{f} * V_{s} * k
 ]]></content>
       <categories>
         <category>llama.cpp</category>
-        <category>LLM</category>
+        <category>Sampling</category>
       </categories>
       <tags>
         <tag>sampling</tag>
+        <tag>llama.cpp</tag>
       </tags>
   </entry>
   <entry>
@@ -9451,10 +9453,12 @@ D = T_{f} * V_{s} * k
 ]]></content>
       <categories>
         <category>llama.cpp</category>
-        <category>LLM</category>
+        <category>ggml</category>
       </categories>
       <tags>
         <tag>ggml</tag>
+        <tag>llama.cpp</tag>
+        <tag>tensor lib</tag>
       </tags>
   </entry>
   <entry>
@@ -9596,11 +9600,12 @@ D = T_{f} * V_{s} * k
 ]]></content>
       <categories>
         <category>llama.cpp</category>
-        <category>LLM</category>
+        <category>Tokenizer</category>
       </categories>
       <tags>
         <tag>Tokenizer</tag>
         <tag>Embedding</tag>
+        <tag>llama.cpp</tag>
       </tags>
   </entry>
 </search>
