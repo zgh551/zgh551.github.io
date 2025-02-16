@@ -9281,4 +9281,176 @@ D = T_{f} * V_{s} * k
         <tag>sampling</tag>
       </tags>
   </entry>
+  <entry>
+    <title>llama.cpp-ggml介绍</title>
+    <url>/2025/02/15/llama-cpp-ggml/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p><code>llama.cpp</code> 使用 <strong>ggml</strong> 张量加速库，这是一个纯 C++ 实现的张量加速库。</p>
+<h2 id="gguf">GGUF</h2>
+<p><strong>GGUF(GPT-Generated-Unified-Format)</strong> 是一种文件格式，用于存储使用 GGML 进行推理的模型以及基于 GGML 的执行器。GGUF 是一种二进制格式，旨在快速加载和保存模型，并且易于读取。模型传统上是使用 PyTorch 或其他框架开发的，然后转换为 GGUF 以用于 GGML。 它于 2023 年 8 月推出，是 <code>GGML</code>、<code>GGMF</code> 和 <code>GGJT</code> 的后续文件格式，旨在通过包含加载模型所需的所有信息来做到明确无误。它还被设计为可扩展的，因此可以在不破坏兼容性的情况下将新信息添加到模型中。</p>
+<h3 id="历史现状">历史现状</h3>
+<p>目前，有三种用于大型语言模型的GGML文件格式在流传。</p>
+<ul>
+<li><strong>GGML (GPT-Generated-Model-Layout)(非正式版本)</strong> 基线格式，无版本控制或对齐。</li>
+<li><strong>GGMF (GPT-Generated-Model-Format)(第一个版本)</strong> 与GGML相同，使用 Protobuf 进行序列化，但增加了版本控制，适用于需要考虑文件版本兼容性的场景。仅存在一个版本。</li>
+<li><strong>GGJT (GPT-Generated-JIT)</strong> 使张量对齐以便与需要对齐的 mmap 一起使用。v1、v2 和 v3 彼此相同，但后两个版本使用了与先前版本不兼容的不同量化方案。专注于性能优化，特别是在使用内存映射时的性能，但牺牲了与旧版本的兼容性。</li>
+</ul>
+<hr />
+<p><strong>GGUF</strong> 实际上是基于 <strong>GGJT</strong> 的格式进行优化的，并解决了 <strong>GGML</strong> 当初面临的问题，包括：</p>
+<ol type="1">
+<li>可扩展性：轻松为 GGML 架构下的工具添加新功能，或者向 GGUF 模型添加新 Feature，不会破坏与现有模型的兼容性。</li>
+<li>对 mmap（内存映射）的兼容性：该模型可以使用 mmap 进行加载，实现快速载入和存储。</li>
+<li>易于使用：模型可以使用少量代码轻松加载和存储，无需依赖的 Library，同时对于不同编程语言支持程度也高。</li>
+<li>模型信息完整：加载模型所需的所有信息都包含在模型文件中，不需要额外编写设置文件。</li>
+<li>有利于模型量化：GGUF 支持模型量化（2位、4 位、8 位、F16），在 GPU 变得越来越昂贵的情况下，节省 vRAM 成本也非常重要。</li>
+</ol>
+<h3 id="历史版本">历史版本</h3>
+<ul>
+<li><strong>V1</strong> GGUF文件格式的初始版本</li>
+<li><strong>V2</strong> 大多数可计数的值（长度等）已从 uint32 更改为 uint64，以便将来能够支持更大的模型。</li>
+<li><strong>V3</strong> 添加对大端设备的支持。</li>
+</ul>
+<h3 id="文件结构">文件结构</h3>
+<p>如下代码是gguf文件的结构体，总的结构如下：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">gguf_context</span> &#123;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">gguf_header</span> header;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">gguf_kv</span>          * kv;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">gguf_tensor_info</span> * infos;</span><br><span class="line"></span><br><span class="line">    <span class="type">size_t</span> alignment;</span><br><span class="line">    <span class="type">size_t</span> offset;    <span class="comment">// offset of `data` from beginning of file</span></span><br><span class="line">    <span class="type">size_t</span> size;      <span class="comment">// size of `data` in bytes</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//uint8_t * padding;</span></span><br><span class="line">    <span class="type">void</span> * data;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>其中，文件头结构如下，包含魔术数、版本信息、tensor的数量和KV字典的数量等信息：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">gguf_header</span> &#123;</span><br><span class="line">    <span class="type">char</span> magic[<span class="number">4</span>];</span><br><span class="line"></span><br><span class="line">    <span class="type">uint32_t</span> version;</span><br><span class="line">    <span class="type">uint64_t</span> n_tensors; <span class="comment">// GGUFv2</span></span><br><span class="line">    <span class="type">uint64_t</span> n_kv;      <span class="comment">// GGUFv2</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>KV字典的结构如下，包含key值、value值和数据类型等信息：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">gguf_kv</span> &#123;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">gguf_str</span> key;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">enum</span>  <span class="title class_">gguf_type</span>  type;</span><br><span class="line">    <span class="keyword">union</span> <span class="title class_">gguf_value</span> value;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>tensor结构体如下，包括tensor名、维度、类型和指针等信息：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">gguf_tensor_info</span> &#123;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">gguf_str</span> name;</span><br><span class="line"></span><br><span class="line">    <span class="type">uint32_t</span> n_dims;</span><br><span class="line">    <span class="type">uint64_t</span> ne[GGML_MAX_DIMS];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">enum</span> <span class="title class_">ggml_type</span> type;</span><br><span class="line"></span><br><span class="line">    <span class="type">uint64_t</span> offset; <span class="comment">// offset from start of `data`, must be a multiple of `ALIGNMENT`</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// for writing API</span></span><br><span class="line">    <span class="type">const</span> <span class="type">void</span> * data;</span><br><span class="line">    <span class="type">size_t</span> size;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>如下图所示，是 <strong>GGUF</strong> 文件格式的结构图：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/15/daxonVbHLjrUwyg.png" alt="GGUF V3" /><figcaption aria-hidden="true">GGUF V3</figcaption>
+</figure>
+<h4 id="标准化的键值对gguf_kv">标准化的键值对(gguf_kv)</h4>
+<p>以下键值对已实现标准化。随着未来更多用例的出现，此列表或许会有所增加。在条件允许的情况下，名称会与原始模型定义保持一致，以方便在两者之间进行映射。 并非所有这些都是必需的，但都建议使用。必需的键已高亮标注。对于被省略的键值对，读者应假定其值未知，并依据具体情况使用默认值或报错。 社区能够开发自身的键值对来承载额外的数据。不过，这些键值对应当运用相关的社区名称进行命名空间的划分，以规避冲突。例如，rustformers 社区可以将“rustformers.”作为其所有键的前缀。倘若某个特定社区的键值被广泛运用，那么它有可能会被提升为标准键值对。 依照惯例，除非另有说明，大多数计数/长度/等均为 uint64 类型。这是为了将来能够支持更大的模型。某些模型可能对其值采用 uint32 类型；建议读者同时支持这两种类型。</p>
+<p>可以通过如下网页编辑器查看模型文件结构： <span class="exturl" data-url="aHR0cHM6Ly9zZW1pZHJpdmUuZmVpc2h1LmNuL3dpa2kvRDRheHdCc3NqaXhOS25rbWRCMWNyeG5DblJiI3NoYXJlLVhCZGhkOWlIUm91d0tSeGNWRzBjbDczNG5QZA==">gguf-editor<i class="fa fa-external-link-alt"></i></span></p>
+<h5 id="llm">LLM</h5>
+<p>在下文中，<a href="#llm">llm</a> 用于代替特定大型语言模型架构的名称。例如，llama 代表 LLaMA，mpt 代表 MPT，等等。如果在某个架构的章节中提到，则该架构需要该键，但并非所有架构都需要所有键。请参阅相关章节了解更多信息。</p>
+<h5 id="tokenizer">Tokenizer</h5>
+<p>以下键用于描述模型的分词器。建议模型作者尽可能支持这些键，因为这将允许支持的执行器获得更好的分词质量。</p>
+<ul>
+<li><code>tokenizer.ggml.model</code>：<strong>分词器模型名称</strong>
+<ol type="1">
+<li><strong>llama</strong>: SPM（LLaMA tokenizer based on byte-level BPE with byte fallback）；</li>
+<li><strong>bert</strong>: WPM (BERT tokenizer based on WordPiece)；</li>
+<li><strong>gpt2</strong>:BPE（GPT-2 tokenizer based on byte-level BPE）；</li>
+<li><strong>t5</strong> : UGM (T5 tokenizer based on Unigram)</li>
+<li><strong>rwkv</strong>: RWKV tokenizer based on greedy tokenization;</li>
+</ol></li>
+<li><code>tokenizer.ggml.pre</code>: <strong>预分词器名称</strong> 只有使用BPE类型的模型才有预分词器的配置项。
+<ol type="1">
+<li>llama3</li>
+</ol></li>
+<li><code>tokenizer.ggml.tokens</code>: <strong>模型使用的词元 ID 索引的词原列表</strong></li>
+<li><code>tokenizer.ggml.scores</code>：<strong>词元的概率值</strong> 如果存在，则为每个词元的得分/概率。如果不存在，则假设所有词元具有相同的概率。如果存在，则其长度和索引必须与词元相同。</li>
+<li><code>tokenizer.ggml.token_type</code>：<strong>词元类型</strong> 如果存在，则其长度和索引必须与词元相同。
+<ol type="1">
+<li>0：未定义；</li>
+<li>1：正常；</li>
+<li>2：未知；</li>
+<li>3：控制；</li>
+<li>4：用户定义；</li>
+<li>5：未使用；</li>
+<li>6：字节；</li>
+</ol></li>
+</ul>
+<h4 id="标准化的张量名称gguf_tensor_info">标准化的张量名称(gguf_tensor_info)</h4>
+<p>位于文件 gguf-py/gguf/constants.py中，为最小化复杂度并最大化兼容性，建议使用Transformer架构的模型对其张量使用以下命名约定：</p>
+<h5 id="base-layers">Base layers</h5>
+<p><strong>AA.weight</strong> 或 <strong>AA.bias</strong></p>
+<p>其中，<strong>AA</strong> 可以是：</p>
+<ul>
+<li><code>token_embd</code>：词嵌入层</li>
+<li><code>position_embd</code>：位置嵌入层</li>
+<li><code>output_norm</code>：输出归一化层</li>
+<li><code>output</code>：输出层</li>
+</ul>
+<h5 id="attention-and-feed-forward-layer-blocks">Attention and feed-forward layer blocks</h5>
+<p><strong>blk.N.BB.weight</strong> 或 <strong>blk.N.BB.bias</strong> 其中<strong>N</strong>表示某层所属的块编号，而<strong>BB</strong>可以是：</p>
+<ul>
+<li><code>attn_norm</code>：注意力归一化层</li>
+<li><code>attn_norm_2</code>：注意力归一化层</li>
+</ul>
+<h3 id="命名规范">命名规范</h3>
+<p>GGUF 遵循 <基础名称><尺寸标签><微调><版本><编码><类型><分片>.gguf 的命名约定，其中每个组件如有存在则以 - 分隔。最终目标是让人们能够一目了然地获取模型最重要的细节。由于现有 gguf 文件名的多样性，它并非旨在完全适用于字段解析。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/16/if7LTMWXSd3zuCe.png" alt="命名" /><figcaption aria-hidden="true">命名</figcaption>
+</figure>
+<h2 id="ggml_tensor">ggml_tensor</h2>
+<p>参考源码对tensor的结构定义如下：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">ggml_tensor</span> &#123;</span><br><span class="line">    <span class="keyword">enum</span> <span class="title class_">ggml_type</span> type;</span><br><span class="line">    <span class="built_in">GGML_DEPRECATED</span>(<span class="keyword">enum</span> ggml_backend_type backend, <span class="string">&quot;use the buffer type to find the storage location of the tensor&quot;</span>);</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">ggml_backend_buffer</span> * buffer;</span><br><span class="line">    <span class="type">int64_t</span> ne[GGML_MAX_DIMS]; <span class="comment">// number of elements</span></span><br><span class="line">    <span class="type">size_t</span>  nb[GGML_MAX_DIMS]; <span class="comment">// stride in bytes:</span></span><br><span class="line">    <span class="comment">// compute data</span></span><br><span class="line">    <span class="keyword">enum</span> <span class="title class_">ggml_op</span> op;</span><br><span class="line">    <span class="comment">// op params - allocated as int32_t for alignment</span></span><br><span class="line">    <span class="type">int32_t</span> op_params[GGML_MAX_OP_PARAMS / <span class="built_in">sizeof</span>(<span class="type">int32_t</span>)];</span><br><span class="line">    <span class="type">int32_t</span> flags;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">ggml_tensor</span> * src[GGML_MAX_SRC];</span><br><span class="line">    <span class="comment">// source tensor and offset for views</span></span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">ggml_tensor</span> * view_src;</span><br><span class="line">    <span class="type">size_t</span>               view_offs;</span><br><span class="line">    <span class="type">void</span> * data;</span><br><span class="line">    <span class="type">char</span> name[GGML_MAX_NAME];</span><br><span class="line">    <span class="type">void</span> * extra; <span class="comment">// extra things e.g. for ggml-cuda.cu</span></span><br><span class="line">    <span class="type">char</span> padding[<span class="number">8</span>];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="基本属性">基本属性</h3>
+<h4 id="type">type</h4>
+<p>包含张量元素的原始类型，例如<strong>GGML_TYPE_F32</strong>表示张量内存储的每个元素是32bit的浮点数。详细的支持类型列表如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">enum ggml_type &#123;</span><br><span class="line">    GGML_TYPE_F32     = <span class="number">0</span>,</span><br><span class="line">    GGML_TYPE_F16     = <span class="number">1</span>,</span><br><span class="line">    GGML_TYPE_Q4_0    = <span class="number">2</span>,</span><br><span class="line">    GGML_TYPE_Q4_1    = <span class="number">3</span>,</span><br><span class="line">    // GGML_TYPE_Q4_2 = <span class="number">4</span>, support has been removed</span><br><span class="line">    // GGML_TYPE_Q4_3 = <span class="number">5</span>, support has been removed</span><br><span class="line">    GGML_TYPE_Q5_0    = <span class="number">6</span>,</span><br><span class="line">    GGML_TYPE_Q5_1    = <span class="number">7</span>,</span><br><span class="line">    GGML_TYPE_Q8_0    = <span class="number">8</span>,</span><br><span class="line">    GGML_TYPE_Q8_1    = <span class="number">9</span>,</span><br><span class="line">    GGML_TYPE_Q2_K    = <span class="number">10</span>,</span><br><span class="line">    GGML_TYPE_Q3_K    = <span class="number">11</span>,</span><br><span class="line">    GGML_TYPE_Q4_K    = <span class="number">12</span>,</span><br><span class="line">    GGML_TYPE_Q5_K    = <span class="number">13</span>,</span><br><span class="line">    GGML_TYPE_Q6_K    = <span class="number">14</span>,</span><br><span class="line">    GGML_TYPE_Q8_K    = <span class="number">15</span>,</span><br><span class="line">    GGML_TYPE_IQ2_XXS = <span class="number">16</span>,</span><br><span class="line">    GGML_TYPE_IQ2_XS  = <span class="number">17</span>,</span><br><span class="line">    GGML_TYPE_IQ3_XXS = <span class="number">18</span>,</span><br><span class="line">    GGML_TYPE_IQ1_S   = <span class="number">19</span>,</span><br><span class="line">    GGML_TYPE_IQ4_NL  = <span class="number">20</span>,</span><br><span class="line">    GGML_TYPE_IQ3_S   = <span class="number">21</span>,</span><br><span class="line">    GGML_TYPE_IQ2_S   = <span class="number">22</span>,</span><br><span class="line">    GGML_TYPE_IQ4_XS  = <span class="number">23</span>,</span><br><span class="line">    GGML_TYPE_I8      = <span class="number">24</span>,</span><br><span class="line">    GGML_TYPE_I16     = <span class="number">25</span>,</span><br><span class="line">    GGML_TYPE_I32     = <span class="number">26</span>,</span><br><span class="line">    GGML_TYPE_I64     = <span class="number">27</span>,</span><br><span class="line">    GGML_TYPE_F64     = <span class="number">28</span>,</span><br><span class="line">    GGML_TYPE_IQ1_M   = <span class="number">29</span>,</span><br><span class="line">    GGML_TYPE_BF16    = <span class="number">30</span>,</span><br><span class="line">    GGML_TYPE_Q4_0_4_4 = <span class="number">31</span>,</span><br><span class="line">    GGML_TYPE_Q4_0_4_8 = <span class="number">32</span>,</span><br><span class="line">    GGML_TYPE_Q4_0_8_8 = <span class="number">33</span>,</span><br><span class="line">    GGML_TYPE_TQ1_0   = <span class="number">34</span>,</span><br><span class="line">    GGML_TYPE_TQ2_0   = <span class="number">35</span>,</span><br><span class="line">    GGML_TYPE_COUNT,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="backend">backend</h4>
+<p>该字段已经被弃用，不推荐使用，主要是为了和旧版本保持兼容，之前负责管理和存储张量数据的后端设备，目前建议使用 buffer字段中的type属性来确定数据存储位置。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">enum ggml_backend_type &#123;</span><br><span class="line">    GGML_BACKEND_TYPE_CPU = <span class="number">0</span>,</span><br><span class="line">    GGML_BACKEND_TYPE_GPU = <span class="number">10</span>,</span><br><span class="line">    GGML_BACKEND_TYPE_GPU_SPLIT = <span class="number">20</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="ne">ne</h4>
+<p>该字段是包含每个维度元素的数量的数组，由于ggml采用行主序，意味着<span class="math inline">\(\mathtt{ne}[0]\)</span>表示每一行的元素个数，<span class="math inline">\(\mathtt{ne}[1]\)</span>表示每一列的元素个数。其中，支持的最大维度为<code>4</code>。</p>
+<h4 id="nb">nb</h4>
+<p>该字段包含每个维度步幅(单位byte)的数组，即为每个维度中连续元素之间的字节数。</p>
+<ol type="1">
+<li>第一个维度的步幅计算为原始元素的字节大小，通常使用<strong>ggml_type_size</strong>函数获得: <span class="math display">\[\mathtt{nb}=\textmd{ggml\_type\_size(type)}\]</span></li>
+<li>第二个维度的步幅计算考虑了阻塞(可能是为了性能和对齐)和填充: <span class="math display">\[\mathtt{nb}[1] = \mathtt{nb}[0]   * \Big(\frac{\mathtt{ne}[0]}{\textmd{ggml\_blck\_size(type)}}\Big) + \textmd{padding}\]</span></li>
+<li>后续维度的步幅计算为 <span class="math display">\[\mathtt{nb}[i] = \mathtt{nb}[i-1] * \mathtt{ne}[i-1]\]</span></li>
+</ol>
+<h4 id="示例">示例</h4>
+<p>假设tensor的数据类型为 float32，shape为<span class="math inline">\([2,3,4]\)</span>，则下图描述了<span class="math inline">\(\mathtt{ne}\)</span>和<span class="math inline">\(\mathtt{nb}\)</span>的计算过程： <img data-src="https://s2.loli.net/2025/02/16/NG8CV3zqpSZMImo.png" alt="32bit的浮点数张量，ne={4,3,2}, nb={4,16,48}" /> 数据结构中使用步幅的目的是为了执行某些张量运算时无需数据拷贝操作。例如，对一个二维矩阵进行转置操作就是将行转换为列，在ggml中可以通过简单地翻转 ne 和 nb 并指向相同的基础数据来实现，详细代码如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">struct ggml_tensor * ggml_transpose(</span><br><span class="line">        struct ggml_context * ctx,</span><br><span class="line">        struct ggml_tensor  * a) &#123;</span><br><span class="line">    struct ggml_tensor * result = ggml_view_tensor(ctx, a);</span><br><span class="line">    ggml_format_name(result, <span class="string">&quot;%s (transposed)&quot;</span>, a-&gt;name);</span><br><span class="line"></span><br><span class="line">    result-&gt;ne[<span class="number">0</span>] = a-&gt;ne[<span class="number">1</span>];</span><br><span class="line">    result-&gt;ne[<span class="number">1</span>] = a-&gt;ne[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">    result-&gt;nb[<span class="number">0</span>] = a-&gt;nb[<span class="number">1</span>];</span><br><span class="line">    result-&gt;nb[<span class="number">1</span>] = a-&gt;nb[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">    result-&gt;op     = GGML_OP_TRANSPOSE;</span><br><span class="line">    result-&gt;src[<span class="number">0</span>] = a;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上述函数中，result 是一个新张量，它被初始化为指向与源张量 <code>a</code> 相同的多维数字数组。通过交换 <code>ne</code> 中的维度和 <code>nb</code> 中的步幅，实现了转置操作而无需复制任何数据。 例如，张量<span class="math inline">\(K=[3,4]\)</span>，则其转置为<span class="math inline">\(K^T=[4,3]6\)</span>，通过交换 <code>ne</code> 和 <code>nb</code> 实现的转置操作流程如下图：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/16/hAZtxJkT3SF7DKy.png" alt="transpose操作示例" /><figcaption aria-hidden="true">transpose操作示例</figcaption>
+</figure>
+<h3 id="张量计算">张量计算</h3>
+<p>如前所述，有些张量表示存储的数据，而另一些张量则表示其他张量之间运算的理论结果。</p>
+<h4 id="op">op</h4>
+<p>指定创建此张量的操作(矩阵乘、加法或激活等)，如果设置为<strong>GGML_OP_NONE</strong>，表明该张量持有数据，否则表明是某个运算的结果值。<strong>GGML_OP_MUL_MAT</strong>意味着该张量不持有数据，而仅代表两个其他张量之间矩阵乘法的结果。</p>
+<h4 id="op_params">op_params</h4>
+<p>存储生成张量的操作 (op) 的特定参数。例如，如果 op 是卷积，则 op_params 可能包含步长、填充和内核大小等。使用 int32_t 可能是确保适当的内存对齐。</p>
+<h4 id="flags">flags</h4>
+<p>存储与张量关联的标志或属性。这些可能指示张量是否为常量、是否需要梯度计算或是否为另一个张量的视图等信息。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> <span class="title class_">ggml_tensor_flag</span> &#123;</span><br><span class="line">    GGML_TENSOR_FLAG_INPUT  =  <span class="number">1</span>, <span class="comment">// ...is an input for the GGML compute graph</span></span><br><span class="line">    GGML_TENSOR_FLAG_OUTPUT =  <span class="number">2</span>, <span class="comment">// ...is an output for the GGML compute graph</span></span><br><span class="line">    GGML_TENSOR_FLAG_PARAM  =  <span class="number">4</span>, <span class="comment">// ...contains trainable parameters</span></span><br><span class="line">    GGML_TENSOR_FLAG_LOSS   =  <span class="number">8</span>, <span class="comment">// ...defines loss for numerical optimization (multiple loss tensors add up)</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="src">src</h4>
+<p>指向源张量的指针数组。这表示计算图中的依赖关系。例如，两个张量相加的结果将在该数组中包含指向两个输入张量的指针。目前支持的最大输入数量为<code>10</code>。</p>
+<h4 id="示例-1">示例</h4>
+<p>可以使用矩阵乘法函数说明上述概念：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">ggml_tensor</span> * <span class="built_in">ggml_mul_mat</span>(</span><br><span class="line">        <span class="keyword">struct</span> ggml_context * ctx,</span><br><span class="line">        <span class="keyword">struct</span> ggml_tensor  * a,</span><br><span class="line">        <span class="keyword">struct</span> ggml_tensor  * b) &#123;</span><br><span class="line">    <span class="built_in">GGML_ASSERT</span>(<span class="built_in">ggml_can_mul_mat</span>(a, b));</span><br><span class="line">    <span class="built_in">GGML_ASSERT</span>(!<span class="built_in">ggml_is_transposed</span>(a));</span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> <span class="type">int64_t</span> ne[<span class="number">4</span>] = &#123; a-&gt;ne[<span class="number">1</span>], b-&gt;ne[<span class="number">1</span>], b-&gt;ne[<span class="number">2</span>], b-&gt;ne[<span class="number">3</span>] &#125;;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">ggml_tensor</span> * result = <span class="built_in">ggml_new_tensor</span>(ctx, GGML_TYPE_F32, <span class="number">4</span>, ne);</span><br><span class="line"></span><br><span class="line">    result-&gt;op     = GGML_OP_MUL_MAT;</span><br><span class="line">    result-&gt;src[<span class="number">0</span>] = a;</span><br><span class="line">    result-&gt;src[<span class="number">1</span>] = b;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上述函数中，result 不包含任何数据，它仅仅代表着 a 和 b 相乘的理论结果。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/16/u8TDEdxBawWP9Ff.png" alt="op" /><figcaption aria-hidden="true">op</figcaption>
+</figure>
+<h3 id="张量视图">张量视图</h3>
+<h4 id="view_src">view_src</h4>
+<p>如果此张量是另一个张量的视图，则此指针指向原始（源）张量。视图与源张量共享数据，而无需创建副本。</p>
+<h4 id="view_offs">view_offs</h4>
+<p>如果此张量是视图，则此字段表示从源张量数据开始到此视图数据开始的字节偏移量。</p>
+<h4 id="data">data</h4>
+<p>指向实际张量数据的指针。根据实现的不同，这可能直接指向 <code>buffer</code> 或 <code>view_src</code> 张量中的特定位置。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/16/HRdrAFO9kq2SKgW.png" alt="tensor view" /><figcaption aria-hidden="true">tensor view</figcaption>
+</figure>
+<h3 id="其它字段">其它字段</h3>
+<h4 id="name">name</h4>
+<p>一个字符串，用于给张量命名，这对于调试和可视化很有帮助</p>
+<h4 id="extra">extra</h4>
+<p>一个通用指针，用于存储额外的数据，很可能用于后端特定的信息或扩展（for ggml-cuda.cu）。</p>
+<h4 id="padding">padding</h4>
+<p>填充以确保适当的内存对齐或容纳结构体的潜在未来添加，而不会破坏 ABI 兼容性.</p>
+<h3 id="ggml_tensor的应用">ggml_tensor的应用</h3>
+<p>llama.cpp构建网络图的方式就是以tensor对象为基本节点，以链表的形式构建网络的。如下图所示，构建了一个简单的 <strong>Attention</strong> 图。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/16/seX2SowMHCrpFL7.png" alt="attention graph" /><figcaption aria-hidden="true">attention graph</figcaption>
+</figure>
+]]></content>
+      <categories>
+        <category>llama.cpp</category>
+        <category>LLM</category>
+      </categories>
+      <tags>
+        <tag>ggml</tag>
+      </tags>
+  </entry>
 </search>
