@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="1AYoSrGqW5qB6rPYnoXq_tIpkaudIK3MXrpUhL_69NI">
+  <meta name="msvalidate.01" content="DF49D5E49BAD0CB8947DDD3824A370B1">
+  <meta name="baidu-site-verification" content="code-EEmJnUEq0A">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"zgh551.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":true,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":true,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":"changyan","storage":true,"lazyload":true,"nav":null,"activeClass":"changyan"},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false,"trigger":"auto"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="概述 如下图所示，是llama.cpp加载GGUF格式模型文件时的调用流程：  gguf File Load Flow   首先根据模型配置参数确定模型推理的后端设备类型和模型调用方式； 加载获取模型架构类型信息； 加载模型的超参数，包括模型名、词表大小、嵌入向量大小、模型层数等模型结构相关的超参数；">
+<meta property="og:type" content="article">
+<meta property="og:title" content="llama.cpp-模型加载阶段">
+<meta property="og:url" content="https://zgh551.github.io/2025/02/16/llama-cpp-load-model/index.html">
+<meta property="og:site_name" content="Henry-Z">
+<meta property="og:description" content="概述 如下图所示，是llama.cpp加载GGUF格式模型文件时的调用流程：  gguf File Load Flow   首先根据模型配置参数确定模型推理的后端设备类型和模型调用方式； 加载获取模型架构类型信息； 加载模型的超参数，包括模型名、词表大小、嵌入向量大小、模型层数等模型结构相关的超参数；">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2025/02/16/LNqlgVjnJaoS8MC.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/16/awyDN2UHAuIdjsq.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/16/UpRNhE76x2mwtSi.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/16/jZCGrEKV4l8QIXv.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/16/2K1Jcoyd95WntIx.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/16/N6oAHCj9g5wi7Gp.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/16/Z9vaVzAOBYXJxQc.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/16/NdCsSgIAwYyQpVi.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/16/68OhZArLQuSc5vK.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/16/58bpaVxMqFfBZQR.png">
+<meta property="og:image" content="https://s2.loli.net/2025/02/16/9Kvc4zNlLDa78do.png">
+<meta property="article:published_time" content="2025-02-16T07:03:00.000Z">
+<meta property="article:modified_time" content="2025-02-16T08:01:52.168Z">
+<meta property="article:author" content="Henry">
+<meta property="article:tag" content="Tokenizer">
+<meta property="article:tag" content="Embedding">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2025/02/16/LNqlgVjnJaoS8MC.png">
+
+
+<link rel="canonical" href="https://zgh551.github.io/2025/02/16/llama-cpp-load-model/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2025/02/16/llama-cpp-load-model/","path":"2025/02/16/llama-cpp-load-model/","title":"llama.cpp-模型加载阶段"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>llama.cpp-模型加载阶段 | Henry-Z</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ML9CRPRYFK"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ML9CRPRYFK","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?c8e65d830c8cd51e920dc7e7c0be8744"></script>
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Henry-Z</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">天道酬勤 知行合一</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">122</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">49</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">57</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tokenizer"><span class="nav-number">2.</span> <span class="nav-text">Tokenizer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pre-tokenizer"><span class="nav-number">2.1.</span> <span class="nav-text">Pre-Tokenizer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#collapsed-codepoints"><span class="nav-number">2.1.1.</span> <span class="nav-text">Collapsed Codepoints</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%A4%E5%AE%9A%E6%8A%98%E5%8F%A0"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">判定折叠</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8A%98%E5%8F%A0%E8%A7%84%E5%88%99"><span class="nav-number">2.1.1.2.</span> <span class="nav-text">折叠规则</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="nav-number">2.1.1.3.</span> <span class="nav-text">设计原则</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96"><span class="nav-number">2.1.1.3.1.</span> <span class="nav-text">性能优化</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%85%BC%E5%AE%B9%E6%80%A7%E4%B8%8E%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.1.1.3.2.</span> <span class="nav-text">兼容性与功能实现</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tokenize"><span class="nav-number">2.2.</span> <span class="nav-text">Tokenize</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#spm"><span class="nav-number">2.2.1.</span> <span class="nav-text">SPM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#wpm"><span class="nav-number">2.2.2.</span> <span class="nav-text">WPM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#bpe"><span class="nav-number">2.2.3.</span> <span class="nav-text">BPE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ugm"><span class="nav-number">2.2.4.</span> <span class="nav-text">UGM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#rwkv"><span class="nav-number">2.2.5.</span> <span class="nav-text">RWKV</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#embedding"><span class="nav-number">3.</span> <span class="nav-text">Embedding</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#get-embedding-matrix"><span class="nav-number">3.1.</span> <span class="nav-text">Get Embedding Matrix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get-token-embedding-vector"><span class="nav-number">3.2.</span> <span class="nav-text">Get Token Embedding Vector</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Henry"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">Henry</p>
+  <div class="site-description" itemprop="description">Opportunity knocks but once</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">57</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">49</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">122</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL3pnaDU1MQ==" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zgh551"><i class="fab fa-github fa-fw"></i>GitHub</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="bWFpbHRvOmhlbnJ5emh1NTUxQGdtYWlsLmNvbQ==" title="E-Mail → mailto:henryzhu551@gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3pnaGZvcmV2ZXI=" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zghforever"><i class="fa-solid fa-c fa-fw"></i>CSDN</span>
+      </span>
+      <span class="links-of-author-item">
+        <span class="exturl" data-url="aHR0cHM6Ly93d3cubGlua2VkaW4uY29tL2luL3pnaDU1MS8=" title="Linkindin → https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;zgh551&#x2F;"><i class="fab fa-linkedin fa-fw"></i>Linkindin</span>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+        <div class="pjax">
+        </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zgh551.github.io/2025/02/16/llama-cpp-load-model/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Henry">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Henry-Z">
+      <meta itemprop="description" content="Opportunity knocks but once">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="llama.cpp-模型加载阶段 | Henry-Z">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          llama.cpp-模型加载阶段
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-02-16 15:03:00 / 修改时间：16:01:52" itemprop="dateCreated datePublished" datetime="2025-02-16T15:03:00+08:00">2025-02-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/llama-cpp/" itemprop="url" rel="index"><span itemprop="name">llama.cpp</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/llama-cpp/LLM/" itemprop="url" rel="index"><span itemprop="name">LLM</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Changyan：</span>
+    
+    <a title="llama.cpp-模型加载阶段" href="/2025/02/16/llama-cpp-load-model/#SOHUCS" itemprop="discussionUrl">
+      <span id="sourceId::2fce24334f2ccb2e8dff88e6de9e6a4f" class="cy_cmt_count" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus：</span>
+    
+    <a title="disqus" href="/2025/02/16/llama-cpp-load-model/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2025/02/16/llama-cpp-load-model/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="概述">概述</h2>
+<p>如下图所示，是llama.cpp加载GGUF格式模型文件时的调用流程：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/16/LNqlgVjnJaoS8MC.png" alt="gguf File Load Flow" /><figcaption aria-hidden="true">gguf File Load Flow</figcaption>
+</figure>
+<ol type="1">
+<li>首先根据模型配置参数确定模型推理的后端设备类型和模型调用方式；</li>
+<li>加载获取模型架构类型信息；</li>
+<li>加载模型的超参数，包括模型名、词表大小、嵌入向量大小、模型层数等模型结构相关的超参数；</li>
+</ol>
+<span id="more"></span>
+<h2 id="tokenizer">Tokenizer</h2>
+<p>目前llama.cpp实现了5种类型的分词器，分别是：<code>SPM</code>、<code>WPM</code>、<code>BPE</code>、<code>UGM</code>和<code>RWKV</code>，其代码实现位于 <code>llama-vocab.cpp</code>文件中。</p>
+<h3 id="pre-tokenizer">Pre-Tokenizer</h3>
+<p>当分词器类型选择 <strong>BPE</strong> 时，根据模型的不同，会使用不同的正则匹配项对文本进行预处理。如下下图所示，是目前llama.cpp支持的预分词类型。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/16/awyDN2UHAuIdjsq.png" alt="pre-tokenizer" /><figcaption aria-hidden="true">pre-tokenizer</figcaption>
+</figure>
+<p>对于一段语句 <code>你好，世界</code>，采用不同的<strong>预分词器</strong>效果如下：</p>
+<ul>
+<li>LLAMA3</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">&#x27;你好&#x27;</span>, <span class="string">&#x27;，&#x27;</span>, <span class="string">&#x27;世界&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>QWen</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">&#x27;你好，世界&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<div class="note info"><p>模型具体的匹配规则一般会存放在tokenizer.json文件的pre_tokenizer字段内。</p>
+</div>
+<h4 id="collapsed-codepoints">Collapsed Codepoints</h4>
+<p><code>llama.cpp</code> 中文本折叠后再进行匹配是一种权衡性能、兼容性和功能实现的优化策略。它通过将复杂的 Unicode 字符和类别映射到简单的单字节表示，降低了正则表达式引擎的计算负担，提高了匹配效率，并绕过了一些标准库正则引擎的限制，从而更好地支持 Unicode 文本处理。这种优化在处理大型文本和需要频繁进行正则表达式匹配的场景下尤为重要。</p>
+<h5 id="判定折叠">判定折叠</h5>
+<p>如果正则表达式中存在 <code>p&#123;N&#125;</code>，<code>p&#123;L&#125;</code>或<code>p&#123;P&#125;</code> 中任意一个匹配项，就会开启折叠功能。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">const</span> std::map&lt;std::string, <span class="type">int</span>&gt; k_ucat_enum = &#123;</span><br><span class="line">    &#123; <span class="string">&quot;\\p&#123;N&#125;&quot;</span>, codepoint_flags::NUMBER &#125;,</span><br><span class="line">    &#123; <span class="string">&quot;\\p&#123;L&#125;&quot;</span>, codepoint_flags::LETTER &#125;,</span><br><span class="line">    &#123; <span class="string">&quot;\\p&#123;P&#125;&quot;</span>, codepoint_flags::PUNCTUATION &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// compute collapsed codepoints only if needed by at least one regex</span></span><br><span class="line"><span class="type">bool</span> need_collapse = <span class="literal">false</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> &amp; regex_expr : regex_exprs) &#123;</span><br><span class="line">    <span class="comment">// search for unicode categories</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">const</span> <span class="keyword">auto</span> &amp; ucat : k_ucat_enum) &#123;</span><br><span class="line">        <span class="keyword">if</span> (std::string::npos != regex_expr.<span class="built_in">find</span>(ucat.first)) &#123;</span><br><span class="line">            need_collapse = <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="折叠规则">折叠规则</h5>
+<ul>
+<li>ASCII 字符保持不变。</li>
+<li>空格字符（包括 Unicode 空格）被替换成垂直制表符 0x0B。</li>
+<li>Unicode 类别字符被替换成 k_ucat_cpt 中定义的对应字节。</li>
+<li>其他 Unicode 字符被替换成 0xD0（作为 fallback）。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">const</span> std::map&lt;<span class="type">int</span>, <span class="type">int</span>&gt; k_ucat_cpt = &#123;</span><br><span class="line">    &#123; codepoint_flags::NUMBER,        <span class="number">0xD1</span> &#125;,</span><br><span class="line">    &#123; codepoint_flags::LETTER,        <span class="number">0xD2</span> &#125;,</span><br><span class="line">    &#123; codepoint_flags::PUNCTUATION,   <span class="number">0xD3</span> &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">const</span> std::map&lt;<span class="type">int</span>, std::string&gt; k_ucat_map = &#123;</span><br><span class="line">    &#123; codepoint_flags::NUMBER,        <span class="string">&quot;\x30-\x39&quot;</span> &#125;, <span class="comment">// 0-9</span></span><br><span class="line">    &#123; codepoint_flags::LETTER,        <span class="string">&quot;\x41-\x5A\x61-\x7A&quot;</span> &#125;, <span class="comment">// A-Za-z</span></span><br><span class="line">    &#123; codepoint_flags::PUNCTUATION,   <span class="string">&quot;\x21-\x23\x25-\x2A\x2C-\x2F\x3A-\x3B\x3F-\x40\\\x5B-\\\x5D\x5F\\\x7B\\\x7D&quot;</span> &#125;, <span class="comment">// !-#%-*,-/:-;?-@\[-\]_\&#123;\&#125;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h5 id="设计原则">设计原则</h5>
+<h6 id="性能优化">性能优化</h6>
+<ul>
+<li><strong>降低正则表达式复杂程度</strong>：Unicode 类别（例如<code>\p&#123;N&#125;</code>、<code>\p&#123;L&#125;</code>、<code>\p&#123;P&#125;</code>）能够在正则表达式中匹配众多 Unicode 字符。倘若直接采用原始 Unicode 文本以及包含 Unicode 类别的正则表达式予以匹配，会致使正则表达式引擎必须处置大量的字符变体，进而降低匹配效率。借由将 Unicode 类别折合为单字节表示，能够把繁杂的 Unicode 匹配问题转变为简易的单字节匹配问题，大幅提升匹配速度。</li>
+<li><strong>精简匹配流程</strong>：折叠后的文本和正则表达式仅涵盖 ASCII 字符以及少量特殊字节，这让正则表达式引擎的匹配流程更为简便和迅捷。相较于处理复杂的 Unicode 字符集，单字节匹配的计算量要少很多。</li>
+</ul>
+<h6 id="兼容性与功能实现">兼容性与功能实现</h6>
+<ul>
+<li><strong>绕过标准库正则引擎的限制</strong>： C++ 标准库 std::regex 对 Unicode 的支持有限，可能无法完全匹配所有的 Unicode 类别。通过将 Unicode 类别预先处理成单字节表示，可以绕过标准库正则引擎的限制，实现对 Unicode 类别的匹配。</li>
+<li><strong>统一处理逻辑</strong>：折叠后的文本和正则表达式使用统一的单字节编码，简化了代码逻辑，使得代码更容易维护和理解。无论是处理 Unicode 类别还是普通 ASCII 字符，都可以使用相同的匹配逻辑。</li>
+</ul>
+<h3 id="tokenize">Tokenize</h3>
+<p>下文列举了 llama.cpp 目前支持的分词器类型，并对各个分词器的特性和细节进行了描述，具体类型与模型关系如下：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/16/UpRNhE76x2mwtSi.png" alt="Tokenizer" /><figcaption aria-hidden="true">Tokenizer</figcaption>
+</figure>
+<h4 id="spm">SPM</h4>
+<p><strong>SPM（SentencePiece Model</strong>）是一种基于字节对级别 BPE（Byte-Pair Encoding）的分词方法，并带有字节回退机制，它在处理多语言文本时具有较好的性能。 <strong>SPM</strong> 分词器将输入文本分割为字节序列，并通过学习字节对的出现频率来构建词汇表。在分词过程中，SPM 会根据词汇表中的字节对来分割文本。字节回退机制指的是，当遇到不在词汇表中的字节时，SPM 会尝试将其与相邻的字节组合成字节对，以提高分词的准确性。 <strong>SPM</strong> 分词器在自然语言处理任务中被广泛应用，特别是在处理低资源语言和多语言文本时具有优势。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/16/jZCGrEKV4l8QIXv.png" alt="SPM" /><figcaption aria-hidden="true">SPM</figcaption>
+</figure>
+<h4 id="wpm">WPM</h4>
+<p><strong>WPM(WordPiece Model)</strong>是一种基于 <code>WordPiece</code> 的分词方法。它将输入文本分割为单词片段，并通过学习单词片段的出现频率来构建词汇表。在分词过程中，WPM 会根据词汇表中的单词片段来分割文本。 与 SPM 不同的是，WPM 主要关注单词层面的分割，而不是字节层面。它适用于处理以单词为基本单位的语言，如英语等。 <strong>WPM</strong> 分词器在自然语言处理任务中也有广泛的应用，特别是在处理以单词为主要单位的文本时表现出色。</p>
+<h4 id="bpe">BPE</h4>
+<p><code>llama.cpp</code>中所指的<strong>BPE(Byte-Pair-Encoding)</strong>准确地说应该是<strong>BBPE(Byte-Level-Byte-Pair-Encoding)</strong>，是一种字节级别的字节对编码方式，主要用于自然语言处理中的文本压缩和词表构建。 <strong>BPE</strong> 是一种基于字节对的编码方法，它通过迭代地合并最频繁出现的字节对来构建词汇表。在分词过程中，BPE 会根据词汇表中的字节对来分割文本。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/16/2K1Jcoyd95WntIx.png" alt="使用不同词汇表分词的日英例句" /><figcaption aria-hidden="true">使用不同词汇表分词的日英例句</figcaption>
+</figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">bytes_to_unicode</span>():</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Returns list of utf-8 byte and a mapping to unicode strings. We specifically avoids mapping to whitespace/control</span></span><br><span class="line"><span class="string">    characters the bpe code barfs on.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    The reversible bpe codes work on unicode strings. This means you need a large # of unicode characters in your vocab</span></span><br><span class="line"><span class="string">    if you want to avoid UNKs. When you&#x27;re at something like a 10B token dataset you end up needing around 5K for</span></span><br><span class="line"><span class="string">    decent coverage. This is a significant percentage of your normal, say, 32K bpe vocab. To avoid that, we want lookup</span></span><br><span class="line"><span class="string">    tables between utf-8 bytes and unicode strings.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    bs = (</span><br><span class="line">        <span class="built_in">list</span>(<span class="built_in">range</span>(<span class="built_in">ord</span>(<span class="string">&quot;!&quot;</span>), <span class="built_in">ord</span>(<span class="string">&quot;~&quot;</span>) + <span class="number">1</span>)) + <span class="built_in">list</span>(<span class="built_in">range</span>(<span class="built_in">ord</span>(<span class="string">&quot;¡&quot;</span>), <span class="built_in">ord</span>(<span class="string">&quot;¬&quot;</span>) + <span class="number">1</span>)) + <span class="built_in">list</span>(<span class="built_in">range</span>(<span class="built_in">ord</span>(<span class="string">&quot;®&quot;</span>), <span class="built_in">ord</span>(<span class="string">&quot;ÿ&quot;</span>) + <span class="number">1</span>))</span><br><span class="line">    )</span><br><span class="line">    cs = bs[:]</span><br><span class="line">    n = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> b <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>**<span class="number">8</span>):</span><br><span class="line">        <span class="keyword">if</span> b <span class="keyword">not</span> <span class="keyword">in</span> bs:</span><br><span class="line">            bs.append(b)</span><br><span class="line">            cs.append(<span class="number">2</span>**<span class="number">8</span> + n)</span><br><span class="line">            n += <span class="number">1</span></span><br><span class="line">    cs = [<span class="built_in">chr</span>(n) <span class="keyword">for</span> n <span class="keyword">in</span> cs]</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">dict</span>(<span class="built_in">zip</span>(bs, cs))</span><br></pre></td></tr></table></figure>
+<p><span class="exturl" data-url="aHR0cHM6Ly9zZW1pZHJpdmUuZmVpc2h1LmNuL3dpa2kvRDRheHdCc3NqaXhOS25rbWRCMWNyeG5DblJiI3NoYXJlLUNweHJkWXNMeW9yY20yeEhMc2VjQ0s4dm56Zw==">Unicode 符号表<i class="fa fa-external-link-alt"></i></span></p>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2025/02/16/N6oAHCj9g5wi7Gp.png" alt="基本字母中的可见字符" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2025/02/16/Z9vaVzAOBYXJxQc.png" alt="补充的可见字符" /></div></div><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2025/02/16/NdCsSgIAwYyQpVi.png" alt="BBPE 符号编码" /></div></div></div>
+<p>经过BBPE编码后的词表保存在 <code>vocab.json</code> 文件中，详细内容如下：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/16/68OhZArLQuSc5vK.png" alt="vocab.json" /><figcaption aria-hidden="true">vocab.json</figcaption>
+</figure>
+<p><code>merges.txt</code>文件定义了字节合并的规则，文件前16行内容如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Ġ Ġ</span><br><span class="line">ĠĠ ĠĠ</span><br><span class="line">i n</span><br><span class="line">Ġ t</span><br><span class="line">ĠĠĠĠ ĠĠĠĠ</span><br><span class="line">e r</span><br><span class="line">ĠĠ Ġ</span><br><span class="line">o n</span><br><span class="line">Ġ a</span><br><span class="line">r e</span><br><span class="line">a t</span><br><span class="line">s t</span><br><span class="line">e n</span><br><span class="line">o r</span><br><span class="line">Ġt h</span><br><span class="line">Ċ Ċ</span><br></pre></td></tr></table></figure>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/16/58bpaVxMqFfBZQR.png" alt="BBPE示例" /><figcaption aria-hidden="true">BBPE示例</figcaption>
+</figure>
+<p>具体来说，BPE通过将文本中的频繁出现的字节对（Byte Pair）替换为一个新的符号，从而减少词汇表的大小。例如，在一个文本中，如果"the"这个词出现得非常频繁，那么BPE可能会将"the"替换为一个新的符号，比如"$"。这样，在后续的处理中，就可以用一个符号来表示"the"这个词，从而减少词汇表的大小。 在llama.cpp中，BPE的实现主要涉及到以下几个步骤：</p>
+<ol type="1">
+<li>构建初始词汇表：首先，从文本中提取出所有的字节，并将它们作为初始词汇表。</li>
+<li>计算字节对频率：对于每个字节对，计算它们在文本中出现的频率。</li>
+<li>选择最高频率的字节对：选择出现频率最高的字节对，并将其替换为一个新的符号。</li>
+<li>更新词汇表：将新的符号添加到词汇表中，并更新文本中所有出现该字节对的地方。</li>
+<li>重复步骤2-4，直到达到某个停止条件，例如词汇表大小达到某个阈值或者字节对频率不再变化。 通过不断地重复上述步骤，BPE可以将文本中的词汇表压缩到一个较小的规模，从而提高模型的效率和性能。同时，BPE也可以用于构建语言模型的词表，从而提高模型的准确性和泛化能力。</li>
+</ol>
+<h4 id="ugm">UGM</h4>
+<p><strong>UGM(UniGram)</strong> 是一种基于 <code>Unigram</code> 的分词方法，它通过学习单词的出现频率来构建词汇表。在分词过程中，UGM 会根据词汇表中的单词来分割文本。 直观地说，我们的目标是从训练语料库中构建一个相当广泛的种子词汇表。这个初始步骤至关重要，因为它是后续词汇扩展的基础。</p>
+<p>然后，我们反复执行以下程序，直到词汇表 |V| 的大小达到所需的规模。</p>
+<ol type="1">
+<li>在词汇集固定的情况下，我们使用期望最大化 (EM) 算法优化概率分布 p(x)。该算法允许有效地估计模型参数，确保模型很好地拟合数据。</li>
+<li>对于每个子词 xi，我们计算 lossi，它表示当子词 xi 从当前词汇表中排除时总体似然 L 减少的可能性。这个指标为词汇表中每个子词的重要性提供了有价值的见解。</li>
+<li>我们根据 lossi 的值对符号进行排序，并保留前 η% 的子词（例如，η 设为 80%）。需要注意的是，我们始终保留由单个字符组成的子词，以防止出现任何词汇表外的情况。通过这样做，我们确保词汇表仍然全面，能够表示广泛的文本。</li>
+</ol>
+<h4 id="rwkv">RWKV</h4>
+<p><strong>RWKV(Receptance-Weight-Key-Value)</strong> Tokenizer 是一种特定于RWKV架构的分词方法，具体特点和应用场景可能因模型的不同而有所差异。 RWKV-World 系列模型使用 <code>rwkv_vocab_v20230424</code> 分词器，具体的文件是 <code>rwkv_vocab_v20230424.txt</code>，可以在 RWKV-主库的 <code>RWKV-v5/tokenizer(opens in a new tab)</code> 目录中找到 。 <code>rwkv_vocab_v20230424</code> 分词器合并了以下分词器的词汇表，并手动为非欧洲语言选择了 token：</p>
+<ul>
+<li><span class="exturl" data-url="aHR0cHM6Ly9odWdnaW5nZmFjZS5jby9FbGV1dGhlckFJL2dwdC1uZW94LTIwYg==">GPT-NeoX-20B(opens in a new tab)<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9odWdnaW5nZmFjZS5jby9vcGVuYWktY29tbXVuaXR5L2dwdDI=">GPT2(opens in a new tab)<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9naXRodWIuY29tL29wZW5haS90aWt0b2tlbg==">cl100k_base of tiktoken(opens in a new tab)<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9odWdnaW5nZmFjZS5jby9tZXRhLWxsYW1hL0xsYW1hLTItN2ItaGY=">Llama2(opens in a new tab)<i class="fa fa-external-link-alt"></i></span></li>
+<li><span class="exturl" data-url="aHR0cHM6Ly9odWdnaW5nZmFjZS5jby9iaWdzY2llbmNlL2Jsb29t">Bloom(opens in a new tab)<i class="fa fa-external-link-alt"></i></span></li>
+</ul>
+<p>分词器通过 Trie（前缀树）实现，在提高速度的同时保持简洁性。编码过程是通过从左到右匹配词汇表中最长的元素与输入字符串进行的。 分词器的词汇量大小为 <code>V = 65536</code>，编号从 0 到 65535，token 按其在字节中的长度排列。 以下是简要概述：</p>
+<ul>
+<li><code>token 0</code>：表示文本文档之间的边界，称为 <code>&lt;EOS&gt;</code> 或 <code>&lt;SOS&gt;</code>。此 token 不编码任何特定内容，仅用于文档分隔。</li>
+<li><code>token 1-256</code>：由字节编码组成（tokenk 编码字节 k−1），其中 token 1-128 对应于标准 ASCII 字符。</li>
+<li><code>token 257-65529</code>：至少具有 2 个 UTF-8 字节长度的 token，包括单词、前缀和后缀、带重音的字母、汉字、韩文、平假名、片假名和表情符号。例如，汉字被分配在 token 10250 至 18493 之间。</li>
+<li><code>token 65530-65535</code>：预留 token，供将来使用。</li>
+</ul>
+<p>不同的分词器在不同的语言和任务中具有不同的表现，选择合适的分词器对于模型的性能和效果至关重要。在 <code>llama.cpp</code> 中，根据具体的需求和模型，可以灵活选择使用不同的分词器来对文本进行处理。</p>
+<h2 id="embedding">Embedding</h2>
+<p>在自然语言处理中，词嵌入（Word Embedding）是将词汇表中的单词或短语映射到实数向量的技术。这些向量通常具有较低的维度，并且在向量空间中具有一定的语义和语法关系。词嵌入在许多自然语言处理任务中都有广泛的应用，例如文本分类、情感分析、机器翻译等。 在 llama.cpp 中，词嵌入的实现方式可能会因模型的不同而有所差异。一般来说，词嵌入可以通过以下几种方式实现：</p>
+<ol type="1">
+<li>基于预训练模型的词嵌入：使用已经在大规模文本上训练好的词嵌入模型，例如 Word2Vec、GloVe 等。这些模型通常具有较高的语义表示能力，可以直接将输入的单词转换为对应的词嵌入向量。</li>
+<li>随机初始化的词嵌入：在模型训练过程中，随机初始化词嵌入向量，并通过反向传播算法不断调整这些向量，以使其能够更好地表示单词之间的语义关系。</li>
+<li>基于上下文的词嵌入：通过分析单词在上下文中的出现情况，来学习词嵌入向量。这种方法通常需要在模型中添加一些额外的模块，例如卷积神经网络或循环神经网络，以捕捉上下文信息。 无论采用哪种方式，词嵌入的目的都是将单词转换为具有语义和语法信息的向量，以便模型能够更好地处理和理解自然语言。在 llama.cpp 中，词嵌入通常是模型的输入之一，模型会根据输入的词嵌入向量来进行后续的计算和预测。</li>
+</ol>
+<h3 id="get-embedding-matrix">Get Embedding Matrix</h3>
+<p><code>llama.cpp</code>中模型对应的嵌入矩阵存储参数在GGUF格式的文件中，通过 token_embd关键字解析嵌入矩阵的内容，如下代码创建了嵌入矩阵 <code>model.tok_embd</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.tok_embd = <span class="built_in">create_tensor</span>(<span class="built_in">tn</span>(LLM_TENSOR_TOKEN_EMBD, <span class="string">&quot;weight&quot;</span>), &#123;n_embd, n_vocab&#125;, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="get-token-embedding-vector">Get Token Embedding Vector</h3>
+<p>首先创建一个新的由整数构成的一维张量，称作 <code>inp_tokens</code>，用于保存词元的索引数值。然后调用 <code>ggml_set_input</code>函数将张量标志设置为 <strong>GGML_TENSOR_FLAG_INPUT</strong>。最后调用 <code>ggml_get_rows</code> 函数创建一个新的张量操作节点<strong>GGML_OP_GET_ROWS</strong>，实现从词元嵌入矩阵中获取具体索引值得词原嵌入向量， 然后创建一个存储 <code>token_id</code> 的张量(<strong>lctx.inp_tokens</strong>)，根据 <code>token_id</code> 和 <code>嵌入矩阵(model.tok_embd)</code> 调用 <code>ggml_get_rows</code> 函数实现token的嵌入矩阵(inpL)的获取，详细代码如下： 只有在编码解码阶段采用更新inp_tokens张量的实际值。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">lctx.inp_tokens = <span class="built_in">ggml_new_tensor_1d</span>(ctx, GGML_TYPE_I32, batch.n_tokens);</span><br><span class="line"><span class="built_in">cb</span>(lctx.inp_tokens, <span class="string">&quot;inp_tokens&quot;</span>, <span class="number">-1</span>);</span><br><span class="line"><span class="built_in">ggml_set_input</span>(lctx.inp_tokens);</span><br><span class="line"></span><br><span class="line">inpL = <span class="built_in">ggml_get_rows</span>(ctx, tok_embd, lctx.inp_tokens);</span><br></pre></td></tr></table></figure>
+<p>整个嵌入过程如下图所示：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/16/9Kvc4zNlLDa78do.png" alt="embedding" /><figcaption aria-hidden="true">embedding</figcaption>
+</figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Henry 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Henry 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Tokenizer/" rel="tag"># Tokenizer</a>
+              <a href="/tags/Embedding/" rel="tag"># Embedding</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/02/15/llama-cpp-ggml/" rel="prev" title="llama.cpp-ggml介绍">
+                  <i class="fa fa-angle-left"></i> llama.cpp-ggml介绍
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      <div class="tabs tabs-comment">
+        <ul class="nav-tabs">
+            <li class="tab"><a href="#comment-changyan">changyan</a></li>
+            <li class="tab"><a href="#comment-gitalk">gitalk</a></li>
+            <li class="tab"><a href="#comment-disqus">disqus</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane changyan" id="comment-changyan">
+              <div class="comments" id="SOHUCS" sid="2fce24334f2ccb2e8dff88e6de9e6a4f"></div>
+            </div>
+            <div class="tab-pane gitalk" id="comment-gitalk">
+              <div class="comments gitalk-container"></div>
+            </div>
+            <div class="tab-pane disqus" id="comment-disqus">
+              
+  <div class="comments" id="disqus_thread">
+    <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+  </div>
+  
+            </div>
+        </div>
+      </div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2020 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Henry</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <span class="exturl github-corner" data-url="aHR0cHM6Ly9naXRodWIuY29tL3pnaDU1MQ==" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></span>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/medium-zoom/1.1.0/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lozad.js/1.16.0/lozad.min.js" integrity="sha256-mOFREFhqmHeQbXpK2lp4nA3qooVgACfh88fpJftLBbc=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/11.4.0/mermaid.min.js","integrity":"sha256-G8ouPAnw4zzMbnAenHnVz6h9XpKbNdOkrqTh7AadyHs="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js" integrity="sha256-yvJQOINiH9fWemHn0vCA5lsHWJaHs6/ZmO+1Ft04SvM=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://zgh551.github.io/2025/02/16/llama-cpp-load-model/"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
+<script class="next-config" data-name="changyan" type="application/json">{"enable":true,"appid":"cyxCTcyif","appkey":"79391f9a8a4f1f9ddf64d58d44069762","count":true}</script>
+<script src="/js/third-party/comments/changyan.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"zgh551","repo":"hexo_gittalk","client_id":"1fb8d150a53497be045f","client_secret":"04fcd95e4d714c51c62222db387f2597d4b5a968","admin_user":"zgh551","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"2fce24334f2ccb2e8dff88e6de9e6a4f"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+<script class="next-config" data-name="disqus" type="application/json">{"enable":true,"shortname":"https-zgh551-github-io","count":true,"i18n":{"disqus":"disqus"}}</script>
+<script src="/js/third-party/comments/disqus.js"></script>
+
+</body>
+</html>
