@@ -9286,6 +9286,7 @@ D = T_{f} * V_{s} * k
     <url>/2025/02/15/llama-cpp-ggml/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p><code>llama.cpp</code> 使用 <strong>ggml</strong> 张量加速库，这是一个纯 C++ 实现的张量加速库。</p>
+<span id="more"></span>
 <h2 id="gguf">GGUF</h2>
 <p><strong>GGUF(GPT-Generated-Unified-Format)</strong> 是一种文件格式，用于存储使用 GGML 进行推理的模型以及基于 GGML 的执行器。GGUF 是一种二进制格式，旨在快速加载和保存模型，并且易于读取。模型传统上是使用 PyTorch 或其他框架开发的，然后转换为 GGUF 以用于 GGML。 它于 2023 年 8 月推出，是 <code>GGML</code>、<code>GGMF</code> 和 <code>GGJT</code> 的后续文件格式，旨在通过包含加载模型所需的所有信息来做到明确无误。它还被设计为可扩展的，因此可以在不破坏兼容性的情况下将新信息添加到模型中。</p>
 <h3 id="历史现状">历史现状</h3>
@@ -9331,22 +9332,22 @@ D = T_{f} * V_{s} * k
 <h5 id="tokenizer">Tokenizer</h5>
 <p>以下键用于描述模型的分词器。建议模型作者尽可能支持这些键，因为这将允许支持的执行器获得更好的分词质量。</p>
 <ul>
-<li><code>tokenizer.ggml.model</code>：<strong>分词器模型名称</strong>
-<ol type="1">
+<li><p><code>tokenizer.ggml.model</code>：<strong>分词器模型名称</strong></p>
+<ul>
 <li><strong>llama</strong>: SPM（LLaMA tokenizer based on byte-level BPE with byte fallback）；</li>
 <li><strong>bert</strong>: WPM (BERT tokenizer based on WordPiece)；</li>
 <li><strong>gpt2</strong>:BPE（GPT-2 tokenizer based on byte-level BPE）；</li>
 <li><strong>t5</strong> : UGM (T5 tokenizer based on Unigram)</li>
 <li><strong>rwkv</strong>: RWKV tokenizer based on greedy tokenization;</li>
-</ol></li>
-<li><code>tokenizer.ggml.pre</code>: <strong>预分词器名称</strong> 只有使用BPE类型的模型才有预分词器的配置项。
-<ol type="1">
+</ul></li>
+<li><p><code>tokenizer.ggml.pre</code>: <strong>预分词器名称</strong> 只有使用BPE类型的模型才有预分词器的配置项。</p>
+<ul>
 <li>llama3</li>
-</ol></li>
-<li><code>tokenizer.ggml.tokens</code>: <strong>模型使用的词元 ID 索引的词原列表</strong></li>
-<li><code>tokenizer.ggml.scores</code>：<strong>词元的概率值</strong> 如果存在，则为每个词元的得分/概率。如果不存在，则假设所有词元具有相同的概率。如果存在，则其长度和索引必须与词元相同。</li>
-<li><code>tokenizer.ggml.token_type</code>：<strong>词元类型</strong> 如果存在，则其长度和索引必须与词元相同。
-<ol type="1">
+</ul></li>
+<li><p><code>tokenizer.ggml.tokens</code>: <strong>模型使用的词元 ID 索引的词原列表</strong></p></li>
+<li><p><code>tokenizer.ggml.scores</code>：<strong>词元的概率值</strong> 如果存在，则为每个词元的得分/概率。如果不存在，则假设所有词元具有相同的概率。如果存在，则其长度和索引必须与词元相同。</p></li>
+<li><p><code>tokenizer.ggml.token_type</code>：<strong>词元类型</strong> 如果存在，则其长度和索引必须与词元相同。</p>
+<ul>
 <li>0：未定义；</li>
 <li>1：正常；</li>
 <li>2：未知；</li>
@@ -9354,13 +9355,12 @@ D = T_{f} * V_{s} * k
 <li>4：用户定义；</li>
 <li>5：未使用；</li>
 <li>6：字节；</li>
-</ol></li>
+</ul></li>
 </ul>
 <h4 id="标准化的张量名称gguf_tensor_info">标准化的张量名称(gguf_tensor_info)</h4>
-<p>位于文件 gguf-py/gguf/constants.py中，为最小化复杂度并最大化兼容性，建议使用Transformer架构的模型对其张量使用以下命名约定：</p>
+<p>位于文件<code>gguf-py/gguf/constants.py</code>中，为最小化复杂度并最大化兼容性，建议使用<strong>Transformer</strong>架构的模型对其张量使用以下命名约定：</p>
 <h5 id="base-layers">Base layers</h5>
-<p><strong>AA.weight</strong> 或 <strong>AA.bias</strong></p>
-<p>其中，<strong>AA</strong> 可以是：</p>
+<p><strong>AA.weight</strong> 或 <strong>AA.bias</strong>，其中<strong>AA</strong>可以是：</p>
 <ul>
 <li><code>token_embd</code>：词嵌入层</li>
 <li><code>position_embd</code>：位置嵌入层</li>
@@ -9368,7 +9368,7 @@ D = T_{f} * V_{s} * k
 <li><code>output</code>：输出层</li>
 </ul>
 <h5 id="attention-and-feed-forward-layer-blocks">Attention and feed-forward layer blocks</h5>
-<p><strong>blk.N.BB.weight</strong> 或 <strong>blk.N.BB.bias</strong> 其中<strong>N</strong>表示某层所属的块编号，而<strong>BB</strong>可以是：</p>
+<p><strong>blk.N.BB.weight</strong> 或 <strong>blk.N.BB.bias</strong>，其中<strong>N</strong>表示某层所属的块编号，而<strong>BB</strong>可以是：</p>
 <ul>
 <li><code>attn_norm</code>：注意力归一化层</li>
 <li><code>attn_norm_2</code>：注意力归一化层</li>
@@ -9376,7 +9376,7 @@ D = T_{f} * V_{s} * k
 <h3 id="命名规范">命名规范</h3>
 <p>GGUF 遵循 <基础名称><尺寸标签><微调><版本><编码><类型><分片>.gguf 的命名约定，其中每个组件如有存在则以 - 分隔。最终目标是让人们能够一目了然地获取模型最重要的细节。由于现有 gguf 文件名的多样性，它并非旨在完全适用于字段解析。</p>
 <figure>
-<img data-src="https://s2.loli.net/2025/02/16/if7LTMWXSd3zuCe.png" alt="命名" /><figcaption aria-hidden="true">命名</figcaption>
+<img data-src="https://s2.loli.net/2025/02/16/if7LTMWXSd3zuCe.png" alt="命名示例" /><figcaption aria-hidden="true">命名示例</figcaption>
 </figure>
 <h2 id="ggml_tensor">ggml_tensor</h2>
 <p>参考源码对tensor的结构定义如下：</p>
@@ -9393,14 +9393,18 @@ D = T_{f} * V_{s} * k
 <h4 id="nb">nb</h4>
 <p>该字段包含每个维度步幅(单位byte)的数组，即为每个维度中连续元素之间的字节数。</p>
 <ol type="1">
-<li>第一个维度的步幅计算为原始元素的字节大小，通常使用<strong>ggml_type_size</strong>函数获得: <span class="math display">\[\mathtt{nb}=\textmd{ggml\_type\_size(type)}\]</span></li>
-<li>第二个维度的步幅计算考虑了阻塞(可能是为了性能和对齐)和填充: <span class="math display">\[\mathtt{nb}[1] = \mathtt{nb}[0]   * \Big(\frac{\mathtt{ne}[0]}{\textmd{ggml\_blck\_size(type)}}\Big) + \textmd{padding}\]</span></li>
+<li>第一个维度的步幅计算为原始元素的字节大小，通常使用<strong>ggml_type_size</strong>函数获得: <span class="math display">\[\mathtt{nb}=\text{ggml_type_size(type)}\]</span></li>
+<li>第二个维度的步幅计算考虑了阻塞(可能是为了性能和对齐)和填充: <span class="math display">\[\mathtt{nb}[1] = \mathtt{nb}[0]   * \Big(\frac{\mathtt{ne}[0]}{\text{ggml_blck_size(type)}}\Big) + \text{padding}\]</span></li>
 <li>后续维度的步幅计算为 <span class="math display">\[\mathtt{nb}[i] = \mathtt{nb}[i-1] * \mathtt{ne}[i-1]\]</span></li>
 </ol>
 <h4 id="示例">示例</h4>
-<p>假设tensor的数据类型为 float32，shape为<span class="math inline">\([2,3,4]\)</span>，则下图描述了<span class="math inline">\(\mathtt{ne}\)</span>和<span class="math inline">\(\mathtt{nb}\)</span>的计算过程： <img data-src="https://s2.loli.net/2025/02/16/NG8CV3zqpSZMImo.png" alt="32bit的浮点数张量，ne={4,3,2}, nb={4,16,48}" /> 数据结构中使用步幅的目的是为了执行某些张量运算时无需数据拷贝操作。例如，对一个二维矩阵进行转置操作就是将行转换为列，在ggml中可以通过简单地翻转 ne 和 nb 并指向相同的基础数据来实现，详细代码如下：</p>
+<p>假设tensor的数据类型为 float32，shape为<span class="math inline">\([2,3,4]\)</span>，则下图描述了<span class="math inline">\(\mathtt{ne}\)</span>和<span class="math inline">\(\mathtt{nb}\)</span>的计算过程。其中，<code>ne=&#123;4,3,2&#125;</code>, <code>nb=&#123;4,16,48&#125;</code>：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/16/NG8CV3zqpSZMImo.png" alt="32bit的浮点数张量" /><figcaption aria-hidden="true">32bit的浮点数张量</figcaption>
+</figure>
+<p>数据结构中使用步幅的目的是为了执行某些张量运算时无需数据拷贝操作。例如，对一个二维矩阵进行转置操作就是将行转换为列，在ggml中可以通过简单地翻转 <code>ne</code> 和 <code>nb</code> 并指向相同的基础数据来实现，详细代码如下：</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">struct ggml_tensor * ggml_transpose(</span><br><span class="line">        struct ggml_context * ctx,</span><br><span class="line">        struct ggml_tensor  * a) &#123;</span><br><span class="line">    struct ggml_tensor * result = ggml_view_tensor(ctx, a);</span><br><span class="line">    ggml_format_name(result, <span class="string">&quot;%s (transposed)&quot;</span>, a-&gt;name);</span><br><span class="line"></span><br><span class="line">    result-&gt;ne[<span class="number">0</span>] = a-&gt;ne[<span class="number">1</span>];</span><br><span class="line">    result-&gt;ne[<span class="number">1</span>] = a-&gt;ne[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">    result-&gt;nb[<span class="number">0</span>] = a-&gt;nb[<span class="number">1</span>];</span><br><span class="line">    result-&gt;nb[<span class="number">1</span>] = a-&gt;nb[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">    result-&gt;op     = GGML_OP_TRANSPOSE;</span><br><span class="line">    result-&gt;src[<span class="number">0</span>] = a;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在上述函数中，result 是一个新张量，它被初始化为指向与源张量 <code>a</code> 相同的多维数字数组。通过交换 <code>ne</code> 中的维度和 <code>nb</code> 中的步幅，实现了转置操作而无需复制任何数据。 例如，张量<span class="math inline">\(K=[3,4]\)</span>，则其转置为<span class="math inline">\(K^T=[4,3]6\)</span>，通过交换 <code>ne</code> 和 <code>nb</code> 实现的转置操作流程如下图：</p>
+<p>在上述函数中，result 是一个新张量，它被初始化为指向与源张量 <code>a</code> 相同的多维数字数组。通过交换 <code>ne</code> 中的维度和 <code>nb</code> 中的步幅，实现了转置操作而无需复制任何数据。 例如，张量<span class="math inline">\(K=[3,4]\)</span>，则其转置为<span class="math inline">\(K^T=[4,3]\)</span>，通过交换 <code>ne</code> 和 <code>nb</code> 实现的转置操作流程如下图：</p>
 <figure>
 <img data-src="https://s2.loli.net/2025/02/16/hAZtxJkT3SF7DKy.png" alt="transpose操作示例" /><figcaption aria-hidden="true">transpose操作示例</figcaption>
 </figure>
