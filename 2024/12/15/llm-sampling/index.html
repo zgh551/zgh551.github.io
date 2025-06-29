@@ -25,7 +25,7 @@
 
     <meta name="description" content="概述 LLM的原始输出是一个 logits 列表，该列表中的每个元素对应一个词元的预测概率，基于它们选择下一个预测的token， 这个过程称为采样。目前llama.cpp存在多种采样方法可供选择，它们适用于不同的应用场景。 例如，在一些自然语言处理任务中，可能会采用贪心采样（Greedy Sampling）方法，即总是选择具有最高概率的token作为下一个 token。 这种方法简单直接，但可能">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于大语言模型的采样算法分析(基于llama.cpp)">
+<meta property="og:title" content="关于大语言模型的采样算法分析-llama.cpp">
 <meta property="og:url" content="https://zgh551.github.io/2024/12/15/llm-sampling/index.html">
 <meta property="og:site_name" content="Henry-Z">
 <meta property="og:description" content="概述 LLM的原始输出是一个 logits 列表，该列表中的每个元素对应一个词元的预测概率，基于它们选择下一个预测的token， 这个过程称为采样。目前llama.cpp存在多种采样方法可供选择，它们适用于不同的应用场景。 例如，在一些自然语言处理任务中，可能会采用贪心采样（Greedy Sampling）方法，即总是选择具有最高概率的token作为下一个 token。 这种方法简单直接，但可能">
@@ -43,7 +43,7 @@
 <meta property="og:image" content="https://s2.loli.net/2025/02/15/abrBgzkE56JVO2P.png">
 <meta property="og:image" content="https://s2.loli.net/2025/02/15/BTqW214pgOYNGsl.png">
 <meta property="article:published_time" content="2024-12-15T03:02:23.000Z">
-<meta property="article:modified_time" content="2025-02-16T08:12:49.988Z">
+<meta property="article:modified_time" content="2025-02-22T09:14:09.799Z">
 <meta property="article:author" content="Henry">
 <meta property="article:tag" content="sampling">
 <meta property="article:tag" content="llama.cpp">
@@ -54,10 +54,10 @@
 <link rel="canonical" href="https://zgh551.github.io/2024/12/15/llm-sampling/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/12/15/llm-sampling/","path":"2024/12/15/llm-sampling/","title":"关于大语言模型的采样算法分析(基于llama.cpp)"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://zgh551.github.io/2024/12/15/llm-sampling/","path":"2024/12/15/llm-sampling/","title":"关于大语言模型的采样算法分析-llama.cpp"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>关于大语言模型的采样算法分析(基于llama.cpp) | Henry-Z</title>
+<title>关于大语言模型的采样算法分析-llama.cpp | Henry-Z</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ML9CRPRYFK"></script>
   <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ML9CRPRYFK","only_pageview":false,"measure_protocol_api_secret":null}</script>
@@ -111,7 +111,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">124</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">52</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">57</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">126</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">54</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">59</span></a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -177,18 +177,18 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">57</span>
+          <span class="site-state-item-count">59</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-count">54</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">124</span>
+        <span class="site-state-item-count">126</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -244,12 +244,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="关于大语言模型的采样算法分析(基于llama.cpp) | Henry-Z">
+      <meta itemprop="name" content="关于大语言模型的采样算法分析-llama.cpp | Henry-Z">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          关于大语言模型的采样算法分析(基于llama.cpp)
+          关于大语言模型的采样算法分析-llama.cpp
         </h1>
 
         <div class="post-meta-container">
@@ -267,7 +267,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-02-16 16:12:49" itemprop="dateModified" datetime="2025-02-16T16:12:49+08:00">2025-02-16</time>
+      <time title="修改时间：2025-02-22 17:14:09" itemprop="dateModified" datetime="2025-02-22T17:14:09+08:00">2025-02-22</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -299,7 +299,7 @@
       </span>
       <span class="post-meta-item-text">Changyan：</span>
     
-    <a title="关于大语言模型的采样算法分析(基于llama.cpp)" href="/2024/12/15/llm-sampling/#SOHUCS" itemprop="discussionUrl">
+    <a title="关于大语言模型的采样算法分析-llama.cpp" href="/2024/12/15/llm-sampling/#SOHUCS" itemprop="discussionUrl">
       <span id="sourceId::8f55b5713448aa5ae3888c6af88a12e3" class="cy_cmt_count" itemprop="commentCount"></span>
     </a>
   </span>
@@ -741,8 +741,8 @@
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2025/02/15/llama-cpp-ggml/" rel="next" title="llama.cpp-ggml介绍">
-                  llama.cpp-ggml介绍 <i class="fa fa-angle-right"></i>
+                <a href="/2025/02/15/llama-cpp-ggml/" rel="next" title="ggml介绍-llama.cpp">
+                  ggml介绍-llama.cpp <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>

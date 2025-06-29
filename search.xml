@@ -8897,7 +8897,7 @@ D = T_{f} * V_{s} * k
       </tags>
   </entry>
   <entry>
-    <title>关于大语言模型的采样算法分析(基于llama.cpp)</title>
+    <title>关于大语言模型的采样算法分析-llama.cpp</title>
     <url>/2024/12/15/llm-sampling/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>LLM的原始输出是一个 <strong>logits</strong> 列表，该列表中的每个元素对应一个词元的预测概率，基于它们选择下一个预测的token， 这个过程称为<strong>采样</strong>。目前<code>llama.cpp</code>存在多种采样方法可供选择，它们适用于不同的应用场景。 例如，在一些自然语言处理任务中，可能会采用<strong>贪心采样（Greedy Sampling）</strong>方法，即总是选择具有<strong>最高概率的token</strong>作为下一个 token。 这种方法简单直接，但可能会导致生成的文本缺乏多样性。 另一种常见的采样方法是<strong>随机采样（Random Sampling）</strong>，它会根据 token 的概率分布进行随机选择。虽然这种方法增加了生成文本的多样性， 但也可能引入一些不太合理的选择。 为了在多样性和合理性之间取得平衡，还有一些更复杂的采样方法，如<strong>基于温度的采样（Temperature-based Sampling）</strong>。通过调整温度参数， 可以控制概率分布的平滑程度，从而影响采样的随机性。 此外，还有一些基于束搜索（Beam Search）的采样方法，它会同时考虑多个可能的序列，并根据一定的评估标准选择最优的序列作为输出。 不同的采样方法在不同的场景下具有各自的优势和局限性，选择合适的采样方法对于生成高质量的文本至关重要。</p>
@@ -9284,10 +9284,13 @@ D = T_{f} * V_{s} * k
       </tags>
   </entry>
   <entry>
-    <title>llama.cpp-ggml介绍</title>
+    <title>ggml介绍-llama.cpp</title>
     <url>/2025/02/15/llama-cpp-ggml/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p><code>llama.cpp</code> 使用 <strong>ggml</strong> 张量加速库，这是一个纯 C++ 实现的张量加速库。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/29/DWb1Ps4HRULAtEc.jpg" alt="黄海森林公园" /><figcaption aria-hidden="true">黄海森林公园</figcaption>
+</figure>
 <span id="more"></span>
 <h2 id="gguf">GGUF</h2>
 <p><strong>GGUF(GPT-Generated-Unified-Format)</strong> 是一种文件格式，用于存储使用 GGML 进行推理的模型以及基于 GGML 的执行器。GGUF 是一种二进制格式，旨在快速加载和保存模型，并且易于读取。模型传统上是使用 PyTorch 或其他框架开发的，然后转换为 GGUF 以用于 GGML。 它于 2023 年 8 月推出，是 <code>GGML</code>、<code>GGMF</code> 和 <code>GGJT</code> 的后续文件格式，旨在通过包含加载模型所需的所有信息来做到明确无误。它还被设计为可扩展的，因此可以在不破坏兼容性的情况下将新信息添加到模型中。</p>
@@ -9462,7 +9465,7 @@ D = T_{f} * V_{s} * k
       </tags>
   </entry>
   <entry>
-    <title>llama.cpp-模型加载阶段</title>
+    <title>Tokenizer-llama.cpp</title>
     <url>/2025/02/16/llama-cpp-load-model/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>如下图所示，是llama.cpp加载GGUF格式模型文件时的调用流程：</p>
@@ -9606,6 +9609,341 @@ D = T_{f} * V_{s} * k
         <tag>Tokenizer</tag>
         <tag>Embedding</tag>
         <tag>llama.cpp</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>KV Cache管理-llama.cpp</title>
+    <url>/2025/02/22/llama-cpp-kv-cache-manage/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p><code>llama.cpp</code>中的<code>KV Cache</code>管理主要涉及<code>Buffer</code>的分配和<code>KV Cache</code>的管理。其中，<code>Buffer</code>采用<strong>静态分配</strong>的方式，初始时分配<strong>上下文大小</strong>的<code>Buffer</code>。当序列长度超出设定的上下文时，一种方式通过删除位置相对较远的<code>KV Cache</code>来释放一部分Cache空间，只保留相对较新的<code>KV Cache</code>；另一种是在模型上下文固定的情况下，通过压缩位置嵌入位置信息，实现更长上下文的支持。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/29/846bzSvri3uKVkm.jpg" alt="黄海森林公园" /><figcaption aria-hidden="true">黄海森林公园</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="kv-cache-init">KV Cache Init</h2>
+<p><code>llama_kv_cache_init</code>函数实现了<strong>KV Cache</strong>的<em>Buffer</em>的分配和初始化，并根据模型架构不同，使用不同的数据类型保存缓存数据，其中Mamba结构的模型使用 <code>FP32</code> 类型保存，其它架构默认使用 <code>FP16</code> 类型保存。</p>
+<h3 id="llama_kv_cache对象初始化">llama_kv_cache对象初始化</h3>
+<p>如下代码所示，<code>cells</code> 容器的大小初始化为 <strong>上下文的大小</strong>，<code>k_l</code> 和 <code>v_l</code> 容器大小初始化为<strong>模型的层数</strong>，用于存储每层KV向量的数据。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">cache.has_shift = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">cache.recurrent = <span class="built_in">llama_model_is_recurrent</span>(&amp;model);</span><br><span class="line">cache.v_trans   = !cache.recurrent &amp;&amp; !cparams.flash_attn;</span><br><span class="line"></span><br><span class="line">cache.head = <span class="number">0</span>;</span><br><span class="line">cache.size = kv_size;</span><br><span class="line">cache.used = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">cache.type_k = type_k;</span><br><span class="line">cache.type_v = type_v;</span><br><span class="line"></span><br><span class="line">cache.cells.<span class="built_in">clear</span>();</span><br><span class="line">cache.cells.<span class="built_in">resize</span>(kv_size);</span><br><span class="line"></span><br><span class="line">cache.k_l.<span class="built_in">reserve</span>(n_layer);</span><br><span class="line">cache.v_l.<span class="built_in">reserve</span>(n_layer);</span><br></pre></td></tr></table></figure>
+<p>相应的数据结构如下：</p>
+<div class="tabs" id="kv-cache-1"><ul class="nav-tabs"><li class="tab active"><a href="#kv-cache-1-1">llama_kv_cache</a></li><li class="tab"><a href="#kv-cache-1-2">llama_kv_cell</a></li></ul><div class="tab-content"><div class="tab-pane active" id="kv-cache-1-1"><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// ring-buffer of cached KV data</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">llama_kv_cache</span> &#123;</span><br><span class="line">    <span class="type">bool</span> has_shift = <span class="literal">false</span>;</span><br><span class="line">    <span class="type">bool</span> do_defrag = <span class="literal">false</span>;</span><br><span class="line">    <span class="type">bool</span> recurrent = <span class="literal">false</span>; <span class="comment">// with recurrent state models, a cell can hold the state for more than one past token</span></span><br><span class="line">    <span class="type">bool</span> v_trans   = <span class="literal">true</span>;  <span class="comment">// the value tensor is transposed</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Note: The value of head isn&#x27;t only used to optimize searching</span></span><br><span class="line">    <span class="comment">// for a free KV slot. llama_decode_internal also uses it, so it</span></span><br><span class="line">    <span class="comment">// cannot be freely changed after a slot has been allocated.</span></span><br><span class="line">    <span class="type">uint32_t</span> head = <span class="number">0</span>;</span><br><span class="line">    <span class="type">uint32_t</span> size = <span class="number">0</span>;</span><br><span class="line">    <span class="type">uint32_t</span> used = <span class="number">0</span>; <span class="comment">// used cells (i.e. at least one seq_id)</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// computed before each graph build</span></span><br><span class="line">    <span class="type">uint32_t</span> n = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    ggml_type type_k = GGML_TYPE_F16;</span><br><span class="line">    ggml_type type_v = GGML_TYPE_F16;</span><br><span class="line"></span><br><span class="line">    std::vector&lt;llama_kv_cell&gt; cells;</span><br><span class="line"></span><br><span class="line">    std::vector&lt;<span class="keyword">struct</span> ggml_tensor *&gt; k_l; <span class="comment">// per layer</span></span><br><span class="line">    std::vector&lt;<span class="keyword">struct</span> ggml_tensor *&gt; v_l;</span><br><span class="line"></span><br><span class="line">    std::vector&lt;ggml_context_ptr&gt; ctxs;</span><br><span class="line">    std::vector&lt;ggml_backend_buffer_ptr&gt; bufs;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">size_t</span> <span class="title">total_size</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="type">size_t</span> size = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span> &amp; buf : bufs) &#123;</span><br><span class="line">            size += <span class="built_in">ggml_backend_buffer_get_size</span>(buf.<span class="built_in">get</span>());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> size;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="kv-cache-1-2"><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">llama_kv_cell</span> &#123;</span><br><span class="line">    llama_pos pos   = <span class="number">-1</span>;</span><br><span class="line">    llama_pos delta = <span class="number">0</span>;</span><br><span class="line">    <span class="type">int32_t</span>   src   = <span class="number">-1</span>; <span class="comment">// used by recurrent state models to copy states</span></span><br><span class="line">    <span class="type">int32_t</span>   tail  = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">    std::set&lt;llama_seq_id&gt; seq_id;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">has_seq_id</span><span class="params">(<span class="type">const</span> llama_seq_id &amp; id)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> seq_id.<span class="built_in">find</span>(id) != seq_id.<span class="built_in">end</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">is_empty</span><span class="params">()</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> seq_id.<span class="built_in">empty</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">is_same_seq</span><span class="params">(<span class="type">const</span> llama_kv_cell &amp; other)</span> <span class="type">const</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> seq_id == other.seq_id;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div></div></div>
+<p>上述数据结构图形化表示如下：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/15/weHa4IMWb3VTxLr.png" alt="llama_kv_cache结构示意图" /><figcaption aria-hidden="true">llama_kv_cache结构示意图</figcaption>
+</figure>
+<h3 id="k_l-和-v_l-容器分配"><code>k_l</code> 和 <code>v_l</code> 容器分配</h3>
+<p>下述代码的核心功能是为每一层 <strong>Transformer</strong> 模型创建 <code>Key</code> 和 <code>Value</code> 张量，并将它们存储到 <code>llama_kv_cache</code> 结构体中。它根据模型超参数(<code>hparams.n_embd_k_gqa(i)</code> 和 <code>hparams.n_embd_k_s()</code>)和是否启用 <strong>GPU OffLoad</strong> 来确定张量的维度和存储位置。这段代码确保了 <code>KV</code> 缓存为每一层模型都分配了足够的内存空间来存储 <code>Key</code> 和 <code>Value</code> 数据，为后续的推理计算做好了准备。<code>ggml_format_name</code> 函数用于设置张量的名称，方便调试和可视化。 其中，<strong>n_embd_k_gqa</strong> 变量的大小为 <code>hparams.n_embd_k_gqa(i)</code> 和 <code>hparams.n_embd_k_s()</code> 两个参数之和，其中 <code>hparams.n_embd_k_s()</code> 只有 <strong>Mamba</strong> 和 <strong>RWKV</strong> 框架才有效。所以 <strong>Transformer</strong> 框架只有 <code>hparams.n_embd_k_gqa(i)</code> 参数生效，其表达式为 <span class="math inline">\(n\_head\_embd \times n\_head\_kv\)</span> 。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; (<span class="type">int</span>) n_layer; i++) &#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">uint32_t</span> n_embd_k_gqa = hparams.<span class="built_in">n_embd_k_gqa</span>(i) + hparams.<span class="built_in">n_embd_k_s</span>();</span><br><span class="line">    <span class="type">const</span> <span class="type">uint32_t</span> n_embd_v_gqa = hparams.<span class="built_in">n_embd_v_gqa</span>(i) + hparams.<span class="built_in">n_embd_v_s</span>();</span><br><span class="line"></span><br><span class="line">    <span class="type">ggml_backend_buffer_type_t</span> buft;</span><br><span class="line">    <span class="keyword">if</span> (offload) &#123;</span><br><span class="line">        <span class="keyword">auto</span> * dev = model.dev_layer.<span class="built_in">at</span>(i).dev;</span><br><span class="line">        buft = <span class="built_in">ggml_backend_dev_buffer_type</span>(dev);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        buft = <span class="built_in">ggml_backend_cpu_buffer_type</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    ggml_context * ctx = <span class="built_in">ctx_for_buft</span>(buft);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!ctx) &#123;</span><br><span class="line">        <span class="built_in">LLAMA_LOG_ERROR</span>(<span class="string">&quot;%s: failed to create ggml context for kv cache\n&quot;</span>, __func__);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ggml_tensor * k = <span class="built_in">ggml_new_tensor_1d</span>(ctx, type_k, n_embd_k_gqa*kv_size);</span><br><span class="line">    ggml_tensor * v = <span class="built_in">ggml_new_tensor_1d</span>(ctx, type_v, n_embd_v_gqa*kv_size);</span><br><span class="line">    <span class="built_in">ggml_format_name</span>(k, <span class="string">&quot;cache_k_l%d&quot;</span>, i);</span><br><span class="line">    <span class="built_in">ggml_format_name</span>(v, <span class="string">&quot;cache_v_l%d&quot;</span>, i);</span><br><span class="line">    cache.k_l.<span class="built_in">push_back</span>(k);</span><br><span class="line">    cache.v_l.<span class="built_in">push_back</span>(v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="allocate-buffer">Allocate Buffer</h3>
+<p>下述代码的主要功能是为每种类型的后端缓冲区分配内存，并进行初始化。它遍历之前创建的上下文映射 <code>ctx_map</code> ，为每个上下文分配一个后端缓冲区，将缓冲区清零以避免 <code>NaNs</code>，然后将缓冲区句柄存储到 <code>cache.bufs</code> 向量中。这段代码确保了 <code>KV</code> 缓存拥有足够的内存空间，并且内存被正确地初始化，为后续的推理计算做好了准备。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// allocate tensors and initialize the buffers to avoid NaNs in the padding</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> it : ctx_map) &#123;</span><br><span class="line">    <span class="keyword">auto</span> * buft = it.first;</span><br><span class="line">    <span class="keyword">auto</span> * ctx  = it.second;</span><br><span class="line"></span><br><span class="line">    <span class="type">ggml_backend_buffer_t</span> buf = <span class="built_in">ggml_backend_alloc_ctx_tensors_from_buft</span>(ctx, buft);</span><br><span class="line">    <span class="keyword">if</span> (!buf) &#123;</span><br><span class="line">        <span class="built_in">LLAMA_LOG_ERROR</span>(<span class="string">&quot;%s: failed to allocate buffer for kv cache\n&quot;</span>, __func__);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">ggml_backend_buffer_clear</span>(buf, <span class="number">0</span>);</span><br><span class="line">    <span class="built_in">LLAMA_LOG_INFO</span>(<span class="string">&quot;%s: %10s KV buffer size = %8.2f MiB\n&quot;</span>, __func__, <span class="built_in">ggml_backend_buffer_name</span>(buf), <span class="built_in">ggml_backend_buffer_get_size</span>(buf)/<span class="number">1024.0</span>/<span class="number">1024.0</span>);</span><br><span class="line">    cache.bufs.<span class="built_in">emplace_back</span>(buf);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="kv-cache-update">KV Cache Update</h2>
+<p>如下代码是Decode阶段的 KV cache的更新流程如下：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">llama_kv_cache_update</span>(&amp;lctx);</span><br><span class="line"><span class="comment">// if we have enough unused cells before the current head -&gt;</span></span><br><span class="line"><span class="comment">//   better to start searching from the beginning of the cache, hoping to fill it</span></span><br><span class="line"><span class="keyword">if</span> (kv_self.head &gt; kv_self.used + <span class="number">2</span>*n_tokens) &#123;</span><br><span class="line">    kv_self.head = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">const</span> <span class="keyword">auto</span> slot = <span class="built_in">llama_kv_cache_find_slot</span>(kv_self, ubatch);</span><br><span class="line"><span class="keyword">if</span> (!slot) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line">kv_slot_restorer.<span class="built_in">save</span>(slot);</span><br><span class="line"><span class="keyword">if</span> (!kv_self.recurrent) &#123;</span><br><span class="line">    <span class="comment">// a heuristic, to avoid attending the full cache if it is not yet utilized</span></span><br><span class="line">    <span class="comment">// after enough generations, the benefit from this heuristic disappears</span></span><br><span class="line">    <span class="comment">// if we start defragmenting the cache, the benefit from this will be more important</span></span><br><span class="line">    <span class="type">const</span> <span class="type">uint32_t</span> pad = <span class="built_in">llama_kv_cache_get_padding</span>(cparams);</span><br><span class="line">    kv_self.n = std::<span class="built_in">min</span>(kv_self.size, std::<span class="built_in">max</span>(pad, <span class="built_in">GGML_PAD</span>(<span class="built_in">llama_kv_cache_cell_max</span>(kv_self), pad)));</span><br><span class="line">    <span class="comment">//kv_self.n = llama_kv_cache_cell_max(kv_self);</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="llama_kv_cache_update">llama_kv_cache_update</h3>
+<p><code>llama_kv_cache_update</code> 负责维护 <strong>KV</strong> 缓存的有效性和效率，它通过应用<code>K-shift</code>、<code>碎片整理</code>和<code>预留最坏情况下的计算图内存</code>来实现这一目标。</p>
+<h4 id="k-shift">K-shift</h4>
+<details class="note info no-icon"><summary><p>为什么只有K-shift 没有 V-shift？</p>
+</summary>
+<p><code>GG say</code>:</p>
+<p>在注意力机制中，token 的位置通过 RoPE（即隐藏状态的旋转）进行编码。由于 RoPE 编码是可加的，所以我们可以通过使用新旧位置的增量(delta)来应用 RoPE “移动” 缓存的键(Key)。我们不将其应用于值 (Value)，因为它们没有显式进行 RoPE。此操作在数学上不等同于从头开始重新计算新上下文，但它的速度要快得多，并且似乎出于某种原因产生了合理的结果。</p>
+
+</details>
+<h5 id="rope编码的可加性">RoPE编码的可加性</h5>
+<p>如下代码验证了RoPE编码的可加性，即张量 r1 和 r2 相等。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">int</span> n_past_0 = <span class="number">100</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">int</span> n_past_2 = <span class="number">33</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; ne[<span class="number">2</span>]; ++i) &#123;</span><br><span class="line">    ((<span class="type">int32_t</span> *) p0-&gt;data)[i] = n_past_0 + i;</span><br><span class="line">    ((<span class="type">int32_t</span> *) p1-&gt;data)[i] = n_past_2 - n_past_0;</span><br><span class="line">    ((<span class="type">int32_t</span> *) p2-&gt;data)[i] = n_past_2 + i;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">x = <span class="built_in">get_random_tensor_f32</span>(ctx0, ndims, ne, <span class="number">-1.0f</span>, <span class="number">1.0f</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 100, 101, 102, ..., 172</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">ggml_tensor</span> * r0 = <span class="built_in">ggml_rope</span>(ctx0, x,  p0, n_rot, mode);</span><br><span class="line"><span class="comment">// -67, -67, -67, ..., -67</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">ggml_tensor</span> * r1 = <span class="built_in">ggml_rope</span>(ctx0, r0, p1, n_rot, mode); <span class="comment">// &quot;context swap&quot;, i.e. forget n_past_0 - n_past_2 tokens</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//  33,  34,  35, ..., 105</span></span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">ggml_tensor</span> * r2 = <span class="built_in">ggml_rope</span>(ctx0, x,  p2, n_rot, mode);</span><br></pre></td></tr></table></figure>
+<h5 id="value-不执行-rope">Value 不执行 RoPE</h5>
+<p>如下图所示，常见LLM中只有 <strong>Q</strong> 和 <strong>K</strong> 执行 <code>RopE</code>:</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/15/UBj2tgar6ieHk4I.png" alt="llama3网络图" /><figcaption aria-hidden="true">llama3网络图</figcaption>
+</figure>
+<h5 id="k-shift-算法">K-Shift 算法</h5>
+<p>如下代码是 <code>K-Shift</code> 算法的实现，通过构建一个graph实现对 Cache 中的 <strong>Key</strong> 向量的 <code>RoPE</code> 修正。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// apply K-shift if needed</span></span><br><span class="line"><span class="keyword">if</span> (lctx.model.hparams.rope_type != LLAMA_ROPE_TYPE_NONE) &#123;</span><br><span class="line">    <span class="built_in">ggml_backend_sched_reset</span>(lctx.sched.<span class="built_in">get</span>());</span><br><span class="line"></span><br><span class="line">    ggml_cgraph * gf = <span class="built_in">llama_build_graph_k_shift</span>(lctx);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">ggml_backend_sched_alloc_graph</span>(lctx.sched.<span class="built_in">get</span>(), gf);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">llama_set_k_shift</span>(lctx);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">llama_graph_compute</span>(lctx, gf, lctx.cparams.n_threads, lctx.threadpool);</span><br><span class="line"></span><br><span class="line">    need_reserve = <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如下图所示，是 <code>K-Shift</code> 算法流程的示意图：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/15/GfcPW9jayg1nLs2.png" alt="K-Shift示意图" /><figcaption aria-hidden="true">K-Shift示意图</figcaption>
+</figure>
+<p>通过对 <strong>K</strong> 向量添加位置偏移量，实现其位置的修正。</p>
+<h4 id="defragment">Defragment</h4>
+<p>关于KV Cache的碎片整理代码如下，其主要由 <code>llama_kv_cache_defrag_internal</code> 函数实现，并使能 <code>need_reserve</code> 。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// defragment the KV cache if needed</span></span><br><span class="line"><span class="keyword">if</span> (lctx.kv_self.do_defrag) &#123;</span><br><span class="line">    <span class="built_in">llama_kv_cache_defrag_internal</span>(lctx);</span><br><span class="line"></span><br><span class="line">    need_reserve = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    lctx.kv_self.do_defrag = <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>llama_kv_cache_defrag_internal</code> 函数主要分为两个功能模块：</p>
+<h5 id="更新-ids-映射表">更新 <strong>ids</strong> 映射表</h5>
+<p>通过更新 <strong>ids</strong> 映射表， 确定哪些 <strong>KV Cache</strong> 需要移动到哪里;</p>
+<ol type="1">
+<li><p><strong>找空洞</strong>: 从 <code>KV</code> 缓存的<em>起始位置</em>开始，寻找连续的空闲单元，使用 <span class="math inline">\(\text{hole_size}\)</span> 变量表示找到的空洞数量。</p></li>
+<li><p><strong>找数据</strong>: 从 <code>KV</code> 缓存的<em>末尾</em>开始，寻找连续的有效单元，其数量与找到的空洞数量一致。</p></li>
+<li><p><strong>移动数据</strong>: 将末尾的有效单元移动到空洞的位置，并清空原来的单元。</p></li>
+<li><p><strong>循环执行</strong>: 重复以上步骤，直到扫描完整个缓存或达到最大移动次数限制。</p></li>
+</ol>
+<h5 id="构建dedragment图">构建dedragment图</h5>
+<p>通过构建 <code>dedragment</code> 图实现KV Cache中的张量数据搬移,这里会用到 <code>cpy</code> 算子, 如下图所示，描述了内存碎片整理的过程，其中，蓝色表示找空洞的过程，红色表示找数据的过程：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/15/gOLh7GYsf9Swnk6.gif" alt="dedragment.gif" /><figcaption aria-hidden="true">dedragment.gif</figcaption>
+</figure>
+<h3 id="llama_kv_cache_find_slot">llama_kv_cache_find_slot</h3>
+<p><code>llama_kv_cache_find_slot</code> 函数是 KV 缓存管理的核心部分，它负责在缓存中找到合适的<code>空闲 slot</code>，用于存储新的 <code>KV</code> 值。函数根据模型类型的不同采用不同的策略，<code>循环模型</code>注重<strong>序列状态的连续性</strong>，而<code>非循环模型</code>则更关注找到<strong>连续的空闲单元格</strong>。</p>
+<h3 id="kv_slot_restorer.saveslot">kv_slot_restorer.save(slot)</h3>
+<p><code>kv_slot_restorer.save(slot)</code> 函数用于保存当前周期下内存插槽的边界位置信息，当出现异常推理时，便于恢复对缓存的占用。</p>
+<h4 id="kv_self.n">kv_self.n</h4>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (!kv_self.recurrent) &#123;</span><br><span class="line">    <span class="comment">// a heuristic, to avoid attending the full cache if it is not yet utilized</span></span><br><span class="line">    <span class="comment">// after enough generations, the benefit from this heuristic disappears</span></span><br><span class="line">    <span class="comment">// if we start defragmenting the cache, the benefit from this will be more important</span></span><br><span class="line">    <span class="type">const</span> <span class="type">uint32_t</span> pad = <span class="built_in">llama_kv_cache_get_padding</span>(cparams);</span><br><span class="line">    kv_self.n = std::<span class="built_in">min</span>(kv_self.size, std::<span class="built_in">max</span>(pad, <span class="built_in">GGML_PAD</span>(<span class="built_in">llama_kv_cache_cell_max</span>(kv_self), pad)));</span><br><span class="line">    <span class="comment">//kv_self.n = llama_kv_cache_cell_max(kv_self);</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>动态调整 <code>kv_self.n</code> 的值来限制参与注意力计算的<strong>缓存大小</strong>，最小尺寸为<em>pad大小</em>。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">static</span> <span class="type">uint32_t</span> <span class="title">llama_kv_cache_get_padding</span><span class="params">(<span class="type">const</span> <span class="keyword">struct</span> llama_cparams &amp; cparams)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// the FA kernels require padding to avoid extra runtime boundary checks</span></span><br><span class="line">    <span class="keyword">return</span> cparams.flash_attn ? <span class="number">256u</span> : <span class="number">32u</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="kv-cache-updatecomputing">KV Cache Update(Computing)</h2>
+<h3 id="prefill-and-decode">Prefill and Decode</h3>
+<p>如下图所示，左图是Prefill阶段的更新的过程，一次性写入所有序列的<strong>KV值</strong>，右图是Decode阶段的更新过程，每次读取所有的<strong>历史KV值</strong>，并写入当前序列的KV值：</p>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2025/06/15/41I2PcTvVOglRsL.png" alt="Prefill" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2025/06/15/GoYRj9UwypKvikg.png" alt="Decode" /></div></div></div>
+<h4 id="kv-store">KV Store</h4>
+<p><code>llama.cpp</code>中通过调用 <code>llm_build_kv_store</code> 函数，实现对 <strong>KV cache</strong> 的保存。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">llm_build_kv_store</span>(ctx, hparams, cparams, kv, graph, k_cur, v_cur, n_tokens, kv_head, cb, il);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>K向量</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">ggml_tensor</span> * k_cache_view = <span class="built_in">ggml_view_1d</span>(ctx, kv.k_l[il], n_tokens*n_embd_k_gqa, <span class="built_in">ggml_row_size</span>(kv.k_l[il]-&gt;type, n_embd_k_gqa)*kv_head);</span><br><span class="line"></span><br><span class="line"><span class="comment">// note: storing RoPE-ed version of K in the KV cache</span></span><br><span class="line"><span class="built_in">ggml_build_forward_expand</span>(graph, <span class="built_in">ggml_cpy</span>(ctx, k_cur, k_cache_view));</span><br></pre></td></tr></table></figure>
+<ul>
+<li>V向量</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (cparams.flash_attn) &#123;</span><br><span class="line">    v_cache_view = <span class="built_in">ggml_view_1d</span>(ctx, kv.v_l[il], n_tokens*n_embd_v_gqa, <span class="built_in">ggml_row_size</span>(kv.v_l[il]-&gt;type, n_embd_v_gqa)*kv_head);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// note: the V cache is transposed when not using flash attention</span></span><br><span class="line">    v_cache_view = <span class="built_in">ggml_view_2d</span>(ctx, kv.v_l[il], n_tokens, n_embd_v_gqa,</span><br><span class="line">            (  n_ctx)*<span class="built_in">ggml_element_size</span>(kv.v_l[il]),</span><br><span class="line">            (kv_head)*<span class="built_in">ggml_element_size</span>(kv.v_l[il]));</span><br><span class="line"></span><br><span class="line">    v_cur = <span class="built_in">ggml_transpose</span>(ctx, v_cur);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">ggml_build_forward_expand</span>(graph, <span class="built_in">ggml_cpy</span>(ctx, v_cur, v_cache_view));</span><br></pre></td></tr></table></figure>
+<h3 id="the-size-of-cache">The size of cache</h3>
+<p>对于每个token，需要为每个注意力头和每一层存储两个向量，且向量中的每个元素假设按照 fp16 格式存储，则每个token在内存中按照字节存储的缓存大小为：</p>
+<p><span class="math display">\[2\times2\times head\_dim \times n\_kv\_heads \times n\_layers\]</span></p>
+<p>其中， <span class="math inline">\(head\_dim\)</span> 表示每个头的 <strong>key</strong> 和 <strong>value</strong> 的向量大小， <span class="math inline">\(n\_kv\_heads\)</span> 表示KV注意力头的数量， <span class="math inline">\(n\_layers\)</span>表示模型的层数。</p>
+<table>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Cache size/token</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LLama3.2-1B</td>
+<td>32KB</td>
+</tr>
+<tr class="even">
+<td>LLama3.2-3B</td>
+<td>84KB</td>
+</tr>
+<tr class="odd">
+<td>LLama3.2-11B-Vision</td>
+<td>5MB</td>
+</tr>
+</tbody>
+</table>
+<p>为了容纳单一推理任务的完整上下文大小，我们必须相应地分配足够的缓存空间。更多的时候，可能会以小批量进行，那么cache大小还需要进一步扩大为：</p>
+<p><span class="math display">\[2\times2\times head\_dim \times n\_kv\_heads \times n\_layers \times max\_context\_lenght \times batch\_size\]</span></p>
+<p>如果想利用<strong>LLama3.2-11B-Vision</strong>的<code>128K</code>个token的完整上下文，且以4个批次推理，则需要缓存的大小将近 2.5TB的大小，这远大于存储模型参数所需要的 22GB大小。</p>
+<p>因此，KV缓存的大小限制了两件事：</p>
+<ol type="1">
+<li>系统能够支持的最大上下文大小；</li>
+<li>系统每个推理时批次的最大大小；</li>
+</ol>
+<h3 id="how-to-reduce-cache-size">How to reduce cache size?</h3>
+<h4 id="grouped-query-attention">Grouped Query Attention</h4>
+<p><span class="exturl" data-url="aHR0cHM6Ly9hcnhpdi5vcmcvYWJzLzIzMDUuMTMyNDV2Mw==">分组查询注意力 (Grouped-Query-Attention GQA)<i class="fa fa-external-link-alt"></i></span>是multi-head attention的一种变体，减少了KV Cache的大小,大体思想如下图所示：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/15/eWq2janx7isvgHU.png" alt="分组查询方法概述" /><figcaption aria-hidden="true">分组查询方法概述</figcaption>
+</figure>
+<p>如下左图是MHA的计算过程，右图是GQA的计算过程，可见GQA可以有效减少KV缓存的大小：</p>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2025/06/15/iOcQvHE2WTLpSu5.png" alt="MHA" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2025/06/15/6gTsyZKYdWxF7Xj.png" alt="GQA" /></div></div></div>
+<h4 id="sliding-window-attention">Sliding Window Attention</h4>
+<p><strong>滑动窗口注意力 (SWA)</strong> 是 <code>Mistral-7B</code> 用于支持更长上下文长度而无需增加 KV 缓存大小的技术。 <strong>SWA</strong>是对原始自注意力机制的改进，利用Transformer的堆叠层来关注窗口大小 <span class="math inline">\(W\)</span> 以外的信息。第 <span class="math inline">\(k\)</span> 层位置 <span class="math inline">\(i\)</span> 的隐藏状态 <span class="math inline">\(h_i\)</span> ，关注于前一层位置在 <span class="math inline">\(i-W\)</span> 和 <span class="math inline">\(W\)</span> 之间的全部隐藏状态。递归地，<span class="math inline">\(h_i\)</span> 可以访问从输入层到距离最远为 <span class="math inline">\(W\times k\)</span> 个token中的所有token，如下图所示：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/15/934SUOIhpRbVkLY.png" alt="SWA" /><figcaption aria-hidden="true">SWA</figcaption>
+</figure>
+<p>按照下图中的参数，在模型最后一层，使用窗口大小 <span class="math inline">\(W = 4096\)</span> ，我们具有大约 131K 个 token 的理论注意力跨度。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/15/ZxvrLVqKRBO5hwe.png" alt="SWA-params" /><figcaption aria-hidden="true">SWA-params</figcaption>
+</figure>
+<h5 id="滚动缓冲区缓存">滚动缓冲区缓存</h5>
+<p>固定的注意力跨度意味着我们可以使用滚动缓冲区缓存来限制我们的缓存大小。缓存大小固定为 W，时间步 i 的键值对存储在缓存的 <span class="math inline">\(i \mod W\)</span> 位置。因此，当位置 <span class="math inline">\(i &gt; W\)</span> 时，缓存中的旧值将被覆盖，缓存的大小停止增长。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/26/PTWEG7li89qSLK1.png" alt="滚动缓冲区缓存。缓存大小固定为W = 4" /><figcaption aria-hidden="true">滚动缓冲区缓存。缓存大小固定为W = 4</figcaption>
+</figure>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/26/enZb3w1co4jGCD7.png" alt="缓存大小固定为W = 6" /><figcaption aria-hidden="true">缓存大小固定为W = 6</figcaption>
+</figure>
+<h5 id="prefill-and-block">Prefill and Block</h5>
+<p>生成序列时，我们需要逐个预测标记，因为每个标记都以之前的标记为条件。然而，提示是预先已知的，我们可以用提示预填充 (k, v) 缓存。如果提示词非常大，我们可以将其分割成更小的片段，并用每个片段预填充缓存。为此，我们可以选择窗口大小作为我们的片段大小。因此，对于每个片段，我们需要计算缓存和片段上的注意力。如下图所示，展示了注意力掩码如何在缓存和块上运作。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/26/q5RlfG2yLsUuNDx.png" alt="Prefill and Block" /><figcaption aria-hidden="true">Prefill and Block</figcaption>
+</figure>
+<h4 id="pagedattention">PagedAttention</h4>
+<p><code>PagedAttention</code> 是一种受操作系统中 <strong>虚拟内存</strong> 和 <strong>分页</strong> 经典思想启发的<code>注意力算法</code>，与传统的注意力算法不同，<strong>PagedAttention</strong>允许将<strong>连续的键值对</strong>存储在<strong>非连续的内存空间</strong>中。具体来说，<strong>PagedAttention</strong> 将每个序列的KV缓存划分为块，每个块包含固定数量标记的键值对。在注意力计算过程中，<strong>PagedAttention</strong>内核高效地识别并提取这些块。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/26/LDRPFxKU41hn7NW.gif" alt="PagedAttention：KV Cache 被划分为块，块在内存空间中不需要连续" /><figcaption aria-hidden="true">PagedAttention：KV Cache 被划分为块，块在内存空间中不需要连续</figcaption>
+</figure>
+<p>由于块不需要在内存中连续，我们可以像操作系统虚拟内存那样更灵活地管理键值对：可以将块视为页面，标记视为字节，序列视为进程。序列中连续的逻辑块通过块表映射到非连续的物理块，新的token生成时，物理块按需分配。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/26/s24zm6BwrMlXxSG.gif" alt="使用PagedAttention的请求示例生成过程" /><figcaption aria-hidden="true">使用PagedAttention的请求示例生成过程</figcaption>
+</figure>
+<p>在<strong>PagedAttention</strong>中，内存浪费仅发生在序列的最后一个块。实际上，这导致了接近最佳的内存使用率，浪费仅低于4%。这种内存效率的提升证明非常有益：它允许系统将更多序列一起批处理，提高GPU利用率，从而显著提高吞吐量。</p>
+<h5 id="内存共享">内存共享</h5>
+<p><strong>PagedAttention</strong>的另一个关键优势在于：高效的内存共享。例如，在并行采样中，多个输出序列是从相同的提示生成的。在这种情况下，提示的计算和内存可以在输出序列之间共享。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/26/qz6SFxZoQEsYMcV.gif" alt="并行采样示例" /><figcaption aria-hidden="true">并行采样示例</figcaption>
+</figure>
+<p><strong>PagedAttention</strong> 通过其块表自然地实现了内存共享。类似于进程共享物理页面，不同的序列在PagedAttention中可以通过将其逻辑块映射到相同的物理块来共享这些块。为了确保安全共享，PagedAttention 跟踪物理块的引用计数并实现了写时复制机制。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/27/zfdW6JixMpo9sCc.gif" alt="多输出采样请求的示例生成过程" /><figcaption aria-hidden="true">多输出采样请求的示例生成过程</figcaption>
+</figure>
+<p>PageAttention的内存共享极大地降低了复杂采样算法（例如并行采样和束搜索）的内存开销，将其内存使用量减少了高达55%。这可以转化为高达2.2倍的吞吐量提升。这使得此类采样方法在LLM服务中变得实用。</p>
+<h4 id="循环缓冲区更新">循环缓冲区更新</h4>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// update the kv ring buffer</span></span><br><span class="line">&#123;</span><br><span class="line">    kv_self.head += n_tokens;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Ensure kv cache head points to a valid index.</span></span><br><span class="line">    <span class="keyword">if</span> (kv_self.head &gt;= kv_self.size) &#123;</span><br><span class="line">        kv_self.head = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码实现了 KV 缓存的环形缓冲区更新逻辑。 它将头部指针 kv_self.head 向前移动 n_tokens 个位置，并在超出缓存边界时将其重置为 0。 这使得 KV 缓存可以循环利用存储空间，从而支持处理更长的序列。</p>
+<h4 id="缓存碎片管理">缓存碎片管理</h4>
+<p><code>llama_kv_cache_defrag_internal</code> 函数通过在 <strong>KV</strong> 缓存中移动数据来整理碎片，提高缓存利用率。它使用 <code>ggml_graph</code> 来高效地执行数据移动操作。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (cparams.causal_attn &amp;&amp; cparams.defrag_thold &gt;= <span class="number">0.0f</span>) &#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">float</span> fragmentation = kv_self.n &gt;= <span class="number">128</span> ? <span class="number">1.0f</span> - <span class="built_in">float</span>(kv_self.used)/<span class="built_in">float</span>(kv_self.n) : <span class="number">0.0f</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// queue defragmentation for next llama_kv_cache_update</span></span><br><span class="line">    <span class="keyword">if</span> (fragmentation &gt; cparams.defrag_thold) &#123;</span><br><span class="line">        <span class="comment">//LLAMA_LOG_INFO(&quot;fragmentation: %.2f\n&quot;, fragmentation);</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">llama_kv_cache_defrag</span>(kv_self);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="kv-cache管理-无限文本生成">KV Cache管理-无限文本生成</h3>
+<p>众所周知，大型语言模型（LLM）难以很好地<em>泛化</em>到长度超过<strong>训练序列长度</strong>的长文本上下文，这在推理过程中使用LLM处理长输入序列时带来了挑战。在这项工作中，我们认为LLM本身具有无需微调即可处理长文本上下文的能力。为实现这一目标，我们提出<strong>SelfExtend</strong>方法，通过构建双层注意力信息：<strong>组注意力</strong>和<strong>邻域注意力</strong>来扩展LLM的上下文窗口。</p>
+<h4 id="selfextend">SelfExtend</h4>
+<p>该方法针对基于旋转位置编码(RoPE)的LLM，其内积仅以相对形式的编码位置信息：</p>
+<p><span class="math display">\[\langle f_q(x_m,m),f_k(x_n,n) \rangle =g(x_m,x_n,m-n).\]</span></p>
+<p>大型语言模型为何在推理过程中无法处理超过其预训练上下文窗口长度的序列，根据前人的经验，在未见过的相对位置上，其注意力分布与预训练上下文窗口内的注意力分布不同。故这种失败源于分布外 (OOD) 的相对距离，即神经网络对分布外输入不鲁棒。</p>
+<h5 id="grouped-attention">Grouped Attention</h5>
+<p><strong>Grouped Attention(GA)</strong>与原始的自注意力机制相同，只是在进行内积之前，对每个token的原始位置应用了FLOOR(向下取整)操作。 我们可以使用FLOOR操作将未见位置映射到预训练上下文窗口内的位置。 <span class="math display">\[P_g=P // G_s\]</span></p>
+<p>假设LLM预训练的上下文窗口长度为<code>5</code>，而推理序列的长度为<code>8</code>。下图展示了当输入长度超出预训练上下文窗口大小时出现的位置超出分布外的问题。该矩阵的纵轴代表查询词元的位置，横轴代表键词元的位置。在这种情况下，在相对位置矩阵中，只有橙色的部分在预训练期间可见。灰色区域中的相对位置位于预训练上下文窗口之外。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/28/yuFqMwfB2NknUKT.png" alt="分组注意力图示" /><figcaption aria-hidden="true">分组注意力图示</figcaption>
+</figure>
+<p>在上述右图中，展示了<code>FLOOR</code>(向下取整)操作的应用方式以及分组自注意力机制的相对位置矩阵。当 <span class="math inline">\(G_s=2\)</span> 时，查询token和键token的位置由FLOOR (//)从<code>0-7</code>映射到<code>0-3</code>。新的相对位置（蓝色显示）均在预训练上下文窗口的范围内。</p>
+<h5 id="分组注意力对模型影响">分组注意力对模型影响</h5>
+<p>大型语言模型在没有精确位置信息时似乎能有效工作，但并非十全十美。 如下图所示，虚线表示<strong>未进行 FLOOR 运算</strong>的原始模型的PPL，实线表示<strong>利用 FLOOR 操作</strong>的模型PPL。可见，采用分组注意力的大型语言模型在长度超出预训练上下文窗口的序列上能保持相对较低且稳定的困惑度。同时，采用分组注意力机制的模型 PPL 比原始 LLM 略高。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/28/zRcuGXaIblt4jp5.png" alt="分组注意力使用不同的组大小" /><figcaption aria-hidden="true">分组注意力使用不同的组大小</figcaption>
+</figure>
+<ul>
+<li>如何恢复由分组注意力引起的退化的语言建模能力？</li>
+</ul>
+<p>核心思路是在邻近区域重新引入<strong>普通注意力</strong>，根据一系列的研究表明，与目标token邻近的token，在生成下一个token时，起着至关重要的作用。<strong>组注意力</strong>可能不显著影响句子整体质量，但需精确定位注意力。保留<strong>标准注意力机制</strong>，可以确保语言模型捕捉局部上下文细微之处的精确性和有效性。</p>
+<h5 id="self-extend">Self-Extend</h5>
+<p><strong>SelfExtend</strong>是一种无需微调即可增强大型语言模型处理长上下文自然能力的方法，融合了两种不同类型的注意力机制：</p>
+<ol type="1">
+<li><strong>Grouped Attention</strong></li>
+</ol>
+<p>这是专门为距离较远的标记而设计的，通过对位置进行下取整运算来处理标记之间的长距离关系。</p>
+<ol start="2" type="1">
+<li><strong>Standard Attention</strong></li>
+</ol>
+<p>它使用传统注意力机制来处理指定范围内的相邻词元。</p>
+<div class="note info"><p>注意：SelfExtend仅在推理过程中修改注意力机制，无需额外微调。</p>
+</div>
+<p>如下图所示，上下文窗口从预训练长度<code>7</code>扩展到<code>(7−4)∗2+4=10</code>。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/29/vQopNS8Ya7GWK6m.png" alt="SelfExtend图示" /><figcaption aria-hidden="true">SelfExtend图示</figcaption>
+</figure>
+<p>如下图所示，左图是代码实现介绍，右图是对该代码的图形化解释。</p>
+<div class="group-picture"><div class="group-picture-row"><div class="group-picture-column"><img data-src="https://s2.loli.net/2025/06/29/o4a19yU8JZRGTHY.png" alt="SelfExtend代码" /></div><div class="group-picture-column"><img data-src="https://s2.loli.net/2025/06/29/r6TjcLltwAWMpb2.gif" alt="SelfExtend注意力生成示意图" /></div></div></div>
+<h4 id="kv-cache管理方案分析">KV Cache管理方案分析</h4>
+<p>目前llama.cpp中关于无限文本生成的KV Cache管理始终保持Cache大小不变，根据是否采用分组注意力机制，采用不同的Cache更新方式。</p>
+<ul>
+<li><strong>KV Cache更新</strong></li>
+</ul>
+<p>当 <code>ga_n==1</code> 时，会始终保留系统提示词的 <strong>KV Cache</strong>，从剩余的缓存中移除一半相对当前token较远的token，只保留一半相对较近的token。具体操作的代码实现如下：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (n_past + (<span class="type">int</span>) embd.<span class="built_in">size</span>() &gt;= n_ctx) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!params.ctx_shift)&#123;</span><br><span class="line">        <span class="built_in">LOG_DBG</span>(<span class="string">&quot;\n\n%s: context full and context shift is disabled =&gt; stopping\n&quot;</span>, __func__);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (params.n_predict == <span class="number">-2</span>) &#123;</span><br><span class="line">        <span class="built_in">LOG_DBG</span>(<span class="string">&quot;\n\n%s: context full and n_predict == -%d =&gt; stopping\n&quot;</span>, __func__, params.n_predict);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> n_left    = n_past - params.n_keep;</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> n_discard = n_left/<span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">LOG_DBG</span>(<span class="string">&quot;context full, swapping: n_past = %d, n_left = %d, n_ctx = %d, n_keep = %d, n_discard = %d\n&quot;</span>,</span><br><span class="line">            n_past, n_left, n_ctx, params.n_keep, n_discard);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">llama_kv_cache_seq_rm</span> (ctx, <span class="number">0</span>, params.n_keep            , params.n_keep + n_discard);</span><br><span class="line">    <span class="built_in">llama_kv_cache_seq_add</span>(ctx, <span class="number">0</span>, params.n_keep + n_discard, n_past, -n_discard);</span><br><span class="line"></span><br><span class="line">    n_past -= n_discard;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">LOG_DBG</span>(<span class="string">&quot;after swap: n_past = %d\n&quot;</span>, n_past);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">LOG_DBG</span>(<span class="string">&quot;embd: %s\n&quot;</span>, <span class="built_in">string_from</span>(ctx, embd).<span class="built_in">c_str</span>());</span><br><span class="line"></span><br><span class="line">    <span class="built_in">LOG_DBG</span>(<span class="string">&quot;clear session path\n&quot;</span>);</span><br><span class="line">    path_session.<span class="built_in">clear</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下图描述了上述代码的中的<strong>KV Cache</strong>更新过程：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/29/TK7WDOJq9uMhmyQ.png" alt="KV Cache Update" /><figcaption aria-hidden="true">KV Cache Update</figcaption>
+</figure>
+<ul>
+<li><strong>Grouped Attention</strong></li>
+</ul>
+<p>当 <code>ga_n!=1</code> 时，说明采用 <strong>grouped self-attention</strong>，采用上文提到的 <strong>SelfExtend</strong> 方法，通过压缩token的相对位置，达到扩展模型上下文的能力，代码实现逻辑如下：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// context extension via Self-Extend</span></span><br><span class="line"><span class="keyword">while</span> (n_past &gt;= ga_i + ga_w) &#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> ib = (ga_n*ga_i)/ga_w;</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> bd = (ga_w/ga_n)*(ga_n - <span class="number">1</span>);</span><br><span class="line">    <span class="type">const</span> <span class="type">int</span> dd = (ga_w/ga_n) - ib*bd - ga_w;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">LOG_DBG</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">    <span class="built_in">LOG_DBG</span>(<span class="string">&quot;shift: [%6d, %6d] + %6d -&gt; [%6d, %6d]\n&quot;</span>, ga_i, n_past, ib*bd, ga_i + ib*bd, n_past + ib*bd);</span><br><span class="line">    <span class="built_in">LOG_DBG</span>(<span class="string">&quot;div:   [%6d, %6d] / %6d -&gt; [%6d, %6d]\n&quot;</span>, ga_i + ib*bd, ga_i + ib*bd + ga_w, ga_n, (ga_i + ib*bd)/ga_n, (ga_i + ib*bd + ga_w)/ga_n);</span><br><span class="line">    <span class="built_in">LOG_DBG</span>(<span class="string">&quot;shift: [%6d, %6d] + %6d -&gt; [%6d, %6d]\n&quot;</span>, ga_i + ib*bd + ga_w, n_past + ib*bd, dd, ga_i + ib*bd + ga_w + dd, n_past + ib*bd + dd);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">llama_kv_cache_seq_add</span>(ctx, <span class="number">0</span>, ga_i,                n_past,              ib*bd);</span><br><span class="line">    <span class="built_in">llama_kv_cache_seq_div</span>(ctx, <span class="number">0</span>, ga_i + ib*bd,        ga_i + ib*bd + ga_w, ga_n);</span><br><span class="line">    <span class="built_in">llama_kv_cache_seq_add</span>(ctx, <span class="number">0</span>, ga_i + ib*bd + ga_w, n_past + ib*bd,      dd);</span><br><span class="line"></span><br><span class="line">    n_past -= bd;</span><br><span class="line"></span><br><span class="line">    ga_i += ga_w/ga_n;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">LOG_DBG</span>(<span class="string">&quot;\nn_past_old = %d, n_past = %d, ga_i = %d\n\n&quot;</span>, n_past + bd, n_past, ga_i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下图描述了上述代码的实现流程：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/06/29/IZNP4eJaHUrvqCW.png" alt="Grouped Attention" /><figcaption aria-hidden="true">Grouped Attention</figcaption>
+</figure>
+<h2 id="session-load-and-save">Session Load and Save</h2>
+<p><strong>llama.cpp</strong>支持加载历史会话文件，该文件保存了上次会话时位于<strong>KV Cache</strong>中的数据，如果匹配到提示词在历史会话中，则在<strong>decode阶段</strong>可以直接加载其<strong>KV Cache,</strong> 不需要重新计算token的嵌入，可以提升总体性能。</p>
+<h3 id="session-file-load">Session file load</h3>
+<p>首先调用 <code>llama_state_load_file</code> 函数，然后调用 <code>llama_state_load_file_internal</code> 函数，其代码如下：</p>
+<ul>
+<li><strong>文件校验</strong></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// sanity checks</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">uint32_t</span> magic   = file.<span class="built_in">read_u32</span>();</span><br><span class="line">    <span class="type">const</span> <span class="type">uint32_t</span> version = file.<span class="built_in">read_u32</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (magic != LLAMA_SESSION_MAGIC || version != LLAMA_SESSION_VERSION) &#123;</span><br><span class="line">        <span class="built_in">LLAMA_LOG_ERROR</span>(<span class="string">&quot;%s: unknown (magic, version) for session file: %08x, %08x\n&quot;</span>, __func__, magic, version);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>加载保存的token计数</strong></li>
+</ul>
+<p>从文件中读取token的数量，代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// load the prompt</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">uint32_t</span> n_token_count = file.<span class="built_in">read_u32</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (n_token_count &gt; n_token_capacity) &#123;</span><br><span class="line">        <span class="built_in">LLAMA_LOG_ERROR</span>(<span class="string">&quot;%s: token count in session file exceeded capacity! %u &gt; %zu\n&quot;</span>, __func__, n_token_count, n_token_capacity);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    file.<span class="built_in">read_raw</span>(tokens_out, <span class="built_in">sizeof</span>(llama_token) * n_token_count);</span><br><span class="line">    *n_token_count_out = n_token_count;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>更新上下文的状态</strong></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="comment">// restore the context state</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">size_t</span> n_state_size_cur = file.size - file.<span class="built_in">tell</span>();</span><br><span class="line"></span><br><span class="line">    <span class="function">llama_data_read_file <span class="title">data_ctx</span><span class="params">(&amp;file)</span></span>;</span><br><span class="line">    <span class="type">const</span> <span class="type">size_t</span> n_read = <span class="built_in">llama_state_set_data_internal</span>(ctx, data_ctx);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (n_read != n_state_size_cur) &#123;</span><br><span class="line">        <span class="built_in">LLAMA_LOG_ERROR</span>(<span class="string">&quot;%s: did not read all of the session file data! size %zu, got %zu\n&quot;</span>, __func__, n_state_size_cur, n_read);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其调用 <code>llama_state_set_data_internal</code> 函数更新上下文的状态：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="built_in">llama_synchronize</span>(ctx);</span><br><span class="line"></span><br><span class="line">data_ctx.<span class="built_in">read_model_info</span>(ctx);</span><br><span class="line"></span><br><span class="line"><span class="comment">// set outputs</span></span><br><span class="line">data_ctx.<span class="built_in">read_output_ids</span>(ctx);</span><br><span class="line">data_ctx.<span class="built_in">read_logits</span>(ctx);</span><br><span class="line">data_ctx.<span class="built_in">read_embeddings</span>(ctx);</span><br><span class="line"></span><br><span class="line">data_ctx.<span class="built_in">read_kv_cache</span>(ctx);</span><br><span class="line"></span><br><span class="line"><span class="keyword">return</span> data_ctx.<span class="built_in">get_size_read</span>();</span><br></pre></td></tr></table></figure>
+<p>其中，<strong>KV Cache</strong> 使用函数 <code>read_kv_cache</code> 读取更新：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">read_kv_cache</span><span class="params">(<span class="keyword">struct</span> llama_context * ctx, llama_seq_id seq_id = <span class="number">-1</span>)</span> </span>&#123;</span><br><span class="line">    <span class="type">uint32_t</span> cell_count;</span><br><span class="line">    <span class="built_in">read_to</span>(&amp;cell_count, <span class="built_in">sizeof</span>(cell_count));</span><br><span class="line"></span><br><span class="line">    <span class="type">bool</span> res = <span class="built_in">read_kv_cache_meta</span>(ctx, cell_count, seq_id) &amp;&amp; <span class="built_in">read_kv_cache_data</span>(ctx, cell_count);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!res) &#123;</span><br><span class="line">        <span class="keyword">if</span> (seq_id == <span class="number">-1</span>) &#123;</span><br><span class="line">            <span class="built_in">llama_kv_cache_clear</span>(ctx);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="built_in">llama_kv_cache_seq_rm</span>(ctx, seq_id, <span class="number">-1</span>, <span class="number">-1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span> std::<span class="built_in">runtime_error</span>(<span class="string">&quot;failed to restore kv cache&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中 <code>read_kv_cache_meta</code> 函数读取 <strong>cells</strong> 信息， <code>read_kv_cache_data</code> 函数读取每层的 <strong>KV cache</strong> 数据。</p>
+]]></content>
+      <categories>
+        <category>llama.cpp</category>
+        <category>KV Cache Manage</category>
+      </categories>
+      <tags>
+        <tag>KV Cache Manage</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>LoRA-llama.cpp</title>
+    <url>/2025/02/20/llama-cpp-lora/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p><strong>LoRA(Low-Rank Adaption)</strong>是微软研究人员<code>2021年</code>提出的一种高效的微调技术，其核心思想就是将<strong>大的矩阵</strong>分解为<strong>两个低秩矩阵</strong>表示，从而减少了权重的数据量。如下图所示，将矩阵 <span class="math inline">\(\Bbb{R}^{1024\times 1024}\)</span>表示为两个低秩矩阵 <span class="math inline">\(\Bbb{R}^{1024\times 2}\)</span>和 <span class="math inline">\(\Bbb{R}^{2\times 1024}\)</span>相乘，其中<strong>秩</strong>的大小为<code>2</code>，可以减少256倍的数据体积。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/22/EYZBhcOK9g7p5SH.png" alt="矩阵分解" /><figcaption aria-hidden="true">矩阵分解</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="lora">LoRA</h2>
+<p>如下图所示，使用高斯随机初始化矩阵 <span class="math inline">\(A\)</span> ，并将矩阵 <span class="math inline">\(B\)</span> 初始化为零，因此在训练开始时 <span class="math inline">\(\Delta W=BA\)</span> 为零。其中， <span class="math inline">\(W_0 \in \Bbb{R}^{d\times k}\)</span>，且矩阵<span class="math inline">\(B\in\Bbb{R}^{d\times r}\)</span>和矩阵<span class="math inline">\(A\in \Bbb{R}^{r\times k}\)</span>的秩满足 <span class="math inline">\(r \ll \min(d,k)\)</span>。</p>
+<p><span class="math display">\[\large h=W_{0}x+\Delta Wx=W_{0}x + BAx\]</span></p>
+<p>可以使用缩放因子 <span class="math inline">\(\frac{\alpha}{r}\)</span>对 <span class="math inline">\(\Delta Wx\)</span>进行缩放:</p>
+<p><span class="math display">\[\large h=W_{0}x+\frac{\alpha}{r}\Delta Wx \]</span></p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/22/zuYKr2JbeAWZn9I.png" alt="LoRA" /><figcaption aria-hidden="true">LoRA</figcaption>
+</figure>
+<ul>
+<li>LoRA 应用于哪些权重矩阵?</li>
+</ul>
+<p>需要注意的是，若将所有参数皆纳入<span class="math inline">\(\Delta W_q\)</span>或<span class="math inline">\(\Delta W_k\)</span>，将会致使精度性能大幅下降，而同时对<span class="math inline">\(\Delta W_q\)</span>和或<span class="math inline">\(\Delta W_v\)</span>进行调整，则会产生最优结果。这意味着，即便秩为 <code>4</code>，在 <span class="math inline">\(\Delta W\)</span> 中亦能够捕捉到充足的信息，故而相较使用秩更大的单一类型的权重，调整多个权重矩阵更为可取。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/22/E7wDsjU3nmhLQR9.png" alt="应用LoRA于不同类型的注意力权重" /><figcaption aria-hidden="true">应用LoRA于不同类型的注意力权重</figcaption>
+</figure>
+<h2 id="loading-lora">Loading LoRA</h2>
+<p>目前<code>llama.cpp</code>中有两种加载lora文件的选项：</p>
+<ul>
+<li><code>--lora</code></li>
+</ul>
+<p>指定LoRA适配器文件的<strong>路径</strong>；</p>
+<ul>
+<li><code>--lora-scaled</code></li>
+</ul>
+<p>指定LoRA适配器文件的<strong>路径</strong>和用户定义的<strong>缩放系数</strong>；</p>
+<div class="note info"><ol type="1">
+<li>可以多次指定 <code>--lora</code> 选项可实现加载多个LoRA适配器；</li>
+<li>支持动态加载LoRA文件；</li>
+<li>支持将LoRA文件参数与基础模型合并；</li>
+</ol>
+</div>
+<h3 id="lora-adapter-init">LoRA Adapter Init</h3>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">auto</span> &amp; la : params.lora_adapters) &#123;</span><br><span class="line">    common_lora_adapter_container loaded_la;</span><br><span class="line">    loaded_la.path = la.path;</span><br><span class="line">    loaded_la.scale = la.scale;</span><br><span class="line">    loaded_la.adapter = <span class="built_in">llama_lora_adapter_init</span>(model, la.path.<span class="built_in">c_str</span>());</span><br><span class="line">    <span class="keyword">if</span> (loaded_la.adapter == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">        <span class="built_in">LOG_ERR</span>(<span class="string">&quot;%s: failed to apply lora adapter &#x27;%s&#x27;\n&quot;</span>, __func__, la.path.<span class="built_in">c_str</span>());</span><br><span class="line">        <span class="built_in">llama_free</span>(lctx);</span><br><span class="line">        <span class="built_in">llama_free_model</span>(model);</span><br><span class="line">        <span class="keyword">return</span> iparams;</span><br><span class="line">    &#125;</span><br><span class="line">    iparams.lora_adapters.<span class="built_in">push_back</span>(loaded_la); <span class="comment">// copy to list of loaded adapters</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码其中，<code>llama_lora_adapter_init</code> 函数从lora格式的文件中加载相关信息，判断是否和当前框架匹配，并加载<strong>BA</strong>矩阵的相关权重参数。</p>
+<h3 id="lora-format">LoRA Format</h3>
+<p>如下图所示，是LoRA文件的结构示意图，主要结构与GGUF格式一致，主要是KV字典中保存与LoRA适配器相关的内容：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/02/22/SfxamObBDHr78GA.png" alt="LoRA文件格式" /><figcaption aria-hidden="true">LoRA文件格式</figcaption>
+</figure>
+<p>llama.cpp中关于LoRA权重的加载实现代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="type">static</span> <span class="keyword">struct</span> <span class="title class_">ggml_tensor</span> * <span class="built_in">llm_build_lora_mm</span>(</span><br><span class="line">        <span class="keyword">struct</span> llama_context &amp; lctx,</span><br><span class="line">         <span class="keyword">struct</span> ggml_context * ctx0,</span><br><span class="line">          <span class="keyword">struct</span> ggml_tensor * w,</span><br><span class="line">          <span class="keyword">struct</span> ggml_tensor * cur) &#123;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">ggml_tensor</span> * res = <span class="built_in">ggml_mul_mat</span>(ctx0, w, cur);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> &amp; it : lctx.lora_adapters) &#123;</span><br><span class="line">        <span class="keyword">struct</span> <span class="title class_">llama_lora_weight</span> * lora = it.first-&gt;<span class="built_in">get_weight</span>(w);</span><br><span class="line">        <span class="keyword">if</span> (lora == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">const</span> <span class="type">float</span> alpha = it.first-&gt;alpha;</span><br><span class="line">        <span class="type">const</span> <span class="type">float</span> rank  = (<span class="type">float</span>) lora-&gt;b-&gt;ne[<span class="number">0</span>];</span><br><span class="line">        <span class="type">const</span> <span class="type">float</span> scale = alpha ? it.second * alpha / rank : it.second;</span><br><span class="line">        <span class="keyword">struct</span> <span class="title class_">ggml_tensor</span> * ab_cur = <span class="built_in">ggml_mul_mat</span>(</span><br><span class="line">            ctx0, lora-&gt;b,</span><br><span class="line">            <span class="built_in">ggml_mul_mat</span>(ctx0, lora-&gt;a, cur)</span><br><span class="line">        );</span><br><span class="line">        ab_cur = <span class="built_in">ggml_scale</span>(ctx0, ab_cur, scale);</span><br><span class="line">        res = <span class="built_in">ggml_add</span>(ctx0, res, ab_cur);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中，权重tensor(<strong>w</strong>)表示匹<span class="math inline">\(W_Q\)</span>，<span class="math inline">\(W_K\)</span>，<span class="math inline">\(W_V\)</span>和<span class="math inline">\(W_O\)</span>中的任意一个，如果存在则加载，否则跳过。 关于<strong>动态加载</strong>的实现，基于判断是否存在 <code>lctx.lora_adapters</code> 对象。如果存在，则在计算图中添加<strong>BA</strong>矩阵的计算分支，这会增加模型的计算量，但由于BA矩阵的<strong>秩</strong>比较<code>小</code>，增加的计算量可以接受。</p>
+]]></content>
+      <categories>
+        <category>llama.cpp</category>
+        <category>LoRA</category>
+      </categories>
+      <tags>
+        <tag>LoRA</tag>
       </tags>
   </entry>
 </search>
