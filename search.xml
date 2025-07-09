@@ -9947,4 +9947,391 @@ D = T_{f} * V_{s} * k
         <tag>LoRA</tag>
       </tags>
   </entry>
+  <entry>
+    <title>K-Quant</title>
+    <url>/2025/07/05/llama-cpp-k-quant/</url>
+    <content><![CDATA[<h2 id="overview">Overview</h2>
+<p>在<code>llama.cpp</code>中，常用的量化方式为 <strong>K-Quant</strong> ，这是一种<code>混合量化</code>方式，意味着不同<strong>类型</strong>和<strong>位置</strong>的权重会采用不同的量化位宽。其核心思想是，对于对模型精度影响较大的权重，采用更高的量化位宽。本节重点探讨了其量化算法背后的数学原理，旨在从数学角度深入理解其背后的数学原理。</p>
+<h2 id="k-quant-compare">K-Quant Compare</h2>
+<p>根据模型量化时是否使用<strong>IMatrix</strong>，<code>K-Quant</code> 算法会调用不同的实现，详细的对比如下：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/07/05/WRkAjIpLlbyEvNZ.png" alt="Compare K-Quant" /><figcaption aria-hidden="true">Compare K-Quant</figcaption>
+</figure>
+<h3 id="data-block-split">Data Block Split</h3>
+<p><strong>K-Quant</strong> 采用<code>逐块量化</code>的方式，首先从原始权重数据中取出<code>256</code>个元素作为一个<strong>量化Block</strong>，然后再将其分割为<code>8</code>个<strong>Super-Block</strong>，每个<strong>Super-Block</strong>包含<code>32</code>个待量化的权重数据。</p>
+<ul>
+<li><span class="math inline">\(N\)</span>：表示<code>Block</code>的大小；</li>
+<li><span class="math inline">\(n\)</span>：表示<code>Super-Block</code>的大小；</li>
+</ul>
+<h3 id="imatrix">IMatrix</h3>
+<p><strong>K-Quant</strong> 支持使用<code>i-matrix</code>进一步提升量化精度，其核心思想是<strong>利用激活值 (activations) 的统计信息来指导权重(weights)量化</strong>。通常的量化方法可能会忽略激活值的影响，该方法试图根据激活值的<strong>重要性</strong>来调整量化系数，从而使得量化的最终目标(量化误差最小)达到最优。 对于<code>i-matrix</code>概念的理解，重点在于<strong>Importance</strong>单词，表示对量化精度影响比较<strong>重要</strong>的权重。当量化时，准备一份校准数据集，通过前向推理收集网络每层的激活值信息。然后根据这些激活值的分布，计算出权重对于量化目标的敏感度，哪些更重要，哪些不那么重要。</p>
+<h4 id="importance-matrix-calculation">Importance Matrix Calculation</h4>
+<p>如何计算出 <code>i-matrix</code>，其背后的数学原理推理如下：</p>
+<p>假设网络某一层的<strong>权重向量</strong>表示为：</p>
+<p><span class="math display">\[
+W_{m\times n}=
+\begin{bmatrix}
+w_{1,1} &amp; w_{1,2} &amp; ... &amp; w_{1,n}\\
+w_{2,1} &amp; w_{2,2} &amp; ... &amp; w_{2,n}\\
+... &amp; ... &amp; ... &amp; ...\\
+w_{m,1} &amp; w_{m,2} &amp; ... &amp; w_{m,n}\\
+\end{bmatrix}
+\]</span></p>
+<p>其中， <span class="math inline">\(m\)</span>表示行， <span class="math inline">\(n\)</span>表示列，则第 <span class="math inline">\(i\)</span> 行的<strong>权重向量</strong>为</p>
+<p><span class="math display">\[
+W_{i,:}=\mathbf{w}_i^T =
+\begin{bmatrix}
+w_{i,1} &amp;w_{i,2}&amp;...&amp;w_{i,n}
+\end{bmatrix}
+\]</span></p>
+<p>假设网络某一层的<strong>激活输入</strong>为</p>
+<p><span class="math display">\[
+X_{n\times k}=
+\begin{bmatrix}
+x_{1,1} &amp; x_{1,2} &amp; ... &amp; x_{1,k}\\
+x_{2,1} &amp; x_{2,2} &amp; ... &amp; x_{2,k}\\
+... &amp; ... &amp; ... &amp; ...\\
+x_{n,1} &amp; x_{n,2} &amp; ... &amp; x_{n,k}\\
+\end{bmatrix}
+\]</span></p>
+<p>其中， <span class="math inline">\(n\)</span> 表示行， <span class="math inline">\(k\)</span> 表示列，则第 <span class="math inline">\(j\)</span> 列的<strong>激活向量</strong>为：</p>
+<p><span class="math display">\[
+X_{:,j}=\mathbf{x}_j=
+\begin{bmatrix}
+x_{1,j}\\
+x_{2,j}\\
+...\\
+x_{n,j}
+\end{bmatrix}=(x_{1,j},x_{2,j},...,x_{n,j})
+\]</span></p>
+<p>那么神经网络层中的一个输出可以表示为<code>权重向量</code> <span class="math inline">\(\mathbf{w}\)</span> 和<code>激活向量</code> <span class="math inline">\(\mathbf{x}\)</span> 的<strong>点积</strong>：</p>
+<p><span class="math display">\[y=\mathbf{w}_i^T\cdot \mathbf{x}_j=\sum_{t=1}^n w_{i,t}*x_{t,j}\tag{1}\]</span></p>
+<p>假设<code>权重向量</code> <span class="math inline">\(\mathbf{w}\)</span> 的<strong>量化形式</strong>表示为</p>
+<p><span class="math display">\[
+\mathbf{q}_i^T =
+\begin{bmatrix}
+q_{i,1} &amp;q_{i,2}&amp;...&amp;q_{i,n}
+\end{bmatrix}
+\]</span></p>
+<p>权重量化后的输出可以表示为</p>
+<p><span class="math display">\[y_q=\mathbf{q}_i^T\cdot \mathbf{x}_j=\sum_{t=1}^n q_{i,t}*x_{t,j} \tag{2}\]</span></p>
+<p>最终量化目标是使量化后的权重 <code>q</code> 和原始权重 <code>w</code> 与激活向量 <span class="math inline">\(a\)</span> 的<strong>点积</strong>结果尽量接近，即最小化量化引入的误差，以最小化<code>RMSE</code>为<strong>目标函数</strong>表示如下：</p>
+<p><span class="math display">\[\mathtt{min} \quad |y_q-y|^2\]</span></p>
+<p>结合公式(1)和(2)得，<strong>误差函数</strong>可以表示如下：</p>
+<p><span class="math display">\[F_{i,j}=\Bigg[\sum_{t=1}^n(q_{i,t}-w_{i,t})x_{t,j}\Bigg]^2 \tag{3}\]</span></p>
+<p>定义每个元素的<strong>量化误差</strong>为 <span class="math inline">\(r_{i,t}=q_{i,t}-w_{i,t}\)</span> ，则</p>
+<p><span class="math display">\[F_{i,j}=\Bigg[\sum_{t=1}^n r_{i,t}x_{t,j}\Bigg]^2 \tag{4}\]</span></p>
+<p>由于上述公式(4)只考虑了第 <span class="math inline">\(i\)</span> 行权重和第 <span class="math inline">\(j\)</span> 列激活值引起的<strong>量化误差</strong>，故可以考虑整个网络的误差表示为</p>
+<p><span class="math display">\[
+F=\begin{bmatrix}
+F_{1,1} &amp; F_{1,2} &amp;... &amp;F_{1,k}\\
+F_{2,1} &amp; F_{2,2} &amp;... &amp;F_{2,k}\\
+... &amp; ... &amp; ... &amp; ...\\
+F_{m,1} &amp; F_{m,2} &amp;... &amp;F_{m,k}\\
+\end{bmatrix}
+\tag{5}
+\]</span></p>
+<p>等效于将 <span class="math inline">\(F\)</span> 的期望值 <span class="math inline">\(\mathbf{E}[F]\)</span> 作为量化目标：</p>
+<p><span class="math display">\[\large \mathbf{E}[F]=\mathbf{E}\Bigg[\Big(\sum_{t=1}^nx_tr_t\Big)^2\Bigg]\tag{6}\]</span></p>
+<div class="note info"><p>假设 <span class="math inline">\(g = \sum_i^3x_i=x_1 + x_2 + x_3\)</span> 则: <span class="math display">\[\begin{align}
+g^2
+&amp;= \Big(\sum_i^3x_i\Big)^2\\
+&amp;= (x_1 + x_2 + x_3)(x_1 + x_2 + x_3)\\
+&amp;=x_1(x_1 + x_2 + x_3)+x_2(x_1 + x_2 + x_3)+x_3(x_1 + x_2 + x_3)\\
+&amp;=\sum_i^3\sum_j^3x_ix_j
+\end{align}
+\tag{7}\]</span></p>
+</div>
+<p>结合上述<code>Tips</code>，将表达式(6)展开得</p>
+<p><span class="math display">\[
+\begin{align}
+\mathbf{E}\Bigg[\Big(\sum_{t=1}^nx_tr_t\Big)^2\Bigg]
+&amp;=\mathbf{E}\Bigg[ \Big(\sum_{t=1}^nx_tr_t\Big)\Big(\sum_{s=1}^nx_sr_s\Big)\Bigg]\\
+&amp;=\mathbf{E}\Bigg[ \sum_{t=1}^n\sum_{s=1}^n(x_tr_t)(x_sr_s)\Bigg]\\
+&amp;=\mathbf{E}\Bigg[ \sum_{t=1}^n\sum_{s=1}^n(r_tr_s)(x_tx_s)\Bigg]\\
+\end{align}
+\tag{8}
+\]</span></p>
+<p>由于量化误差 <span class="math inline">\(r\)</span> 由权重量化过程确定，与输入激活 <span class="math inline">\(x\)</span> 无关，可以将 <span class="math inline">\(r\)</span> 移出期望运算符，故公式(8)可进一步化简得</p>
+<p><span class="math display">\[
+\large\mathbf{E}[F]=\mathbf{E}\Bigg[ \sum_{t=1}^n\sum_{s=1}^n(r_tr_s)(x_tx_s)\Bigg]=\sum_{t=1}^n\sum_{s=1}^n(r_tr_s)\mathbf{E}(x_tx_s)
+\tag{9}\]</span></p>
+<p>公式(9)中出现了 <span class="math inline">\(\mathbf{E}(x_tx_s)\)</span> 项，表示输入激活 <span class="math inline">\(\mathbf{x}_j\)</span> 中第 <span class="math inline">\(t\)</span> 个元素和第 <span class="math inline">\(s\)</span> 个元素的协方差，可以定义矩阵 <span class="math inline">\(\mathbf{I}\)</span>为：</p>
+<p><span class="math display">\[\mathbf{I}=
+\begin{bmatrix}
+\mathbf{E}(x_1x_1) &amp; \mathbf{E}(x_1x_2) &amp; ... &amp; \mathbf{E}(x_1x_n)\\
+\mathbf{E}(x_2x_1) &amp; \mathbf{E}(x_2x_2) &amp; ... &amp; \mathbf{E}(x_2x_n)\\
+... &amp; ... &amp; ... &amp; ...\\
+\mathbf{E}(x_nx_1) &amp; \mathbf{E}(x_nx_2) &amp; ... &amp; \mathbf{E}(x_nx_n)\\
+\end{bmatrix}
+\tag{10}\]</span></p>
+<p>其中的某个元素可以表示为：</p>
+<p><span class="math display">\[\mathbf{I}_{t,s}=\mathbf{E}(x_tx_s)\]</span></p>
+<p>将期望符号转换为求和符号得</p>
+<p><span class="math display">\[\mathbf{I}_{t,s}=\frac{1}{k}\sum_{j=1}^{k}x_{t,j}x_{s,j}\]</span></p>
+<p>则矩阵 <span class="math inline">\(\mathbf{I}\)</span> 的计算可以表示为</p>
+<p><span class="math display">\[\mathbf{I}=\frac{1}{k}\sum_{j=1}^{k}\mathbf{x}_j\mathbf{x}_j^T=\frac{1}{k}\mathbf{X}\mathbf{X}^T\]</span></p>
+<p>其中，<span class="math inline">\(\mathbf{x}_j= \begin{bmatrix} x_{1,j}\\ x_{2,j}\\ ...\\ x_{n,j} \end{bmatrix}\)</span> 。在实际计算中，通常会忽略归一化因子 <span class="math inline">\(\frac{1}{k}\)</span>。</p>
+<p>将公式(9)拆分为对角元素和非对角元素两部分得</p>
+<p><span class="math display">\[\large\mathbf{E}[F]=\sum_{i=j}\mathbf{E}[x_j^2]r_j^2+\sum_{i\neq j}\mathbf{E}[x_ix_j]r_ir_j
+\tag{11}\]</span></p>
+<p>由于激活值的正负性以及非对角元素的激活值之间相关性较弱，故非对角线元素 <span class="math inline">\(\mathbf{E}[x_{i}x_{j}]\)</span> 的期望值通常远小于对角线元素 <span class="math inline">\(\mathbf{E}[x_j^2]\)</span> ，即</p>
+<p><span class="math display">\[\mathbf{E}[x_ix_j] \lll \mathbf{E}[x_j^2]\]</span></p>
+<p>因此可以<strong>忽略</strong><code>非对角线元素</code>，简化计算，只关注对角线元素，即激活值的平方期望 <span class="math inline">\(\mathbf{E}[x_j^2]\)</span> ，故公式(11)忽略非对角线项得</p>
+<p><span class="math display">\[\large\mathbf{E}[F]\approx \sum_{i=j}\mathbf{E}[x_j^2]r_j^2\]</span></p>
+<h4 id="i-matrix可以用于指导权重量化"><code>i-Matrix</code>可以用于指导权重量化</h4>
+<p>因此，最小化权重的 <span class="math inline">\(\sum_{i=j}\mathbf{E}[x_i^2](q_i-\mathtt{w}_i)^2\)</span> 等效于最小化 <span class="math inline">\(\mathbf{E}[F]\)</span> ，表达式 <span class="math inline">\(\mathbf{E}[x_i^2]\)</span> 可以作为 <strong>Importance Matrix</strong> 去指导量化 <span class="math inline">\(\mathtt{w}\)</span> 权重矩阵。</p>
+<h4 id="代码示例">代码示例</h4>
+<p>在<code>llama.cpp</code>中计算 <code>imatrix</code> 矩阵的计算代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> row = <span class="number">0</span>; row &lt; (<span class="type">int</span>)src1-&gt;ne[<span class="number">1</span>]; ++row) &#123;</span><br><span class="line">    <span class="type">const</span> <span class="type">float</span> * x = data + row * src1-&gt;ne[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> j = <span class="number">0</span>; j &lt; (<span class="type">int</span>)src1-&gt;ne[<span class="number">0</span>]; ++j) &#123;</span><br><span class="line">        e.values[j] += x[j]*x[j]; <span class="comment">// 核心计算代码</span></span><br><span class="line">        e.counts[j]++;</span><br><span class="line">        <span class="keyword">if</span> (!std::<span class="built_in">isfinite</span>(e.values[j])) &#123;</span><br><span class="line">            <span class="built_in">LOG_ERR</span>(<span class="string">&quot;%f detected in %s\n&quot;</span>, e.values[j], wname.<span class="built_in">c_str</span>());</span><br><span class="line">            <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="without-imatrix">Without IMatrix</h3>
+<h4 id="data-weight-calculate">Data Weight Calculate</h4>
+<ol type="1">
+<li><strong>数据块(局部)幅度</strong></li>
+</ol>
+<p>首先计算权重数据块的局部(32)的平均幅度，即数据块的<strong>均方根(Root Mean Square-RMS)</strong>，公式如下： <span class="math display">\[\mathbf{E}[X^2]=\sqrt\frac{\sum_{i=1}^{n}x_i^2}{n}\]</span> 这部分是块内所有数据点共享的，反映了整个数据块的平均能量水平。如果一个数据块的 <code>av_x</code> 很大，那么这个块内的所有数据点都会获得一个较高的基础权重。</p>
+<ol start="2" type="1">
+<li><strong>数据点幅度</strong></li>
+</ol>
+<p>通过计算当前数据点的绝对值，获得每个数据个体的幅度值，用于反应数据本身的大小，公式如下： <span class="math display">\[|x_i|\]</span> 这部分是每个数据独有的，反映了该数据点自身的绝对大小。绝对值越大的数据点，会获得额外的权重。</p>
+<ol start="3" type="1">
+<li><strong>数据点权重计算</strong></li>
+</ol>
+<p>每个数据点的权重为<strong>数据块幅度</strong>和<strong>数据点幅度</strong>两部分之和，最终的权重计算如下： <span class="math display">\[W_i=|x_i|+\mathbf{E}[X^2]\]</span> 在后续的量化优化过程中，具有以下特点的数据，其量化误差将会被赋予更高的权重(更重要)：</p>
+<ul>
+<li><strong>位于“幅度较高”的局部邻域内的数据点</strong>：如果一个数据点周围的其他数据点的幅度也较大（导致较高的数据块幅度），那么即使它自身的幅度不是特别大，也会获得较高的权重。这可以理解为，在一个重要的局部区域内，所有数据点都应该被更精确地量化。</li>
+<li><strong>自身幅度较大的数据点</strong>:无论其周围邻域的能量如何，幅度较大的数据点本身就会获得较高的权重。这符合直觉，因为较大的数值的量化误差对整体的影响通常更大，因此需要更精确的表示。</li>
+</ul>
+<h3 id="with-imatrix">With IMatrix</h3>
+<h4 id="data-weight-calculate-1">Data Weight Calculate</h4>
+<ol type="1">
+<li><strong>数据块峰值幅度</strong></li>
+</ol>
+<p>首先计算整个数据块(256)的平均幅度，即数据块的均方值(Mean Square-MS)，或者叫<strong>峰值幅度</strong>，公式如下： <span class="math display">\[\frac{2\sum_{i=1}^{N}x_i^2}{N}\]</span> 其中， <span class="math inline">\(N=256\)</span>表示整个 <code>Block</code> 的大小。</p>
+<ol start="2" type="1">
+<li><strong>数据点幅度</strong></li>
+</ol>
+<p>通过计算当前数据点的绝对值，获得每个数据个体的幅度值，用于反应数据本身的大小，公式如下： <span class="math display">\[x_i^2\]</span> 这部分是每个数据独有的，反映了该数据点自身的绝对大小。绝对值越大的数据点，会获得额外的权重。</p>
+<ol start="3" type="1">
+<li><strong>数据点权重计算</strong></li>
+</ol>
+<p>每个数据点的权重为<strong>数据块幅度</strong>和<strong>数据点幅度</strong>两部分之和，最终的权重计算如下： <span class="math display">\[W_i=w_i\times \sqrt{x_i^2+\frac{2\sum_{i=1}^{N}x_i^2}{N}}\]</span> 其中， <span class="math inline">\(w_i\)</span>表示<code>imatrix</code>中的权重。</p>
+<h2 id="super-block-quant">Super Block Quant</h2>
+<h3 id="asymmetric-quant-and-dequant">Asymmetric Quant and Dequant</h3>
+<p>根据数据分布范围，找出其中的<strong>最大值</strong>和<strong>最小值</strong>，然后根据量化的bit数(例如4bit)，按照如下公式计算量化的缩放系数： <span class="math display">\[\delta=\frac{f_{max}-f_{min}}{2^{bit}-1}=\frac{f_{max}-f_{min}}{15}\]</span></p>
+<p>如下图所示，是4bit非对称量化的示意图，显示了浮点数值分布与量化数值分布的关系：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/07/06/kVRtlcPfmMveHoC.png" alt="4bit asymmetric quant" /><figcaption aria-hidden="true">4bit asymmetric quant</figcaption>
+</figure>
+<p><strong>量化</strong>表示如下：</p>
+<p><span class="math display">\[q=\frac{f-f_{min}}{\delta}\]</span></p>
+<p><strong>反量化</strong>表示如下：</p>
+<p><span class="math display">\[f = q\times\delta+ f_{min}\]</span></p>
+<h3 id="symmetric-quant-and-dequant">Symmetric Quant and Dequant</h3>
+<p>如果是对称量化，计算比较简单，直接找出数据分布的最大值，然后根据量化bit位宽，按照如下公式计算量化系数：</p>
+<p><span class="math display">\[\delta=\frac{|f|_{max}}{-2^{(bit-1)}}\]</span> 其中， <span class="math display">\[|f|_{max}=
+\begin{cases}
+   f_{max} &amp;\text{if } |f_{max}|&gt;|f_{min}| \\
+   f_{min} &amp;\text{if } |f_{max}|&lt;|f_{min}|
+\end{cases}\]</span></p>
+<p>如下图所示，是6bit对称量化的示例图，根据绝对值最大的值是负数还是正数，采取不同的映射策略：</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/07/06/udxF7yS58iGQscI.png" alt="6bit symmetric quant" /><figcaption aria-hidden="true">6bit symmetric quant</figcaption>
+</figure>
+<p><strong>量化</strong>表示如下：</p>
+<p><span class="math display">\[q=\frac{f}{\delta}\]</span></p>
+<p><strong>反量化</strong>表示如下：</p>
+<p><span class="math display">\[f = q\times\delta\]</span></p>
+<h2 id="quant-optimization">Quant Optimization</h2>
+<p>根据采用的量化算法的对称方式，可以分为<strong>对称</strong>和<strong>非对称</strong>两种方式，它们详细的量化误差表示略有不同，下面根据不同量化对称方式分析其量化算法的数学原理。</p>
+<h3 id="asymmetric">Asymmetric</h3>
+<p>如下图所示，是目前<code>llama.cpp</code>采用<strong>非对称量化</strong>算法的数据结构示意图，主要分析<code>Block</code>内的数据是如何在内存存储的：</p>
+<ul>
+<li><strong>Q2_K</strong></li>
+</ul>
+<p>如下图所示，是 <code>Q2_K</code> 量化算法的数据存储示意图。整个 <strong>Block</strong> 的<strong>量化系数</strong>和<strong>零点值</strong>以<code>float16</code>格式存储，占据4字节的空间。然后再将 <strong>Block</strong> 划分为<code>16</code>个 <strong>Super-Block</strong> ，每个 <strong>Super-Block</strong> 拥有自己的<strong>量化系数</strong>和<strong>零点值</strong>，且数据位宽为<code>4bit</code>，拼接在一起按照<code>1byte</code>存储，<code>高4bit</code>表示<strong>零点值</strong>，<code>低4bit</code>位表示<strong>量化系数</strong>，一共占据16个字节空间。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/07/06/zvKGkJnZ5uiTxMD.png" alt="Q2_K" /><figcaption aria-hidden="true">Q2_K</figcaption>
+</figure>
+<ul>
+<li><strong>Q4_K</strong></li>
+</ul>
+<p>如下图所示，是 <code>Q4_K</code> 量化算法的数据存储示意图。整个 <strong>Block</strong> 的<strong>量化系数</strong>和<strong>零点值</strong>以<code>float16</code>格式存储，占据4字节的空间。然后再将 <strong>Block</strong> 划分为<code>8</code>个 <strong>Super-Block</strong> ，每个 <strong>Super-Block</strong> 拥有自己的<strong>量化系数</strong>和<strong>零点值</strong>，且数据位宽为<code>6bit</code>，按照图中的结构进行拼接，一共占据<code>12</code>个字节空间。每两个 <strong>Super-Block</strong> 进行拼接，并使用一个<code>32</code>字节的数组保存，一共<strong>4</strong>个组共<code>128</code>字节。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/07/06/yTot5sFC6MIQaeX.png" alt="Q4_K" /><figcaption aria-hidden="true">Q4_K</figcaption>
+</figure>
+<ul>
+<li><strong>Q5_k</strong></li>
+</ul>
+<p>如下图所示，是 <code>Q5_K</code> 量化算法的数据存储示意图。整个 <strong>Block</strong> 的<strong>量化系数</strong>和<strong>零点值</strong>以<code>float16</code>格式存储，占据4字节的空间。然后再将 <strong>Block</strong> 划分为<code>8</code>个 <strong>Super-Block</strong> ，每个 <strong>Super-Block</strong> 拥有自己的<strong>量化系数</strong>和<strong>零点值</strong>，且数据位宽为<code>6bit</code>，按照图中的结构进行拼接，一共占据<code>12</code>个字节空间。每两个 <strong>Super-Block</strong> 的低4bit位进行拼接，组成一个<code>32</code>字节的数组，8个<strong>Super-Block</strong>的第5个bit拼接为一个字节，使用一个32字节的数组保存，一共<code>160</code>字节。</p>
+<figure>
+<img data-src="https://s2.loli.net/2025/07/06/fqih9K6pjlCM7XF.png" alt="Q5_K" /><figcaption aria-hidden="true">Q5_K</figcaption>
+</figure>
+<h4 id="quant-error">Quant Error</h4>
+<p>为了最小化整个数据块的量化误差，可以将某个数据的量化误差表示为： <span class="math display">\[Q(i)_{err}=|q_{i}\times\delta+ f_{min}-f_i|\]</span> 或者 <span class="math display">\[Q(i)_{err}=(q_{i}\times\delta+ f_{min}-f_i)^2\]</span> 则整个<strong>Super-Block</strong>内的量化误差表示为： <span class="math display">\[Q_{err}=\sum_{i=1}^{n}Q(i)_{err}\]</span> 由于每个数据对量化误差的敏感度不一，则将考虑了<strong>误差权重</strong>的表达式表示如下： <span class="math display">\[Q_{err}=\sum_{i=1}^{n}W_{i}\times Q(i)_{err}\]</span></p>
+<h4 id="quant-scale-opt">Quant-Scale OPT</h4>
+<p>为了最小化<strong>Super-Block</strong>内的量化误差之和，则设定优化目标可以表示为：</p>
+<p><span class="math display">\[\mathbf{argmin}_{\delta,f_{min}} \quad Q_{err}=\sum_{i=1}^{n}W_i \times (q_{i}\times\delta+ f_{min}-f_i)^2\]</span></p>
+<p>可以通过求解最小二乘问题，求得优化的 <span class="math inline">\(\delta\)</span>和 <span class="math inline">\(f_{min}\)</span>。</p>
+<ol type="1">
+<li>对 <span class="math inline">\(\delta\)</span>求偏导，并令等式为<code>0</code>得： <span class="math display">\[\sum_{i=1}^{n}W_i \times (q_{i}\times\delta+ f_{min}-f_i)q_i=0\]</span> 上式展开得 <span class="math display">\[\delta\sum_{i=1}^{n}W_{i}\times q_{i}^2 +f_{min}\sum_{i=1}^{n}W_iq_i=\sum_{i=1}^{n}W_{i}f_iq_i \tag{1}\]</span></li>
+<li>对 <span class="math inline">\(f_{min}\)</span>求偏导，并令等式为<code>0</code>得： <span class="math display">\[\sum_{i=1}^{n}W_i \times (q_{i}\times\delta+ f_{min}-f_i)=0\]</span> 上式展开得 <span class="math display">\[\delta\sum_{i=1}^{n}W_{i}\times q_{i} +f_{min}\sum_{i=1}^{n}W_i=\sum_{i=1}^{n}W_{i}f_i \tag{2}\]</span> 故结合上述等式(1)和(2)，可以得到两个关于 <span class="math inline">\(\delta\)</span>和 <span class="math inline">\(f_{min}\)</span>的线性方程组： <span class="math display">\[
+\begin{align}
+\delta\sum_{i=1}^{n}W_{i}\times q_{i}^2 +f_{min}\sum_{i=1}^{n}W_iq_i &amp;=\sum_{i=1}^{n}W_{i}f_iq_i\\
+\delta\sum_{i=1}^{n}W_{i}\times q_{i}+f_{min}\sum_{i=1}^{n}W_i&amp; =\sum_{i=1}^{n}W_{i}f_i
+\end{align}
+\tag{3}
+\]</span> 将等式(3)使用矩阵形式表示如下： <span class="math display">\[
+\Large
+\begin{bmatrix}
+\sum_{i=1}^{n}W_{i}q_{i}^2 &amp; \sum_{i=1}^{n}W_iq_i \\
+\sum_{i=1}^{n}W_{i}q_{i} &amp; \sum_{i=1}^{n}W_i
+\end{bmatrix}
+\begin{bmatrix}
+\delta\\
+f_{min}
+\end{bmatrix}=
+\begin{bmatrix}
+\sum_{i=1}^{n}W_{i}f_iq_i\\
+\sum_{i=1}^{n}W_{i}f_i
+\end{bmatrix}
+\tag{4}
+\]</span></li>
+</ol>
+<div class="note success"><p><strong>克莱姆法则</strong>: 假设多项式表示如下： <span class="math display">\[
+\begin{array}{cc}
+ax+by&amp;=\textcolor{red}{e}\\
+cx+dy&amp;=\textcolor{red}{f}
+\end{array}
+\]</span> 使用矩阵来表示为： <span class="math display">\[
+\begin{bmatrix}
+a &amp; b\\
+c &amp; d
+\end{bmatrix}
+\begin{bmatrix}
+x\\y
+\end{bmatrix}=
+\begin{bmatrix}
+\textcolor{red}{e}\\\textcolor{red}{f}
+\end{bmatrix}
+\]</span> 当矩阵可逆时，x和y可以从克莱姆法则中得出： <span class="math display">\[
+x=\frac{
+\begin{vmatrix}
+\textcolor{red}{e} &amp; b\\
+\textcolor{red}{f} &amp; d
+\end{vmatrix}
+}{
+\begin{vmatrix}
+a &amp; b\\
+c &amp; d
+\end{vmatrix}
+}=\frac{\textcolor{red}{e}d-b\textcolor{red}{f}}{ad-bc}
+\]</span> 同时 <span class="math display">\[
+y=\frac{
+\begin{vmatrix}
+a&amp;\textcolor{red}{e}\\
+c&amp;\textcolor{red}{f}
+\end{vmatrix}
+}{
+\begin{vmatrix}
+a &amp; b\\
+c &amp; d
+\end{vmatrix}
+}=\frac{a\textcolor{red}{f}-\textcolor{red}{e}c}{ad-bc}
+\]</span> 假设使用 <span class="math inline">\(\mathbf{A}= \begin{bmatrix} a &amp; b\\ c &amp; d \end{bmatrix}\)</span>表示线性矩阵，则行列式表示为<span class="math inline">\(\det(\mathbf{A})=\begin{vmatrix} a &amp; b\\ c &amp; d \end{vmatrix}\)</span></p>
+<ul>
+<li><strong>可解性判据</strong>: <span class="math inline">\(\det(\mathbf{A})\)</span> 是用于判断上述线性方程组是否存在唯一解的关键。
+<ol type="1">
+<li>如果 <span class="math inline">\(\det(\mathbf{A})&gt;0\)</span> ，则方程组有唯一解，意味着我们可以找到一组唯一的 <span class="math inline">\(\delta\)</span> 和 <span class="math inline">\(f_{min}\)</span> 来最小化误差。</li>
+<li>如果 <span class="math inline">\(\det(\mathbf{A})=0\)</span>，则方程组无解或有无穷多解，这意味着我们无法找到唯一的 <span class="math inline">\(\delta\)</span> 和 <span class="math inline">\(f_{min}\)</span> 来最优地拟合数据。这通常发生在 的所有值都相等或存在线性依赖关系的情况下。</li>
+<li>如果 <span class="math inline">\(\det(\mathbf{A})&lt;0\)</span>，在实数域中通常不会出现这种情况，因为 <span class="math inline">\(ad \ge bc\)</span>（这可以从柯西-施瓦茨不等式推导出来）。</li>
+</ol></li>
+</ul>
+</div>
+<p>根据<strong>克莱姆法则</strong>，最优的 <span class="math inline">\(\delta\)</span>可以表示为： <span class="math display">\[\delta=\frac{
+\begin{vmatrix}
+\textcolor{red}{\sum_{i=1}^{n}W_{i}f_iq_i} &amp; \sum_{i=1}^{n}W_iq_i\\
+\textcolor{red}{\sum_{i=1}^{n}W_{i}f_i} &amp; \sum_{i=1}^{n}W_i
+\end{vmatrix}
+}{
+\begin{vmatrix}
+\sum_{i=1}^{n}W_{i}q_{i}^2 &amp; \sum_{i=1}^{n}W_iq_i \\
+\sum_{i=1}^{n}W_{i}q_{i} &amp; \sum_{i=1}^{n}W_i
+\end{vmatrix}
+}=\frac{
+\textcolor{red}{\sum_{i=1}^{n}W_{i}f_iq_i} \times \sum_{i=1}^{n}W_i-\sum_{i=1}^{n}W_iq_i\times \textcolor{red}{\sum_{i=1}^{n}W_{i}f_i}
+}{\sum_{i=1}^{n}W_{i}q_{i}^2\times \sum_{i=1}^{n}W_i-\sum_{i=1}^{n}W_iq_i\times \sum_{i=1}^{n}W_iq_i}
+\tag{5}\]</span> 同理，最优的 <span class="math inline">\(f_{min}\)</span>可以表示为 <span class="math display">\[f_{min}=\frac{
+\begin{vmatrix}
+\sum_{i=1}^{n}W_{i}q_{i}^2 &amp;\textcolor{red}{\sum_{i=1}^{n}W_{i}f_iq_i}\\
+\sum_{i=1}^{n}W_{i}q_{i} &amp; \textcolor{red}{\sum_{i=1}^{n}W_{i}f_i}
+\end{vmatrix}
+}{
+\begin{vmatrix}
+\sum_{i=1}^{n}W_{i}q_{i}^2 &amp; \sum_{i=1}^{n}W_iq_i \\
+\sum_{i=1}^{n}W_{i}q_{i} &amp; \sum_{i=1}^{n}W_i
+\end{vmatrix}
+}=\frac{
+\sum_{i=1}^{n}W_{i}q_{i}^2 \times \textcolor{red}{\sum_{i=1}^{n}W_{i}f_i}-\textcolor{red}{\sum_{i=1}^{n}W_{i}f_iq_i}\times \sum_{i=1}^{n}W_{i}q_{i}
+}{
+\sum_{i=1}^{n}W_{i}q_{i}^2\times \sum_{i=1}^{n}W_i-\sum_{i=1}^{n}W_iq_i\times \sum_{i=1}^{n}W_iq_i
+}
+\tag{6}\]</span> 其中，需要保证 <span class="math inline">\(\begin{vmatrix} \sum_{i=1}^{n}W_{i}q_{i}^2 &amp; \sum_{i=1}^{n}W_iq_i \\ \sum_{i=1}^{n}W_{i}q_{i} &amp; \sum_{i=1}^{n}W_i \end{vmatrix} &gt; 0\)</span>。</p>
+<h4 id="quant-scale-update">Quant-Scale Update</h4>
+<p>根据量化公式 <span class="math inline">\(q=\frac{f-f_{min}}{\delta}\)</span> 知，通过动态调整量化系数 <span class="math inline">\(\delta\)</span> 的大小，可以对数据的量化结果进行调整。 <span class="math display">\[\set{\frac{1}{\delta_j}|\frac{(2^{bit}-1)+r_{min}+\delta_r*j}{f_{max}-f_{min}}, j \in[1,step]}\]</span> 假设采用4bit量化， <span class="math inline">\(r_{min}=-1.0\)</span>， <span class="math inline">\(\delta_r=0.1\)</span>， <span class="math inline">\(step=20\)</span>，则 <span class="math display">\[\set{\frac{1}{\delta_j}|\frac{15-1+0.1*j}{f_{max}-f_{min}}, j \in[1,20]}\]</span> 从而得到一组新的量化数值 <span class="math inline">\(\set{q_i|i\in[1,n]}\)</span> ，根据量化的最优目标<span class="math inline">\(\mathtt{minimine} \quad Q_{err}\)</span>，并结合公式(5)和(6)可以得到新的量化系数 <span class="math inline">\(\delta_{b}\)</span>和 <span class="math inline">\(b_{min}\)</span>，并重新计算出新的 <span class="math inline">\(Q_{err}^j=\sum_{i=1}^{n}W_i \times (q_{i}\times\delta_{b}+ b_{min}-f_i)^2\)</span> 如果新的 <span class="math inline">\(Q_{err}^j &lt; Q_{err}\)</span>，则更新 <span class="math inline">\(\delta_{b}\)</span>和 <span class="math inline">\(b_{min}\)</span>为最终输出的量化系数。</p>
+<h3 id="symmetric-quant-and-global-optimumq6_k">Symmetric Quant and Global Optimum(Q6_K)</h3>
+<figure>
+<img data-src="https://s2.loli.net/2025/07/06/cma32uSXkh6dEoL.png" alt="Q6_K" /><figcaption aria-hidden="true">Q6_K</figcaption>
+</figure>
+<h4 id="quant-error-1">Quant Error</h4>
+<p>为了最小化整个数据块的量化误差，可以将某个数据的量化误差表示为： <span class="math display">\[Q(i)_{err}=|q_{i}\times\delta-f_i|\]</span> 或者 <span class="math display">\[Q(i)_{err}=(q_{i}\times\delta-f_i)^2\]</span> 则整个<strong>Super-Block</strong>内的量化误差表示为： <span class="math display">\[Q_{err}=\sum_{i=1}^{n}Q(i)_{err}\]</span> 由于每个数据对量化误差的敏感度不一，则考虑误差权重的表达式如下： <span class="math display">\[Q_{err}=\sum_{i=1}^{n}W_{i}\times Q(i)_{err}\]</span></p>
+<h4 id="quant-scale-opt-1">Quant Scale OPT</h4>
+<p>为了最小化<strong>Super-Block</strong>内的量化误差之和，则设定优化目标可以表示为： <span class="math display">\[\mathbf{argmin}_{\delta} \quad Q_{err}=\sum_{i=1}^{n}W_i \times (q_{i}\times\delta-f_i)^2\]</span> 可以通过求解最小二乘问题，求得优化的 <span class="math inline">\(\delta\)</span>。</p>
+<ol type="1">
+<li>对 <span class="math inline">\(\delta\)</span>求偏导，并令等式为<code>0</code>得： <span class="math display">\[\sum_{i=1}^{n}W_i \times (q_{i}\times\delta-f_i)q_i=0\]</span> 上式展开得 <span class="math display">\[\delta\sum_{i=1}^{n}W_{i}q_{i}^2 =\sum_{i=1}^{n}W_{i}f_iq_i\]</span> 求解得 <span class="math display">\[\delta_{b}=\frac{\sum_{i=1}^{n}W_{i}f_iq_i}{\sum_{i=1}^{n}W_{i}q_{i}^2} \tag{7}\]</span></li>
+</ol>
+<h4 id="quant-scale-update-1">Quant Scale Update</h4>
+<p>根据量化公式 <span class="math inline">\(q=\frac{f}{\delta}\)</span> 知，通过动态调整量化系数 <span class="math inline">\(\delta\)</span> 的大小，可以对数据的量化结果进行调整。 <span class="math display">\[\set{\frac{1}{\delta_j}|\frac{-\large(2^{bit-1}+\delta_r*j\large)}{|f|_{max}}, j \in[1,step]}\]</span> 假设采用<code>6bit</code>量化， <span class="math inline">\(\delta_r=0.1\)</span>， <span class="math inline">\(step=[-9,9]\)</span>，则 <span class="math display">\[\set{\frac{1}{\delta_j}|\frac{-(32+0.1*j)}{|f|_{max}}, j \in[-9,9]}\]</span> 从而得到一组新的量化数值 <span class="math inline">\(\set{q_i|i\in[1,n]}\)</span> ，根据量化的最优目标 <span class="math inline">\(\mathtt{minimine} \quad Q_{err}\)</span> ，并结合公式(7)可以得到新的量化系数 <span class="math inline">\(\delta_{b}\)</span> ，并重新计算出新的 <span class="math inline">\(Q_{err}^j=\sum_{i=1}^{n}W_i \times (q_{i}\times\delta_{b}-f_i)^2\)</span> 。 <span class="math display">\[
+\begin{align}
+Q_{err}^j
+&amp;=\sum_{i=1}^{n}W_i \times (q_{i}\delta_{b}-f_i)^2\\
+&amp;=\sum_{i=1}^{n}W_if_i^2 -2\sum_{i=1}^{n}W_iq_{i}\delta_{b}f_i + \sum_{i=1}^{n}W_i(q_{i}\delta_{b})^2\\
+&amp;=\textcolor{red}{\sum_{i=1}^{n}W_if_i^2}-2\delta_{b}\sum_{i=1}^{n}W_iq_{i}f_i + \delta_{b}^2\sum_{i=1}^{n}W_iq_{i}^2
+\end{align}
+\tag{8}
+\]</span> 其中， 因为校验集数据集在量化过程中是固定的，则 <span class="math inline">\(\sum_{i=1}^{n}W_if_i^2\)</span> 项可以看作常数，将公式(7)计算的 <span class="math inline">\(\delta_b\)</span> 项代入公式(8)可得 <span class="math display">\[
+\begin{align}
+Q_{err}^j
+&amp;=\textcolor{red}{Constant}-2\frac{\sum_{i=1}^{n}W_{i}f_iq_i}{\sum_{i=1}^{n}W_{i}q_{i}^2}\sum_{i=1}^{n}W_iq_{i}f_i + (\frac{\sum_{i=1}^{n}W_{i}f_iq_i}{\sum_{i=1}^{n}W_{i}q_{i}^2})^2\sum_{i=1}^{n}W_iq_{i}^2\\
+&amp;=\textcolor{red}{Constant}-\frac{(\sum_{i=1}^{n}W_{i}f_iq_i)^2}{\sum_{i=1}^{n}W_{i}q_{i}^2}
+\end{align}
+\tag{9}
+\]</span> 故 <span class="math inline">\(\mathtt{minimine} \quad Q_{err}^j\)</span> 等效于 <span class="math display">\[\mathtt{maxmine} \quad \frac{(\sum_{i=1}^{n}W_{i}f_iq_i)^2}{\sum_{i=1}^{n}W_{i}q_{i}^2}\]</span> 结合公式(7)可得 <span class="math display">\[\mathtt{maxmine} \quad \delta_{b}\sum_{i=1}^{n}W_{i}f_iq_i\]</span> 只要 <span class="math inline">\(\delta_{b}\sum_{i=1}^{n}W_{i}f_i\hat{q}_i &gt; \delta\sum_{i=1}^{n}W_{i}f_iq_i\)</span> ，则更新 <span class="math inline">\(\delta_{b}\)</span> 为最终输出的量化系数。</p>
+<h3 id="symmetric-quant-and-local-optimumq3_k">Symmetric Quant and Local Optimum(Q3_K)</h3>
+<figure>
+<img data-src="https://s2.loli.net/2025/07/06/RiPwFv5JKeqmUVX.png" alt="Q3_K" /><figcaption aria-hidden="true">Q3_K</figcaption>
+</figure>
+<p>为了最小化<code>Super-Block</code>内的量化误差之和，则设定<strong>RMSE</strong>优化的目标可以表示为：</p>
+<p><span class="math display">\[\mathtt{minimine} \quad \sum_{i=0}^{n-1}W_i \times (q_{i}\times\delta-f_i)^2\]</span></p>
+<p>可以考虑估计一个局部最优的比例因子，使得量化误差局部最优。</p>
+<p>当关注优化单个元素 <span class="math inline">\(q_i\)</span> 时，假设其它元素的量化值保持不变。为了决定 <span class="math inline">\(q_i\)</span> 一个好的候选值，需要一个临时、局部的比例因子，这个比例因子在当前迭代状态下，对于除了元素 <code>i</code> 之外的所有元素来说是“最优”的。</p>
+<ul>
+<li>考虑排除元素 i 后的加权平方误差：</li>
+</ul>
+<p><span class="math display">\[Q_{err}(\delta)=\large\sum_{j!=i}^{n-1}W_j \times (q_{j}\times\delta-f_j)^2\]</span></p>
+<p>目标是找到一个比例因子 <span class="math inline">\(\delta_{local}\)</span> ，使得这个 <span class="math inline">\(Q_{err}(\delta)\)</span> 最小。 为了找到最小值，我们可以对 <span class="math inline">\(Q_{err}(\delta)\)</span> 关于 <span class="math inline">\(\delta_{local}\)</span> 求导并令导数为<code>零</code>得 <span class="math display">\[\large\delta_{local}=\frac{\sum_{j!=i}^{n-1}W_{j}f_jq_j}{\sum_{j!=i}^{n-1}W_{j}q_{j}^2}=\frac{\sum_{j=0}^{n-1}W_{j}f_jq_j-W_{i}f_iq_i}{\sum_{j=0}^{n-1}W_{j}q_{j}^2-W_{i}q_{i}^2}\]</span></p>
+<p>当前量化状态下，排除元素 <code>i</code> 后剩余元素的加权平方误差最小的比例因子。</p>
+<h2 id="super-block-scale-quant">Super-Block Scale Quant</h2>
+<p>然后对每个 <strong>Super-Block</strong> 的量化系数再进行非对称或对称6bit量化，并将量化系数存储在外部的数据结构中。</p>
+]]></content>
+      <categories>
+        <category>llama.cpp</category>
+        <category>quant</category>
+      </categories>
+      <tags>
+        <tag>llama.cpp</tag>
+        <tag>llm quant</tag>
+        <tag>k-quant</tag>
+      </tags>
+  </entry>
 </search>
